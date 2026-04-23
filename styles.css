@@ -50,6 +50,15 @@ body {
   color: #fff; display: grid; place-items: center; font-size: 24px; font-weight: 800;
   box-shadow: 0 2px 8px rgba(139, 90, 43, .3);
 }
+.brand-icon-img {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fbf6ee, #f1e0c6);
+  padding: 2px;
+  box-shadow: 0 3px 10px rgba(139, 90, 43, .22), 0 0 0 1px rgba(139, 90, 43, .08);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
 .brand-title { font-weight: 700; font-size: 16px; }
 .brand-sub { color: var(--ink-soft); font-size: 12px; }
 .tabs { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
@@ -182,6 +191,14 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .welcome-banner[hidden] { display: none; }
 .welcome-content { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
 .welcome-bear { font-size: 56px; line-height: 1; flex: 0 0 auto; }
+.welcome-bear-img {
+  width: 96px; height: 96px; flex: 0 0 auto;
+  border-radius: 18px;
+  background: rgba(255,255,255,.15);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  object-fit: contain;
+}
 .welcome-content h2 { margin: 0 0 4px; font-size: 22px; }
 .welcome-content p { margin: 4px 0; opacity: .95; }
 .welcome-content .welcome-steps { font-size: 13px; opacity: .9; margin: 8px 0 12px; }

@@ -6,9 +6,14 @@
   <title>BerUang — Catat Uangmu, Jadi Ber-uang</title>
   <meta name="description" content="BerUang — aplikasi catat keuangan pribadi. Catet dulu, biar beneran ber-uang. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20." />
   <meta name="theme-color" content="#8b5a2b" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=1" />
+  <link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=1" />
+  <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-title" content="BerUang" />
-  <link rel="stylesheet" href="styles.css?v=12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="styles.css?v=13" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -19,7 +24,7 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon" aria-label="BerUang">🐻</div>
+      <img class="brand-icon-img" src="assets/mascot-beruang.png?v=1" alt="BerUang" />
       <div>
         <div class="brand-title">BerUang</div>
         <div class="brand-sub">Catet dulu, biar beneran ber-uang</div>
@@ -45,16 +50,15 @@
     <section id="tab-dashboard" class="tab-panel active">
       <div id="welcome-banner" class="welcome-banner" hidden>
         <div class="welcome-content">
-          <div class="welcome-bear">🐻</div>
+          <img class="welcome-bear-img" src="assets/mascot-beruang.png?v=1" alt="Mascot BerUang" />
           <div>
             <h2>Halo, selamat datang di <b>BerUang</b>!</h2>
-            <p><i>"Catet dulu, biar beneran ber-uang"</i></p>
+            <p class="welcome-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
             <p class="welcome-steps">
-              Mulai catat transaksi dengan <b>3 cara</b>:
-              ① Ketik chat natural <i>"bakso 45rb"</i> ·
-              ② Foto struk belanja ·
-              ③ Isi form biasa.
-              <br>Buka tab <b>Tambah</b> untuk mulai.
+              Mulai catat transaksi dengan <b>3 cara</b>:<br>
+              ① Ketik chat natural <i>"bakso 45rb"</i><br>
+              ② Foto struk belanja<br>
+              ③ Isi form biasa
             </p>
             <button class="btn btn-primary" id="btn-dismiss-welcome">Mulai catat uang →</button>
           </div>
@@ -472,12 +476,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=12"></script>
-  <script src="js/utils.js?v=12"></script>
-  <script src="js/storage.js?v=12"></script>
-  <script src="js/parser.js?v=12"></script>
-  <script src="js/dashboard.js?v=12"></script>
-  <script src="js/pages.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/data.js?v=13"></script>
+  <script src="js/utils.js?v=13"></script>
+  <script src="js/storage.js?v=13"></script>
+  <script src="js/parser.js?v=13"></script>
+  <script src="js/dashboard.js?v=13"></script>
+  <script src="js/pages.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>

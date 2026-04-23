@@ -1,0 +1,49 @@
+{
+  "name": "BerUang — Catat Uangmu, Jadi Ber-uang",
+  "short_name": "BerUang",
+  "description": "Aplikasi catat keuangan pribadi. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf6ee",
+  "theme_color": "#8b5a2b",
+  "lang": "id",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "assets/mascot-beruang.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/mascot-beruang.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/logo-beruang.png",
+      "sizes": "1248x1248",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tambah Transaksi",
+      "short_name": "Tambah",
+      "description": "Langsung ke halaman tambah",
+      "url": "./index.html#tambah",
+      "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Lihat Rekap",
+      "short_name": "Rekap",
+      "description": "Rekap harian/mingguan/bulanan",
+      "url": "./index.html#rekap",
+      "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
+    }
+  ]
+}

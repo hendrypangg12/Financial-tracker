@@ -444,4 +444,8 @@ function setupWelcomeBanner() {
 document.addEventListener('DOMContentLoaded', () => {
   init();
   setupWelcomeBanner();
+  // Daftarkan service worker (PWA: supaya aplikasi bisa offline & diinstall)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
 });
