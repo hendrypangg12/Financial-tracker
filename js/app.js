@@ -185,8 +185,19 @@ function attachEvents() {
         <tfoot><tr><td><b>TOTAL</b></td><td style="text-align:right"><b>${formatRupiah(res.jumlah)}</b></td></tr></tfoot>
       </table>
       <div style="margin-top:8px">Kategori: <b>${escapeHtml(res.subKategori)}</b> (${escapeHtml(res.kategori)}) · ${escapeHtml(res.alokasi || '-')}</div>
-      <button class="btn btn-primary" style="margin-top:8px" id="btn-confirm-struk">Simpan Transaksi</button>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btn-confirm-struk">✅ Simpan Transaksi</button>
+        <button class="btn btn-ghost" id="btn-edit-struk">✏️ Koreksi Manual</button>
+      </div>
+      <small style="display:block;margin-top:6px;color:var(--ink-soft)">Hasilnya salah? Klik "Koreksi Manual" untuk edit total/deskripsi/kategori.</small>
     `;
+    document.getElementById('btn-edit-struk').onclick = () => {
+      renderManualFallback(text, date, 'Koreksi hasil parse sebelum disimpan.', {
+        total: res.jumlah,
+        desc: res.deskripsi,
+        sub: res.subKategori,
+      });
+    };
     document.getElementById('btn-confirm-struk').onclick = () => {
       const { items, ...toSave } = res;
       addTransaction(toSave);
@@ -197,29 +208,34 @@ function attachEvents() {
     };
   };
 
-  // Fallback manual saat OCR meleset / tidak temukan total
-  function renderManualFallback(text, date, errMsg) {
+  // Fallback manual saat OCR meleset / tidak temukan total / user mau edit
+  function renderManualFallback(text, date, errMsg, prefill) {
+    prefill = prefill || {};
     // Tebak nama merchant dari baris pertama yang masuk akal
     const firstLine = String(text || '').split(/\r?\n/).find(l => l.trim().length > 2) || '';
     // Tebak kategori dari keyword di teks OCR
-    let sub = null;
-    for (const rule of KEYWORD_MAP) {
-      if (rule.jenis === 'pengeluaran' && rule.re.test(text)) { sub = rule.sub; break; }
+    let sub = prefill.sub || null;
+    if (!sub) {
+      for (const rule of KEYWORD_MAP) {
+        if (rule.jenis === 'pengeluaran' && rule.re.test(text)) { sub = rule.sub; break; }
+      }
     }
     if (!sub) sub = 'Belanja bulanan supermarket';
-    const { kategori, alokasi } = findCategoryForSub(sub, 'pengeluaran');
+
+    const initialTotal = prefill.total || '';
+    const initialDesc = prefill.desc || firstLine.slice(0, 80);
 
     strukPreview.innerHTML = `
       <div style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:10px;border-radius:10px;margin-bottom:10px">
         ⚠️ ${escapeHtml(errMsg)}<br>
-        <small>Lihat preview foto di atas lalu isi total manual di bawah ini.</small>
+        <small>Lihat preview foto di atas lalu isi / koreksi di bawah ini.</small>
       </div>
       <div class="form" style="display:grid;gap:8px">
         <label>Total (Rp)
-          <input type="number" id="manual-total" min="0" step="500" placeholder="contoh: 286300" autofocus />
+          <input type="number" id="manual-total" min="0" step="500" placeholder="contoh: 92400" value="${escapeHtml(String(initialTotal))}" autofocus />
         </label>
         <label>Deskripsi
-          <input type="text" id="manual-desc" value="${escapeHtml(firstLine.slice(0, 80))}" placeholder="nama toko / order" />
+          <input type="text" id="manual-desc" value="${escapeHtml(initialDesc)}" placeholder="nama toko / order" />
         </label>
         <label>Sub Kategori
           <select id="manual-sub"></select>
