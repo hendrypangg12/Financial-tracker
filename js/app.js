@@ -442,10 +442,183 @@ function setupWelcomeBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  init();
-  setupWelcomeBanner();
   // Daftarkan service worker (PWA: supaya aplikasi bisa offline & diinstall)
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
+  // Setup event login/register/paywall
+  setupAuthUI();
+  // Tunggu auth state, baru tentukan tampil app atau login screen
+  if (typeof onAuthStateChanged === 'function') {
+    onAuthStateChanged(async (user, profile) => {
+      if (!user) {
+        showScreen('login');
+        return;
+      }
+      if (!isSubscriptionActive(profile)) {
+        showScreen('paywall');
+        return;
+      }
+      showScreen('app');
+      // Load data dari cloud sebelum render
+      await loadFromCloud();
+      init();
+      setupWelcomeBanner();
+      startCloudListener(() => {
+        // Ada perubahan dari device lain → re-render
+        renderAll();
+        fillSubCategoriSelects();
+      });
+      updateUserMenu(user, profile);
+    });
+  } else {
+    // Fallback: Firebase gagal load, jalankan standalone (localStorage only)
+    init();
+    setupWelcomeBanner();
+  }
 });
+
+// Tampilkan layar tertentu (login/paywall/app)
+function showScreen(which) {
+  document.getElementById('login-screen').hidden = which !== 'login';
+  document.getElementById('paywall-screen').hidden = which !== 'paywall';
+  const menu = document.getElementById('user-menu');
+  if (menu) menu.hidden = which !== 'app';
+  if (which === 'paywall') {
+    const link = document.getElementById('btn-contact-admin');
+    if (link && typeof adminWhatsAppLink === 'function') link.href = adminWhatsAppLink();
+  }
+}
+
+// Setup form login/register/google/forgot/paywall
+function setupAuthUI() {
+  // Tab switching
+  document.querySelectorAll('.login-tab').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.authTab;
+      document.getElementById('form-login').hidden = tab !== 'login';
+      document.getElementById('form-register').hidden = tab !== 'register';
+      hideAuthMsg();
+    };
+  });
+
+  // Form Login
+  const formLogin = document.getElementById('form-login');
+  if (formLogin) {
+    formLogin.onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = new FormData(formLogin);
+      setAuthBusy(true);
+      try {
+        await loginEmailPassword(fd.get('email'), fd.get('password'));
+        // onAuthStateChanged akan handle redirect
+      } catch (err) {
+        showAuthError(authErrorMessage(err));
+      } finally { setAuthBusy(false); }
+    };
+  }
+
+  // Form Register
+  const formRegister = document.getElementById('form-register');
+  if (formRegister) {
+    formRegister.onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = new FormData(formRegister);
+      if (fd.get('password') !== fd.get('password2')) {
+        showAuthError('Password konfirmasi tidak cocok.');
+        return;
+      }
+      setAuthBusy(true);
+      try {
+        await registerEmailPassword(fd.get('email'), fd.get('password'));
+      } catch (err) {
+        showAuthError(authErrorMessage(err));
+      } finally { setAuthBusy(false); }
+    };
+  }
+
+  // Tombol Google
+  const btnGoogle = document.getElementById('btn-google-login');
+  if (btnGoogle) {
+    btnGoogle.onclick = async () => {
+      setAuthBusy(true);
+      try { await loginGoogle(); }
+      catch (err) { showAuthError(authErrorMessage(err)); }
+      finally { setAuthBusy(false); }
+    };
+  }
+
+  // Lupa password
+  const linkForgot = document.getElementById('link-forgot');
+  if (linkForgot) {
+    linkForgot.onclick = async (e) => {
+      e.preventDefault();
+      const email = document.querySelector('#form-login [name="email"]').value;
+      if (!email) { showAuthError('Masukkan email di form dulu, lalu klik "Lupa password".'); return; }
+      try {
+        await resetPassword(email);
+        showAuthInfo('Link reset password dikirim ke ' + email + '. Cek email Anda.');
+      } catch (err) { showAuthError(authErrorMessage(err)); }
+    };
+  }
+
+  // Paywall logout
+  const btnPayLogout = document.getElementById('btn-paywall-logout');
+  if (btnPayLogout) btnPayLogout.onclick = () => logout();
+
+  // User menu dropdown
+  const btnMenu = document.getElementById('user-menu-btn');
+  const dropdown = document.getElementById('user-dropdown');
+  if (btnMenu && dropdown) {
+    btnMenu.onclick = (e) => { e.stopPropagation(); dropdown.hidden = !dropdown.hidden; };
+    document.addEventListener('click', () => { dropdown.hidden = true; });
+  }
+  const btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) btnLogout.onclick = () => logout();
+}
+
+function updateUserMenu(user, profile) {
+  const avatar = document.getElementById('user-avatar');
+  const name = document.getElementById('user-name');
+  const email = document.getElementById('user-email');
+  const plan = document.getElementById('user-plan');
+  if (user.photoURL && avatar) {
+    avatar.innerHTML = `<img src="${user.photoURL}" alt="" />`;
+  } else if (avatar) {
+    const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+    avatar.textContent = initial;
+  }
+  if (name) name.textContent = profile?.displayName || user.displayName || 'User';
+  if (email) email.textContent = user.email || '';
+  if (plan && profile) {
+    const days = daysRemaining(profile);
+    const planLabel = profile.plan === 'lifetime' ? 'Lifetime ∞'
+      : profile.plan === 'monthly' ? `Bulanan (${days} hari lagi)`
+      : `Trial (${days} hari lagi)`;
+    plan.innerHTML = `📅 ${planLabel}`;
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  const info = document.getElementById('auth-info');
+  if (info) info.hidden = true;
+  if (el) { el.textContent = msg; el.hidden = false; }
+}
+function showAuthInfo(msg) {
+  const el = document.getElementById('auth-info');
+  const err = document.getElementById('auth-error');
+  if (err) err.hidden = true;
+  if (el) { el.textContent = msg; el.hidden = false; }
+}
+function hideAuthMsg() {
+  document.getElementById('auth-error').hidden = true;
+  document.getElementById('auth-info').hidden = true;
+}
+function setAuthBusy(busy) {
+  document.querySelectorAll('#login-screen button, #login-screen input').forEach(el => {
+    el.disabled = busy;
+  });
+}

@@ -28,6 +28,8 @@ function saveState() {
       categories: state.categories,
       target: state.target,
     }));
+    // Sync ke cloud (debounced) kalau user login
+    if (typeof pushToCloud === 'function') pushToCloud();
   } catch (e) {
     console.warn('Gagal menyimpan:', e);
   }

@@ -1,19 +1,22 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v2';
+const CACHE_VERSION = 'beruang-v3';
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=14',
+  './styles.css?v=15',
   './manifest.json',
   './assets/logo-beruang.png',
   './assets/mascot-beruang.png',
-  './js/data.js?v=14',
-  './js/utils.js?v=14',
-  './js/storage.js?v=14',
-  './js/parser.js?v=14',
-  './js/dashboard.js?v=14',
-  './js/pages.js?v=14',
-  './js/app.js?v=14',
+  './js/data.js?v=15',
+  './js/utils.js?v=15',
+  './js/firebase-config.js?v=15',
+  './js/storage.js?v=15',
+  './js/parser.js?v=15',
+  './js/sync.js?v=15',
+  './js/auth.js?v=15',
+  './js/dashboard.js?v=15',
+  './js/pages.js?v=15',
+  './js/app.js?v=15',
 ];
 
 self.addEventListener('install', (event) => {
@@ -34,17 +37,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  // Hanya cache GET request untuk file lokal (bukan API/cross-origin)
   if (req.method !== 'GET') return;
+  // Jangan cache request Firebase (harus selalu fresh untuk auth/firestore)
+  const url = new URL(req.url);
+  if (/firebaseio|googleapis|firebase\.com/.test(url.host)) return;
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
       return fetch(req)
         .then((res) => {
-          // Cache file-file lokal dan library CDN
-          const url = new URL(req.url);
           const isSameOrigin = url.origin === self.location.origin;
-          const isCDN = /(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)/.test(url.host);
+          const isCDN = /(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com|gstatic\.com)/.test(url.host);
           if ((isSameOrigin || isCDN) && res.ok) {
             const clone = res.clone();
             caches.open(CACHE_VERSION).then((c) => c.put(req, clone));
