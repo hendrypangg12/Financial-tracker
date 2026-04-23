@@ -173,14 +173,15 @@ function attachEvents() {
   const editForm = document.getElementById('form-edit');
   editForm.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
   editForm.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-edit');
-  document.getElementById('btn-cancel-edit').onclick = () => editModal.hidden = true;
-  // Klik area gelap di luar kartu modal untuk menutup
+  // Tutup modal (3 cara: tombol Batal, tombol ×, klik backdrop, Escape)
+  document.getElementById('btn-cancel-edit').onclick = hideEditModal;
+  const closeBtn = document.getElementById('btn-close-edit');
+  if (closeBtn) closeBtn.onclick = hideEditModal;
   editModal.addEventListener('click', (e) => {
-    if (e.target === editModal) editModal.hidden = true;
+    if (e.target === editModal) hideEditModal();
   });
-  // Tombol Escape untuk tutup modal
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !editModal.hidden) editModal.hidden = true;
+    if (e.key === 'Escape' && editModal.style.display !== 'none') hideEditModal();
   });
   editForm.onsubmit = (e) => {
     e.preventDefault();
@@ -188,7 +189,7 @@ function attachEvents() {
     const t = Object.fromEntries(fd.entries());
     t.jumlah = +t.jumlah;
     updateTransaction(t.id, t);
-    editModal.hidden = true;
+    hideEditModal();
     renderAll();
     showToast('Transaksi diperbarui', 'success');
   };
@@ -265,7 +266,19 @@ function openEditModal(id) {
   form.querySelector('[name="subKategori"]').value = t.subKategori || '';
   syncKategoriFromSub('#form-edit');
   form.querySelector('[name="alokasi"]').value = t.alokasi || '';
-  document.getElementById('modal-edit').hidden = false;
+  showEditModal();
+}
+
+// Tutup/buka modal pakai inline style (anti-cache, tidak bergantung CSS)
+function hideEditModal() {
+  const m = document.getElementById('modal-edit');
+  m.hidden = true;
+  m.style.display = 'none';
+}
+function showEditModal() {
+  const m = document.getElementById('modal-edit');
+  m.hidden = false;
+  m.style.display = 'grid';
 }
 
 document.addEventListener('DOMContentLoaded', init);

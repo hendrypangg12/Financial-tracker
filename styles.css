@@ -280,10 +280,18 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 /* MODAL */
 .modal {
   position: fixed; inset: 0; background: rgba(15, 23, 42, .5); z-index: 50;
-  display: grid; place-items: center; padding: 20px;
+  padding: 20px;
 }
-.modal[hidden] { display: none; }
-.toast[hidden] { display: none; }
+.modal[hidden] { display: none !important; }
+.modal:not([hidden]) { display: grid; place-items: center; }
+.toast[hidden] { display: none !important; }
+.modal-close {
+  position: absolute; top: 8px; right: 10px;
+  background: transparent; border: none; font-size: 26px; line-height: 1;
+  color: var(--ink-soft); cursor: pointer; padding: 4px 10px; border-radius: 8px;
+}
+.modal-close:hover { background: #f1f5f9; color: var(--ink); }
+.modal-card { position: relative; }
 .modal-card {
   background: #fff; border-radius: var(--radius); padding: 20px; width: 100%;
   max-width: 520px; box-shadow: 0 20px 40px rgba(0,0,0,.2);

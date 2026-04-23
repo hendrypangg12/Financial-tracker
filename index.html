@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -377,8 +377,9 @@ TOTAL            86.500"></textarea>
   </footer>
 
   <!-- Modal edit -->
-  <div class="modal" id="modal-edit" hidden>
+  <div class="modal" id="modal-edit" hidden style="display:none">
     <div class="modal-card">
+      <button type="button" id="btn-close-edit" class="modal-close" aria-label="Tutup">&times;</button>
       <h3>Edit Transaksi</h3>
       <form id="form-edit" class="form">
         <input type="hidden" name="id" />
@@ -411,12 +412,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/parser.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/pages.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js?v=3"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script src="js/storage.js?v=3"></script>
+  <script src="js/parser.js?v=3"></script>
+  <script src="js/dashboard.js?v=3"></script>
+  <script src="js/pages.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>
