@@ -12,8 +12,8 @@ const firebaseConfig = {
 
 // Kontak admin (buat customer hubungi saat langganan habis)
 const ADMIN_CONTACT = {
-  whatsapp: '6281234567890', // GANTI dengan nomor WA Anda (format internasional tanpa +)
-  instagram: 'beruang.app',  // GANTI dengan username IG Anda
+  whatsapp: '6282124848924',  // WA Admin BerUang
+  instagram: 'hendrypangg',   // IG Admin BerUang
 };
 
 // Lama trial gratis untuk user baru (hari)
