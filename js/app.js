@@ -120,6 +120,51 @@ function attachEvents() {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
+  // OCR foto struk (pakai Tesseract.js, lazy-load dari CDN)
+  const photoInput = document.getElementById('struk-photo');
+  const photoPreview = document.getElementById('struk-photo-preview');
+  const ocrProgress = document.getElementById('struk-ocr-progress');
+  if (photoInput) {
+    photoInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      photoPreview.src = URL.createObjectURL(file);
+      photoPreview.hidden = false;
+      setOcrStatus('loading', 'Memuat mesin OCR (sekali saja, ~3 MB)…', 5);
+      try {
+        const Tesseract = await loadTesseract();
+        setOcrStatus('loading', 'Memuat data bahasa Indonesia…', 15);
+        const { data } = await Tesseract.recognize(file, 'ind+eng', {
+          logger: (m) => {
+            if (m.status === 'recognizing text') {
+              setOcrStatus('loading', `Membaca teks dari gambar… ${Math.round(m.progress * 100)}%`, 20 + m.progress * 78);
+            } else if (m.status) {
+              setOcrStatus('loading', `${m.status}…`, 15);
+            }
+          },
+        });
+        const text = (data && data.text) ? data.text.trim() : '';
+        if (!text) {
+          setOcrStatus('err', 'Tidak berhasil membaca teks. Coba foto yang lebih terang / lurus.', 100);
+          return;
+        }
+        document.getElementById('struk-text').value = text;
+        setOcrStatus('ok', '✅ Teks terbaca! Cek / edit lalu klik "Parse Struk".', 100);
+      } catch (err) {
+        setOcrStatus('err', '❌ Gagal OCR: ' + (err && err.message ? err.message : 'coba lagi'), 100);
+      }
+    });
+  }
+
+  function setOcrStatus(type, msg, pct) {
+    ocrProgress.hidden = false;
+    ocrProgress.className = 'ocr-progress' + (type === 'ok' ? ' ok' : type === 'err' ? ' err' : '');
+    ocrProgress.innerHTML = msg + (type === 'loading' ? `<span class="ocr-bar"><span style="width:${pct}%"></span></span>` : '');
+    if (type === 'ok' || type === 'err') {
+      setTimeout(() => { ocrProgress.hidden = true; }, type === 'ok' ? 5000 : 8000);
+    }
+  }
+
   // Struk
   const strukBtn = document.getElementById('btn-parse-struk');
   const strukPreview = document.getElementById('struk-preview');
@@ -279,6 +324,22 @@ function showEditModal() {
   const m = document.getElementById('modal-edit');
   m.hidden = false;
   m.style.display = 'grid';
+}
+
+// Lazy-load Tesseract.js dari CDN saat pertama kali dipakai
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-tesseract]');
+    if (existing) { existing.addEventListener('load', () => resolve(window.Tesseract)); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.defer = true;
+    s.dataset.tesseract = '1';
+    s.onload = () => resolve(window.Tesseract);
+    s.onerror = () => reject(new Error('Gagal memuat Tesseract dari CDN. Cek koneksi internet.'));
+    document.body.appendChild(s);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -253,9 +253,27 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 
 /* STRUK */
 #struk-text {
-  width: 100%; min-height: 200px; padding: 10px; border-radius: 10px;
+  width: 100%; min-height: 180px; padding: 10px; border-radius: 10px;
   border: 1px solid var(--line); font-family: ui-monospace, Menlo, monospace; font-size: 12px;
 }
+.struk-photo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.struk-photo-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #2563eb, #16a34a); color: #fff; border: none;
+}
+.struk-photo-btn:hover { filter: brightness(1.08); }
+#struk-photo-preview {
+  max-width: 100%; max-height: 220px; border-radius: 10px; margin-bottom: 8px;
+  border: 1px solid var(--line); display: block;
+}
+.ocr-progress {
+  padding: 10px 12px; border-radius: 10px; background: #eff6ff; color: #1e40af;
+  font-size: 12px; margin-bottom: 8px; border: 1px solid #bfdbfe;
+}
+.ocr-progress.ok { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.ocr-progress.err { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.ocr-bar { display: block; height: 6px; background: #dbeafe; border-radius: 999px; margin-top: 6px; overflow: hidden; }
+.ocr-bar > span { display: block; height: 100%; background: #2563eb; width: 0%; transition: width .2s; }
 .struk-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; flex-wrap: wrap; }
 .struk-preview { margin-top: 10px; font-size: 12px; }
 .struk-preview table { width: 100%; border-collapse: collapse; }

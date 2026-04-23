@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -293,9 +293,18 @@
         <div class="panel">
           <div class="panel-head">
             <h3>🧾 Input via Struk</h3>
-            <small>Tempel teks struk, aplikasi akan mengekstrak item & total.</small>
+            <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
           </div>
-          <textarea id="struk-text" rows="10" placeholder="Contoh:
+          <div class="struk-photo-row">
+            <label class="btn btn-ghost struk-photo-btn">
+              📷 Ambil / Pilih Foto Struk
+              <input type="file" id="struk-photo" accept="image/*" capture="environment" hidden />
+            </label>
+            <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
+          </div>
+          <img id="struk-photo-preview" alt="preview struk" hidden />
+          <div id="struk-ocr-progress" class="ocr-progress" hidden></div>
+          <textarea id="struk-text" rows="8" placeholder="Contoh:
 INDOMARET JL MAWAR
 Indomie Goreng    3.500
 Susu UHT 1L       18.000
@@ -412,12 +421,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=3"></script>
-  <script src="js/utils.js?v=3"></script>
-  <script src="js/storage.js?v=3"></script>
-  <script src="js/parser.js?v=3"></script>
-  <script src="js/dashboard.js?v=3"></script>
-  <script src="js/pages.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/data.js?v=4"></script>
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/storage.js?v=4"></script>
+  <script src="js/parser.js?v=4"></script>
+  <script src="js/dashboard.js?v=4"></script>
+  <script src="js/pages.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>
