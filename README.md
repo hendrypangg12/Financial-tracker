@@ -1,4 +1,4 @@
-# Financial Tracker
+# 🐻 BerUang — Catet dulu, biar beneran ber-uang
 
 Aplikasi pencatatan keuangan pribadi berbasis web. Tidak perlu server — cukup buka `index.html` di browser. Semua data disimpan di `localStorage` browser Anda.
 

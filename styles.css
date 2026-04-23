@@ -1,20 +1,23 @@
 :root {
-  --bg: #f4f6fb;
-  --panel: #ffffff;
-  --ink: #1a2238;
-  --ink-soft: #5a6277;
-  --line: #e5e9f2;
-  --income: #16a34a;
-  --income-bg: #dcfce7;
-  --expense: #dc2626;
-  --expense-bg: #fee2e2;
-  --balance: #2563eb;
-  --balance-bg: #dbeafe;
-  --count: #ea580c;
-  --count-bg: #ffedd5;
-  --primary: #2563eb;
+  /* Palet BerUang: coklat beruang + krem hangat */
+  --bg: #fbf6ee;            /* krem terang — background utama */
+  --panel: #ffffff;         /* panel putih bersih */
+  --ink: #3e2d21;           /* coklat gelap — teks utama */
+  --ink-soft: #8b7355;      /* coklat tanah — teks sekunder */
+  --line: #ede2cc;          /* krem gelap — border/pemisah */
+  --income: #5a8a3a;        /* hijau zaitun hangat — pemasukan */
+  --income-bg: #e7efd9;
+  --expense: #c0392b;       /* merah bata hangat — pengeluaran */
+  --expense-bg: #f6dcd7;
+  --balance: #4a7fc1;       /* biru klasik — saldo */
+  --balance-bg: #dde7f1;
+  --count: #c17c3e;         /* amber — jumlah transaksi */
+  --count-bg: #f6e4cf;
+  --primary: #8b5a2b;       /* coklat beruang — warna utama */
+  --primary-dark: #6f4518;  /* coklat gelap untuk hover */
   --primary-ink: #fff;
-  --shadow: 0 1px 2px rgba(20, 30, 60, .05), 0 4px 12px rgba(20, 30, 60, .04);
+  --cream-2: #f5ebd8;       /* krem aksen */
+  --shadow: 0 1px 2px rgba(62, 45, 33, .06), 0 4px 12px rgba(62, 45, 33, .05);
   --radius: 14px;
 }
 
@@ -42,10 +45,10 @@ body {
 }
 .brand { display: flex; gap: 12px; align-items: center; min-width: 240px; }
 .brand-icon {
-  width: 40px; height: 40px; border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #16a34a);
-  color: #fff; display: grid; place-items: center; font-weight: 800; letter-spacing: .5px;
-  box-shadow: var(--shadow);
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, #8b5a2b, #c89468);
+  color: #fff; display: grid; place-items: center; font-size: 24px; font-weight: 800;
+  box-shadow: 0 2px 8px rgba(139, 90, 43, .3);
 }
 .brand-title { font-weight: 700; font-size: 16px; }
 .brand-sub { color: var(--ink-soft); font-size: 12px; }
@@ -67,7 +70,7 @@ body {
 .btn:hover { background: #f6f8fd; }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
 .btn-danger { color: #b91c1c; border-color: #fecaca; background: #fff5f5; }
 .btn-danger:hover { background: #fee2e2; }
 .btn-ghost { background: #f6f8fd; }
@@ -145,6 +148,24 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   .grid-3 { grid-template-columns: 1fr; }
 }
 
+/* WELCOME BANNER */
+.welcome-banner {
+  background: linear-gradient(135deg, #8b5a2b, #c89468);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 16px rgba(139, 90, 43, .25);
+}
+.welcome-banner[hidden] { display: none; }
+.welcome-content { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+.welcome-bear { font-size: 56px; line-height: 1; flex: 0 0 auto; }
+.welcome-content h2 { margin: 0 0 4px; font-size: 22px; }
+.welcome-content p { margin: 4px 0; opacity: .95; }
+.welcome-content .welcome-steps { font-size: 13px; opacity: .9; margin: 8px 0 12px; }
+.welcome-content .btn-primary { background: #fff; color: var(--primary); border-color: #fff; font-weight: 600; }
+.welcome-content .btn-primary:hover { background: var(--cream-2); color: var(--primary-dark); border-color: var(--cream-2); }
+
 /* MINI REPORTS */
 .mini-reports { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .mini-reports li {
@@ -179,9 +200,9 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 /* ALOKASI */
 .alokasi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .alokasi-item { border-radius: 10px; padding: 12px; border: 1px solid var(--line); }
-.alok-keb { background: #fff7ed; }
-.alok-kei { background: #fef2f2; }
-.alok-inv { background: #ecfdf5; }
+.alok-keb { background: #fdf0dc; border-color: #f1dab4; }
+.alok-kei { background: #fbe8e4; border-color: #f2c9c0; }
+.alok-inv { background: #e9efd9; border-color: #d0dcb2; }
 .alokasi-title { font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12px; letter-spacing: .5px; }
 .alokasi-item ol { padding-left: 20px; margin: 0; font-size: 12px; max-height: 220px; overflow: auto; }
 .alokasi-item ol li { display: flex; justify-content: space-between; gap: 6px; }

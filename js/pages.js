@@ -28,7 +28,7 @@ function renderTransaksi() {
       <td>${formatTanggal(t.tanggal)}</td>
       <td>${escapeHtml(t.deskripsi || '-')}</td>
       <td><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${t.jenis}</span></td>
-      <td class="num"><b style="color:${t.jenis === 'pemasukan' ? '#16a34a' : '#dc2626'}">${formatRupiah(t.jumlah)}</b></td>
+      <td class="num"><b style="color:${t.jenis === 'pemasukan' ? '#5a8a3a' : '#c0392b'}">${formatRupiah(t.jumlah)}</b></td>
       <td>${escapeHtml(t.subKategori || '-')}</td>
       <td>${escapeHtml(t.kategori || '-')}</td>
       <td>${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
@@ -80,8 +80,8 @@ function renderRekap() {
   tbody.innerHTML = rows.length
     ? rows.map(r => `<tr>
         <td>${r.label}</td>
-        <td class="num" style="color:#16a34a">${formatRupiah(r.inc)}</td>
-        <td class="num" style="color:#dc2626">${formatRupiah(r.exp)}</td>
+        <td class="num" style="color:#5a8a3a">${formatRupiah(r.inc)}</td>
+        <td class="num" style="color:#c0392b">${formatRupiah(r.exp)}</td>
         <td class="num"><b>${formatRupiah(r.bal)}</b></td>
         <td class="num">${r.count}</td>
       </tr>`).join('')
@@ -93,8 +93,8 @@ function renderRekap() {
     data: {
       labels: rows.map(r => r.label),
       datasets: [
-        { label: 'Pemasukan', data: rows.map(r => r.inc), backgroundColor: '#16a34a', borderColor: '#16a34a', tension: .35 },
-        { label: 'Pengeluaran', data: rows.map(r => r.exp), backgroundColor: '#dc2626', borderColor: '#dc2626', tension: .35 },
+        { label: 'Pemasukan', data: rows.map(r => r.inc), backgroundColor: '#5a8a3a', borderColor: '#5a8a3a', tension: .35 },
+        { label: 'Pengeluaran', data: rows.map(r => r.exp), backgroundColor: '#c0392b', borderColor: '#c0392b', tension: .35 },
       ]
     },
     options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => formatShort(v) } } } }

@@ -422,4 +422,26 @@ function loadTesseract() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Welcome banner: muncul kalau user belum pernah pakai (tidak ada transaksi, belum dismiss)
+function setupWelcomeBanner() {
+  const banner = document.getElementById('welcome-banner');
+  if (!banner) return;
+  const dismissed = localStorage.getItem('beruang-welcome-dismissed') === '1';
+  const hasData = state.transactions && state.transactions.length > 0;
+  banner.hidden = dismissed || hasData;
+  const btn = document.getElementById('btn-dismiss-welcome');
+  if (btn) {
+    btn.onclick = () => {
+      localStorage.setItem('beruang-welcome-dismissed', '1');
+      banner.hidden = true;
+      // Arahkan ke tab Tambah
+      const tambahTab = document.querySelector('.tab[data-tab="tambah"]');
+      if (tambahTab) tambahTab.click();
+    };
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  setupWelcomeBanner();
+});

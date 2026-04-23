@@ -71,6 +71,6 @@ const INCOME_HINTS = /\b(terima|dapat|masuk|pemasukan|income|pendapatan|cair)\b/
 const STORAGE_KEY = 'financial-tracker-v1';
 
 const PIE_COLORS = [
-  '#2563eb','#16a34a','#dc2626','#ea580c','#9333ea','#0891b2',
-  '#db2777','#65a30d','#ca8a04','#4f46e5','#14b8a6','#f97316'
+  '#8b5a2b','#c17c3e','#5a8a3a','#c0392b','#d4a373','#6f4518',
+  '#4a7fc1','#b5835a','#7a9f5d','#e07856','#9c6f44','#5a7a93'
 ];

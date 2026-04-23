@@ -68,8 +68,8 @@ function renderDailyChart(trx, m, y) {
     data: {
       labels,
       datasets: [
-        { label: 'Pengeluaran', data: expense, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,.1)', fill: true, tension: .35, pointRadius: 2 },
-        { label: 'Pemasukan', data: income, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,.1)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Pengeluaran', data: expense, borderColor: '#c0392b', backgroundColor: 'rgba(192,57,43,.1)', fill: true, tension: .35, pointRadius: 2 },
+        { label: 'Pemasukan', data: income, borderColor: '#5a8a3a', backgroundColor: 'rgba(90,138,58,.1)', fill: true, tension: .35, pointRadius: 2 },
       ]
     },
     options: {
@@ -205,9 +205,9 @@ function renderBudgetRings(trx) {
   document.getElementById('target-bulan').textContent = formatRupiah(target);
   document.getElementById('input-target').value = target || '';
 
-  drawRing('ring-keb', totals.Kebutuhan, target * 0.5, '#f97316', 'pct-keb');
-  drawRing('ring-kei', totals.Keinginan, target * 0.3, '#ef4444', 'pct-kei');
-  drawRing('ring-inv', totals.Investasi, target * 0.2, '#16a34a', 'pct-inv');
+  drawRing('ring-keb', totals.Kebutuhan, target * 0.5, '#c17c3e', 'pct-keb');
+  drawRing('ring-kei', totals.Keinginan, target * 0.3, '#c0392b', 'pct-kei');
+  drawRing('ring-inv', totals.Investasi, target * 0.2, '#5a8a3a', 'pct-inv');
 }
 
 function drawRing(id, used, budget, color, pctId) {
@@ -256,8 +256,8 @@ function renderSixMonth(m, y) {
     data: {
       labels,
       datasets: [
-        { label: 'Pemasukan', data: rows.map(r => r.inc).reverse(), backgroundColor: '#16a34a' },
-        { label: 'Pengeluaran', data: rows.map(r => r.exp).reverse(), backgroundColor: '#dc2626' },
+        { label: 'Pemasukan', data: rows.map(r => r.inc).reverse(), backgroundColor: '#5a8a3a' },
+        { label: 'Pengeluaran', data: rows.map(r => r.exp).reverse(), backgroundColor: '#c0392b' },
         { label: 'Sisa Saldo', data: rows.map(r => r.bal).reverse(), backgroundColor: '#2563eb' },
       ]
     },

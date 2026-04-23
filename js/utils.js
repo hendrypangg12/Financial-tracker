@@ -114,7 +114,7 @@ function showToast(msg, type = 'info') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.hidden = false;
-  el.style.background = type === 'error' ? '#b91c1c' : type === 'success' ? '#16a34a' : '#1a2238';
+  el.style.background = type === 'error' ? '#922d22' : type === 'success' ? '#5a8a3a' : '#3e2d21';
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => { el.hidden = true; }, 2500);
 }

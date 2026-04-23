@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <title>BerUang — Catat Uangmu, Jadi Ber-uang</title>
+  <meta name="description" content="BerUang — aplikasi catat keuangan pribadi. Catet dulu, biar beneran ber-uang. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20." />
+  <meta name="theme-color" content="#8b5a2b" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E" />
+  <meta name="apple-mobile-web-app-title" content="BerUang" />
+  <link rel="stylesheet" href="styles.css?v=10" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -14,10 +18,10 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">FT</div>
+      <div class="brand-icon" aria-label="BerUang">🐻</div>
       <div>
-        <div class="brand-title">Financial Tracker</div>
-        <div class="brand-sub">Catatan keuangan pribadi — harian, mingguan, bulanan</div>
+        <div class="brand-title">BerUang</div>
+        <div class="brand-sub">Catet dulu, biar beneran ber-uang</div>
       </div>
     </div>
     <nav class="tabs">
@@ -38,6 +42,23 @@
   <main>
     <!-- ================= DASHBOARD ================= -->
     <section id="tab-dashboard" class="tab-panel active">
+      <div id="welcome-banner" class="welcome-banner" hidden>
+        <div class="welcome-content">
+          <div class="welcome-bear">🐻</div>
+          <div>
+            <h2>Halo, selamat datang di <b>BerUang</b>!</h2>
+            <p><i>"Catet dulu, biar beneran ber-uang"</i></p>
+            <p class="welcome-steps">
+              Mulai catat transaksi dengan <b>3 cara</b>:
+              ① Ketik chat natural <i>"bakso 45rb"</i> ·
+              ② Foto struk belanja ·
+              ③ Isi form biasa.
+              <br>Buka tab <b>Tambah</b> untuk mulai.
+            </p>
+            <button class="btn btn-primary" id="btn-dismiss-welcome">Mulai catat uang →</button>
+          </div>
+        </div>
+      </div>
       <div class="page-head">
         <div class="page-title">
           <span class="emoji">📅</span>
@@ -382,7 +403,8 @@ TOTAL            86.500"></textarea>
   </main>
 
   <footer class="footer">
-    Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.
+    🐻 <b>BerUang</b> · Catet dulu, biar beneran ber-uang<br>
+    <small>Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.</small>
   </footer>
 
   <!-- Modal edit -->
@@ -421,12 +443,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=9"></script>
-  <script src="js/utils.js?v=9"></script>
-  <script src="js/storage.js?v=9"></script>
-  <script src="js/parser.js?v=9"></script>
-  <script src="js/dashboard.js?v=9"></script>
-  <script src="js/pages.js?v=9"></script>
-  <script src="js/app.js?v=9"></script>
+  <script src="js/data.js?v=10"></script>
+  <script src="js/utils.js?v=10"></script>
+  <script src="js/storage.js?v=10"></script>
+  <script src="js/parser.js?v=10"></script>
+  <script src="js/dashboard.js?v=10"></script>
+  <script src="js/pages.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
 </body>
 </html>
