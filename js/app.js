@@ -176,7 +176,7 @@ function attachEvents() {
     const text = document.getElementById('struk-text').value;
     const date = document.getElementById('struk-date').value || todayISO();
     const res = parseStruk(text, date);
-    if (res.error) { strukPreview.innerHTML = `<div style="color:#dc2626">${res.error}</div>`; return; }
+    if (res.error) { renderManualFallback(text, date, res.error); return; }
     strukPreview.innerHTML = `
       <div style="margin-bottom:8px"><b>${escapeHtml(res.deskripsi)}</b> · ${formatTanggal(res.tanggal)}</div>
       <table>
@@ -196,6 +196,66 @@ function attachEvents() {
       renderAll();
     };
   };
+
+  // Fallback manual saat OCR meleset / tidak temukan total
+  function renderManualFallback(text, date, errMsg) {
+    // Tebak nama merchant dari baris pertama yang masuk akal
+    const firstLine = String(text || '').split(/\r?\n/).find(l => l.trim().length > 2) || '';
+    // Tebak kategori dari keyword di teks OCR
+    let sub = null;
+    for (const rule of KEYWORD_MAP) {
+      if (rule.jenis === 'pengeluaran' && rule.re.test(text)) { sub = rule.sub; break; }
+    }
+    if (!sub) sub = 'Belanja bulanan supermarket';
+    const { kategori, alokasi } = findCategoryForSub(sub, 'pengeluaran');
+
+    strukPreview.innerHTML = `
+      <div style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:10px;border-radius:10px;margin-bottom:10px">
+        ⚠️ ${escapeHtml(errMsg)}<br>
+        <small>Lihat preview foto di atas lalu isi total manual di bawah ini.</small>
+      </div>
+      <div class="form" style="display:grid;gap:8px">
+        <label>Total (Rp)
+          <input type="number" id="manual-total" min="0" step="500" placeholder="contoh: 286300" autofocus />
+        </label>
+        <label>Deskripsi
+          <input type="text" id="manual-desc" value="${escapeHtml(firstLine.slice(0, 80))}" placeholder="nama toko / order" />
+        </label>
+        <label>Sub Kategori
+          <select id="manual-sub"></select>
+        </label>
+        <button class="btn btn-primary" id="btn-save-manual">Simpan Transaksi</button>
+      </div>
+    `;
+    // Isi dropdown sub-kategori pengeluaran
+    const manualSub = document.getElementById('manual-sub');
+    const subs = allSubs('pengeluaran').map(x => x.sub);
+    manualSub.innerHTML = subs.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+    manualSub.value = sub;
+
+    document.getElementById('btn-save-manual').onclick = () => {
+      const amt = +document.getElementById('manual-total').value;
+      const desc = document.getElementById('manual-desc').value.trim() || 'Struk belanja';
+      const chosenSub = manualSub.value;
+      if (!amt || amt <= 0) { showToast('Masukkan total yang valid', 'error'); return; }
+      const info = findCategoryForSub(chosenSub, 'pengeluaran');
+      addTransaction({
+        tanggal: date,
+        jenis: 'pengeluaran',
+        jumlah: amt,
+        deskripsi: desc.slice(0, 80),
+        subKategori: chosenSub,
+        kategori: info.kategori,
+        alokasi: info.alokasi,
+      });
+      showToast('Transaksi disimpan', 'success');
+      strukPreview.innerHTML = '';
+      document.getElementById('struk-text').value = '';
+      const preview = document.getElementById('struk-photo-preview');
+      if (preview) { preview.style.display = 'none'; preview.removeAttribute('src'); }
+      renderAll();
+    };
+  }
 
   // Transaksi filters
   ['trx-search','trx-filter-jenis','trx-filter-month','trx-filter-year'].forEach(id => {
