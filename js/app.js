@@ -174,6 +174,14 @@ function attachEvents() {
   editForm.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
   editForm.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-edit');
   document.getElementById('btn-cancel-edit').onclick = () => editModal.hidden = true;
+  // Klik area gelap di luar kartu modal untuk menutup
+  editModal.addEventListener('click', (e) => {
+    if (e.target === editModal) editModal.hidden = true;
+  });
+  // Tombol Escape untuk tutup modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !editModal.hidden) editModal.hidden = true;
+  });
   editForm.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(editForm);
