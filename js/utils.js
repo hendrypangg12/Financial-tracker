@@ -8,10 +8,13 @@ function formatRupiah(n) {
 
 function formatShort(n) {
   n = Number(n) || 0;
-  if (Math.abs(n) >= 1_000_000_000) return 'Rp' + (n / 1_000_000_000).toFixed(1) + 'M';
-  if (Math.abs(n) >= 1_000_000) return 'Rp' + (n / 1_000_000).toFixed(1) + 'jt';
-  if (Math.abs(n) >= 1_000) return 'Rp' + Math.round(n / 1_000) + 'rb';
-  return 'Rp' + n;
+  const sign = n < 0 ? '-' : '';
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000_000_000) return sign + 'Rp' + (abs / 1_000_000_000_000).toFixed(1) + 't';   // triliun
+  if (abs >= 1_000_000_000)     return sign + 'Rp' + (abs / 1_000_000_000).toFixed(1) + 'mlr';     // miliar
+  if (abs >= 1_000_000)         return sign + 'Rp' + (abs / 1_000_000).toFixed(1) + 'jt';          // juta
+  if (abs >= 1_000)             return sign + 'Rp' + Math.round(abs / 1_000) + 'rb';                // ribu
+  return sign + 'Rp' + abs;
 }
 
 function parseAmount(text) {
