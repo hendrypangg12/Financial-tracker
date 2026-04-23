@@ -125,10 +125,6 @@ function attachEvents() {
   const ocrProgress = document.getElementById('struk-ocr-progress');
   const cameraInput = document.getElementById('struk-photo-camera');
   const galleryInput = document.getElementById('struk-photo-gallery');
-  const btnCamera = document.getElementById('btn-open-camera');
-  const btnGallery = document.getElementById('btn-open-gallery');
-  if (btnCamera && cameraInput) btnCamera.onclick = () => cameraInput.click();
-  if (btnGallery && galleryInput) btnGallery.onclick = () => galleryInput.click();
   async function handlePhotoOCR(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;

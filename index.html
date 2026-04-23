@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -296,10 +296,10 @@
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
           </div>
           <div class="struk-photo-row">
-            <button type="button" class="btn struk-photo-btn" id="btn-open-camera">📷 Ambil Foto</button>
-            <button type="button" class="btn struk-gallery-btn" id="btn-open-gallery">🖼️ Pilih dari Galeri</button>
-            <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" style="display:none" />
-            <input type="file" id="struk-photo-gallery" accept="image/*" style="display:none" />
+            <label for="struk-photo-camera" class="btn struk-photo-btn">📷 Ambil Foto</label>
+            <label for="struk-photo-gallery" class="btn struk-gallery-btn">🖼️ Pilih dari Galeri</label>
+            <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" class="visually-hidden" />
+            <input type="file" id="struk-photo-gallery" accept="image/*" class="visually-hidden" />
             <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
           </div>
           <img id="struk-photo-preview" alt="" style="display:none" />
@@ -421,12 +421,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=6"></script>
-  <script src="js/utils.js?v=6"></script>
-  <script src="js/storage.js?v=6"></script>
-  <script src="js/parser.js?v=6"></script>
-  <script src="js/dashboard.js?v=6"></script>
-  <script src="js/pages.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/data.js?v=7"></script>
+  <script src="js/utils.js?v=7"></script>
+  <script src="js/storage.js?v=7"></script>
+  <script src="js/parser.js?v=7"></script>
+  <script src="js/dashboard.js?v=7"></script>
+  <script src="js/pages.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>
