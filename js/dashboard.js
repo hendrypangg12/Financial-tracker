@@ -135,23 +135,58 @@ function renderCategoryPie(canvasId, legendId, trx) {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const colors = labels.map((_, i) => PIE_COLORS[i % PIE_COLORS.length]);
+  const total = data.reduce((a, b) => a + b, 0);
+
+  // Update total di tengah donut kalau ada elemen-nya
+  const pieTotalId = canvasId === 'chart-expense-cat' ? 'pie-total-expense' : 'pie-total-income';
+  const pieTotalEl = document.getElementById(pieTotalId);
+  if (pieTotalEl) pieTotalEl.textContent = formatShort(total);
 
   destroyChart(canvasId);
   if (!data.length) {
     document.getElementById(legendId).innerHTML = '<li style="color:#94a3b8">Belum ada data</li>';
+    if (pieTotalEl) pieTotalEl.textContent = 'Rp 0';
     const ctx = document.getElementById(canvasId);
     ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);
     return;
   }
   charts[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '62%' }
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderWidth: 3,
+        borderColor: '#fff',
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const pct = total ? (ctx.parsed / total * 100).toFixed(1) : 0;
+              return `${ctx.label}: ${formatRupiah(ctx.parsed)} (${pct}%)`;
+            }
+          }
+        }
+      },
+      cutout: '68%',
+    }
   });
-  const total = data.reduce((a, b) => a + b, 0);
   document.getElementById(legendId).innerHTML = labels.map((l, i) => {
     const pct = total ? (data[i] / total * 100).toFixed(1) : 0;
-    return `<li><span class="sw" style="background:${colors[i]}"></span>${l} <b style="margin-left:auto">${pct}%</b></li>`;
+    return `<li>
+      <span class="sw" style="background:${colors[i]}"></span>
+      <span class="cat-name">${l}</span>
+      <span class="cat-pct">${pct}%</span>
+    </li>`;
   }).join('');
 }
 

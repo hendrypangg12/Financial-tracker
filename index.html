@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#8b5a2b" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E" />
   <meta name="apple-mobile-web-app-title" content="BerUang" />
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -122,8 +122,16 @@
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Alokasi Kategori Pengeluaran</h3></div>
-          <canvas id="chart-expense-cat" height="220"></canvas>
-          <ul id="legend-expense-cat" class="cat-legend"></ul>
+          <div class="pie-with-legend">
+            <div class="pie-canvas-wrap">
+              <canvas id="chart-expense-cat"></canvas>
+              <div class="pie-center" id="pie-center-expense">
+                <small>Total</small>
+                <b id="pie-total-expense">Rp 0</b>
+              </div>
+            </div>
+            <ul id="legend-expense-cat" class="pie-legend-right"></ul>
+          </div>
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Pengeluaran Bulan Ini vs Lalu</h3></div>
@@ -138,8 +146,16 @@
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Kategori Pemasukan</h3></div>
-          <canvas id="chart-income-cat" height="220"></canvas>
-          <ul id="legend-income-cat" class="cat-legend"></ul>
+          <div class="pie-with-legend">
+            <div class="pie-canvas-wrap">
+              <canvas id="chart-income-cat"></canvas>
+              <div class="pie-center" id="pie-center-income">
+                <small>Total</small>
+                <b id="pie-total-income">Rp 0</b>
+              </div>
+            </div>
+            <ul id="legend-income-cat" class="pie-legend-right"></ul>
+          </div>
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Pemasukan Bulan Ini vs Lalu</h3></div>
@@ -443,12 +459,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=10"></script>
-  <script src="js/utils.js?v=10"></script>
-  <script src="js/storage.js?v=10"></script>
-  <script src="js/parser.js?v=10"></script>
-  <script src="js/dashboard.js?v=10"></script>
-  <script src="js/pages.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/data.js?v=11"></script>
+  <script src="js/utils.js?v=11"></script>
+  <script src="js/storage.js?v=11"></script>
+  <script src="js/parser.js?v=11"></script>
+  <script src="js/dashboard.js?v=11"></script>
+  <script src="js/pages.js?v=11"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>
