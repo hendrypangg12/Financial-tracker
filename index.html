@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -296,9 +296,13 @@
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
           </div>
           <div class="struk-photo-row">
-            <label class="btn btn-ghost struk-photo-btn">
-              📷 Ambil / Pilih Foto Struk
-              <input type="file" id="struk-photo" accept="image/*" capture="environment" hidden />
+            <label class="btn struk-photo-btn">
+              📷 Ambil Foto
+              <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" hidden />
+            </label>
+            <label class="btn struk-gallery-btn">
+              🖼️ Pilih dari Galeri
+              <input type="file" id="struk-photo-gallery" accept="image/*" hidden />
             </label>
             <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
           </div>
@@ -421,12 +425,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=4"></script>
-  <script src="js/utils.js?v=4"></script>
-  <script src="js/storage.js?v=4"></script>
-  <script src="js/parser.js?v=4"></script>
-  <script src="js/dashboard.js?v=4"></script>
-  <script src="js/pages.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/data.js?v=5"></script>
+  <script src="js/utils.js?v=5"></script>
+  <script src="js/storage.js?v=5"></script>
+  <script src="js/parser.js?v=5"></script>
+  <script src="js/dashboard.js?v=5"></script>
+  <script src="js/pages.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

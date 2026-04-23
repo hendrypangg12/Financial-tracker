@@ -121,40 +121,44 @@ function attachEvents() {
   }
 
   // OCR foto struk (pakai Tesseract.js, lazy-load dari CDN)
-  const photoInput = document.getElementById('struk-photo');
   const photoPreview = document.getElementById('struk-photo-preview');
   const ocrProgress = document.getElementById('struk-ocr-progress');
-  if (photoInput) {
-    photoInput.addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      photoPreview.src = URL.createObjectURL(file);
-      photoPreview.hidden = false;
-      setOcrStatus('loading', 'Memuat mesin OCR (sekali saja, ~3 MB)…', 5);
-      try {
-        const Tesseract = await loadTesseract();
-        setOcrStatus('loading', 'Memuat data bahasa Indonesia…', 15);
-        const { data } = await Tesseract.recognize(file, 'ind+eng', {
-          logger: (m) => {
-            if (m.status === 'recognizing text') {
-              setOcrStatus('loading', `Membaca teks dari gambar… ${Math.round(m.progress * 100)}%`, 20 + m.progress * 78);
-            } else if (m.status) {
-              setOcrStatus('loading', `${m.status}…`, 15);
-            }
-          },
-        });
-        const text = (data && data.text) ? data.text.trim() : '';
-        if (!text) {
-          setOcrStatus('err', 'Tidak berhasil membaca teks. Coba foto yang lebih terang / lurus.', 100);
-          return;
-        }
-        document.getElementById('struk-text').value = text;
-        setOcrStatus('ok', '✅ Teks terbaca! Cek / edit lalu klik "Parse Struk".', 100);
-      } catch (err) {
-        setOcrStatus('err', '❌ Gagal OCR: ' + (err && err.message ? err.message : 'coba lagi'), 100);
+  const cameraInput = document.getElementById('struk-photo-camera');
+  const galleryInput = document.getElementById('struk-photo-gallery');
+  async function handlePhotoOCR(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    photoPreview.src = URL.createObjectURL(file);
+    photoPreview.hidden = false;
+    setOcrStatus('loading', 'Memuat mesin OCR (sekali saja, ~3 MB)…', 5);
+    try {
+      const Tesseract = await loadTesseract();
+      setOcrStatus('loading', 'Memuat data bahasa Indonesia…', 15);
+      const { data } = await Tesseract.recognize(file, 'ind+eng', {
+        logger: (m) => {
+          if (m.status === 'recognizing text') {
+            setOcrStatus('loading', `Membaca teks dari gambar… ${Math.round(m.progress * 100)}%`, 20 + m.progress * 78);
+          } else if (m.status) {
+            setOcrStatus('loading', `${m.status}…`, 15);
+          }
+        },
+      });
+      const text = (data && data.text) ? data.text.trim() : '';
+      if (!text) {
+        setOcrStatus('err', 'Tidak berhasil membaca teks. Coba foto yang lebih terang / lurus.', 100);
+        return;
       }
-    });
+      document.getElementById('struk-text').value = text;
+      setOcrStatus('ok', '✅ Teks terbaca! Cek / edit lalu klik "Parse Struk".', 100);
+    } catch (err) {
+      setOcrStatus('err', '❌ Gagal OCR: ' + (err && err.message ? err.message : 'coba lagi'), 100);
+    } finally {
+      // Reset supaya user bisa pilih file yang sama lagi
+      e.target.value = '';
+    }
   }
+  if (cameraInput) cameraInput.addEventListener('change', handlePhotoOCR);
+  if (galleryInput) galleryInput.addEventListener('change', handlePhotoOCR);
 
   function setOcrStatus(type, msg, pct) {
     ocrProgress.hidden = false;
