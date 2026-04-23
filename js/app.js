@@ -125,11 +125,15 @@ function attachEvents() {
   const ocrProgress = document.getElementById('struk-ocr-progress');
   const cameraInput = document.getElementById('struk-photo-camera');
   const galleryInput = document.getElementById('struk-photo-gallery');
+  const btnCamera = document.getElementById('btn-open-camera');
+  const btnGallery = document.getElementById('btn-open-gallery');
+  if (btnCamera && cameraInput) btnCamera.onclick = () => cameraInput.click();
+  if (btnGallery && galleryInput) btnGallery.onclick = () => galleryInput.click();
   async function handlePhotoOCR(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     photoPreview.src = URL.createObjectURL(file);
-    photoPreview.hidden = false;
+    photoPreview.style.display = 'block';
     setOcrStatus('loading', 'Memuat mesin OCR (sekali saja, ~3 MB)…', 5);
     try {
       const Tesseract = await loadTesseract();

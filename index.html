@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Financial Tracker — Catatan Keuangan Pribadi</title>
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -296,17 +296,13 @@
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
           </div>
           <div class="struk-photo-row">
-            <label class="btn struk-photo-btn">
-              📷 Ambil Foto
-              <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" hidden />
-            </label>
-            <label class="btn struk-gallery-btn">
-              🖼️ Pilih dari Galeri
-              <input type="file" id="struk-photo-gallery" accept="image/*" hidden />
-            </label>
+            <button type="button" class="btn struk-photo-btn" id="btn-open-camera">📷 Ambil Foto</button>
+            <button type="button" class="btn struk-gallery-btn" id="btn-open-gallery">🖼️ Pilih dari Galeri</button>
+            <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" style="display:none" />
+            <input type="file" id="struk-photo-gallery" accept="image/*" style="display:none" />
             <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
           </div>
-          <img id="struk-photo-preview" alt="preview struk" hidden />
+          <img id="struk-photo-preview" alt="" style="display:none" />
           <div id="struk-ocr-progress" class="ocr-progress" hidden></div>
           <textarea id="struk-text" rows="8" placeholder="Contoh:
 INDOMARET JL MAWAR
@@ -425,12 +421,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=5"></script>
-  <script src="js/utils.js?v=5"></script>
-  <script src="js/storage.js?v=5"></script>
-  <script src="js/parser.js?v=5"></script>
-  <script src="js/dashboard.js?v=5"></script>
-  <script src="js/pages.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/data.js?v=6"></script>
+  <script src="js/utils.js?v=6"></script>
+  <script src="js/storage.js?v=6"></script>
+  <script src="js/parser.js?v=6"></script>
+  <script src="js/dashboard.js?v=6"></script>
+  <script src="js/pages.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
