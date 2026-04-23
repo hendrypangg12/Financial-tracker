@@ -48,33 +48,72 @@ function parseStruk(text, fallbackDate) {
   const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   if (!lines.length) return { error: 'Teks struk kosong.' };
 
-  const items = [];
+  let items = [];
+  const candidates = []; // nominal besar tanpa nama (kandidat total)
   let total = null;
-  let merchant = lines[0];
+  // Gunakan baris non-angka pertama sebagai nama toko
+  let merchant = lines.find(l => !/^\s*[\d.,\s:\-]+\s*$/.test(l)) || lines[0];
+
+  // Pola yang harus dibersihkan dari baris sebelum parse jumlah
+  const noisePatterns = [
+    /\b\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}\b/g,                      // tanggal
+    /\b\d{1,2}:\d{2}(?::\d{2})?\b/g,                              // jam
+    /\b\d{1,2}\s+(jan|feb|mar|apr|mei|jun|jul|ags?|agu|sep|okt|nov|des)\w*\s+\d{2,4}\b/gi, // tgl indo
+    /\b\d+\s*items?\b/gi,                                         // "4 items"
+    /\b\d[.,]\d\s*(?:★|stars?|bintang)?\b(?=\s|$)/gi,             // rating 4.9
+  ];
+  // Kata kunci yang harus diabaikan sepenuhnya
+  const skipKeywords = /\b(kembali|kembalian|diskon|tunai|ppn|pajak|pb1|service|ongkir|delivery|rating|repeat|completed|order|pesanan|tanggal|tgl|jam|waktu|no\.?\s*trx|cashier|kasir|alamat)\b/i;
+  const totalKeywords = /\b(grand\s*total|total|subtotal|bayar|jumlah|tagihan|nilai)\b/i;
 
   for (const line of lines) {
     const lower = line.toLowerCase();
-    // Cari total
-    if (/\btotal\b|\bgrand\s*total\b|\bsubtotal\b|\bbayar\b/.test(lower)) {
+    // Bersihkan tanggal/jam/rating/dll
+    let cleaned = line;
+    for (const re of noisePatterns) cleaned = cleaned.replace(re, ' ');
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    if (!cleaned) continue;
+
+    // Baris TOTAL eksplisit
+    if (totalKeywords.test(lower)) {
       const amt = parseAmount(line);
-      if (amt && (!total || amt > total)) total = amt;
+      if (amt && amt >= 1000) { if (!total || amt > total) total = amt; }
       continue;
     }
-    const amt = parseAmount(line);
-    if (amt && amt > 0 && !/\bkembali|kembalian|diskon|tunai|ppn|pajak|pb1|service\b/.test(lower)) {
-      // Nama item = line tanpa angka
-      const name = line
-        .replace(/(\d+(?:[.,]\d+)*)\s*(rb|ribu|k|jt|juta)?/gi, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-      if (name && name.length > 1) items.push({ name, amt });
-    }
+    if (skipKeywords.test(lower)) continue;
+
+    const amt = parseAmount(cleaned);
+    if (!amt || amt < 1000) continue; // abaikan angka kecil (rating, jam, kuantitas)
+
+    // Ekstrak nama item (buang angka & tanda baca)
+    const name = cleaned
+      .replace(/(\d+(?:[.,]\d+)*)\s*(rb|ribu|k|jt|juta)?/gi, '')
+      .replace(/[^\w\s&/]/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (name && name.length >= 2) items.push({ name, amt });
+    else candidates.push(amt); // angka besar tanpa nama → mungkin total
   }
 
-  if (!total && items.length) {
-    total = items.reduce((s, i) => s + i.amt, 0);
+  // Tentukan total
+  if (!total) {
+    if (candidates.length) {
+      total = Math.max(...candidates);
+    } else if (items.length) {
+      // Jika ada 1 angka yang jauh lebih besar dari jumlah sisanya, anggap itu total
+      const sorted = [...items].sort((a, b) => b.amt - a.amt);
+      const max = sorted[0].amt;
+      const restSum = sorted.slice(1).reduce((s, i) => s + i.amt, 0);
+      if (max >= 10000 && max > restSum * 0.8) {
+        total = max;
+        items = items.filter(i => i.amt !== max);
+      } else {
+        total = items.reduce((s, i) => s + i.amt, 0);
+      }
+    }
   }
-  if (!total) return { error: 'Tidak menemukan total pada struk.' };
+  if (!total) return { error: 'Tidak menemukan total pada struk. Coba edit teks manual.' };
 
   // Deteksi kategori dari merchant & item
   let sub = null;
