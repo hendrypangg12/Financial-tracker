@@ -152,6 +152,7 @@ function renderCategoryPie(canvasId, legendId, trx) {
   }
   charts[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'doughnut',
+    plugins: window.ChartDataLabels ? [window.ChartDataLabels] : [],
     data: {
       labels,
       datasets: [{
@@ -159,25 +160,44 @@ function renderCategoryPie(canvasId, legendId, trx) {
         backgroundColor: colors,
         borderWidth: 3,
         borderColor: '#fff',
-        hoverOffset: 8,
+        borderRadius: 6,
+        hoverOffset: 12,
+        hoverBorderWidth: 4,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: 1,
+      animation: { animateRotate: true, animateScale: true, duration: 900, easing: 'easeOutQuart' },
       plugins: {
         legend: { display: false },
         tooltip: {
+          backgroundColor: 'rgba(30, 24, 18, .95)',
+          titleColor: '#fff', bodyColor: '#fff',
+          padding: 10, cornerRadius: 8,
+          displayColors: true, boxPadding: 4,
           callbacks: {
             label: (ctx) => {
               const pct = total ? (ctx.parsed / total * 100).toFixed(1) : 0;
-              return `${ctx.label}: ${formatRupiah(ctx.parsed)} (${pct}%)`;
-            }
+              return ` ${formatRupiah(ctx.parsed)}  (${pct}%)`;
+            },
+            title: (ctx) => ctx[0].label,
+          }
+        },
+        datalabels: {
+          color: '#fff',
+          font: { weight: 800, size: 12, family: 'Inter, sans-serif' },
+          textStrokeColor: 'rgba(0,0,0,.25)',
+          textStrokeWidth: 2,
+          formatter: (value) => {
+            if (!total) return '';
+            const pct = value / total * 100;
+            return pct >= 7 ? pct.toFixed(0) + '%' : '';
           }
         }
       },
-      cutout: '68%',
+      cutout: '65%',
     }
   });
   document.getElementById(legendId).innerHTML = labels.map((l, i) => {

@@ -8,12 +8,13 @@
   <meta name="theme-color" content="#8b5a2b" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E" />
   <meta name="apple-mobile-web-app-title" content="BerUang" />
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -76,24 +77,36 @@
 
       <div class="cards">
         <div class="card card-income">
-          <div class="card-label">TOTAL PEMASUKAN</div>
-          <div class="card-value" id="kpi-income">Rp 0</div>
-          <div class="card-delta" id="kpi-income-delta">— vs Bulan Lalu</div>
+          <div class="card-icon">💰</div>
+          <div class="card-body">
+            <div class="card-label">TOTAL PEMASUKAN</div>
+            <div class="card-value" id="kpi-income">Rp 0</div>
+            <div class="card-delta" id="kpi-income-delta">— vs Bulan Lalu</div>
+          </div>
         </div>
         <div class="card card-expense">
-          <div class="card-label">TOTAL PENGELUARAN</div>
-          <div class="card-value" id="kpi-expense">Rp 0</div>
-          <div class="card-delta" id="kpi-expense-delta">— vs Bulan Lalu</div>
+          <div class="card-icon">💸</div>
+          <div class="card-body">
+            <div class="card-label">TOTAL PENGELUARAN</div>
+            <div class="card-value" id="kpi-expense">Rp 0</div>
+            <div class="card-delta" id="kpi-expense-delta">— vs Bulan Lalu</div>
+          </div>
         </div>
         <div class="card card-balance">
-          <div class="card-label">SISA SALDO</div>
-          <div class="card-value" id="kpi-balance">Rp 0</div>
-          <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
+          <div class="card-icon">🏦</div>
+          <div class="card-body">
+            <div class="card-label">SISA SALDO</div>
+            <div class="card-value" id="kpi-balance">Rp 0</div>
+            <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
+          </div>
         </div>
         <div class="card card-count">
-          <div class="card-label">TOTAL TRANSAKSI</div>
-          <div class="card-value" id="kpi-count">0</div>
-          <div class="card-delta" id="kpi-count-delta">— vs Bulan Lalu</div>
+          <div class="card-icon">📝</div>
+          <div class="card-body">
+            <div class="card-label">TOTAL TRANSAKSI</div>
+            <div class="card-value" id="kpi-count">0</div>
+            <div class="card-delta" id="kpi-count-delta">— vs Bulan Lalu</div>
+          </div>
         </div>
       </div>
 
@@ -459,12 +472,12 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=11"></script>
-  <script src="js/utils.js?v=11"></script>
-  <script src="js/storage.js?v=11"></script>
-  <script src="js/parser.js?v=11"></script>
-  <script src="js/dashboard.js?v=11"></script>
-  <script src="js/pages.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/data.js?v=12"></script>
+  <script src="js/utils.js?v=12"></script>
+  <script src="js/storage.js?v=12"></script>
+  <script src="js/parser.js?v=12"></script>
+  <script src="js/dashboard.js?v=12"></script>
+  <script src="js/pages.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

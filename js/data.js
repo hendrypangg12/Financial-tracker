@@ -70,7 +70,22 @@ const INCOME_HINTS = /\b(terima|dapat|masuk|pemasukan|income|pendapatan|cair)\b/
 
 const STORAGE_KEY = 'financial-tracker-v1';
 
+// Palet warna cantik untuk pie/donut (vibrant, modern, IG-worthy)
 const PIE_COLORS = [
-  '#8b5a2b','#c17c3e','#5a8a3a','#c0392b','#d4a373','#6f4518',
-  '#4a7fc1','#b5835a','#7a9f5d','#e07856','#9c6f44','#5a7a93'
+  '#6366F1', // indigo
+  '#EC4899', // pink
+  '#F59E0B', // amber emas
+  '#10B981', // emerald
+  '#8B5CF6', // violet
+  '#F97316', // orange segar
+  '#06B6D4', // cyan
+  '#F43F5E', // rose
+  '#84CC16', // lime
+  '#3B82F6', // biru langit
+  '#A855F7', // ungu elektrik
+  '#14B8A6', // teal
+  '#EAB308', // kuning emas
+  '#EF4444', // merah
+  '#22C55E', // hijau segar
+  '#0EA5E9', // sky blue
 ];
