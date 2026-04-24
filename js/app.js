@@ -485,8 +485,39 @@ function showScreen(which) {
   const menu = document.getElementById('user-menu');
   if (menu) menu.hidden = which !== 'app';
   if (which === 'paywall') {
-    const link = document.getElementById('btn-contact-admin');
-    if (link && typeof adminWhatsAppLink === 'function') link.href = adminWhatsAppLink();
+    // Isi email user di paywall
+    const emailEl = document.getElementById('paywall-email');
+    if (emailEl && currentUser) emailEl.textContent = currentUser.email || '—';
+    // Set link WhatsApp umum & Instagram
+    const waBtn = document.getElementById('btn-wa-admin');
+    const igBtn = document.getElementById('btn-ig-admin');
+    if (waBtn && typeof adminWhatsAppLink === 'function') waBtn.href = adminWhatsAppLink();
+    if (igBtn && typeof adminInstagramLink === 'function') igBtn.href = adminInstagramLink();
+    // Tombol pilih paket -> isi pesan WA sesuai paket
+    document.querySelectorAll('.btn-buy').forEach(btn => {
+      btn.onclick = () => {
+        const paket = btn.dataset.paket;
+        if (waBtn) waBtn.href = adminWhatsAppLink(paket);
+        // Scroll ke bagian pembayaran
+        document.querySelector('.payment-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight paket terpilih
+        document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
+        btn.closest('.price-card')?.classList.add('selected');
+        showToast(`Paket ${paket === 'monthly' ? 'Bulanan' : 'Lifetime'} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
+      };
+    });
+    // Copy rekening
+    const btnCopy = document.getElementById('btn-copy-acc');
+    if (btnCopy) {
+      btnCopy.onclick = async () => {
+        const acc = document.getElementById('bank-account')?.textContent || '';
+        try {
+          await navigator.clipboard.writeText(acc);
+          btnCopy.textContent = '✓ Tersalin';
+          setTimeout(() => { btnCopy.textContent = 'Copy'; }, 2000);
+        } catch (e) { showToast('Gagal menyalin, salin manual ya', 'error'); }
+      };
+    }
   }
 }
 

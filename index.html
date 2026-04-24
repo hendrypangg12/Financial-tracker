@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=16" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -49,8 +49,8 @@
         <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
         <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
         <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
-        <button class="btn btn-primary btn-block" type="submit">Daftar (Trial 7 Hari Gratis)</button>
-        <small style="color:var(--ink-soft)">Dengan daftar, Anda setuju tidak menyalahgunakan aplikasi.</small>
+        <button class="btn btn-primary btn-block" type="submit">Buat Akun</button>
+        <small style="color:var(--ink-soft)">Setelah daftar, pilih paket bulanan Rp 35rb / lifetime Rp 125rb.</small>
       </form>
 
       <div class="auth-divider"><span>atau</span></div>
@@ -66,24 +66,50 @@
     <div class="login-footer">🐻 BerUang — Data aman tersinkron di semua device Anda</div>
   </div>
 
-  <!-- ============ PAYWALL (tampil saat langganan habis) ============ -->
+  <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
   <div id="paywall-screen" class="login-screen" hidden>
-    <div class="login-card">
+    <div class="login-card paywall-card">
       <img class="login-logo" src="assets/mascot-beruang.png?v=1" alt="BerUang" />
-      <h2>Langganan Habis</h2>
-      <p style="color:var(--ink-soft)">Data Anda aman tersimpan. Perpanjang langganan untuk melanjutkan mencatat.</p>
+      <h2 id="paywall-title">Pilih Paket Langganan</h2>
+      <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
+
       <div class="paywall-prices">
-        <div class="price-card">
+        <div class="price-card" data-paket="monthly">
           <b>Bulanan</b>
-          <div class="price">Rp 29.000<small>/bulan</small></div>
+          <div class="price">Rp 35.000<small>/bulan</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="monthly">Pilih Bulanan</button>
         </div>
-        <div class="price-card highlight">
+        <div class="price-card highlight" data-paket="lifetime">
+          <span class="badge">HEMAT 70%</span>
           <b>Lifetime</b>
-          <div class="price">Rp 299.000<small>sekali bayar</small></div>
-          <span class="badge">Hemat</span>
+          <div class="price">Rp 125.000<small>sekali bayar</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="lifetime">Pilih Lifetime</button>
         </div>
       </div>
-      <a class="btn btn-primary btn-block" id="btn-contact-admin" target="_blank" rel="noopener">💬 Hubungi Admin via WhatsApp</a>
+
+      <div class="payment-info">
+        <div class="payment-title">💰 Cara Pembayaran</div>
+        <div class="payment-row">
+          <span>Bank BCA</span>
+          <div class="payment-copy">
+            <code id="bank-account">7130902183</code>
+            <button class="btn btn-small" id="btn-copy-acc">Copy</button>
+          </div>
+        </div>
+        <div class="payment-row"><span>Atas Nama</span><b>HENDRY</b></div>
+        <div class="payment-row"><span>QRIS</span><b>Minta ke Admin via WA</b></div>
+      </div>
+
+      <div class="paywall-actions">
+        <a class="btn btn-wa btn-block" id="btn-wa-admin" target="_blank" rel="noopener">💬 Kirim Bukti via WhatsApp</a>
+        <a class="btn btn-ig btn-block" id="btn-ig-admin" target="_blank" rel="noopener">📷 DM Instagram @hendrypangg</a>
+      </div>
+
+      <p class="paywall-note">
+        ⏱️ Akun aktif &lt;1 jam setelah bukti transfer diterima.<br>
+        🔒 Data Anda aman tersimpan — tidak akan hilang.
+      </p>
+
       <button class="btn btn-ghost btn-block" id="btn-paywall-logout">Logout</button>
     </div>
   </div>
@@ -557,15 +583,15 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=15"></script>
-  <script src="js/utils.js?v=15"></script>
-  <script src="js/firebase-config.js?v=15"></script>
-  <script src="js/storage.js?v=15"></script>
-  <script src="js/parser.js?v=15"></script>
-  <script src="js/sync.js?v=15"></script>
-  <script src="js/auth.js?v=15"></script>
-  <script src="js/dashboard.js?v=15"></script>
-  <script src="js/pages.js?v=15"></script>
-  <script src="js/app.js?v=15"></script>
+  <script src="js/data.js?v=16"></script>
+  <script src="js/utils.js?v=16"></script>
+  <script src="js/firebase-config.js?v=16"></script>
+  <script src="js/storage.js?v=16"></script>
+  <script src="js/parser.js?v=16"></script>
+  <script src="js/sync.js?v=16"></script>
+  <script src="js/auth.js?v=16"></script>
+  <script src="js/dashboard.js?v=16"></script>
+  <script src="js/pages.js?v=16"></script>
+  <script src="js/app.js?v=16"></script>
 </body>
 </html>

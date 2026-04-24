@@ -19,20 +19,21 @@ function onAuthStateChanged(callback) {
 }
 
 // Pastikan profile user ada di Firestore (buat saat pertama login)
+// Karena TRIAL_DAYS=0, user baru langsung masuk paywall (expiresAt = sekarang)
 async function ensureUserProfile(user) {
   if (!fbDb) return null;
   const ref = fbDb.collection('users').doc(user.uid).collection('meta').doc('profile');
   const snap = await ref.get();
   if (snap.exists) return snap.data();
   const now = new Date();
-  const trialEnd = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+  const expires = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
   const profile = {
     email: user.email || '',
     displayName: user.displayName || user.email?.split('@')[0] || 'User',
     photoURL: user.photoURL || '',
     createdAt: now.toISOString(),
-    plan: 'trial',
-    expiresAt: trialEnd.toISOString(),
+    plan: TRIAL_DAYS > 0 ? 'trial' : 'pending',
+    expiresAt: expires.toISOString(),
   };
   await ref.set(profile);
   return profile;
@@ -102,10 +103,16 @@ function authErrorMessage(err) {
 }
 
 // Build link WhatsApp untuk hubungi admin
-function adminWhatsAppLink(subject = '') {
-  const text = encodeURIComponent(
-    subject ||
-    `Halo Admin BerUang, saya ${currentUser?.email || 'user'} ingin perpanjang/aktivasi langganan.`
-  );
-  return `https://wa.me/${ADMIN_CONTACT.whatsapp}?text=${text}`;
+function adminWhatsAppLink(paket = '') {
+  const email = currentUser?.email || '(email)';
+  const text = paket === 'monthly'
+    ? `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *BULANAN Rp 35.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`
+    : paket === 'lifetime'
+    ? `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *LIFETIME Rp 125.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`
+    : `Halo Admin BerUang 🐻\n\nSaya ${email} ingin tanya/aktivasi langganan.`;
+  return `https://wa.me/${ADMIN_CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
+}
+
+function adminInstagramLink() {
+  return `https://instagram.com/${ADMIN_CONTACT.instagram}`;
 }
