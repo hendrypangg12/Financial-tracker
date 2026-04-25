@@ -177,9 +177,8 @@ function setupProductForm() {
   form.querySelector('[name="hargaModal"]').addEventListener('input', updateMarginPreview);
   form.querySelector('[name="hargaJual"]').addEventListener('input', updateMarginPreview);
 
-  // Foto upload
-  const fotoInput = document.getElementById('foto-input');
-  fotoInput.addEventListener('change', async (e) => {
+  // Foto upload (galeri & kamera)
+  const onFotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
@@ -195,7 +194,9 @@ function setupProductForm() {
       showToast('Gagal proses foto: ' + err.message, 'error');
     }
     e.target.value = '';
-  });
+  };
+  document.getElementById('foto-input').addEventListener('change', onFotoChange);
+  document.getElementById('foto-camera').addEventListener('change', onFotoChange);
   document.getElementById('btn-foto-remove').onclick = () => setFotoPreview('');
 
   form.onsubmit = (e) => {

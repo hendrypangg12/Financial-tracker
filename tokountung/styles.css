@@ -441,6 +441,9 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   display: inline-flex; align-items: center; gap: 6px;
   cursor: pointer; width: fit-content;
 }
+.foto-buttons {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
 
 /* ===================== MARGIN PREVIEW ===================== */
 .margin-preview {

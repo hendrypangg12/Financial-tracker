@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=3" />
+<link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 
@@ -303,11 +303,17 @@
           <div id="foto-placeholder" class="foto-placeholder">📦</div>
         </div>
         <div class="foto-actions">
-          <label class="btn btn-ghost btn-small foto-btn">
-            📷 Pilih Foto
-            <input type="file" id="foto-input" accept="image/*" hidden />
-          </label>
-          <button type="button" class="btn btn-small btn-danger" id="btn-foto-remove" hidden>Hapus Foto</button>
+          <div class="foto-buttons">
+            <label class="btn btn-ghost btn-small foto-btn">
+              📸 Jepret Kamera
+              <input type="file" id="foto-camera" accept="image/*" capture="environment" hidden />
+            </label>
+            <label class="btn btn-ghost btn-small foto-btn">
+              🖼️ Galeri
+              <input type="file" id="foto-input" accept="image/*" hidden />
+            </label>
+            <button type="button" class="btn btn-small btn-danger" id="btn-foto-remove" hidden>Hapus</button>
+          </div>
           <small style="color:var(--ink-soft); font-size:11px">Foto otomatis dikecilkan ke 300px (~30KB)</small>
         </div>
       </div>
@@ -401,7 +407,7 @@
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=1"></script>
 <script src="js/storage.js?v=1"></script>
-<script src="js/products.js?v=2"></script>
+<script src="js/products.js?v=3"></script>
 <script src="js/sales.js?v=2"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
