@@ -58,6 +58,7 @@ function attachEvents() {
       if (btn.dataset.tab === 'transaksi') renderTransaksi();
       if (btn.dataset.tab === 'rekap') renderRekap();
       if (btn.dataset.tab === 'kategori') renderKategori();
+      if (btn.dataset.tab === 'admin' && typeof renderAdmin === 'function') renderAdmin();
     };
   });
 
@@ -611,6 +612,10 @@ function setupAuthUI() {
 }
 
 function updateUserMenu(user, profile) {
+  // Show/hide tab Admin berdasarkan email user
+  document.querySelectorAll('.tab-admin').forEach(t => {
+    t.hidden = !(typeof isAdmin === 'function' && isAdmin());
+  });
   const avatar = document.getElementById('user-avatar');
   const name = document.getElementById('user-name');
   const email = document.getElementById('user-email');

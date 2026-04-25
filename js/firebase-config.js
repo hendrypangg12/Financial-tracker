@@ -31,6 +31,13 @@ const PAYMENT_INFO = {
 // Trial hari (0 = tanpa trial, user langsung paywall setelah daftar)
 const TRIAL_DAYS = 0;
 
+// Email admin (untuk akses tab Admin Panel)
+// Tambahkan email Anda di sini supaya bisa aktivasi customer dari aplikasi
+const ADMIN_EMAILS = [
+  'hendryphang12@gmail.com',  // Email utama admin
+  // Tambah email lain di sini jika perlu (misal partner)
+];
+
 // Inisialisasi Firebase (pakai compat SDK dari window.firebase)
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);

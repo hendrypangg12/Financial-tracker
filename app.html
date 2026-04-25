@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <link rel="stylesheet" href="styles.css?v=18" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -128,6 +128,7 @@
       <button class="tab" data-tab="tambah">Tambah</button>
       <button class="tab" data-tab="rekap">Rekap</button>
       <button class="tab" data-tab="kategori">Kategori</button>
+      <button class="tab tab-admin" data-tab="admin" hidden>👨‍💼 Admin</button>
     </nav>
     <div class="topbar-actions">
       <span id="sync-status" class="sync-status"></span>
@@ -540,6 +541,19 @@ TOTAL            86.500"></textarea>
         </div>
       </div>
     </section>
+
+    <!-- ================= ADMIN PANEL ================= -->
+    <section id="tab-admin" class="tab-panel">
+      <div class="page-head">
+        <h1>👨‍💼 Admin Panel</h1>
+        <small style="color:var(--ink-soft)">Kelola customer & aktivasi langganan</small>
+      </div>
+      <div class="panel">
+        <div id="admin-root">
+          <div class="empty">⏳ Memuat data customer…</div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
@@ -583,15 +597,16 @@ TOTAL            86.500"></textarea>
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="js/data.js?v=17"></script>
-  <script src="js/utils.js?v=17"></script>
-  <script src="js/firebase-config.js?v=17"></script>
-  <script src="js/storage.js?v=17"></script>
-  <script src="js/parser.js?v=17"></script>
-  <script src="js/sync.js?v=17"></script>
-  <script src="js/auth.js?v=17"></script>
-  <script src="js/dashboard.js?v=17"></script>
-  <script src="js/pages.js?v=17"></script>
-  <script src="js/app.js?v=17"></script>
+  <script src="js/data.js?v=18"></script>
+  <script src="js/utils.js?v=18"></script>
+  <script src="js/firebase-config.js?v=18"></script>
+  <script src="js/storage.js?v=18"></script>
+  <script src="js/parser.js?v=18"></script>
+  <script src="js/sync.js?v=18"></script>
+  <script src="js/auth.js?v=18"></script>
+  <script src="js/dashboard.js?v=18"></script>
+  <script src="js/pages.js?v=18"></script>
+  <script src="js/admin.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
 </body>
 </html>
