@@ -708,6 +708,27 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   .admin-status { grid-column: 1 / -1; text-align: center; }
 }
 
+/* Custom confirm modal (in-app browser friendly) */
+.admin-confirm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, .55);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.admin-confirm-card {
+  background: #fff; border-radius: 16px;
+  padding: 24px; max-width: 420px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.admin-confirm-card h3 { margin: 0 0 12px; font-size: 18px; }
+.admin-confirm-card p {
+  color: var(--ink-soft); margin-bottom: 20px;
+  line-height: 1.5; font-size: 14px;
+  white-space: pre-line;
+}
+.admin-confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.admin-confirm-actions .btn { padding: 10px 18px; }
+
 /* ============ SYNC STATUS BADGE ============ */
 .sync-status {
   font-size: 11px; color: var(--ink-soft);

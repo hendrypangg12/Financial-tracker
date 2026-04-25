@@ -205,11 +205,23 @@ function renderAdminCard(u) {
 }
 
 async function handleAdminAction(action, uid, email) {
-  let confirmMsg = '';
-  if (action === 'monthly') confirmMsg = `Aktivasi paket BULANAN (Rp ${PRICE_MONTHLY.toLocaleString('id-ID')}) untuk ${email}?\n\nMasa berlaku: 30 hari (akan ditambah ke sisa langganan jika masih aktif).`;
-  else if (action === 'lifetime') confirmMsg = `Aktivasi paket LIFETIME (Rp ${PRICE_LIFETIME.toLocaleString('id-ID')}) untuk ${email}?\n\nAkun akan aktif SELAMANYA.`;
-  else if (action === 'deactivate') confirmMsg = `Nonaktifkan akun ${email}?\n\nUser akan langsung ke paywall.`;
-  if (!confirm(confirmMsg)) return;
+  let title = '', msg = '', okText = 'Aktivasi';
+  if (action === 'monthly') {
+    title = '📅 Aktivasi Bulanan';
+    msg = `Aktifkan paket BULANAN (Rp ${PRICE_MONTHLY.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nMasa berlaku: 30 hari (akan ditambahkan ke sisa langganan jika masih aktif).`;
+    okText = '✅ Aktivasi Bulanan';
+  } else if (action === 'lifetime') {
+    title = '⭐ Aktivasi Lifetime';
+    msg = `Aktifkan paket LIFETIME (Rp ${PRICE_LIFETIME.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nAkun akan AKTIF SELAMANYA.`;
+    okText = '✅ Aktivasi Lifetime';
+  } else if (action === 'deactivate') {
+    title = '⏸️ Nonaktifkan Akun';
+    msg = `Nonaktifkan akun:\n\n${email}\n\nUser akan langsung kena paywall.`;
+    okText = '⚠️ Nonaktifkan';
+  }
+
+  const ok = await customConfirm(title, msg, okText);
+  if (!ok) return;
 
   try {
     if (action === 'deactivate') {
@@ -219,10 +231,40 @@ async function handleAdminAction(action, uid, email) {
       await activateUser(uid, action);
       showToast(`✅ Akun ${email} aktif (${action})`, 'success');
     }
-    // Reload list
     await renderAdmin();
   } catch (e) {
     console.error(e);
     showToast('Gagal: ' + (e.message || 'unknown'), 'error');
   }
+}
+
+// Custom confirm dialog yang work di semua browser (termasuk IG/FB in-app browser)
+function customConfirm(title, message, okText = 'OK') {
+  return new Promise((resolve) => {
+    let modal = document.getElementById('admin-confirm-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'admin-confirm-modal';
+      modal.className = 'admin-confirm-overlay';
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = `
+      <div class="admin-confirm-card">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+        <div class="admin-confirm-actions">
+          <button class="btn btn-ghost" id="ac-cancel">Batal</button>
+          <button class="btn btn-primary" id="ac-ok">${escapeHtml(okText)}</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    const close = (val) => {
+      modal.style.display = 'none';
+      resolve(val);
+    };
+    document.getElementById('ac-ok').onclick = () => close(true);
+    document.getElementById('ac-cancel').onclick = () => close(false);
+    modal.onclick = (e) => { if (e.target === modal) close(false); };
+  });
 }
