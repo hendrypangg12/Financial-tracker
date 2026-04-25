@@ -3,31 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TokoUntung — Kelola Stok & Untung</title>
-<meta name="description" content="Aplikasi kasir & stok untuk UMKM. Catat stok, hitung untung, generate struk, BEP otomatis." />
-<meta name="theme-color" content="#10b981" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏪%3C/text%3E%3C/svg%3E" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<title>BerBisnis — Beruang Bisnis untuk UMKM Indonesia</title>
+<meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, BEP, generate struk — semua dalam satu app. Mulai dari Rp 99rb/bulan." />
+<meta name="theme-color" content="#1e3a5f" />
+<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=1" />
+<link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=1" />
+<meta name="apple-mobile-web-app-title" content="BerBisnis" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=1" />
+<link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-icon">🏪</div>
+    <img class="brand-icon" src="assets/logo-berbisnis.png?v=1" alt="BerBisnis" />
     <div>
-      <div class="brand-title">TokoUntung</div>
-      <div class="brand-sub">Catat stok, hitung untung</div>
+      <div class="brand-title">BerBisnis</div>
+      <div class="brand-sub">Beruang Bisnis · Atur stok, untung pasti masuk</div>
     </div>
   </div>
   <nav class="tabs">
-    <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
-    <button class="tab" data-tab="stok">📦 Stok</button>
-    <button class="tab" data-tab="jual">🛒 Jual</button>
-    <button class="tab" data-tab="restock">📥 Restock</button>
-    <button class="tab" data-tab="laporan">📈 Laporan</button>
-    <button class="tab" data-tab="pengaturan">⚙️ Pengaturan</button>
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="stok">Stok</button>
+    <button class="tab" data-tab="jual">Kasir</button>
+    <button class="tab" data-tab="restock">Restock</button>
+    <button class="tab" data-tab="laporan">Laporan</button>
+    <button class="tab" data-tab="pengaturan">Pengaturan</button>
   </nav>
   <div class="topbar-actions">
     <button class="btn btn-ghost" id="btn-export">Export</button>
@@ -40,7 +43,7 @@
   <!-- ============ DASHBOARD ============ -->
   <section id="tab-dashboard" class="tab-panel active">
     <div class="page-head">
-      <h1>📊 Dashboard Hari Ini</h1>
+      <h1>Dashboard</h1>
       <small id="today-label">—</small>
     </div>
     <div class="cards">
@@ -108,7 +111,7 @@
   <!-- ============ STOK ============ -->
   <section id="tab-stok" class="tab-panel">
     <div class="page-head">
-      <h1>📦 Stok Barang</h1>
+      <h1>Inventaris Barang</h1>
       <div class="page-filters">
         <input type="search" id="stok-search" placeholder="Cari nama / SKU / kategori..." />
         <select id="stok-filter-kat"><option value="">Semua kategori</option></select>
@@ -138,7 +141,7 @@
   <!-- ============ JUAL (POS) ============ -->
   <section id="tab-jual" class="tab-panel">
     <div class="page-head">
-      <h1>🛒 Kasir / POS</h1>
+      <h1>Kasir</h1>
       <small style="color:var(--ink-soft)">Cari barang, masukkan ke keranjang, proses bayar</small>
     </div>
     <div class="pos-grid">
@@ -174,7 +177,7 @@
   <!-- ============ RESTOCK ============ -->
   <section id="tab-restock" class="tab-panel">
     <div class="page-head">
-      <h1>📥 Restock / Barang Masuk</h1>
+      <h1>Restock Barang Masuk</h1>
       <button class="btn btn-primary" id="btn-add-restock">+ Catat Restock</button>
     </div>
     <div class="panel">
@@ -191,7 +194,7 @@
   <!-- ============ LAPORAN ============ -->
   <section id="tab-laporan" class="tab-panel">
     <div class="page-head">
-      <h1>📈 Laporan Keuangan</h1>
+      <h1>Laporan</h1>
       <div class="page-filters">
         <select id="laporan-periode">
           <option value="hari">Hari Ini</option>
@@ -241,7 +244,7 @@
   <!-- ============ PENGATURAN ============ -->
   <section id="tab-pengaturan" class="tab-panel">
     <div class="page-head">
-      <h1>⚙️ Pengaturan</h1>
+      <h1>Pengaturan</h1>
     </div>
     <div class="grid-2">
       <div class="panel">
@@ -281,7 +284,7 @@
 </main>
 
 <footer class="footer">
-  🏪 <b>TokoUntung</b> — Catat stok, hitung untung<br>
+  <b>BerBisnis</b> — Beruang Bisnis untuk UMKM Indonesia<br>
   <small>Data tersimpan di browser Anda. Gunakan <b>Export</b> untuk backup.</small>
 </footer>
 
