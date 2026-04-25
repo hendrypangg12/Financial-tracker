@@ -223,60 +223,102 @@ section { padding: 70px 0; }
   display: block;
 }
 .preview-fallback {
-  display: none; padding: 16px; flex-direction: column; gap: 10px;
+  display: none; padding: 12px; flex-direction: column; gap: 8px;
   background: #fbf6ee;
-  height: 100%;
+  height: 100%; overflow: hidden;
+}
+.fb-period {
+  font-weight: 800; font-size: 13px; color: var(--ink);
+  padding: 2px 0;
 }
 .fb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.fb-card {
+.fb-card2 {
   background: #fff; border-radius: 10px; padding: 8px 10px;
   border-top: 3px solid;
   box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  display: flex; gap: 8px; align-items: center;
 }
-.fb-card small { font-size: 9px; color: var(--ink-soft); font-weight: 600; letter-spacing: .3px; }
-.fb-card b { display: block; font-size: 14px; margin-top: 2px; }
+.fb-icon-box {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; font-size: 16px;
+  flex: 0 0 auto;
+}
+.fb-card2 small { font-size: 8px; color: var(--ink-soft); font-weight: 700; letter-spacing: .3px; line-height: 1.1; display: block; }
+.fb-card2 b { display: block; font-size: 12px; margin-top: 1px; line-height: 1.1; }
+.fb-card2 em { font-size: 8px; font-style: normal; }
+.fb-card2 em.up { color: #059669; }
+.fb-card2 em.down { color: #dc2626; }
 .fb-green { border-color: #10b981; } .fb-green b { color: #059669; }
 .fb-red { border-color: #ef4444; } .fb-red b { color: #dc2626; }
 .fb-blue { border-color: #3b82f6; } .fb-blue b { color: #2563eb; }
 .fb-amber { border-color: #f59e0b; } .fb-amber b { color: #d97706; }
 .fb-chart {
   flex: 1; background: #fff; border-radius: 10px;
+  padding: 8px;
   background-image:
     linear-gradient(to right, rgba(139,90,43,.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(139,90,43,.05) 1px, transparent 1px);
   background-size: 20px 20px;
-  position: relative;
+  position: relative; min-height: 60px;
 }
-.fb-chart::after {
-  content: ''; position: absolute;
-  bottom: 20%; right: 15%; width: 50%; height: 60%;
-  background: radial-gradient(ellipse at center bottom, rgba(90,138,58,.4), transparent 70%);
-  filter: blur(2px);
-}
-.fb-trx {
-  display: grid; grid-template-columns: 50px 1fr auto;
-  gap: 10px; padding: 8px 10px;
+
+/* Frame 2: Transaksi list */
+.fb-h4 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+.fb-trx2 {
+  display: grid; grid-template-columns: 1fr auto auto;
+  gap: 8px; padding: 6px 10px;
   background: #fff; border-radius: 8px;
-  font-size: 12px; align-items: center;
+  font-size: 11px; align-items: center;
   box-shadow: 0 1px 2px rgba(0,0,0,.03);
 }
-.fb-trx > span:first-child { color: var(--ink-soft); font-size: 10px; }
-.fb-pie {
-  width: 140px; height: 140px; margin: 20px auto;
+.fb-date { color: var(--ink-soft); font-size: 9px; margin-right: 4px; }
+.fb-pill { font-size: 8px; padding: 2px 6px; border-radius: 999px; font-weight: 700; }
+.fb-pill-in { background: #dcfce7; color: #166534; }
+.fb-pill-out { background: #fee2e2; color: #991b1b; }
+.fb-trx2 b { font-size: 11px; white-space: nowrap; }
+
+/* Frame 3: Pie + Insight */
+.fb-mini-rep {
+  background: #fff; padding: 6px 10px; border-radius: 8px;
+  font-size: 11px; border-left: 3px solid;
+  box-shadow: 0 1px 2px rgba(0,0,0,.03);
+}
+.fb-mini-rep.good { border-color: #10b981; }
+.fb-mini-rep.info { border-color: #3b82f6; }
+.fb-pie-wrap {
+  display: grid; grid-template-columns: 110px 1fr; gap: 12px;
+  align-items: center;
+  background: #fff; padding: 12px; border-radius: 10px;
+  flex: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.fb-pie2 {
+  width: 100px; height: 100px;
   border-radius: 50%;
   background: conic-gradient(#6366F1 0% 90%, #EC4899 90% 100%);
-  position: relative;
+  position: relative; margin: 0 auto;
 }
-.fb-pie::after {
-  content: 'Rp 20jt'; position: absolute; inset: 25%;
+.fb-pie-center {
+  position: absolute; inset: 22%;
   background: #fff; border-radius: 50%;
-  display: grid; place-items: center;
-  font-size: 11px; font-weight: 800; color: var(--ink);
+  display: grid; place-items: center; text-align: center;
+  box-shadow: inset 0 0 0 1px var(--line);
 }
-.fb-legend { padding: 0 16px; font-size: 12px; }
-.fb-legend > div { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-.fb-legend b { margin-left: auto; color: var(--primary); }
-.fb-sw { width: 10px; height: 10px; border-radius: 2px; }
+.fb-pie-center small { font-size: 7px; color: var(--ink-soft); font-weight: 700; letter-spacing: .5px; line-height: 1; }
+.fb-pie-center b { font-size: 11px; color: var(--ink); margin-top: 1px; }
+.fb-pie-legend2 { display: grid; gap: 4px; font-size: 10px; }
+.fb-leg-item {
+  display: grid; grid-template-columns: 10px 1fr auto;
+  gap: 6px; align-items: center;
+  padding: 3px 6px; border-radius: 6px;
+  background: #fbf6ee;
+}
+.fb-leg-item b {
+  background: var(--primary); color: #fff;
+  padding: 1px 6px; border-radius: 999px;
+  font-size: 9px;
+}
+.fb-sw { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
 .preview-caption {
   background: #fff;
   text-align: center; padding: 10px 12px;
@@ -555,16 +597,50 @@ footer {
         </div>
         <div class="preview-screen">
           <img src="assets/screenshots/preview-dashboard.png" alt="Dashboard BerUang" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div class="preview-fallback">
+          <div class="preview-fallback fb-dashboard">
+            <div class="fb-period">📅 April 2026</div>
             <div class="fb-row">
-              <div class="fb-card fb-green"><small>PEMASUKAN</small><b>Rp 70jt</b></div>
-              <div class="fb-card fb-red"><small>PENGELUARAN</small><b>Rp 20jt</b></div>
+              <div class="fb-card2 fb-green">
+                <div class="fb-icon-box" style="background:linear-gradient(135deg,#D1FAE5,#BBF7D0)">💰</div>
+                <div>
+                  <small>PEMASUKAN</small>
+                  <b>Rp 70.000.000</b>
+                  <em class="up">▲ 100%</em>
+                </div>
+              </div>
+              <div class="fb-card2 fb-red">
+                <div class="fb-icon-box" style="background:linear-gradient(135deg,#FEE2E2,#FED7AA)">💸</div>
+                <div>
+                  <small>PENGELUARAN</small>
+                  <b>Rp 20.280.000</b>
+                  <em class="up">▲ 100%</em>
+                </div>
+              </div>
             </div>
             <div class="fb-row">
-              <div class="fb-card fb-blue"><small>SALDO</small><b>Rp 49jt</b></div>
-              <div class="fb-card fb-amber"><small>TRANSAKSI</small><b>10</b></div>
+              <div class="fb-card2 fb-blue">
+                <div class="fb-icon-box" style="background:linear-gradient(135deg,#DBEAFE,#E0E7FF)">🏦</div>
+                <div>
+                  <small>SISA SALDO</small>
+                  <b>Rp 49.720.000</b>
+                  <em class="up">▲ 100%</em>
+                </div>
+              </div>
+              <div class="fb-card2 fb-amber">
+                <div class="fb-icon-box" style="background:linear-gradient(135deg,#FEF3C7,#FCE7F3)">📝</div>
+                <div>
+                  <small>TRANSAKSI</small>
+                  <b>10</b>
+                  <em class="up">▲ 100%</em>
+                </div>
+              </div>
             </div>
-            <div class="fb-chart"></div>
+            <div class="fb-chart">
+              <svg viewBox="0 0 200 50" preserveAspectRatio="none" style="width:100%;height:100%">
+                <path d="M0,45 L40,45 L60,40 L80,42 L100,38 L120,15 L130,5 L140,15 L160,38 L200,40" stroke="#5a8a3a" stroke-width="1.5" fill="none"/>
+                <path d="M0,45 L40,45 L60,42 L80,44 L100,40 L120,20 L130,10 L140,18 L160,40 L200,42" stroke="#c0392b" stroke-width="1.5" fill="none"/>
+              </svg>
+            </div>
           </div>
         </div>
         <div class="preview-caption">📊 KPI Cards + Grafik Harian</div>
@@ -580,13 +656,38 @@ footer {
         </div>
         <div class="preview-screen">
           <img src="assets/screenshots/preview-transaksi.png" alt="Daftar Transaksi" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div class="preview-fallback">
-            <div class="fb-trx"><span>25 Apr</span><span>Makan</span><b style="color:#c0392b">Rp 50rb</b></div>
-            <div class="fb-trx"><span>25 Apr</span><span>Gaji</span><b style="color:#5a8a3a">Rp 50jt</b></div>
-            <div class="fb-trx"><span>25 Apr</span><span>Kopi fore</span><b style="color:#c0392b">Rp 200rb</b></div>
-            <div class="fb-trx"><span>25 Apr</span><span>Cicilan kartu kredit</span><b style="color:#c0392b">Rp 2jt</b></div>
-            <div class="fb-trx"><span>23 Apr</span><span>Beli speaker</span><b style="color:#c0392b">Rp 15jt</b></div>
-            <div class="fb-trx"><span>23 Apr</span><span>Parkir</span><b style="color:#c0392b">Rp 5rb</b></div>
+          <div class="preview-fallback fb-trxlist">
+            <h4 class="fb-h4">Daftar Transaksi</h4>
+            <div class="fb-trx2">
+              <div><span class="fb-date">25 Apr</span> Gaji bulanan</div>
+              <span class="fb-pill fb-pill-in">pemasukan</span>
+              <b style="color:#5a8a3a">+Rp 50jt</b>
+            </div>
+            <div class="fb-trx2">
+              <div><span class="fb-date">25 Apr</span> Cicilan kartu kredit</div>
+              <span class="fb-pill fb-pill-out">pengeluaran</span>
+              <b style="color:#c0392b">-Rp 2jt</b>
+            </div>
+            <div class="fb-trx2">
+              <div><span class="fb-date">25 Apr</span> Kopi fore</div>
+              <span class="fb-pill fb-pill-out">pengeluaran</span>
+              <b style="color:#c0392b">-Rp 200rb</b>
+            </div>
+            <div class="fb-trx2">
+              <div><span class="fb-date">25 Apr</span> Makan keluarga</div>
+              <span class="fb-pill fb-pill-out">pengeluaran</span>
+              <b style="color:#c0392b">-Rp 50rb</b>
+            </div>
+            <div class="fb-trx2">
+              <div><span class="fb-date">23 Apr</span> Beli speaker</div>
+              <span class="fb-pill fb-pill-out">pengeluaran</span>
+              <b style="color:#c0392b">-Rp 15jt</b>
+            </div>
+            <div class="fb-trx2">
+              <div><span class="fb-date">23 Apr</span> Parkir & Tol</div>
+              <span class="fb-pill fb-pill-out">pengeluaran</span>
+              <b style="color:#c0392b">-Rp 5rb</b>
+            </div>
           </div>
         </div>
         <div class="preview-caption">📋 Daftar Transaksi + Filter & Search</div>
@@ -602,12 +703,21 @@ footer {
         </div>
         <div class="preview-screen">
           <img src="assets/screenshots/preview-insight.png" alt="Pie Chart Kategori" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div class="preview-fallback">
-            <div class="fb-pie"></div>
-            <div class="fb-legend">
-              <div><span class="fb-sw" style="background:#6366F1"></span>Konsumsi <b>90%</b></div>
-              <div><span class="fb-sw" style="background:#EC4899"></span>Hunian <b>10%</b></div>
-              <div><span class="fb-sw" style="background:#F59E0B"></span>Transport <b>0%</b></div>
+          <div class="preview-fallback fb-insight">
+            <div class="fb-mini-rep good">✅ Saldo surplus Rp 49.72jt</div>
+            <div class="fb-mini-rep info">🛒 Top: Makan keluarga di luar — Rp 18jt</div>
+            <div class="fb-pie-wrap">
+              <div class="fb-pie2">
+                <div class="fb-pie-center">
+                  <small>TOTAL</small>
+                  <b>Rp 20.3jt</b>
+                </div>
+              </div>
+              <div class="fb-pie-legend2">
+                <div class="fb-leg-item"><span class="fb-sw" style="background:#6366F1"></span><span>Konsumsi Makan</span><b>90.1%</b></div>
+                <div class="fb-leg-item"><span class="fb-sw" style="background:#EC4899"></span><span>Hunian</span><b>9.9%</b></div>
+                <div class="fb-leg-item"><span class="fb-sw" style="background:#F59E0B"></span><span>Transportasi</span><b>0%</b></div>
+              </div>
             </div>
           </div>
         </div>
