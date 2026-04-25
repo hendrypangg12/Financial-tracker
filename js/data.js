@@ -15,18 +15,39 @@ const DEFAULT_CATEGORIES = {
     'Lifestyle & Self-care': { alokasi: 'Keinginan', subs: ['Fashion/pakaian', 'Gas/LPG', 'Salon & perawatan'] },
     'Hiburan & Rekreasi': { alokasi: 'Keinginan', subs: ['Nonton bioskop/teater', 'Langganan streaming', 'Liburan'] },
     'Internet & Komunikasi': { alokasi: 'Kebutuhan', subs: ['Internet & TV kabel', 'Pulsa & Paket Data'] },
+    'Utang & Pinjaman': { alokasi: 'Kebutuhan', subs: ['Bayar utang', 'Bayar cicilan', 'Pinjaman keluar'] },
   },
   pemasukan: {
     'Gaji & Pendapatan Utama': { subs: ['Gaji bulanan', 'Bonus/THR', 'Komisi afiliasi/digital'] },
     'Investasi/Tabungan': { subs: ['Dividen saham', 'Hasil sewa rumah/kos', 'Bunga tabungan'] },
     'Usaha/Sampingan': { subs: ['Pemasukan toko/online shop', 'Hasil freelance'] },
+    'Utang & Piutang': { subs: ['Pelunasan piutang', 'Pinjaman cair', 'Transfer masuk'] },
     'Lain-lain': { subs: ['Hadiah', 'Pengembalian uang'] },
   }
 };
 
 // Pemetaan kata kunci -> sub kategori (untuk chat parser)
+// PENTING: urutan rule = priority. Rule yang lebih spesifik harus di atas.
 const KEYWORD_MAP = [
-  // Pemasukan
+  // ==== UTANG & PIUTANG (priority paling tinggi karena ambigu) ====
+  // "saya/aku/gue bayar utang" -> pengeluaran (saya yang bayar)
+  { re: /\b(saya|aku|gue|gw|kami|kita)\s+bayar\s+(utang|hutang|pinjaman|cicilan)\b/i, jenis: 'pengeluaran', sub: 'Bayar utang' },
+  // "bayar utang ke X" -> pengeluaran
+  { re: /\bbayar\s+(utang|hutang|pinjaman|cicilan)\s+(ke|kepada|sama|buat)\b/i, jenis: 'pengeluaran', sub: 'Bayar utang' },
+  // "kasih pinjaman ke X" / "pinjamkan X" -> pengeluaran (uang keluar)
+  { re: /\b(kasih|beri|kirim)\s+pinjaman\b|\bpinjamkan\b|\bminjam[ki]n?\s+(ke|kepada)\b/i, jenis: 'pengeluaran', sub: 'Pinjaman keluar' },
+  // "[Nama X] bayar utang" -> pemasukan (orang lain yg bayar ke saya)
+  { re: /\b[a-z]+\s+(bayar|melunasi|lunas[ki]n?)\s+(utang|hutang|pinjaman)\b/i, jenis: 'pemasukan', sub: 'Pelunasan piutang' },
+  // "utang dari X dilunasi" / "piutang lunas" / "pelunasan utang"
+  { re: /\b(piutang|pelunasan)\b|\b(utang|hutang)\s+(dari|kembali|balik|lunas)\b/i, jenis: 'pemasukan', sub: 'Pelunasan piutang' },
+  // "pinjam dari X" / "pinjaman cair" -> pemasukan (uang masuk meskipun hutang)
+  { re: /\bpinjam(an)?\s+(dari|cair|masuk)\b|\bdapet?\s+pinjaman\b/i, jenis: 'pemasukan', sub: 'Pinjaman cair' },
+  // "transfer dari X" / "ditransfer X"
+  { re: /\b(transfer|tf)\s+dari\b|\bditransfer\s+(sama|oleh)\b|\bkirim(an)?\s+dari\b/i, jenis: 'pemasukan', sub: 'Transfer masuk' },
+  // "X kasih duit" / "X kasih uang" -> pemasukan
+  { re: /\b[a-z]+\s+(kasih|ngasih|kasi)\s+(duit|uang|dana|fulus)\b/i, jenis: 'pemasukan', sub: 'Transfer masuk' },
+
+  // ==== Pemasukan biasa ====
   { re: /\b(gaji)\b/i, jenis: 'pemasukan', sub: 'Gaji bulanan' },
   { re: /\b(bonus|thr)\b/i, jenis: 'pemasukan', sub: 'Bonus/THR' },
   { re: /\b(afiliasi|komisi)\b/i, jenis: 'pemasukan', sub: 'Komisi afiliasi/digital' },

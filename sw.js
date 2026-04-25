@@ -1,25 +1,25 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v6';
+const CACHE_VERSION = 'beruang-v7';
 const CORE = [
   './',
   './index.html',
   './app.html',
   './landing.html',
-  './styles.css?v=18',
+  './styles.css?v=19',
   './manifest.json',
   './assets/logo-beruang.png',
   './assets/mascot-beruang.png',
-  './js/data.js?v=18',
-  './js/utils.js?v=18',
-  './js/firebase-config.js?v=18',
-  './js/storage.js?v=18',
-  './js/parser.js?v=18',
-  './js/sync.js?v=18',
-  './js/auth.js?v=18',
-  './js/admin.js?v=18',
-  './js/dashboard.js?v=18',
-  './js/pages.js?v=18',
-  './js/app.js?v=18',
+  './js/data.js?v=19',
+  './js/utils.js?v=19',
+  './js/firebase-config.js?v=19',
+  './js/storage.js?v=19',
+  './js/parser.js?v=19',
+  './js/sync.js?v=19',
+  './js/auth.js?v=19',
+  './js/admin.js?v=19',
+  './js/dashboard.js?v=19',
+  './js/pages.js?v=19',
+  './js/app.js?v=19',
 ];
 
 self.addEventListener('install', (event) => {
