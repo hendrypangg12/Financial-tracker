@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TokoUntung — Kelola Stok & Untung</title>
+<meta name="description" content="Aplikasi kasir & stok untuk UMKM. Catat stok, hitung untung, generate struk, BEP otomatis." />
+<meta name="theme-color" content="#10b981" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏪%3C/text%3E%3C/svg%3E" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css?v=1" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">🏪</div>
+    <div>
+      <div class="brand-title">TokoUntung</div>
+      <div class="brand-sub">Catat stok, hitung untung</div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab" data-tab="stok">📦 Stok</button>
+    <button class="tab" data-tab="jual">🛒 Jual</button>
+    <button class="tab" data-tab="restock">📥 Restock</button>
+    <button class="tab" data-tab="laporan">📈 Laporan</button>
+    <button class="tab" data-tab="pengaturan">⚙️ Pengaturan</button>
+  </nav>
+  <div class="topbar-actions">
+    <button class="btn btn-ghost" id="btn-export">Export</button>
+    <button class="btn btn-ghost" id="btn-import">Import</button>
+    <input type="file" id="file-import" accept=".json" hidden />
+  </div>
+</header>
+
+<main>
+  <!-- ============ DASHBOARD ============ -->
+  <section id="tab-dashboard" class="tab-panel active">
+    <div class="page-head">
+      <h1>📊 Dashboard Hari Ini</h1>
+      <small id="today-label">—</small>
+    </div>
+    <div class="cards">
+      <div class="card card-revenue">
+        <div class="card-icon">💵</div>
+        <div class="card-body">
+          <div class="card-label">PENJUALAN HARI INI</div>
+          <div class="card-value" id="kpi-revenue">Rp 0</div>
+          <div class="card-delta" id="kpi-revenue-delta">0 transaksi</div>
+        </div>
+      </div>
+      <div class="card card-profit">
+        <div class="card-icon">📈</div>
+        <div class="card-body">
+          <div class="card-label">PROFIT HARI INI</div>
+          <div class="card-value" id="kpi-profit">Rp 0</div>
+          <div class="card-delta" id="kpi-profit-delta">— margin</div>
+        </div>
+      </div>
+      <div class="card card-stock">
+        <div class="card-icon">📦</div>
+        <div class="card-body">
+          <div class="card-label">NILAI STOK</div>
+          <div class="card-value" id="kpi-stock">Rp 0</div>
+          <div class="card-delta" id="kpi-stock-delta">0 item</div>
+        </div>
+      </div>
+      <div class="card card-alert">
+        <div class="card-icon">⚠️</div>
+        <div class="card-body">
+          <div class="card-label">STOK MENIPIS</div>
+          <div class="card-value" id="kpi-alert">0</div>
+          <div class="card-delta">Perlu restock</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><h3>📈 Trend Penjualan 7 Hari</h3></div>
+        <div class="chart-box"><canvas id="chart-trend"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>🏆 Top Seller Hari Ini</h3></div>
+        <ol id="top-seller" class="ranked"><li class="empty">Belum ada penjualan hari ini</li></ol>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><h3>⚠️ Stok Menipis (Perlu Restock)</h3></div>
+        <ul id="low-stock-list" class="alert-list"><li class="empty">Semua stok aman ✅</li></ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>🎯 BEP Bulan Ini</h3></div>
+        <div id="bep-info" class="bep-info">
+          <div class="bep-row"><span>Target BEP</span><b id="bep-target">Rp 0</b></div>
+          <div class="bep-row"><span>Tercapai</span><b id="bep-achieved">Rp 0</b></div>
+          <div class="bep-row"><span>Sisa untuk BEP</span><b id="bep-remaining">Rp 0</b></div>
+          <div class="bep-bar"><div class="bep-fill" id="bep-fill" style="width:0%"></div></div>
+          <small id="bep-status">Atur biaya tetap di Pengaturan</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STOK ============ -->
+  <section id="tab-stok" class="tab-panel">
+    <div class="page-head">
+      <h1>📦 Stok Barang</h1>
+      <div class="page-filters">
+        <input type="search" id="stok-search" placeholder="Cari nama / SKU / kategori..." />
+        <select id="stok-filter-kat"><option value="">Semua kategori</option></select>
+        <button class="btn btn-primary" id="btn-add-product">+ Tambah Barang</button>
+      </div>
+    </div>
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Nama Barang</th>
+            <th>Kategori</th>
+            <th class="num">Stok</th>
+            <th class="num">H. Modal</th>
+            <th class="num">H. Jual</th>
+            <th class="num">Margin</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="stok-body"></tbody>
+      </table>
+      <div id="stok-empty" class="empty" hidden>Belum ada barang. Klik <b>+ Tambah Barang</b> untuk mulai.</div>
+    </div>
+  </section>
+
+  <!-- ============ JUAL (POS) ============ -->
+  <section id="tab-jual" class="tab-panel">
+    <div class="page-head">
+      <h1>🛒 Kasir / POS</h1>
+      <small style="color:var(--ink-soft)">Cari barang, masukkan ke keranjang, proses bayar</small>
+    </div>
+    <div class="pos-grid">
+      <div class="panel pos-products">
+        <div class="panel-head">
+          <input type="search" id="pos-search" placeholder="🔍 Cari barang (nama / SKU / scan barcode)..." autofocus />
+        </div>
+        <div id="pos-product-grid" class="product-grid">
+          <div class="empty">Mulai ketik untuk cari barang</div>
+        </div>
+      </div>
+      <div class="panel pos-cart">
+        <div class="panel-head">
+          <h3>🛍️ Keranjang</h3>
+          <button class="btn btn-small btn-ghost" id="btn-clear-cart">Kosongkan</button>
+        </div>
+        <ul id="cart-list" class="cart-list">
+          <li class="empty">Keranjang kosong</li>
+        </ul>
+        <div class="cart-summary">
+          <div class="row"><span>Subtotal</span><b id="cart-subtotal">Rp 0</b></div>
+          <div class="row">
+            <span>Diskon</span>
+            <input type="number" id="cart-diskon" min="0" value="0" />
+          </div>
+          <div class="row total"><span>TOTAL</span><b id="cart-total">Rp 0</b></div>
+          <button class="btn btn-primary btn-block btn-large" id="btn-checkout" disabled>💳 Bayar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESTOCK ============ -->
+  <section id="tab-restock" class="tab-panel">
+    <div class="page-head">
+      <h1>📥 Restock / Barang Masuk</h1>
+      <button class="btn btn-primary" id="btn-add-restock">+ Catat Restock</button>
+    </div>
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Catatan</th><th></th></tr>
+        </thead>
+        <tbody id="restock-body"></tbody>
+      </table>
+      <div id="restock-empty" class="empty" hidden>Belum ada catatan restock.</div>
+    </div>
+  </section>
+
+  <!-- ============ LAPORAN ============ -->
+  <section id="tab-laporan" class="tab-panel">
+    <div class="page-head">
+      <h1>📈 Laporan Keuangan</h1>
+      <div class="page-filters">
+        <select id="laporan-periode">
+          <option value="hari">Hari Ini</option>
+          <option value="minggu">Minggu Ini</option>
+          <option value="bulan" selected>Bulan Ini</option>
+          <option value="tahun">Tahun Ini</option>
+        </select>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-body">
+        <div class="card-label">REVENUE</div>
+        <div class="card-value" id="lap-revenue" style="color:#10b981">Rp 0</div>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <div class="card-label">HPP TERJUAL</div>
+        <div class="card-value" id="lap-hpp" style="color:#f59e0b">Rp 0</div>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <div class="card-label">PROFIT KOTOR</div>
+        <div class="card-value" id="lap-profit" style="color:#10b981">Rp 0</div>
+      </div></div>
+      <div class="card"><div class="card-body">
+        <div class="card-label">MARGIN</div>
+        <div class="card-value" id="lap-margin" style="color:#3b82f6">0%</div>
+      </div></div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><h3>🏆 Top 10 Best Seller</h3></div>
+        <ol id="lap-best-seller" class="ranked"><li class="empty">Belum ada data</li></ol>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>🐢 Slow Moving (>30 hari tidak laku)</h3></div>
+        <ul id="lap-slow-moving" class="ranked"><li class="empty">Belum ada data</li></ul>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>📅 Riwayat Transaksi Penjualan</h3></div>
+      <table class="data-table">
+        <thead><tr><th>Tanggal</th><th>No. Invoice</th><th>Items</th><th class="num">Total</th><th class="num">Profit</th><th></th></tr></thead>
+        <tbody id="lap-sales-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PENGATURAN ============ -->
+  <section id="tab-pengaturan" class="tab-panel">
+    <div class="page-head">
+      <h1>⚙️ Pengaturan</h1>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><h3>🏪 Info Toko</h3></div>
+        <form id="form-toko" class="form">
+          <label>Nama Toko<input name="namaToko" required /></label>
+          <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
+          <label>No. Telepon / WA<input name="telepon" type="tel" /></label>
+          <label>Footer Struk<input name="footerStruk" placeholder="Terima kasih atas kunjungan!" /></label>
+          <button class="btn btn-primary" type="submit">💾 Simpan</button>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>🎯 Target & BEP</h3></div>
+        <form id="form-bep" class="form">
+          <label>Biaya Tetap Bulanan (Rp)
+            <input name="biayaTetap" type="number" min="0" step="100000" placeholder="Sewa + listrik + gaji + dll" />
+          </label>
+          <label>Target Untung Bulanan (Rp)
+            <input name="targetUntung" type="number" min="0" step="100000" />
+          </label>
+          <small style="color:var(--ink-soft)">BEP otomatis dihitung dari biaya tetap & margin rata-rata.</small>
+          <button class="btn btn-primary" type="submit">💾 Simpan</button>
+        </form>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>🗃️ Kategori Barang</h3></div>
+      <div id="kategori-list" class="kat-pills"></div>
+      <form id="form-add-kat" class="form-inline">
+        <input name="nama" placeholder="Nama kategori baru (mis. Mie Instan)" required />
+        <button class="btn btn-small btn-primary">+ Tambah</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  🏪 <b>TokoUntung</b> — Catat stok, hitung untung<br>
+  <small>Data tersimpan di browser Anda. Gunakan <b>Export</b> untuk backup.</small>
+</footer>
+
+<!-- Modal: Tambah/Edit Produk -->
+<div class="modal" id="modal-product" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-product')">&times;</button>
+    <h3 id="modal-product-title">Tambah Barang</h3>
+    <form id="form-product" class="form">
+      <input type="hidden" name="id" />
+      <div class="grid-2-form">
+        <label>SKU / Kode<input name="sku" required placeholder="mis. IDM-001" /></label>
+        <label>Satuan<input name="satuan" placeholder="pcs / kg / liter" value="pcs" /></label>
+      </div>
+      <label>Nama Barang<input name="nama" required placeholder="mis. Indomie Goreng" /></label>
+      <label>Kategori<select name="kategori"></select></label>
+      <div class="grid-2-form">
+        <label>Harga Modal (Rp)<input name="hargaModal" type="number" min="0" required /></label>
+        <label>Harga Jual (Rp)<input name="hargaJual" type="number" min="0" required /></label>
+      </div>
+      <div class="grid-2-form">
+        <label>Stok Saat Ini<input name="stok" type="number" min="0" value="0" /></label>
+        <label>Min. Stok (alert)<input name="minStok" type="number" min="0" value="5" /></label>
+      </div>
+      <div class="margin-preview" id="margin-preview" hidden></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modal-product')">Batal</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Checkout/Bayar -->
+<div class="modal" id="modal-checkout" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-checkout')">&times;</button>
+    <h3>💳 Pembayaran</h3>
+    <div id="checkout-summary"></div>
+    <form id="form-checkout" class="form">
+      <label>Bayar (Rp)<input name="bayar" type="number" required autofocus /></label>
+      <div id="kembalian-preview" class="kembalian-preview"></div>
+      <label>Metode Bayar
+        <select name="metode">
+          <option value="tunai">💵 Tunai</option>
+          <option value="transfer">🏦 Transfer</option>
+          <option value="qris">📱 QRIS</option>
+          <option value="ewallet">💳 E-wallet</option>
+        </select>
+      </label>
+      <label>Nama Pelanggan (opsional)<input name="pelanggan" placeholder="Anonim" /></label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modal-checkout')">Batal</button>
+        <button type="submit" class="btn btn-primary">✅ Selesaikan & Cetak Struk</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Restock -->
+<div class="modal" id="modal-restock" hidden>
+  <div class="modal-card modal-large">
+    <button type="button" class="modal-close" onclick="closeModal('modal-restock')">&times;</button>
+    <h3>📥 Catat Restock</h3>
+    <form id="form-restock" class="form">
+      <div class="grid-2-form">
+        <label>Tanggal<input name="tanggal" type="date" required /></label>
+        <label>Supplier<input name="supplier" placeholder="Nama supplier" /></label>
+      </div>
+      <div class="restock-items" id="restock-items">
+        <!-- baris item akan ditambahkan dinamis -->
+      </div>
+      <button type="button" class="btn btn-ghost" id="btn-add-restock-item">+ Tambah Item</button>
+      <label>Catatan<textarea name="notes" rows="2"></textarea></label>
+      <div class="restock-total">Total: <b id="restock-total">Rp 0</b></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modal-restock')">Batal</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan Restock</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Struk -->
+<div class="modal" id="modal-receipt" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-receipt')">&times;</button>
+    <div id="receipt-content" class="receipt"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btn-share-receipt">📤 Share/WhatsApp</button>
+      <button type="button" class="btn btn-primary" id="btn-print-receipt">🖨️ Cetak/Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="js/data.js?v=1"></script>
+<script src="js/utils.js?v=1"></script>
+<script src="js/storage.js?v=1"></script>
+<script src="js/products.js?v=1"></script>
+<script src="js/sales.js?v=1"></script>
+<script src="js/restock.js?v=1"></script>
+<script src="js/reports.js?v=1"></script>
+<script src="js/receipt.js?v=1"></script>
+<script src="js/app.js?v=1"></script>
+</body>
+</html>
