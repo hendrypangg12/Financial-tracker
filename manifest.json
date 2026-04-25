@@ -2,7 +2,7 @@
   "name": "BerUang — Catat Uangmu, Jadi Ber-uang",
   "short_name": "BerUang",
   "description": "Aplikasi catat keuangan pribadi. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20.",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -35,14 +35,14 @@
       "name": "Tambah Transaksi",
       "short_name": "Tambah",
       "description": "Langsung ke halaman tambah",
-      "url": "./index.html#tambah",
+      "url": "./app.html#tambah",
       "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
     },
     {
       "name": "Lihat Rekap",
       "short_name": "Rekap",
       "description": "Rekap harian/mingguan/bulanan",
-      "url": "./index.html#rekap",
+      "url": "./app.html#rekap",
       "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
     }
   ]

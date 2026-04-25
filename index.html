@@ -1,597 +1,397 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BerUang — Catat Uangmu, Jadi Ber-uang</title>
-  <meta name="description" content="BerUang — aplikasi catat keuangan pribadi. Catet dulu, biar beneran ber-uang. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20." />
-  <meta name="theme-color" content="#8b5a2b" />
-  <link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=1" />
-  <link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=1" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="apple-mobile-web-app-title" content="BerUang" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=16" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <!-- Firebase compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerUang 🐻 — Catat Uangmu, Jadi Ber-uang</title>
+<meta name="description" content="Aplikasi catat keuangan paling simpel. Mulai Rp 35rb/bulan." />
+<meta name="theme-color" content="#8b5a2b" />
+<link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=1" />
+<meta property="og:title" content="BerUang — Catat Uangmu, Jadi Ber-uang" />
+<meta property="og:description" content="Aplikasi catat keuangan pribadi paling simpel. Cukup Rp 35rb/bulan atau Rp 125rb lifetime." />
+<meta property="og:image" content="assets/logo-beruang.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fdf6e8 0%, #f1e0c6 50%, #d4a373 100%);
+  background-attachment: fixed;
+  color: #3e2d21;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Floating shapes background */
+body::before, body::after {
+  content: ''; position: fixed; pointer-events: none;
+  border-radius: 50%; opacity: .35; filter: blur(60px);
+  animation: float 12s ease-in-out infinite;
+}
+body::before {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, #f59e0b, transparent);
+  top: -100px; left: -100px;
+}
+body::after {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #c89468, transparent);
+  bottom: -150px; right: -150px;
+  animation-delay: 4s;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(30px, -30px) scale(1.05); }
+}
+
+.container {
+  max-width: 480px; margin: 0 auto;
+  padding: 40px 20px 60px;
+  position: relative; z-index: 1;
+}
+
+/* ============ HEADER ============ */
+.header { text-align: center; margin-bottom: 28px; }
+.avatar-wrap {
+  display: inline-block; position: relative;
+  margin-bottom: 16px;
+}
+.avatar {
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: #fff; padding: 6px;
+  box-shadow: 0 8px 24px rgba(139,90,43,.25), 0 0 0 4px rgba(255,255,255,.4);
+  display: block;
+}
+.avatar img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.online-dot {
+  position: absolute; bottom: 12px; right: 12px;
+  width: 22px; height: 22px;
+  background: #10b981; border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(16,185,129,.6);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16,185,129,.6); }
+  70% { box-shadow: 0 0 0 12px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+
+.brand {
+  font-size: 32px; font-weight: 900; letter-spacing: -.8px;
+  color: #3e2d21; margin-bottom: 4px;
+}
+.brand .heart { color: #ef4444; animation: beat 1.4s infinite; display: inline-block; }
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.tag {
+  font-size: 14px; color: #6f5f55;
+  margin-bottom: 10px; font-style: italic;
+}
+.bio {
+  font-size: 13px; color: #6f5f55;
+  margin-bottom: 4px;
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.bio span { white-space: nowrap; }
+
+/* ============ TRUST BADGES ============ */
+.badges {
+  display: flex; gap: 8px; justify-content: center;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+.badge-pill {
+  background: rgba(255,255,255,.7); backdrop-filter: blur(8px);
+  border: 1px solid rgba(139,90,43,.15);
+  padding: 5px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; color: #6f4518;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* ============ BUTTONS ============ */
+.links { display: grid; gap: 12px; }
+.lnk {
+  background: #fff; color: #3e2d21;
+  padding: 16px 20px; border-radius: 16px;
+  text-decoration: none; font-weight: 700; font-size: 15px;
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid rgba(139,90,43,.12);
+  box-shadow: 0 2px 8px rgba(139,90,43,.08), 0 8px 24px rgba(139,90,43,.04);
+  transition: all .25s cubic-bezier(.4,0,.2,1);
+  position: relative; overflow: hidden;
+}
+.lnk::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(139,90,43,.06));
+  opacity: 0; transition: opacity .25s;
+}
+.lnk:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(139,90,43,.18), 0 12px 36px rgba(139,90,43,.08);
+}
+.lnk:hover::before { opacity: 1; }
+.lnk:active { transform: translateY(-1px) scale(.99); }
+.lnk-icon {
+  width: 44px; height: 44px; flex: 0 0 auto;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 22px;
+}
+.lnk-text { flex: 1; min-width: 0; }
+.lnk-title { display: block; line-height: 1.2; }
+.lnk-sub { display: block; font-size: 11px; color: #8b7355; font-weight: 500; margin-top: 2px; }
+.lnk-arrow { color: #b5835a; font-size: 18px; }
+
+/* Highlighted (featured) button */
+.lnk-featured {
+  background: linear-gradient(135deg, #8b5a2b, #c89468);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 20px rgba(139,90,43,.4);
+  position: relative;
+}
+.lnk-featured .lnk-icon { background: rgba(255,255,255,.18); }
+.lnk-featured .lnk-sub { color: rgba(255,255,255,.85); }
+.lnk-featured .lnk-arrow { color: rgba(255,255,255,.7); }
+.lnk-featured::after {
+  content: 'POPULER'; position: absolute;
+  top: -8px; right: 16px;
+  background: #f59e0b; color: #fff;
+  font-size: 10px; font-weight: 800;
+  padding: 3px 10px; border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(245,158,11,.5);
+}
+
+/* Specific colored icons */
+.icon-app { background: linear-gradient(135deg, #fbf6ee, #f1e0c6); }
+.icon-buy { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.icon-life { background: linear-gradient(135deg, #d4a373, #8b5a2b); color: #fff; }
+.icon-wa { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
+.icon-ig { background: linear-gradient(135deg, #833AB4, #E1306C, #F77737); color: #fff; }
+.icon-mail { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.icon-info { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+
+/* ============ FOOTER ============ */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 28px 0 16px;
+  color: #8b7355; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(139,90,43,.2);
+}
+.foot {
+  text-align: center; margin-top: 24px;
+  font-size: 12px; color: #8b7355;
+}
+.foot a { color: #6f4518; text-decoration: none; font-weight: 600; }
+.foot-bears { font-size: 24px; margin-bottom: 8px; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px; padding: 8px 14px;
+  background: rgba(255,255,255,.6); backdrop-filter: blur(8px);
+  border: 1px solid rgba(139,90,43,.2);
+  border-radius: 999px; font-size: 12px; font-weight: 600;
+  color: #6f4518; text-decoration: none; cursor: pointer;
+}
+.share-btn:hover { background: rgba(255,255,255,.9); }
+
+/* Reveal animation */
+.lnk, .header { animation: fadeUp .6s backwards; }
+.header { animation-delay: .05s; }
+.lnk:nth-child(1) { animation-delay: .15s; }
+.lnk:nth-child(2) { animation-delay: .22s; }
+.lnk:nth-child(3) { animation-delay: .29s; }
+.lnk:nth-child(4) { animation-delay: .36s; }
+.lnk:nth-child(5) { animation-delay: .43s; }
+.lnk:nth-child(6) { animation-delay: .5s; }
+.lnk:nth-child(7) { animation-delay: .57s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast */
+#toast {
+  position: fixed; bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #3e2d21; color: #fff;
+  padding: 12px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  opacity: 0; transition: all .3s;
+  pointer-events: none;
+  z-index: 100;
+}
+#toast.show {
+  opacity: 1; transform: translateX(-50%) translateY(0);
+}
+</style>
 </head>
 <body>
-  <!-- ============ LOGIN SCREEN (tampil saat belum login) ============ -->
-  <div id="login-screen" class="login-screen" hidden>
-    <div class="login-card">
-      <img class="login-logo" src="assets/mascot-beruang.png?v=1" alt="BerUang" />
-      <h1 class="login-brand">BerUang</h1>
-      <p class="login-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
 
-      <div class="login-tabs">
-        <button class="login-tab active" data-auth-tab="login">Masuk</button>
-        <button class="login-tab" data-auth-tab="register">Daftar</button>
+<div class="container">
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="avatar-wrap">
+      <div class="avatar">
+        <img src="assets/mascot-beruang.png?v=1" alt="BerUang" />
       </div>
-
-      <form id="form-login" class="auth-form">
-        <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
-        <label>Password<input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" minlength="6" /></label>
-        <button class="btn btn-primary btn-block" type="submit">Masuk</button>
-        <a href="#" id="link-forgot">Lupa password?</a>
-      </form>
-
-      <form id="form-register" class="auth-form" hidden>
-        <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
-        <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
-        <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
-        <button class="btn btn-primary btn-block" type="submit">Buat Akun</button>
-        <small style="color:var(--ink-soft)">Setelah daftar, pilih paket bulanan Rp 35rb / lifetime Rp 125rb.</small>
-      </form>
-
-      <div class="auth-divider"><span>atau</span></div>
-
-      <button class="btn btn-google btn-block" id="btn-google-login">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.8 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.3 0-9.8-3.6-11.3-8.4l-6.6 5.1C9.5 39.7 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.8-3.7 5.2l6.2 5.2C41.3 35.3 44 30 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
-        Login dengan Google
-      </button>
-
-      <div id="auth-error" class="auth-error" hidden></div>
-      <div id="auth-info" class="auth-info" hidden></div>
+      <span class="online-dot"></span>
     </div>
-    <div class="login-footer">🐻 BerUang — Data aman tersinkron di semua device Anda</div>
-  </div>
-
-  <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
-  <div id="paywall-screen" class="login-screen" hidden>
-    <div class="login-card paywall-card">
-      <img class="login-logo" src="assets/mascot-beruang.png?v=1" alt="BerUang" />
-      <h2 id="paywall-title">Pilih Paket Langganan</h2>
-      <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
-
-      <div class="paywall-prices">
-        <div class="price-card" data-paket="monthly">
-          <b>Bulanan</b>
-          <div class="price">Rp 35.000<small>/bulan</small></div>
-          <button class="btn btn-primary btn-block btn-buy" data-paket="monthly">Pilih Bulanan</button>
-        </div>
-        <div class="price-card highlight" data-paket="lifetime">
-          <span class="badge">HEMAT 70%</span>
-          <b>Lifetime</b>
-          <div class="price">Rp 125.000<small>sekali bayar</small></div>
-          <button class="btn btn-primary btn-block btn-buy" data-paket="lifetime">Pilih Lifetime</button>
-        </div>
-      </div>
-
-      <div class="payment-info">
-        <div class="payment-title">💰 Cara Pembayaran</div>
-        <div class="payment-row">
-          <span>Bank BCA</span>
-          <div class="payment-copy">
-            <code id="bank-account">7130902183</code>
-            <button class="btn btn-small" id="btn-copy-acc">Copy</button>
-          </div>
-        </div>
-        <div class="payment-row"><span>Atas Nama</span><b>HENDRY</b></div>
-        <div class="payment-row"><span>QRIS</span><b>Minta ke Admin via WA</b></div>
-      </div>
-
-      <div class="paywall-actions">
-        <a class="btn btn-wa btn-block" id="btn-wa-admin" target="_blank" rel="noopener">💬 Kirim Bukti via WhatsApp</a>
-        <a class="btn btn-ig btn-block" id="btn-ig-admin" target="_blank" rel="noopener">📷 DM Instagram @hendrypangg</a>
-      </div>
-
-      <p class="paywall-note">
-        ⏱️ Akun aktif &lt;1 jam setelah bukti transfer diterima.<br>
-        🔒 Data Anda aman tersimpan — tidak akan hilang.
-      </p>
-
-      <button class="btn btn-ghost btn-block" id="btn-paywall-logout">Logout</button>
+    <h1 class="brand">BerUang <span class="heart">🐻</span></h1>
+    <div class="tag">"Catet dulu, biar beneran ber-uang"</div>
+    <div class="bio">
+      <span>📱 Aplikasi Web</span>
+      <span>•</span>
+      <span>💸 Mulai Rp 35rb</span>
+      <span>•</span>
+      <span>☁️ Sync Multi-Device</span>
+    </div>
+    <div class="badges">
+      <span class="badge-pill">⚡ Setup &lt;1 jam</span>
+      <span class="badge-pill">🔒 Data Aman</span>
+      <span class="badge-pill">♾️ Update Gratis</span>
     </div>
   </div>
 
-  <header class="topbar">
-    <div class="brand">
-      <img class="brand-icon-img" src="assets/mascot-beruang.png?v=1" alt="BerUang" />
-      <div>
-        <div class="brand-title">BerUang</div>
-        <div class="brand-sub">Catet dulu, biar beneran ber-uang</div>
-      </div>
-    </div>
-    <nav class="tabs">
-      <button class="tab active" data-tab="dashboard">Dashboard</button>
-      <button class="tab" data-tab="transaksi">Transaksi</button>
-      <button class="tab" data-tab="tambah">Tambah</button>
-      <button class="tab" data-tab="rekap">Rekap</button>
-      <button class="tab" data-tab="kategori">Kategori</button>
-    </nav>
-    <div class="topbar-actions">
-      <span id="sync-status" class="sync-status"></span>
-      <button class="btn btn-ghost" id="btn-export">Export</button>
-      <button class="btn btn-ghost" id="btn-import">Import</button>
-      <input type="file" id="file-import" accept="application/json" hidden />
-      <button class="btn btn-danger" id="btn-reset" title="Hapus semua data">Reset</button>
-      <div class="user-menu" id="user-menu" hidden>
-        <button class="user-menu-btn" id="user-menu-btn" title="Akun">
-          <span class="user-avatar" id="user-avatar">🙂</span>
-        </button>
-        <div class="user-dropdown" id="user-dropdown" hidden>
-          <div class="user-info">
-            <div class="user-name" id="user-name">—</div>
-            <div class="user-email" id="user-email">—</div>
-            <div class="user-plan" id="user-plan">—</div>
-          </div>
-          <hr>
-          <button class="user-item" id="btn-logout">🚪 Logout</button>
-        </div>
-      </div>
-    </div>
-  </header>
+  <!-- ===== LINKS ===== -->
+  <div class="links">
 
-  <main>
-    <!-- ================= DASHBOARD ================= -->
-    <section id="tab-dashboard" class="tab-panel active">
-      <div id="welcome-banner" class="welcome-banner" hidden>
-        <div class="welcome-content">
-          <img class="welcome-bear-img" src="assets/mascot-beruang.png?v=1" alt="Mascot BerUang" />
-          <div>
-            <h2>Halo, selamat datang di <b>BerUang</b>!</h2>
-            <p class="welcome-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
-            <p class="welcome-steps">
-              Mulai catat transaksi dengan <b>3 cara</b>:<br>
-              ① Ketik chat natural <i>"bakso 45rb"</i><br>
-              ② Foto struk belanja<br>
-              ③ Isi form biasa
-            </p>
-            <button class="btn btn-primary" id="btn-dismiss-welcome">Mulai catat uang →</button>
-          </div>
-        </div>
-      </div>
-      <div class="page-head">
-        <div class="page-title">
-          <span class="emoji">📅</span>
-          <h1 id="dash-month-label">—</h1>
-        </div>
-        <div class="page-filters">
-          <label>Pilih Bulan
-            <select id="dash-month"></select>
-          </label>
-          <label>Pilih Tahun
-            <select id="dash-year"></select>
-          </label>
-        </div>
-      </div>
+    <!-- 1. Lihat Aplikasi (Featured) -->
+    <a href="landing.html" class="lnk lnk-featured">
+      <span class="lnk-icon">🚀</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Lihat Aplikasi & Fitur Lengkap</span>
+        <span class="lnk-sub">Demo, harga, FAQ — semua di sini</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-      <div class="cards">
-        <div class="card card-income">
-          <div class="card-icon">💰</div>
-          <div class="card-body">
-            <div class="card-label">TOTAL PEMASUKAN</div>
-            <div class="card-value" id="kpi-income">Rp 0</div>
-            <div class="card-delta" id="kpi-income-delta">— vs Bulan Lalu</div>
-          </div>
-        </div>
-        <div class="card card-expense">
-          <div class="card-icon">💸</div>
-          <div class="card-body">
-            <div class="card-label">TOTAL PENGELUARAN</div>
-            <div class="card-value" id="kpi-expense">Rp 0</div>
-            <div class="card-delta" id="kpi-expense-delta">— vs Bulan Lalu</div>
-          </div>
-        </div>
-        <div class="card card-balance">
-          <div class="card-icon">🏦</div>
-          <div class="card-body">
-            <div class="card-label">SISA SALDO</div>
-            <div class="card-value" id="kpi-balance">Rp 0</div>
-            <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
-          </div>
-        </div>
-        <div class="card card-count">
-          <div class="card-icon">📝</div>
-          <div class="card-body">
-            <div class="card-label">TOTAL TRANSAKSI</div>
-            <div class="card-value" id="kpi-count">0</div>
-            <div class="card-delta" id="kpi-count-delta">— vs Bulan Lalu</div>
-          </div>
-        </div>
-      </div>
+    <!-- 2. Beli Lifetime -->
+    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*LIFETIME%20Rp%20125.000*%0A%0AEmail%20akun%3A%20...%0A%0ABerikut%20bukti%20transfer%3A%0A%5Blampirkan%20foto%20transfer%5D" class="lnk">
+      <span class="lnk-icon icon-life">⭐</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Beli LIFETIME — Rp 125.000</span>
+        <span class="lnk-sub">Sekali bayar, pakai selamanya • HEMAT 70%</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>Grafik Pengeluaran Harian</h3>
-            <div class="legend">
-              <span class="dot dot-income"></span> Pemasukan
-              <span class="dot dot-expense"></span> Pengeluaran
-            </div>
-          </div>
-          <div class="chart-box"><canvas id="chart-daily"></canvas></div>
-        </div>
+    <!-- 3. Beli Bulanan -->
+    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*BULANAN%20Rp%2035.000*%0A%0AEmail%20akun%3A%20...%0A%0ABerikut%20bukti%20transfer%3A%0A%5Blampirkan%20foto%20transfer%5D" class="lnk">
+      <span class="lnk-icon icon-buy">📅</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Beli Bulanan — Rp 35.000/bln</span>
+        <span class="lnk-sub">Coba dulu, mantap baru lifetime</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-        <div class="panel">
-          <div class="panel-head"><h3>Mini Reports</h3></div>
-          <ul id="mini-reports" class="mini-reports"></ul>
-        </div>
-      </div>
+    <!-- 4. Buka Aplikasi langsung -->
+    <a href="app.html" class="lnk">
+      <span class="lnk-icon icon-app">🐻</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Buka Aplikasi BerUang</span>
+        <span class="lnk-sub">Sudah punya akun? Login di sini</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-      <div class="grid-3">
-        <div class="panel">
-          <div class="panel-head"><h3>Top Pengeluaran</h3></div>
-          <ol id="top-expense" class="ranked"></ol>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Alokasi Kategori Pengeluaran</h3></div>
-          <div class="pie-with-legend">
-            <div class="pie-canvas-wrap">
-              <canvas id="chart-expense-cat"></canvas>
-              <div class="pie-center" id="pie-center-expense">
-                <small>Total</small>
-                <b id="pie-total-expense">Rp 0</b>
-              </div>
-            </div>
-            <ul id="legend-expense-cat" class="pie-legend-right"></ul>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Pengeluaran Bulan Ini vs Lalu</h3></div>
-          <ul id="compare-expense" class="compare-list"></ul>
-        </div>
-      </div>
+    <!-- 5. WhatsApp -->
+    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20bertanya..." class="lnk">
+      <span class="lnk-icon icon-wa">💬</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Chat WhatsApp Admin</span>
+        <span class="lnk-sub">Tanya-tanya / kirim bukti transfer</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-      <div class="grid-3">
-        <div class="panel">
-          <div class="panel-head"><h3>Top Pemasukan</h3></div>
-          <ol id="top-income" class="ranked"></ol>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Kategori Pemasukan</h3></div>
-          <div class="pie-with-legend">
-            <div class="pie-canvas-wrap">
-              <canvas id="chart-income-cat"></canvas>
-              <div class="pie-center" id="pie-center-income">
-                <small>Total</small>
-                <b id="pie-total-income">Rp 0</b>
-              </div>
-            </div>
-            <ul id="legend-income-cat" class="pie-legend-right"></ul>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Pemasukan Bulan Ini vs Lalu</h3></div>
-          <ul id="compare-income" class="compare-list"></ul>
-        </div>
-      </div>
+    <!-- 6. Instagram -->
+    <a href="https://instagram.com/hendrypangg" class="lnk" target="_blank" rel="noopener">
+      <span class="lnk-icon icon-ig">📷</span>
+      <span class="lnk-text">
+        <span class="lnk-title">Follow Instagram</span>
+        <span class="lnk-sub">@hendrypangg • Tips keuangan harian</span>
+      </span>
+      <span class="lnk-arrow">→</span>
+    </a>
 
-      <div class="grid-2">
-        <div class="panel alokasi">
-          <div class="panel-head"><h3>Alokasi 50 / 30 / 20</h3></div>
-          <div class="alokasi-grid">
-            <div class="alokasi-item alok-keb">
-              <div class="alokasi-title">KEBUTUHAN <span>50%</span></div>
-              <ol id="list-kebutuhan"></ol>
-              <div class="alokasi-total">TOTAL <span id="total-kebutuhan">Rp 0</span></div>
-            </div>
-            <div class="alokasi-item alok-kei">
-              <div class="alokasi-title">KEINGINAN <span>30%</span></div>
-              <ol id="list-keinginan"></ol>
-              <div class="alokasi-total">TOTAL <span id="total-keinginan">Rp 0</span></div>
-            </div>
-            <div class="alokasi-item alok-inv">
-              <div class="alokasi-title">INVESTASI <span>20%</span></div>
-              <ol id="list-investasi"></ol>
-              <div class="alokasi-total">TOTAL <span id="total-investasi">Rp 0</span></div>
-            </div>
-          </div>
-        </div>
+    <!-- 7. Cara Bayar -->
+    <div class="divider">Cara Pembayaran</div>
+    <a href="javascript:void(0)" class="lnk" id="copy-bca">
+      <span class="lnk-icon icon-info">🏦</span>
+      <span class="lnk-text">
+        <span class="lnk-title">BCA <code style="background:#fbf6ee;padding:2px 6px;border-radius:4px;font-family:ui-monospace,monospace;font-size:13px">7130902183</code></span>
+        <span class="lnk-sub">a/n HENDRY • tap untuk copy</span>
+      </span>
+      <span class="lnk-arrow">📋</span>
+    </a>
 
-        <div class="panel">
-          <div class="panel-head"><h3>% Budget Yang Digunakan</h3></div>
-          <div class="budget-rings">
-            <div class="ring-wrap">
-              <canvas class="ring" id="ring-keb"></canvas>
-              <div class="ring-label"><span id="pct-keb">0%</span><small>dari 50% Kebutuhan</small></div>
-            </div>
-            <div class="ring-wrap">
-              <canvas class="ring" id="ring-kei"></canvas>
-              <div class="ring-label"><span id="pct-kei">0%</span><small>dari 30% Keinginan</small></div>
-            </div>
-            <div class="ring-wrap">
-              <canvas class="ring" id="ring-inv"></canvas>
-              <div class="ring-label"><span id="pct-inv">0%</span><small>dari 20% Investasi</small></div>
-            </div>
-          </div>
-          <div class="budget-note">
-            Target pengeluaran bulan ini: <b id="target-bulan">Rp 0</b>
-            <label class="inline-edit">
-              Ubah target:
-              <input type="number" id="input-target" min="0" step="100000" />
-              <button class="btn btn-small" id="btn-save-target">Simpan</button>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head"><h3>Keuangan 6 Bulan Terakhir</h3></div>
-        <div class="grid-2">
-          <table class="six-month-table">
-            <thead>
-              <tr>
-                <th>Bulan</th><th>Pemasukan</th><th>Pengeluaran</th><th>Sisa Saldo</th><th>Transaksi</th>
-              </tr>
-            </thead>
-            <tbody id="six-month-body"></tbody>
-            <tfoot id="six-month-foot"></tfoot>
-          </table>
-          <div class="chart-box chart-box-lg"><canvas id="chart-sixmonth"></canvas></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TRANSAKSI ================= -->
-    <section id="tab-transaksi" class="tab-panel">
-      <div class="page-head">
-        <h1>Daftar Transaksi</h1>
-        <div class="page-filters">
-          <input type="search" id="trx-search" placeholder="Cari deskripsi / kategori…" />
-          <select id="trx-filter-jenis">
-            <option value="">Semua jenis</option>
-            <option value="pemasukan">Pemasukan</option>
-            <option value="pengeluaran">Pengeluaran</option>
-          </select>
-          <select id="trx-filter-month"></select>
-          <select id="trx-filter-year"></select>
-        </div>
-      </div>
-      <div class="panel">
-        <table class="trx-table">
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Deskripsi</th>
-              <th>Jenis</th>
-              <th class="num">Jumlah</th>
-              <th>Sub Kategori</th>
-              <th>Kategori</th>
-              <th>Alokasi</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="trx-body"></tbody>
-        </table>
-        <div class="empty" id="trx-empty" hidden>Belum ada transaksi. Yuk tambah di tab <b>Tambah</b>!</div>
-      </div>
-    </section>
-
-    <!-- ================= TAMBAH ================= -->
-    <section id="tab-tambah" class="tab-panel">
-      <div class="page-head"><h1>Tambah Transaksi</h1></div>
-      <div class="grid-3">
-        <!-- FORM -->
-        <div class="panel">
-          <div class="panel-head"><h3>📝 Form Input</h3></div>
-          <form id="form-transaksi" class="form">
-            <label>Tanggal
-              <input type="date" name="tanggal" required />
-            </label>
-            <label>Jenis
-              <select name="jenis" required>
-                <option value="pengeluaran">Pengeluaran</option>
-                <option value="pemasukan">Pemasukan</option>
-              </select>
-            </label>
-            <label>Jumlah (Rp)
-              <input type="number" name="jumlah" min="0" step="500" required />
-            </label>
-            <label>Deskripsi
-              <input type="text" name="deskripsi" placeholder="mis. Bensin Pertamax" required />
-            </label>
-            <label>Sub Kategori
-              <select name="subKategori" required></select>
-            </label>
-            <label>Kategori
-              <input type="text" name="kategori" readonly />
-            </label>
-            <label>Alokasi
-              <select name="alokasi">
-                <option value="">—</option>
-                <option>Kebutuhan</option>
-                <option>Keinginan</option>
-                <option>Investasi</option>
-              </select>
-            </label>
-            <button class="btn btn-primary" type="submit">Simpan Transaksi</button>
-          </form>
-        </div>
-
-        <!-- CHAT -->
-        <div class="panel chat-panel">
-          <div class="panel-head">
-            <h3>💬 Input via Chat</h3>
-            <small>Ketik bebas, aplikasi akan menebak jumlah & kategori.</small>
-          </div>
-          <div class="chat-box" id="chat-box">
-            <div class="chat-msg bot">
-              Halo! Tulis transaksi natural, contoh:<br>
-              • <i>bensin pertamax 250rb</i><br>
-              • <i>makan bakso 45000</i><br>
-              • <i>terima gaji 5jt</i><br>
-              • <i>beli kopi 28k kemarin</i>
-            </div>
-          </div>
-          <form id="chat-form" class="chat-form">
-            <input type="text" id="chat-input" placeholder="Ketik transaksi…" autocomplete="off" />
-            <button class="btn btn-primary" type="submit">Kirim</button>
-          </form>
-        </div>
-
-        <!-- STRUK -->
-        <div class="panel">
-          <div class="panel-head">
-            <h3>🧾 Input via Struk</h3>
-            <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
-          </div>
-          <div class="struk-photo-row">
-            <label for="struk-photo-camera" class="btn struk-photo-btn">📷 Ambil Foto</label>
-            <label for="struk-photo-gallery" class="btn struk-gallery-btn">🖼️ Pilih dari Galeri</label>
-            <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" class="visually-hidden" />
-            <input type="file" id="struk-photo-gallery" accept="image/*" class="visually-hidden" />
-            <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
-          </div>
-          <img id="struk-photo-preview" alt="" style="display:none" />
-          <div id="struk-ocr-progress" class="ocr-progress" hidden></div>
-          <textarea id="struk-text" rows="8" placeholder="Contoh:
-INDOMARET JL MAWAR
-Indomie Goreng    3.500
-Susu UHT 1L       18.000
-Beras 5kg         65.000
-TOTAL            86.500"></textarea>
-          <div class="struk-actions">
-            <label>Tanggal struk <input type="date" id="struk-date" /></label>
-            <button class="btn btn-primary" id="btn-parse-struk">Parse Struk</button>
-          </div>
-          <div id="struk-preview" class="struk-preview"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= REKAP ================= -->
-    <section id="tab-rekap" class="tab-panel">
-      <div class="page-head">
-        <h1>Rekap Keuangan</h1>
-        <div class="page-filters">
-          <button class="seg active" data-period="harian">Harian</button>
-          <button class="seg" data-period="mingguan">Mingguan</button>
-          <button class="seg" data-period="bulanan">Bulanan</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3 id="rekap-title">Rekap Harian</h3></div>
-        <div class="chart-box"><canvas id="chart-rekap"></canvas></div>
-      </div>
-      <div class="panel">
-        <table class="rekap-table">
-          <thead>
-            <tr>
-              <th>Periode</th>
-              <th class="num">Pemasukan</th>
-              <th class="num">Pengeluaran</th>
-              <th class="num">Sisa</th>
-              <th class="num">Transaksi</th>
-            </tr>
-          </thead>
-          <tbody id="rekap-body"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ================= KATEGORI ================= -->
-    <section id="tab-kategori" class="tab-panel">
-      <div class="page-head"><h1>Kategori & Sub-Kategori</h1></div>
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-head"><h3>Pengeluaran</h3></div>
-          <div id="kategori-pengeluaran"></div>
-          <form id="form-add-sub-out" class="form-inline">
-            <select name="kategori" required></select>
-            <input type="text" name="sub" placeholder="Sub kategori baru" required />
-            <select name="alokasi">
-              <option value="">Alokasi…</option>
-              <option>Kebutuhan</option>
-              <option>Keinginan</option>
-              <option>Investasi</option>
-            </select>
-            <button class="btn btn-small btn-primary">Tambah</button>
-          </form>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Pemasukan</h3></div>
-          <div id="kategori-pemasukan"></div>
-          <form id="form-add-sub-in" class="form-inline">
-            <select name="kategori" required></select>
-            <input type="text" name="sub" placeholder="Sub kategori baru" required />
-            <button class="btn btn-small btn-primary">Tambah</button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    🐻 <b>BerUang</b> · Catet dulu, biar beneran ber-uang<br>
-    <small>Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.</small>
-  </footer>
-
-  <!-- Modal edit -->
-  <div class="modal" id="modal-edit" hidden style="display:none">
-    <div class="modal-card">
-      <button type="button" id="btn-close-edit" class="modal-close" aria-label="Tutup">&times;</button>
-      <h3>Edit Transaksi</h3>
-      <form id="form-edit" class="form">
-        <input type="hidden" name="id" />
-        <label>Tanggal <input type="date" name="tanggal" required /></label>
-        <label>Jenis
-          <select name="jenis" required>
-            <option value="pengeluaran">Pengeluaran</option>
-            <option value="pemasukan">Pemasukan</option>
-          </select>
-        </label>
-        <label>Jumlah <input type="number" name="jumlah" min="0" step="500" required /></label>
-        <label>Deskripsi <input type="text" name="deskripsi" required /></label>
-        <label>Sub Kategori <select name="subKategori" required></select></label>
-        <label>Kategori <input type="text" name="kategori" readonly /></label>
-        <label>Alokasi
-          <select name="alokasi">
-            <option value="">—</option>
-            <option>Kebutuhan</option>
-            <option>Keinginan</option>
-            <option>Investasi</option>
-          </select>
-        </label>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-ghost" id="btn-cancel-edit">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </form>
-    </div>
   </div>
 
-  <div id="toast" class="toast" hidden></div>
+  <!-- ===== FOOTER ===== -->
+  <div class="foot">
+    <div class="foot-bears">🐻 🐻‍❄️ 🧸</div>
+    <p>© 2026 <a href="landing.html">BerUang</a> — Made with 💛 by <a href="https://instagram.com/hendrypangg">@hendrypangg</a></p>
+    <button class="share-btn" id="share-btn">📤 Bagikan halaman ini</button>
+  </div>
+</div>
 
-  <script src="js/data.js?v=16"></script>
-  <script src="js/utils.js?v=16"></script>
-  <script src="js/firebase-config.js?v=16"></script>
-  <script src="js/storage.js?v=16"></script>
-  <script src="js/parser.js?v=16"></script>
-  <script src="js/sync.js?v=16"></script>
-  <script src="js/auth.js?v=16"></script>
-  <script src="js/dashboard.js?v=16"></script>
-  <script src="js/pages.js?v=16"></script>
-  <script src="js/app.js?v=16"></script>
+<div id="toast"></div>
+
+<script>
+// Copy BCA account
+document.getElementById('copy-bca').addEventListener('click', async (e) => {
+  e.preventDefault();
+  try {
+    await navigator.clipboard.writeText('7130902183');
+    showToast('✅ Nomor BCA tersalin: 7130902183');
+  } catch {
+    showToast('Salin manual: 7130902183');
+  }
+});
+
+// Share button
+document.getElementById('share-btn').addEventListener('click', async () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'BerUang — Catat Uangmu, Jadi Ber-uang',
+        text: 'Cek aplikasi catat keuangan paling simpel ini 🐻💰',
+        url: url,
+      });
+    } catch {}
+  } else {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('✅ Link tersalin, paste ke teman!');
+    } catch {
+      showToast('Link: ' + url);
+    }
+  }
+});
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+
 </body>
 </html>
