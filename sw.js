@@ -1,24 +1,25 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v5';
+const CACHE_VERSION = 'beruang-v6';
 const CORE = [
   './',
   './index.html',
   './app.html',
   './landing.html',
-  './styles.css?v=17',
+  './styles.css?v=18',
   './manifest.json',
   './assets/logo-beruang.png',
   './assets/mascot-beruang.png',
-  './js/data.js?v=17',
-  './js/utils.js?v=17',
-  './js/firebase-config.js?v=17',
-  './js/storage.js?v=17',
-  './js/parser.js?v=17',
-  './js/sync.js?v=17',
-  './js/auth.js?v=17',
-  './js/dashboard.js?v=17',
-  './js/pages.js?v=17',
-  './js/app.js?v=17',
+  './js/data.js?v=18',
+  './js/utils.js?v=18',
+  './js/firebase-config.js?v=18',
+  './js/storage.js?v=18',
+  './js/parser.js?v=18',
+  './js/sync.js?v=18',
+  './js/auth.js?v=18',
+  './js/admin.js?v=18',
+  './js/dashboard.js?v=18',
+  './js/pages.js?v=18',
+  './js/app.js?v=18',
 ];
 
 self.addEventListener('install', (event) => {
@@ -40,7 +41,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  // Jangan cache request Firebase (harus selalu fresh untuk auth/firestore)
   const url = new URL(req.url);
   if (/firebaseio|googleapis|firebase\.com/.test(url.host)) return;
   event.respondWith(
