@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerUang — Catat Uangmu, Jadi Ber-uang 🐻💰</title>
+<meta name="description" content="Aplikasi catat keuangan paling simpel. Cukup ketik chat 'bakso 45rb' atau foto struk - otomatis tercatat. Dashboard cantik, sync semua device. Mulai Rp 35rb/bulan." />
+<meta name="theme-color" content="#8b5a2b" />
+<link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=1" />
+<meta property="og:title" content="BerUang — Catat Uangmu, Jadi Ber-uang" />
+<meta property="og:description" content="Aplikasi catat keuangan paling simpel di Indonesia. Mulai Rp 35rb/bulan." />
+<meta property="og:image" content="assets/logo-beruang.png" />
+<meta property="og:type" content="website" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #fbf6ee;
+  --cream: #f5ebd8;
+  --ink: #3e2d21;
+  --ink-soft: #8b7355;
+  --line: #ede2cc;
+  --primary: #8b5a2b;
+  --primary-dark: #6f4518;
+  --primary-light: #c89468;
+  --accent: #f59e0b;
+  --green: #10b981;
+  --red: #ef4444;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ NAVBAR ============ */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(251, 246, 238, .95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.nav-inner { display: flex; justify-content: space-between; align-items: center; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand img { width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 2px 6px rgba(139,90,43,.2); }
+.brand-name { font-weight: 800; font-size: 18px; letter-spacing: -.3px; }
+.nav-cta {
+  background: var(--primary); color: #fff !important; text-decoration: none;
+  padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px;
+  transition: all .2s;
+}
+.nav-cta:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+/* ============ HERO ============ */
+.hero {
+  padding: 60px 0 80px;
+  background: radial-gradient(ellipse at top, #fef9ef, var(--bg));
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute;
+  top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(245,158,11,.15), transparent 70%);
+  border-radius: 50%;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 50px; align-items: center; position: relative;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  color: var(--primary); font-weight: 600; margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(139,90,43,.08);
+}
+.hero h1 {
+  font-size: 48px; font-weight: 900;
+  line-height: 1.1; letter-spacing: -1.2px;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--primary); }
+.hero-sub { font-size: 18px; color: var(--ink-soft); margin-bottom: 28px; }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 15px;
+  text-decoration: none; cursor: pointer; border: none; transition: all .2s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 4px 14px rgba(139,90,43,.3);
+}
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,90,43,.4); }
+.btn-secondary {
+  background: #fff; color: var(--ink); border: 2px solid var(--line);
+}
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+.btn-wa {
+  background: #25d366; color: #fff;
+  box-shadow: 0 4px 14px rgba(37,211,102,.35);
+}
+.btn-wa:hover { background: #128c7e; transform: translateY(-2px); }
+.btn-ig {
+  background: linear-gradient(135deg, #833AB4, #E1306C, #F77737);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(225,48,108,.35);
+}
+.btn-ig:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+.hero-visual {
+  position: relative; text-align: center;
+}
+.hero-visual img {
+  width: 100%; max-width: 400px;
+  filter: drop-shadow(0 20px 40px rgba(139,90,43,.25));
+  animation: floatY 4s ease-in-out infinite;
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.hero-stats {
+  display: flex; gap: 24px; margin-top: 32px;
+  padding-top: 24px; border-top: 1px solid var(--line);
+}
+.stat-num { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+/* ============ SECTIONS ============ */
+section { padding: 70px 0; }
+.section-head { text-align: center; margin-bottom: 48px; max-width: 720px; margin-left: auto; margin-right: auto; }
+.section-tag {
+  display: inline-block; color: var(--primary); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; font-size: 12px; margin-bottom: 8px;
+}
+.section-head h2 {
+  font-size: 36px; font-weight: 800; letter-spacing: -.8px;
+  line-height: 1.2; margin-bottom: 12px;
+}
+.section-head p { color: var(--ink-soft); font-size: 17px; }
+
+/* ============ PROBLEM SECTION ============ */
+.problem {
+  background: #fff; border-radius: 24px;
+  padding: 48px; margin: 40px 0;
+  border: 1px solid var(--line);
+}
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; }
+.problem-item {
+  background: #fff5f5; border-left: 4px solid var(--red);
+  padding: 16px 20px; border-radius: 10px;
+  font-size: 14px;
+}
+.problem-item b { color: var(--red); display: block; margin-bottom: 4px; }
+
+/* ============ FEATURES ============ */
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.feature {
+  background: #fff; border-radius: 16px; padding: 28px 24px;
+  border: 1px solid var(--line);
+  transition: all .25s;
+}
+.feature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(139,90,43,.12);
+  border-color: var(--primary-light);
+}
+.feature-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 28px;
+  margin-bottom: 16px;
+}
+.feature:nth-child(1) .feature-icon { background: linear-gradient(135deg, #dbeafe, #c7d2fe); }
+.feature:nth-child(2) .feature-icon { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.feature:nth-child(3) .feature-icon { background: linear-gradient(135deg, #d1fae5, #bbf7d0); }
+.feature:nth-child(4) .feature-icon { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+.feature:nth-child(5) .feature-icon { background: linear-gradient(135deg, #e0e7ff, #ddd6fe); }
+.feature:nth-child(6) .feature-icon { background: linear-gradient(135deg, #ffedd5, #fed7aa); }
+.feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.feature p { color: var(--ink-soft); font-size: 14px; }
+
+/* ============ HOW IT WORKS ============ */
+.how-section { background: linear-gradient(180deg, var(--bg), var(--cream)); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.step { text-align: center; position: relative; }
+.step-num {
+  display: inline-block; width: 48px; height: 48px; line-height: 48px;
+  background: var(--primary); color: #fff; border-radius: 50%;
+  font-weight: 800; font-size: 20px; margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(139,90,43,.3);
+}
+.step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.step p { color: var(--ink-soft); font-size: 14px; }
+.step-arrow {
+  position: absolute; top: 24px; right: -15px;
+  font-size: 24px; color: var(--primary-light);
+}
+.step:last-child .step-arrow { display: none; }
+
+/* ============ PRICING ============ */
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto; }
+.price-card {
+  background: #fff; border: 2px solid var(--line);
+  border-radius: 20px; padding: 32px 28px;
+  position: relative; transition: all .25s;
+}
+.price-card.featured {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #fffbeb, #fff);
+  transform: scale(1.03);
+  box-shadow: 0 12px 36px rgba(245,158,11,.15);
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+.price-badge {
+  position: absolute; top: -12px; right: 20px;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  color: #fff; font-size: 11px; font-weight: 800;
+  padding: 5px 12px; border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(245,158,11,.4);
+}
+.price-name { color: var(--ink-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; margin-bottom: 8px; }
+.price-amount { font-size: 36px; font-weight: 900; color: var(--primary); line-height: 1; }
+.price-amount small { font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+.price-list { list-style: none; margin: 24px 0; }
+.price-list li {
+  padding: 8px 0; display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--ink);
+}
+.price-list li::before { content: '✅'; flex: 0 0 auto; }
+.price-cta { width: 100%; margin-top: 8px; }
+
+/* ============ TESTIMONIAL ============ */
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.testi {
+  background: #fff; border-radius: 16px; padding: 24px;
+  border: 1px solid var(--line);
+}
+.testi-stars { color: #f59e0b; font-size: 16px; margin-bottom: 12px; }
+.testi-text { color: var(--ink); font-style: italic; margin-bottom: 16px; font-size: 14px; }
+.testi-author { display: flex; align-items: center; gap: 10px; }
+.testi-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.testi-name { font-weight: 700; font-size: 13px; }
+.testi-role { font-size: 11px; color: var(--ink-soft); }
+
+/* ============ FAQ ============ */
+.faq-list { max-width: 720px; margin: 0 auto; display: grid; gap: 12px; }
+.faq-item {
+  background: #fff; border-radius: 12px;
+  border: 1px solid var(--line); overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: 15px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.faq-q::after { content: '+'; font-size: 24px; color: var(--primary); transition: transform .2s; }
+.faq-item.open .faq-q::after { transform: rotate(45deg); }
+.faq-a {
+  padding: 0 20px 16px; color: var(--ink-soft); font-size: 14px;
+  display: none;
+}
+.faq-item.open .faq-a { display: block; }
+
+/* ============ FINAL CTA ============ */
+.cta-section {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; padding: 70px 0;
+  border-radius: 24px;
+  margin: 70px 20px;
+  text-align: center;
+}
+.cta-section h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; color: #fff; }
+.cta-section p { font-size: 17px; opacity: .95; margin-bottom: 28px; }
+.cta-section .btn { background: #fff; color: var(--primary); }
+.cta-section .btn:hover { background: var(--cream); transform: translateY(-2px); }
+
+/* ============ FOOTER ============ */
+footer {
+  background: var(--ink); color: #fff;
+  padding: 40px 0 24px;
+}
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 32px; }
+.foot-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.foot-brand img { width: 36px; height: 36px; border-radius: 8px; }
+.foot-brand b { font-size: 16px; }
+.foot-tag { color: rgba(255,255,255,.6); font-size: 13px; }
+.foot-col h4 { font-size: 13px; margin-bottom: 12px; opacity: .8; text-transform: uppercase; letter-spacing: 1px; }
+.foot-col a { color: rgba(255,255,255,.7); text-decoration: none; display: block; padding: 4px 0; font-size: 14px; }
+.foot-col a:hover { color: #fff; }
+.foot-bottom { border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; text-align: center; font-size: 12px; color: rgba(255,255,255,.5); }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .hero h1 { font-size: 36px; }
+  .hero-grid, .features-grid, .steps, .testi-grid, .problem-grid, .pricing-grid, .foot-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-grid { gap: 30px; }
+  .price-card.featured { transform: none; }
+  .price-card.featured:hover { transform: translateY(-4px); }
+  .step-arrow { display: none !important; }
+  .section-head h2, .cta-section h2 { font-size: 28px; }
+  section { padding: 50px 0; }
+  .problem { padding: 28px 24px; }
+  .cta-section { padding: 50px 24px; margin: 40px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#" class="brand">
+      <img src="assets/mascot-beruang.png?v=1" alt="BerUang" />
+      <span class="brand-name">BerUang</span>
+    </a>
+    <a href="index.html" class="nav-cta">Buka Aplikasi →</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <span class="hero-badge">🐻 Aplikasi Catat Uang #1 untuk Pemula</span>
+        <h1>Catet dulu, biar beneran <span>ber-uang</span> 💰</h1>
+        <p class="hero-sub">
+          Aplikasi catat keuangan paling simpel — tinggal ketik <i>"bakso 45rb"</i> atau <b>foto struk</b>, otomatis tercatat. Dashboard cantik, sync semua device.
+        </p>
+        <div class="hero-cta">
+          <a href="#pricing" class="btn btn-primary">🚀 Mulai Pakai (Rp 35rb)</a>
+          <a href="index.html" class="btn btn-secondary">👀 Lihat Demo</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">3 cara</div>
+            <div class="stat-label">Input transaksi</div>
+          </div>
+          <div>
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Sync semua device</div>
+          </div>
+          <div>
+            <div class="stat-num">50/30/20</div>
+            <div class="stat-label">Auto alokasi budget</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/logo-beruang.png" alt="BerUang Mascot" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<div class="container">
+  <div class="problem">
+    <div class="section-head" style="margin-bottom: 0">
+      <span class="section-tag">😩 Problem yang sering dialami</span>
+      <h2>Sering bingung kemana uang lari?</h2>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-item">
+        <b>💸 Boros tanpa sadar</b>
+        Akhir bulan saldo tipis, tapi nggak tahu habisnya buat apa
+      </div>
+      <div class="problem-item">
+        <b>📊 Spreadsheet ribet</b>
+        Excel/Google Sheet susah, harus rumus & format manual
+      </div>
+      <div class="problem-item">
+        <b>🤯 App lain kompleks</b>
+        Aplikasi keuangan terlalu banyak fitur, bikin pusing
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FEATURES ============ -->
+<section id="features">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">✨ Fitur Andalan</span>
+      <h2>Catat uang seperti chat ke teman</h2>
+      <p>Lupakan ribetnya isi form panjang. Cukup ketik bebas atau foto struk, BerUang yang ngerjain sisanya.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>Input via Chat</h3>
+        <p>Ketik natural: <i>"makan bakso 45rb"</i>, <i>"bensin 250rb kemarin"</i>, <i>"terima gaji 5jt"</i>. Otomatis terdeteksi jumlah, kategori & tanggal.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📷</div>
+        <h3>Foto Struk Otomatis</h3>
+        <p>Upload foto struk belanja, OCR baca teks otomatis, total langsung tercatat. Tidak perlu input manual lagi.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Dashboard Cantik</h3>
+        <p>Pie chart warna-warni, grafik harian, ring budget 50/30/20. Selevel template Google Sheets premium.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">☁️</div>
+        <h3>Sync Multi-Device</h3>
+        <p>Catat di iPad, lihat di HP, edit di laptop — datanya nyambung otomatis. Tidak takut hilang.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <h3>Install Seperti App</h3>
+        <p>Pasang ke Home Screen Android/iPhone — terasa seperti aplikasi native, jalan offline.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>Alokasi 50/30/20</h3>
+        <p>Otomatis pisahkan: 50% Kebutuhan, 30% Keinginan, 20% Investasi. Kelola finansial jadi disiplin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">⚡ Cara Pakai</span>
+      <h2>3 langkah, beres dalam 5 menit</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Daftar & Bayar</h3>
+        <p>Register pakai email, transfer Rp 35rb (bulanan) atau Rp 125rb (lifetime), kirim bukti via WA.</p>
+        <div class="step-arrow">→</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Akun Aktif</h3>
+        <p>Admin verifikasi & aktifkan akun Anda dalam &lt;1 jam. Buka aplikasi, login, mulai catat.</p>
+        <div class="step-arrow">→</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Pantau Keuangan</h3>
+        <p>Dashboard otomatis update tiap kali Anda input. Lihat tren, alokasi, & rekap harian/bulanan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">💰 Harga</span>
+      <h2>Pilih paket yang cocok untukmu</h2>
+      <p>Cuma sekali bayar, langsung punya alat finansial selevel jutaan rupiah.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Bulanan</div>
+        <div class="price-amount">Rp 35.000<small>/bulan</small></div>
+        <ul class="price-list">
+          <li>Semua fitur unlocked</li>
+          <li>Sync semua device</li>
+          <li>Foto struk OCR</li>
+          <li>Input via chat & form</li>
+          <li>Update gratis</li>
+        </ul>
+        <a class="btn btn-primary price-cta" href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*BULANAN%20Rp%2035.000*">
+          💬 Pesan via WhatsApp
+        </a>
+      </div>
+      <div class="price-card featured">
+        <span class="price-badge">HEMAT 70%</span>
+        <div class="price-name">Lifetime ⭐</div>
+        <div class="price-amount">Rp 125.000<small>sekali bayar</small></div>
+        <ul class="price-list">
+          <li><b>Semua fitur unlocked</b></li>
+          <li>Sync semua device</li>
+          <li>Foto struk OCR</li>
+          <li>Input via chat & form</li>
+          <li><b>Update gratis SELAMANYA</b></li>
+          <li><b>Hemat Rp 295rb (vs 12 bln)</b></li>
+        </ul>
+        <a class="btn btn-primary price-cta" href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*LIFETIME%20Rp%20125.000*">
+          💬 Pesan via WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIAL ============ -->
+<section style="background: var(--cream)">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">⭐ Kata Pengguna</span>
+      <h2>Mereka udah ber-uang dengan BerUang</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"Akhirnya nggak ribet lagi catet uang. Tinggal ketik 'kopi 28k', selesai. Dashboardnya juga bagus banget!"</div>
+        <div class="testi-author">
+          <div class="testi-avatar">A</div>
+          <div>
+            <div class="testi-name">Andi Pratama</div>
+            <div class="testi-role">Karyawan Swasta</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"Suka banget fitur foto struk, jadi nggak perlu ngetik manual. Sekarang pengeluaran jadi lebih sadar."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">S</div>
+          <div>
+            <div class="testi-name">Sarah Wijaya</div>
+            <div class="testi-role">Mahasiswa</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"Worth it banget Rp 125rb lifetime. Pakai di HP & laptop, datanya sama. Lebih baik daripada langganan bulanan."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">B</div>
+          <div>
+            <div class="testi-name">Budi Santoso</div>
+            <div class="testi-role">Wirausaha</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">❓ FAQ</span>
+      <h2>Pertanyaan yang sering ditanyakan</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Bedanya dengan aplikasi keuangan lain?</div>
+        <div class="faq-a">BerUang fokus pada SIMPLE. Tidak ada feature overload. Cukup input chat atau foto struk, dashboard auto generate. Cocok untuk pemula yang baru mau atur keuangan.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apa bedanya bulanan vs lifetime?</div>
+        <div class="faq-a">Bulanan Rp 35rb berlaku 30 hari. Lifetime Rp 125rb sekali bayar untuk SELAMANYA + dapat update fitur baru gratis. Lifetime jauh lebih hemat (setara ~3.5 bulan).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apakah datanya aman?</div>
+        <div class="faq-a">Ya. Data tersimpan di Google Cloud Firebase yang aman, dengan enkripsi. Setiap akun terisolasi (tidak bisa diakses user lain). Hanya Anda yang bisa lihat data Anda.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Bisa dipakai di iPhone, Android, laptop?</div>
+        <div class="faq-a">Ya semua bisa! Cukup buka link aplikasi di browser apa saja (Safari, Chrome, dll). Login dengan email yang sama, data otomatis sync.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Cara bayarnya bagaimana?</div>
+        <div class="faq-a">Transfer ke BCA 7130902183 a/n HENDRY (atau request QRIS), lalu kirim bukti via WhatsApp. Akun Anda akan diaktifkan dalam &lt;1 jam.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Garansi uang kembali?</div>
+        <div class="faq-a">Ya, ada garansi 3 hari pertama. Kalau merasa tidak cocok, hubungi admin via WA, uang dikembalikan 100%.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Update fitur baru ada terus?</div>
+        <div class="faq-a">Ya! Aplikasi terus diupdate. Semua user bulanan & lifetime dapat update gratis. Saran fitur dari user juga akan dipertimbangkan.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<div class="container">
+  <section class="cta-section">
+    <h2>Siap jadi <i>ber-uang</i> beneran? 🚀</h2>
+    <p>Mulai catat uangmu hari ini juga. Cuma Rp 35rb buat 1 bulan penuh kontrol finansial.</p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap">
+      <a href="https://wa.me/6282124848924?text=Halo%20Admin%2C%20saya%20mau%20pesan%20BerUang%20%F0%9F%90%BB" class="btn btn-wa">💬 Pesan via WhatsApp</a>
+      <a href="https://instagram.com/hendrypangg" class="btn btn-ig">📷 DM Instagram</a>
+    </div>
+  </section>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img src="assets/mascot-beruang.png?v=1" alt="" />
+          <b>BerUang</b>
+        </div>
+        <p class="foot-tag">Catet dulu, biar beneran ber-uang. Aplikasi catat keuangan paling simpel di Indonesia. 🇮🇩</p>
+      </div>
+      <div class="foot-col">
+        <h4>Produk</h4>
+        <a href="index.html">Buka Aplikasi</a>
+        <a href="#features">Fitur</a>
+        <a href="#pricing">Harga</a>
+      </div>
+      <div class="foot-col">
+        <h4>Kontak</h4>
+        <a href="https://wa.me/6282124848924">WhatsApp</a>
+        <a href="https://instagram.com/hendrypangg">Instagram</a>
+        <a href="mailto:hendryphang12@gmail.com">Email</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      © 2026 BerUang. Made with 🐻 by hendrypangg.
+    </div>
+  </div>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.onclick = () => q.parentElement.classList.toggle('open');
+});
+</script>
+
+</body>
+</html>
