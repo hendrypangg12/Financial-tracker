@@ -187,6 +187,107 @@ section { padding: 70px 0; }
 .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .feature p { color: var(--ink-soft); font-size: 14px; }
 
+/* ============ PREVIEW SCREENSHOTS ============ */
+.preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.preview-frame {
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(139,90,43,.12), 0 2px 6px rgba(139,90,43,.06);
+  overflow: hidden; transition: transform .25s, box-shadow .25s;
+  border: 1px solid var(--line);
+}
+.preview-frame:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(139,90,43,.18), 0 4px 12px rgba(139,90,43,.08);
+}
+.preview-bar {
+  background: #f5ebd8;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.preview-bar .dot {
+  width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto;
+}
+.dot-r { background: #ff6b6b; } .dot-y { background: #fbbf24; } .dot-g { background: #10b981; }
+.preview-url {
+  margin-left: 8px; font-size: 11px; color: var(--ink-soft);
+  background: #fff; padding: 3px 10px; border-radius: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.preview-screen {
+  position: relative; height: 280px; overflow: hidden;
+  background: #fbf6ee;
+}
+.preview-screen img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top;
+  display: block;
+}
+.preview-fallback {
+  display: none; padding: 16px; flex-direction: column; gap: 10px;
+  background: #fbf6ee;
+  height: 100%;
+}
+.fb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fb-card {
+  background: #fff; border-radius: 10px; padding: 8px 10px;
+  border-top: 3px solid;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.fb-card small { font-size: 9px; color: var(--ink-soft); font-weight: 600; letter-spacing: .3px; }
+.fb-card b { display: block; font-size: 14px; margin-top: 2px; }
+.fb-green { border-color: #10b981; } .fb-green b { color: #059669; }
+.fb-red { border-color: #ef4444; } .fb-red b { color: #dc2626; }
+.fb-blue { border-color: #3b82f6; } .fb-blue b { color: #2563eb; }
+.fb-amber { border-color: #f59e0b; } .fb-amber b { color: #d97706; }
+.fb-chart {
+  flex: 1; background: #fff; border-radius: 10px;
+  background-image:
+    linear-gradient(to right, rgba(139,90,43,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139,90,43,.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+}
+.fb-chart::after {
+  content: ''; position: absolute;
+  bottom: 20%; right: 15%; width: 50%; height: 60%;
+  background: radial-gradient(ellipse at center bottom, rgba(90,138,58,.4), transparent 70%);
+  filter: blur(2px);
+}
+.fb-trx {
+  display: grid; grid-template-columns: 50px 1fr auto;
+  gap: 10px; padding: 8px 10px;
+  background: #fff; border-radius: 8px;
+  font-size: 12px; align-items: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.03);
+}
+.fb-trx > span:first-child { color: var(--ink-soft); font-size: 10px; }
+.fb-pie {
+  width: 140px; height: 140px; margin: 20px auto;
+  border-radius: 50%;
+  background: conic-gradient(#6366F1 0% 90%, #EC4899 90% 100%);
+  position: relative;
+}
+.fb-pie::after {
+  content: 'Rp 20jt'; position: absolute; inset: 25%;
+  background: #fff; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 800; color: var(--ink);
+}
+.fb-legend { padding: 0 16px; font-size: 12px; }
+.fb-legend > div { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.fb-legend b { margin-left: auto; color: var(--primary); }
+.fb-sw { width: 10px; height: 10px; border-radius: 2px; }
+.preview-caption {
+  background: #fff;
+  text-align: center; padding: 10px 12px;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 900px) {
+  .preview-grid { grid-template-columns: 1fr; gap: 18px; }
+  .preview-screen { height: 320px; }
+}
+
 /* ============ HOW IT WORKS ============ */
 .how-section { background: linear-gradient(180deg, var(--bg), var(--cream)); }
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
@@ -430,6 +531,92 @@ footer {
         <h3>Alokasi 50/30/20</h3>
         <p>Otomatis pisahkan: 50% Kebutuhan, 30% Keinginan, 20% Investasi. Kelola finansial jadi disiplin.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREVIEW SCREENSHOTS ============ -->
+<section id="preview" style="background: linear-gradient(180deg, var(--cream), var(--bg))">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">📸 Preview Aplikasi</span>
+      <h2>Begini tampilan setelah Anda mulai catat</h2>
+      <p>Dashboard yang cantik, data terorganisir, insight finansial langsung di depan mata.</p>
+    </div>
+
+    <div class="preview-grid">
+      <!-- Frame 1: Dashboard -->
+      <div class="preview-frame">
+        <div class="preview-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="preview-url">🐻 BerUang — Dashboard</span>
+        </div>
+        <div class="preview-screen">
+          <img src="assets/screenshots/preview-dashboard.png" alt="Dashboard BerUang" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="preview-fallback">
+            <div class="fb-row">
+              <div class="fb-card fb-green"><small>PEMASUKAN</small><b>Rp 70jt</b></div>
+              <div class="fb-card fb-red"><small>PENGELUARAN</small><b>Rp 20jt</b></div>
+            </div>
+            <div class="fb-row">
+              <div class="fb-card fb-blue"><small>SALDO</small><b>Rp 49jt</b></div>
+              <div class="fb-card fb-amber"><small>TRANSAKSI</small><b>10</b></div>
+            </div>
+            <div class="fb-chart"></div>
+          </div>
+        </div>
+        <div class="preview-caption">📊 KPI Cards + Grafik Harian</div>
+      </div>
+
+      <!-- Frame 2: Transactions -->
+      <div class="preview-frame">
+        <div class="preview-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="preview-url">🐻 BerUang — Transaksi</span>
+        </div>
+        <div class="preview-screen">
+          <img src="assets/screenshots/preview-transaksi.png" alt="Daftar Transaksi" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="preview-fallback">
+            <div class="fb-trx"><span>25 Apr</span><span>Makan</span><b style="color:#c0392b">Rp 50rb</b></div>
+            <div class="fb-trx"><span>25 Apr</span><span>Gaji</span><b style="color:#5a8a3a">Rp 50jt</b></div>
+            <div class="fb-trx"><span>25 Apr</span><span>Kopi fore</span><b style="color:#c0392b">Rp 200rb</b></div>
+            <div class="fb-trx"><span>25 Apr</span><span>Cicilan kartu kredit</span><b style="color:#c0392b">Rp 2jt</b></div>
+            <div class="fb-trx"><span>23 Apr</span><span>Beli speaker</span><b style="color:#c0392b">Rp 15jt</b></div>
+            <div class="fb-trx"><span>23 Apr</span><span>Parkir</span><b style="color:#c0392b">Rp 5rb</b></div>
+          </div>
+        </div>
+        <div class="preview-caption">📋 Daftar Transaksi + Filter & Search</div>
+      </div>
+
+      <!-- Frame 3: Reports + Pie -->
+      <div class="preview-frame">
+        <div class="preview-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="preview-url">🐻 BerUang — Insight</span>
+        </div>
+        <div class="preview-screen">
+          <img src="assets/screenshots/preview-insight.png" alt="Pie Chart Kategori" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="preview-fallback">
+            <div class="fb-pie"></div>
+            <div class="fb-legend">
+              <div><span class="fb-sw" style="background:#6366F1"></span>Konsumsi <b>90%</b></div>
+              <div><span class="fb-sw" style="background:#EC4899"></span>Hunian <b>10%</b></div>
+              <div><span class="fb-sw" style="background:#F59E0B"></span>Transport <b>0%</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="preview-caption">🥧 Pie Chart + Insight Otomatis</div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px">
+      <a href="app.html" class="btn btn-primary">🚀 Coba Aplikasinya Sendiri</a>
     </div>
   </div>
 </section>
