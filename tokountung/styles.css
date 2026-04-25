@@ -296,6 +296,19 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   box-shadow: 0 4px 12px rgba(30,58,95,.12);
   transform: translateY(-2px);
 }
+.product-card .pphoto {
+  width: 100%; aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: var(--bg-deep);
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+}
+.product-card .pphoto-empty {
+  display: grid; place-items: center;
+  font-size: 36px; color: var(--ink-soft);
+  background: linear-gradient(135deg, var(--bg-deep), #fff);
+}
 .product-card .pname {
   font-weight: 600; font-size: 13px; line-height: 1.3;
   color: var(--ink); margin-bottom: 4px;
@@ -388,6 +401,46 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   color: var(--ink-soft); font-size: 16px; line-height: 1;
 }
 .kat-pill button:hover { color: var(--danger); }
+
+/* ===================== FOTO UPLOADER ===================== */
+.product-thumb {
+  width: 40px; height: 40px; border-radius: 8px;
+  object-fit: cover; background: var(--bg-deep);
+  border: 1px solid var(--line); display: block;
+}
+.product-thumb-empty {
+  display: grid; place-items: center;
+  font-size: 18px; color: var(--ink-soft);
+  background: linear-gradient(135deg, var(--bg-deep), #fff);
+}
+
+.foto-uploader {
+  display: flex; gap: 14px; align-items: center;
+  padding: 12px; background: var(--bg-deep);
+  border-radius: 10px; border: 1px dashed var(--line);
+}
+.foto-preview-wrap {
+  width: 84px; height: 84px; flex: 0 0 auto;
+  border-radius: 10px; overflow: hidden;
+  background: #fff; border: 1px solid var(--line);
+  position: relative;
+}
+.foto-preview {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.foto-placeholder {
+  width: 100%; height: 100%; display: grid; place-items: center;
+  font-size: 36px; color: var(--ink-soft);
+  background: linear-gradient(135deg, #fff, var(--bg-deep));
+}
+.foto-actions {
+  display: flex; flex-direction: column; gap: 6px;
+  flex: 1; min-width: 0;
+}
+.foto-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; width: fit-content;
+}
 
 /* ===================== MARGIN PREVIEW ===================== */
 .margin-preview {

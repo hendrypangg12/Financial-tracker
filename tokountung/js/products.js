@@ -22,8 +22,12 @@ function renderStok() {
   tbody.innerHTML = list.map(p => {
     const margin = calcMargin(p.hargaModal, p.hargaJual);
     const lowStock = p.stok <= (p.minStok || 5);
+    const thumb = p.fotoUrl
+      ? `<img class="product-thumb" src="${p.fotoUrl}" alt="" />`
+      : `<div class="product-thumb product-thumb-empty">📦</div>`;
     return `
       <tr>
+        <td>${thumb}</td>
         <td><code>${escapeHtml(p.sku)}</code></td>
         <td><b>${escapeHtml(p.nama)}</b></td>
         <td><span class="kat-pill">${escapeHtml(p.kategori || '-')}</span></td>
@@ -67,6 +71,7 @@ function openProductModal(id) {
   katSel.innerHTML = state.kategori.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
 
   form.reset();
+  setFotoPreview('');
   if (id) {
     const p = getProduct(id);
     if (!p) return;
@@ -80,6 +85,7 @@ function openProductModal(id) {
     form.querySelector('[name="hargaJual"]').value = p.hargaJual;
     form.querySelector('[name="stok"]').value = p.stok;
     form.querySelector('[name="minStok"]').value = p.minStok || 5;
+    setFotoPreview(p.fotoUrl || '');
   } else {
     title.textContent = 'Tambah Barang';
     form.querySelector('[name="id"]').value = '';
@@ -89,6 +95,61 @@ function openProductModal(id) {
   }
   updateMarginPreview();
   openModal('modal-product');
+}
+
+function setFotoPreview(dataUrl) {
+  const form = document.getElementById('form-product');
+  const img = document.getElementById('foto-preview');
+  const placeholder = document.getElementById('foto-placeholder');
+  const removeBtn = document.getElementById('btn-foto-remove');
+  form.querySelector('[name="fotoUrl"]').value = dataUrl || '';
+  if (dataUrl) {
+    img.src = dataUrl;
+    img.hidden = false;
+    placeholder.hidden = true;
+    removeBtn.hidden = false;
+  } else {
+    img.src = '';
+    img.hidden = true;
+    placeholder.hidden = false;
+    removeBtn.hidden = true;
+  }
+}
+
+function handleFileUpload(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      reject(new Error('File bukan gambar'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const max = 300;
+        let w = img.width, h = img.height;
+        if (w > h) {
+          if (w > max) { h = h * max / w; w = max; }
+        } else {
+          if (h > max) { w = w * max / h; h = max; }
+        }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        try {
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(dataUrl);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = () => reject(new Error('Gambar gagal dibaca'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('File gagal dibaca'));
+    reader.readAsDataURL(file);
+  });
 }
 
 function updateMarginPreview() {
@@ -115,6 +176,28 @@ function setupProductForm() {
   const form = document.getElementById('form-product');
   form.querySelector('[name="hargaModal"]').addEventListener('input', updateMarginPreview);
   form.querySelector('[name="hargaJual"]').addEventListener('input', updateMarginPreview);
+
+  // Foto upload
+  const fotoInput = document.getElementById('foto-input');
+  fotoInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      showToast('Foto terlalu besar (max 8MB)', 'error');
+      e.target.value = '';
+      return;
+    }
+    try {
+      const dataUrl = await handleFileUpload(file);
+      setFotoPreview(dataUrl);
+      showToast('Foto siap disimpan', 'success');
+    } catch (err) {
+      showToast('Gagal proses foto: ' + err.message, 'error');
+    }
+    e.target.value = '';
+  });
+  document.getElementById('btn-foto-remove').onclick = () => setFotoPreview('');
+
   form.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(form);
@@ -133,6 +216,7 @@ function setupProductForm() {
     }
     closeModal('modal-product');
     renderStok();
+    renderPOSProducts();
     renderDashboard();
   };
 }
