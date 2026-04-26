@@ -273,13 +273,34 @@
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h3>🗃️ Kategori Barang</h3></div>
-      <div id="kategori-list" class="kat-pills"></div>
-      <form id="form-add-kat" class="form-inline">
-        <input name="nama" placeholder="Nama kategori baru (mis. Mie Instan)" required />
-        <button class="btn btn-small btn-primary">+ Tambah</button>
+      <div class="panel-head"><h3>🤖 Cloud Sync (Berstock Bot)</h3></div>
+      <p style="color:var(--ink-soft); font-size:13px; margin-bottom:14px">
+        Hubungkan ke <b>Berstock Bot</b> di Telegram supaya owner bisa tanya stok & sales kapanpun via chat.
+        <a href="../bot/README.md" target="_blank" style="color:var(--primary)">Cara setup →</a>
+      </p>
+      <form id="form-cloud-sync" class="form">
+        <label>Worker URL
+          <input name="workerUrl" type="url" placeholder="https://berstock-bot.your-domain.workers.dev" />
+        </label>
+        <div class="grid-2-form">
+          <label>Tenant ID
+            <input name="tenantId" placeholder="tnt_a1b2c3d4" />
+          </label>
+          <label>API Key
+            <input name="apiKey" type="password" placeholder="32-char hex string" />
+          </label>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+          <button class="btn btn-primary" type="submit">💾 Simpan Config</button>
+          <button class="btn btn-gold" type="button" id="btn-sync-now">🔄 Sync Sekarang</button>
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--ink-soft); margin-left:auto">
+            <input type="checkbox" id="auto-sync-toggle" /> Auto-sync tiap 5 menit
+          </label>
+        </div>
+        <div id="cloud-status" style="font-size:12px; padding:10px; background:var(--bg-deep); border-radius:8px"></div>
       </form>
     </div>
+
   </section>
 
 </main>
@@ -412,6 +433,7 @@
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=1"></script>
-<script src="js/app.js?v=1"></script>
+<script src="js/cloud-sync.js?v=1"></script>
+<script src="js/app.js?v=2"></script>
 </body>
 </html>

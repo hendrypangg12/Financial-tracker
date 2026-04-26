@@ -1,0 +1,27 @@
+name = "berstock-bot"
+main = "src/index.js"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV Namespaces — diisi setelah `wrangler kv:namespace create` (lihat README)
+# [[kv_namespaces]]
+# binding = "BOT_DATA"
+# id = "<paste_id_here>"
+#
+# [[kv_namespaces]]
+# binding = "BOT_AUTH"
+# id = "<paste_id_here>"
+
+[vars]
+BOT_NAME = "Berstock"
+BUSINESS_NAME_DEFAULT = "Toko Anda"
+DEFAULT_TZ = "Asia/Jakarta"
+
+# Secrets diset via: wrangler secret put <NAMA>
+# - ANTHROPIC_API_KEY
+# - TELEGRAM_BOT_TOKEN
+# - TELEGRAM_WEBHOOK_SECRET
+# - ADMIN_KEY  (untuk endpoint provisioning tenant baru)
+
+[observability]
+enabled = true

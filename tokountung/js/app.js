@@ -6,6 +6,7 @@ function init() {
   setupCheckoutForm();
   setupRestockForm();
   setupSettingsForms();
+  if (typeof setupCloudSyncForm === 'function') setupCloudSyncForm();
 
   // Event handlers global
   document.getElementById('btn-add-product').onclick = () => openProductModal(null);
