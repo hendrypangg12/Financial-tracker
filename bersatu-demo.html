@@ -66,12 +66,14 @@ html, body {
   display: flex; align-items: center; gap: 12px;
 }
 .brand-logo {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: radial-gradient(circle at 30% 30%, var(--accent-gold), #b8860b);
-  display: grid; place-items: center; font-size: 22px;
+  width: 48px; height: 48px; border-radius: 12px;
+  background: #fff;
+  display: grid; place-items: center;
   box-shadow: 0 0 20px rgba(245,185,66,.5), inset 0 0 12px rgba(255,255,255,.2);
   border: 2px solid rgba(245,185,66,.4);
+  overflow: hidden;
 }
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .brand-text {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px; color: var(--ink-soft); letter-spacing: 2px;
@@ -148,20 +150,23 @@ html, body {
 .orchestrator {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 140px; height: 140px;
+  width: 160px; height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffd97a 0%, var(--accent-gold) 30%, #b8860b 80%);
+  background: radial-gradient(circle at 35% 30%, #fff5e0 0%, #fde7c3 50%, #f5d896 100%);
   display: grid; place-items: center;
   box-shadow:
-    0 0 0 4px rgba(245,185,66,.15),
+    0 0 0 4px rgba(245,185,66,.2),
     0 0 60px rgba(245,185,66,.6),
     0 0 120px rgba(255,140,66,.3),
-    inset -10px -10px 30px rgba(0,0,0,.3),
     inset 10px 10px 30px rgba(255,255,255,.3);
-  font-size: 64px;
   z-index: 5;
   cursor: pointer;
   transition: transform .3s;
+  overflow: visible;
+}
+.orchestrator img {
+  width: 75%; height: 75%; object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.2));
 }
 .orchestrator:hover { transform: translate(-50%, -50%) scale(1.05); }
 .orchestrator::before {
@@ -412,7 +417,7 @@ html, body {
 <!-- ===== TOPBAR ===== -->
 <header class="topbar">
   <div class="brand">
-    <div class="brand-logo">🐻</div>
+    <div class="brand-logo"><img src="assets/logo-beruang.png?v=2" alt="BerSatu" /></div>
     <div class="brand-text">
       <b>BERSATU</b><br />
       COMMAND CENTER
@@ -440,7 +445,7 @@ html, body {
 
     <!-- Center: Orchestrator -->
     <div class="orchestrator" data-agent="orchestrator">
-      🐻
+      <img src="assets/logo-beruang.png?v=2" alt="BerSatu Orchestrator" />
       <div class="orchestrator-label">
         <b>ORCHESTRATOR</b>
         BerSatu Core
@@ -652,10 +657,16 @@ function openModal(agentId) {
   const agent = AGENTS[agentId];
   if (!agent) return;
 
+  const iconHtml = agentId === 'orchestrator'
+    ? `<img src="assets/logo-beruang.png?v=2" alt="${agent.name}" style="width:100%;height:100%;object-fit:contain;padding:6px;" />`
+    : agent.icon;
+  const iconBg = agentId === 'orchestrator'
+    ? `background: radial-gradient(circle at 35% 30%, #fff5e0, #f5d896); box-shadow: 0 0 30px ${agent.color}80;`
+    : `background: radial-gradient(circle at 30% 30%, ${agent.color}, ${shade(agent.color, -40)}); box-shadow: 0 0 30px ${agent.color}60;`;
   const html = `
     <div class="modal-header">
-      <div class="modal-icon" style="background: radial-gradient(circle at 30% 30%, ${agent.color}, ${shade(agent.color, -40)}); box-shadow: 0 0 30px ${agent.color}60;">
-        ${agent.icon}
+      <div class="modal-icon" style="${iconBg}">
+        ${iconHtml}
       </div>
       <div class="modal-title">
         <h2 style="color: ${agent.color}">${agent.name}</h2>
