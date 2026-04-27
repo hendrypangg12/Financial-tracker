@@ -64,45 +64,68 @@ function renderStok() {
 }
 
 function openProductModal(id) {
-  const form = document.getElementById('form-product');
-  const title = document.getElementById('modal-product-title');
-  // Fill kategori dropdown
-  const katSel = form.querySelector('[name="kategori"]');
-  katSel.innerHTML = state.kategori.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+  try {
+    const form = document.getElementById('form-product');
+    if (!form) { alert('ERROR: form-product tidak ditemukan'); return; }
 
-  form.reset();
-  setFotoPreview('');
-  if (id) {
-    const p = getProduct(id);
-    if (!p) return;
-    title.textContent = 'Edit Barang';
-    form.querySelector('[name="id"]').value = p.id;
-    form.querySelector('[name="sku"]').value = p.sku;
-    form.querySelector('[name="nama"]').value = p.nama;
-    form.querySelector('[name="kategori"]').value = p.kategori || '';
-    form.querySelector('[name="satuan"]').value = p.satuan || 'pcs';
-    form.querySelector('[name="hargaModal"]').value = p.hargaModal;
-    form.querySelector('[name="hargaJual"]').value = p.hargaJual;
-    form.querySelector('[name="stok"]').value = p.stok;
-    form.querySelector('[name="minStok"]').value = p.minStok || 5;
-    setFotoPreview(p.fotoUrl || '');
-  } else {
-    title.textContent = 'Tambah Barang';
-    form.querySelector('[name="id"]').value = '';
-    form.querySelector('[name="satuan"]').value = 'pcs';
-    form.querySelector('[name="stok"]').value = 0;
-    form.querySelector('[name="minStok"]').value = 5;
+    const title = document.getElementById('modal-product-title');
+
+    // Fill kategori dropdown — defensive
+    const katSel = form.querySelector('[name="kategori"]');
+    if (katSel) {
+      const kats = (typeof state !== 'undefined' && Array.isArray(state.kategori)) ? state.kategori : [];
+      katSel.innerHTML = kats.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+    }
+
+    form.reset();
+
+    // setFotoPreview wrapped — kalau gagal, modal tetap kebuka
+    try { setFotoPreview(''); } catch (e) { console.warn('setFotoPreview failed:', e); }
+
+    const setVal = (name, val) => {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (el) el.value = val;
+    };
+
+    if (id) {
+      const p = getProduct(id);
+      if (!p) { alert('Barang tidak ditemukan'); return; }
+      if (title) title.textContent = 'Edit Barang';
+      setVal('id', p.id);
+      setVal('sku', p.sku);
+      setVal('nama', p.nama);
+      setVal('kategori', p.kategori || '');
+      setVal('satuan', p.satuan || 'pcs');
+      setVal('hargaModal', p.hargaModal);
+      setVal('hargaJual', p.hargaJual);
+      setVal('stok', p.stok);
+      setVal('minStok', p.minStok || 5);
+      try { setFotoPreview(p.fotoUrl || ''); } catch (e) { console.warn('setFotoPreview load failed:', e); }
+    } else {
+      if (title) title.textContent = 'Tambah Barang';
+      setVal('id', '');
+      setVal('satuan', 'pcs');
+      setVal('stok', 0);
+      setVal('minStok', 5);
+    }
+
+    try { updateMarginPreview(); } catch (e) { console.warn('updateMarginPreview failed:', e); }
+    openModal('modal-product');
+  } catch (err) {
+    console.error('[openProductModal] CRITICAL:', err);
+    alert('Error buka form: ' + (err.message || err));
   }
-  updateMarginPreview();
-  openModal('modal-product');
 }
 
 function setFotoPreview(dataUrl) {
   const form = document.getElementById('form-product');
+  if (!form) return;
+  const fotoUrlInput = form.querySelector('[name="fotoUrl"]');
+  if (fotoUrlInput) fotoUrlInput.value = dataUrl || '';
   const img = document.getElementById('foto-preview');
   const placeholder = document.getElementById('foto-placeholder');
   const removeBtn = document.getElementById('btn-foto-remove');
-  form.querySelector('[name="fotoUrl"]').value = dataUrl || '';
+  if (!img || !placeholder || !removeBtn) return;
   if (dataUrl) {
     img.src = dataUrl;
     img.hidden = false;

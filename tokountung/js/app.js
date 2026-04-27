@@ -32,7 +32,16 @@ function safeRun(label, fn) {
 function bindGlobalButtons() {
   const $ = (id) => document.getElementById(id);
 
-  if ($('btn-add-product')) $('btn-add-product').onclick = () => openProductModal(null);
+  if ($('btn-add-product')) {
+    $('btn-add-product').addEventListener('click', (e) => {
+      e.preventDefault();
+      try { openProductModal(null); }
+      catch (err) {
+        console.error('btn-add-product click error:', err);
+        alert('Error: ' + (err.message || err));
+      }
+    });
+  }
   if ($('stok-search')) $('stok-search').addEventListener('input', renderStok);
   if ($('stok-filter-kat')) $('stok-filter-kat').addEventListener('change', renderStok);
 
