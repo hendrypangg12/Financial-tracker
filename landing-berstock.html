@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Berstock — AI Agent Stok via Telegram untuk UMKM Indonesia</title>
+<meta name="description" content="Asisten AI 24/7 di Telegram. Tanya stok, sales, profit toko Anda kapanpun. Mulai Rp 500rb/bulan early bird." />
+<meta name="theme-color" content="#1e3a5f" />
+<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
+<link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=3" />
+<meta property="og:title" content="Berstock — AI Agent Stok via Telegram" />
+<meta property="og:description" content="Tanya stok, sales, profit toko kapanpun via Telegram. Powered by Claude AI." />
+<meta property="og:image" content="assets/logo-berbisnis.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f7f6f2;
+  --bg-deep: #ecebe5;
+  --ink: #1a2238;
+  --ink-soft: #5a6275;
+  --line: #e3e0d6;
+  --primary: #1e3a5f;
+  --primary-dark: #142944;
+  --accent: #c9a352;
+  --accent-dark: #a3823a;
+  --green: #16a34a;
+}
+html, body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--ink);
+  line-height: 1.6; font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+
+/* Sticky nav */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(247,246,242,.95); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-brand img { width: 36px; height: 36px; border-radius: 8px; }
+.nav-brand .name { font-weight: 800; font-size: 17px; letter-spacing: -.3px; }
+.nav-brand .name b { color: var(--primary); }
+.nav-cta {
+  padding: 9px 18px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff; font-weight: 700; font-size: 13px;
+  text-decoration: none; box-shadow: 0 2px 8px rgba(201,163,82,.3);
+}
+.nav-cta:hover { transform: translateY(-1px); }
+
+/* Container */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+  padding: 70px 0 90px;
+  background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--line);
+}
+.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 60px; align-items: center; }
+.hero h1 {
+  font-size: 48px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1;
+  color: var(--primary); margin-bottom: 18px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero p.lead {
+  font-size: 18px; color: var(--ink-soft);
+  margin-bottom: 28px; max-width: 520px;
+}
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px; margin-bottom: 22px;
+  background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
+  color: #15803d; font-size: 12px; font-weight: 700; letter-spacing: .5px;
+}
+.hero-pill::before { content: '●'; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px; border-radius: 10px;
+  font-weight: 700; font-size: 14px;
+  text-decoration: none; cursor: pointer; border: none;
+  font-family: inherit; transition: all .15s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff; box-shadow: 0 4px 14px rgba(201,163,82,.4);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,163,82,.5); }
+.btn-secondary {
+  background: #fff; color: var(--primary); border: 1.5px solid var(--line);
+}
+.btn-secondary:hover { border-color: var(--primary); }
+
+.hero-illust {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 24px; padding: 28px; color: #fff;
+  box-shadow: 0 20px 60px rgba(30,58,95,.25);
+  position: relative; overflow: hidden;
+}
+.hero-illust::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,163,82,.4), transparent);
+}
+.tg-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.tg-avatar { width: 40px; height: 40px; border-radius: 50%; background: #fff; padding: 4px; }
+.tg-avatar img { width: 100%; height: 100%; object-fit: contain; }
+.tg-name { font-weight: 700; font-size: 14px; }
+.tg-name small { display: block; font-size: 11px; color: #9ca3af; font-weight: 400; margin-top: 1px; }
+.tg-msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; font-size: 13px; margin-bottom: 8px; line-height: 1.45; }
+.tg-msg.me { background: var(--accent); color: var(--ink); margin-left: auto; border-bottom-right-radius: 4px; }
+.tg-msg.bot { background: rgba(255,255,255,.1); border-bottom-left-radius: 4px; }
+.tg-msg.bot b { color: var(--accent); }
+
+/* Sections */
+.section { padding: 80px 0; }
+.section-alt { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.section-head { text-align: center; margin-bottom: 50px; }
+.section-tag {
+  display: inline-block; padding: 4px 12px; border-radius: 999px;
+  background: rgba(30,58,95,.08); color: var(--primary);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-head h2 {
+  font-size: 36px; font-weight: 800; letter-spacing: -1px;
+  color: var(--primary); margin-bottom: 12px; line-height: 1.2;
+}
+.section-head p { font-size: 16px; color: var(--ink-soft); max-width: 600px; margin: 0 auto; }
+
+/* Problem grid */
+.problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.problem-card {
+  padding: 24px; border-radius: 14px; background: #fff;
+  border: 1px solid var(--line);
+}
+.problem-card .ico { font-size: 32px; margin-bottom: 10px; }
+.problem-card h4 { color: var(--primary); margin-bottom: 6px; font-size: 16px; }
+.problem-card p { color: var(--ink-soft); font-size: 14px; }
+
+/* How it works */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 30px; }
+.step {
+  text-align: center; padding: 28px 20px;
+  background: var(--bg); border-radius: 16px; border: 1px solid var(--line);
+  position: relative;
+}
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff; font-weight: 900; font-size: 18px;
+  display: grid; place-items: center; margin: 0 auto 16px;
+  box-shadow: 0 4px 12px rgba(30,58,95,.3);
+}
+.step h4 { color: var(--primary); margin-bottom: 8px; font-size: 17px; }
+.step p { color: var(--ink-soft); font-size: 14px; }
+
+/* Features */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.feature {
+  padding: 26px; border-radius: 14px; background: #fff;
+  border: 1px solid var(--line); transition: all .2s;
+}
+.feature:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30,58,95,.08); border-color: var(--accent); }
+.feature .ico { font-size: 28px; margin-bottom: 12px; }
+.feature h4 { color: var(--primary); margin-bottom: 6px; font-size: 16px; font-weight: 700; }
+.feature p { color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
+
+/* Demo chat */
+.demo-wrap {
+  max-width: 480px; margin: 0 auto;
+  background: linear-gradient(135deg, var(--primary), #2c4d7d);
+  border-radius: 24px; padding: 24px;
+  box-shadow: 0 20px 60px rgba(30,58,95,.3);
+}
+
+/* Pricing */
+.price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+.price-card {
+  background: #fff; border-radius: 18px; padding: 32px 26px;
+  border: 1.5px solid var(--line); position: relative;
+  display: flex; flex-direction: column;
+}
+.price-card.featured {
+  border: 2px solid var(--accent);
+  box-shadow: 0 10px 40px rgba(201,163,82,.2);
+  transform: scale(1.03);
+}
+.price-card.featured::before {
+  content: '🔥 RECOMMENDED'; position: absolute; top: -12px; left: 50%;
+  transform: translateX(-50%); white-space: nowrap;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 1px;
+  padding: 5px 14px; border-radius: 999px;
+}
+.price-tier { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 8px; }
+.price-amount { display: flex; align-items: baseline; gap: 4px; margin-bottom: 16px; }
+.price-amount .amount { font-size: 36px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+.price-amount .period { font-size: 14px; color: var(--ink-soft); }
+.price-amount .strike { color: var(--ink-soft); text-decoration: line-through; font-size: 18px; font-weight: 600; margin-right: 6px; }
+.price-features { list-style: none; margin-bottom: 24px; flex: 1; }
+.price-features li { padding: 6px 0; font-size: 14px; color: var(--ink); }
+.price-features li::before { content: '✓ '; color: var(--green); font-weight: 800; margin-right: 4px; }
+.price-features li.no::before { content: '× '; color: var(--ink-soft); }
+.price-features li.no { color: var(--ink-soft); }
+.price-card .btn { width: 100%; justify-content: center; }
+
+/* FAQ */
+.faq-list { max-width: 760px; margin: 0 auto; }
+.faq-item {
+  background: #fff; border: 1px solid var(--line);
+  border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+}
+.faq-item summary {
+  padding: 18px 22px; cursor: pointer; font-weight: 600; font-size: 15px;
+  color: var(--primary); list-style: none; position: relative;
+  padding-right: 50px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+'; position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+  font-size: 22px; color: var(--accent); font-weight: 400;
+  transition: transform .2s;
+}
+.faq-item[open] summary::after { content: '−'; }
+.faq-item .answer { padding: 0 22px 18px; color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
+
+/* Final CTA */
+.final-cta {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff; padding: 80px 24px; text-align: center;
+}
+.final-cta h2 {
+  font-size: 36px; font-weight: 900; letter-spacing: -1px; margin-bottom: 14px;
+}
+.final-cta p { font-size: 17px; opacity: .85; margin-bottom: 30px; max-width: 540px; margin-left: auto; margin-right: auto; }
+.final-cta .btn-primary { font-size: 16px; padding: 16px 32px; }
+
+/* Footer */
+.footer {
+  background: #0f172a; color: #94a3b8; padding: 40px 24px;
+  text-align: center; font-size: 13px;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer .links { margin-top: 12px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+/* Responsive */
+@media (max-width: 800px) {
+  .hero { padding: 50px 0 60px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hero h1 { font-size: 34px; }
+  .hero p.lead { font-size: 16px; }
+  .section { padding: 60px 0; }
+  .section-head h2 { font-size: 28px; }
+  .problem-grid, .steps, .features, .price-grid { grid-template-columns: 1fr; }
+  .price-card.featured { transform: scale(1); }
+  .final-cta { padding: 60px 20px; }
+  .final-cta h2 { font-size: 28px; }
+  .nav { padding: 12px 16px; }
+  .nav-cta { padding: 8px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-brand" style="text-decoration:none; color:inherit">
+    <img src="assets/logo-berbisnis.png?v=3" alt="Berstock" />
+    <div class="name"><b>Berstock</b></div>
+  </a>
+  <a href="#pricing" class="nav-cta">Lihat Harga</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-pill">EARLY BIRD: 50 KLIEN PERTAMA · DISKON 67%</div>
+      <h1>Asisten AI <span class="accent">Stok &amp; Sales</span> Toko Anda — di Telegram, 24/7</h1>
+      <p class="lead">
+        Tinggal chat di Telegram, langsung dapat jawaban tentang stok, penjualan, dan profit toko Anda.
+        Tidak perlu buka aplikasi, tidak perlu nunggu admin lapor — cukup tanya, langsung dijawab.
+      </p>
+      <div class="hero-cta">
+        <a href="https://wa.me/6282124848924?text=Halo%20saya%20mau%20demo%20Berstock" class="btn btn-primary">
+          💬 Demo Gratis via WhatsApp
+        </a>
+        <a href="#how" class="btn btn-secondary">Cara Kerjanya →</a>
+      </div>
+    </div>
+    <div class="hero-illust">
+      <div class="tg-header">
+        <div class="tg-avatar"><img src="assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+        <div class="tg-name">Berstock <small>online · powered by Claude AI</small></div>
+      </div>
+      <div class="tg-msg me">Stok apa yang habis hari ini?</div>
+      <div class="tg-msg bot">🔥 <b>3 barang stok kritis:</b><br>• Indomie Goreng — sisa 3 dus<br>• Beras Premium — sisa 2 karung ⚠️<br>• Kopi Kapal Api — <b>HABIS!</b><br><br>💡 Prioritas restock Beras &amp; Kopi minggu ini bos.</div>
+      <div class="tg-msg me">Sales hari ini gimana?</div>
+      <div class="tg-msg bot">📊 <b>Hari ini:</b><br>💰 Revenue Rp 2.450.000 (15 trx)<br>📈 Profit Rp 580.000 (margin 23.7%)<br><br>Naik 18% dari kemarin — solid! 👍</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Masalah Owner UMKM</span>
+      <h2>Ribet pantau toko 24/7?</h2>
+      <p>Anda tidak sendirian. Inilah keluhan yang paling sering kami dengar dari pemilik UMKM Indonesia:</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="ico">😴</div>
+        <h4>Karyawan lapor stok lambat</h4>
+        <p>Stok sudah habis tapi baru tahu setelah ada customer marah karena barang ga ada.</p>
+      </div>
+      <div class="problem-card">
+        <div class="ico">📱</div>
+        <h4>Buka aplikasi malas</h4>
+        <p>Aplikasi kasir punya, tapi owner ga sempat buka tiap hari. Akhirnya gak ke-pantau.</p>
+      </div>
+      <div class="problem-card">
+        <div class="ico">📊</div>
+        <h4>Bingung apa yang restock</h4>
+        <p>Tiap minggu order ke supplier, tapi nggak yakin barang mana yang prioritas dan jumlahnya berapa.</p>
+      </div>
+      <div class="problem-card">
+        <div class="ico">💸</div>
+        <h4>Gaji admin Rp 3jt+</h4>
+        <p>Bayar admin khusus untuk monitoring saja mahal, padahal cuma butuh jawaban cepat 5–10 kali sehari.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section-alt" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Solusinya Simpel</span>
+      <h2>3 Langkah Setup, 1 Menit</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Aktivasi Bot</h4>
+        <p>Kami kasih kode tenant. Anda buka Telegram, ketik <code>/start</code> di @BerstockBot.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Hubungkan Toko</h4>
+        <p>Buka aplikasi BerBisnis Anda, klik "Sync ke Cloud". Data langsung connected.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Tanya Apa Saja</h4>
+        <p>"Stok yang habis?", "Sales hari ini?", "Apa yang harus saya restock?" — dijawab dalam 3 detik.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">8 Kemampuan Bot</span>
+      <h2>Sekali setup, Berstock kerja untuk Anda</h2>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="ico">🔥</div>
+        <h4>Alert Stok Kritis</h4>
+        <p>Bot otomatis identifikasi barang dengan stok ≤ minimum. Lengkap dengan urgency level.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">📊</div>
+        <h4>Ringkasan Sales</h4>
+        <p>Penjualan hari ini, kemarin, minggu, bulan — dengan margin profit dan top seller.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🏆</div>
+        <h4>Best Seller Analytics</h4>
+        <p>Barang paling laku per periode. Data revenue + qty terjual untuk decision making.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🐢</div>
+        <h4>Slow Moving Detector</h4>
+        <p>Barang yang tidak laku &gt;30 hari padahal masih ada stok. Kasih tahu modal terikat berapa.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">🛒</div>
+        <h4>Saran Restock Cerdas</h4>
+        <p>Kombinasi stok kritis + velocity penjualan. Bot kasih saran berapa yang harus diorder.</p>
+      </div>
+      <div class="feature">
+        <div class="ico">💰</div>
+        <h4>Profit &amp; BEP Tracking</h4>
+        <p>Margin per periode, sudah dekat BEP atau belum, sisa berapa untuk capai target.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section section-alt" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Pricing Transparan</span>
+      <h2>Pilih paket yang sesuai bisnis Anda</h2>
+      <p>Semua paket termasuk: bot 24/7, integrasi BerBisnis, 8 jenis pertanyaan, support WhatsApp.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount">
+          <span class="amount">Rp 99rb</span>
+          <span class="period">/bulan</span>
+        </div>
+        <ul class="price-features">
+          <li>BerBisnis web app saja</li>
+          <li>POS &amp; manajemen stok</li>
+          <li>Laporan dasar</li>
+          <li class="no">Telegram bot</li>
+          <li class="no">AI assistant</li>
+        </ul>
+        <a href="https://wa.me/6282124848924?text=Halo%20saya%20mau%20paket%20Starter" class="btn btn-secondary">Pilih Starter</a>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tier">Pro Early Bird</div>
+        <div class="price-amount">
+          <span class="strike">Rp 1,5jt</span>
+          <span class="amount">Rp 500rb</span>
+          <span class="period">/bulan</span>
+        </div>
+        <ul class="price-features">
+          <li><b>Semua fitur Starter</b></li>
+          <li>Berstock AI Telegram bot</li>
+          <li>Unlimited query bulanan*</li>
+          <li>Auto-sync 5 menit</li>
+          <li>Priority support WA</li>
+          <li>Setup gratis (kami yang urus)</li>
+        </ul>
+        <a href="https://wa.me/6282124848924?text=Halo%20saya%20mau%20Early%20Bird%20Berstock%20Rp%20500rb" class="btn btn-primary">🔥 Ambil Early Bird</a>
+      </div>
+
+      <div class="price-card">
+        <div class="price-tier">Enterprise</div>
+        <div class="price-amount">
+          <span class="amount">Custom</span>
+        </div>
+        <ul class="price-features">
+          <li>Multi-cabang/outlet</li>
+          <li>Custom AI agent (HRD, Pembukuan)</li>
+          <li>API integration</li>
+          <li>White-label branding</li>
+          <li>Dedicated account manager</li>
+          <li>SLA 99.9%</li>
+        </ul>
+        <a href="https://wa.me/6282124848924?text=Halo%20saya%20tertarik%20paket%20Enterprise" class="btn btn-secondary">Hubungi Sales</a>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:24px; font-size:12px; color:var(--ink-soft)">
+      *Fair use: hingga 100 query/hari per akun. Early bird limited 50 klien pertama.
+    </p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">FAQ</span>
+      <h2>Pertanyaan yang Sering Ditanya</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Data toko saya aman tidak?</summary>
+        <div class="answer">
+          Aman. Data disimpan di Cloudflare KV (infrastruktur kelas enterprise) dengan enkripsi end-to-end.
+          Kami tidak share data ke pihak ketiga. Anda bisa hapus akun dan semua data kapanpun via WhatsApp ke kami.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Apa bedanya dengan ChatGPT / aplikasi lain?</summary>
+        <div class="answer">
+          ChatGPT generic — tidak tahu data toko Anda. Berstock terhubung langsung ke BerBisnis Anda,
+          jadi jawabannya based on data REAL toko Anda, bukan halusinasi.
+          Powered by Claude AI yang lebih akurat dari ChatGPT untuk reasoning Bahasa Indonesia.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Bagaimana cara setupnya? Saya tidak techy.</summary>
+        <div class="answer">
+          Setup 1 menit. Untuk paket Pro Early Bird, <b>kami yang setup-kan</b>. Anda cuma terima kode aktivasi,
+          buka Telegram, ketik <code>/start &lt;kode&gt;</code>, selesai. Total waktu Anda: 3 menit.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Bot bisa edit data atau cuma baca?</summary>
+        <div class="answer">
+          Saat ini <b>read-only</b> (cuma baca). Ini intentional untuk safety — bot tidak bisa hapus barang
+          atau cancel transaksi. Edit tetap di aplikasi BerBisnis. Phase 2 nanti kami buka feature action
+          dengan approval workflow (tapi setelah trust terbangun).
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Kalau koneksi internet putus gimana?</summary>
+        <div class="answer">
+          Aplikasi BerBisnis Anda <b>offline-first</b> — tetap bisa input transaksi tanpa internet.
+          Begitu online lagi, data auto-sync ke cloud, dan bot bisa lagi diakses.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary>Bisa cancel kapan saja?</summary>
+        <div class="answer">
+          Bisa, tanpa penalty. Bayar bulanan, kalau dirasa tidak cocok cukup chat WA, kami matikan akun.
+          Data Anda tetap bisa di-export dari BerBisnis (offline-first).
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Siap Punya Asisten AI di Toko Anda?</h2>
+  <p>50 klien pertama dapat harga early bird Rp 500rb/bulan (hemat 67% dari harga normal Rp 1,5jt).<br>Slot makin sedikit — chat WA sekarang sebelum kehabisan.</p>
+  <a href="https://wa.me/6282124848924?text=Halo%20saya%20mau%20Early%20Bird%20Berstock" class="btn btn-primary">
+    💬 Chat WhatsApp Sekarang
+  </a>
+</section>
+
+<footer class="footer">
+  <div><b style="color:#fff">Berstock</b> — bagian dari <b style="color:var(--accent)">BerSatu Suite</b></div>
+  <div style="margin-top:8px">PT Sinar Pang Cemerlang · BCA 7130902183 a/n HENDRY</div>
+  <div class="links">
+    <a href="https://wa.me/6282124848924">WhatsApp</a>
+    <a href="https://instagram.com/hendrypangg">Instagram</a>
+    <a href="tokountung/app.html">BerBisnis App</a>
+    <a href="bersatu-demo.html">BerSatu Demo</a>
+  </div>
+</footer>
+
+</body>
+</html>
