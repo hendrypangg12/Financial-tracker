@@ -17,13 +17,19 @@ function renderPOSProducts() {
     grid.innerHTML = '<div class="empty">' + (search ? 'Tidak ditemukan' : 'Belum ada barang. Tambah di tab Stok dulu.') + '</div>';
     return;
   }
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML = list.map(p => {
+    const photo = p.fotoUrl
+      ? `<img class="pphoto" src="${p.fotoUrl}" alt="" loading="lazy" />`
+      : `<div class="pphoto pphoto-empty">📦</div>`;
+    return `
     <div class="product-card ${p.stok <= 0 ? 'out-of-stock' : ''}" data-pid="${p.id}">
+      ${photo}
       <div class="pname">${escapeHtml(p.nama)}</div>
       <div class="pprice">${formatRupiah(p.hargaJual)}</div>
       <div class="pstok">Stok: ${p.stok} ${escapeHtml(p.satuan || 'pcs')}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
   grid.querySelectorAll('.product-card').forEach(card => {
     card.onclick = () => {
       const id = card.dataset.pid;

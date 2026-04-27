@@ -6,22 +6,22 @@
 <title>BerBisnis — Beruang Bisnis untuk UMKM Indonesia</title>
 <meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, BEP, generate struk — semua dalam satu app. Mulai dari Rp 99rb/bulan." />
 <meta name="theme-color" content="#1e3a5f" />
-<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=1" />
-<link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=1" />
+<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
+<link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=3" />
 <meta name="apple-mobile-web-app-title" content="BerBisnis" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=2" />
+<link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <img class="brand-icon" src="assets/logo-berbisnis.png?v=1" alt="BerBisnis" />
+    <img class="brand-icon" src="assets/logo-berbisnis.png?v=3" alt="BerBisnis" />
     <div>
       <div class="brand-title">BerBisnis</div>
-      <div class="brand-sub">Beruang Bisnis · Atur stok, untung pasti masuk</div>
+      <div class="brand-sub">PT Sinar Pang Cemerlang</div>
     </div>
   </div>
   <nav class="tabs">
@@ -122,6 +122,7 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>Foto</th>
             <th>SKU</th>
             <th>Nama Barang</th>
             <th>Kategori</th>
@@ -272,13 +273,34 @@
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h3>🗃️ Kategori Barang</h3></div>
-      <div id="kategori-list" class="kat-pills"></div>
-      <form id="form-add-kat" class="form-inline">
-        <input name="nama" placeholder="Nama kategori baru (mis. Mie Instan)" required />
-        <button class="btn btn-small btn-primary">+ Tambah</button>
+      <div class="panel-head"><h3>🤖 Cloud Sync (Berstock Bot)</h3></div>
+      <p style="color:var(--ink-soft); font-size:13px; margin-bottom:14px">
+        Hubungkan ke <b>Berstock Bot</b> di Telegram supaya owner bisa tanya stok & sales kapanpun via chat.
+        <a href="../bot/README.md" target="_blank" style="color:var(--primary)">Cara setup →</a>
+      </p>
+      <form id="form-cloud-sync" class="form">
+        <label>Worker URL
+          <input name="workerUrl" type="url" placeholder="https://berstock-bot.your-domain.workers.dev" />
+        </label>
+        <div class="grid-2-form">
+          <label>Tenant ID
+            <input name="tenantId" placeholder="tnt_a1b2c3d4" />
+          </label>
+          <label>API Key
+            <input name="apiKey" type="password" placeholder="32-char hex string" />
+          </label>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+          <button class="btn btn-primary" type="submit">💾 Simpan Config</button>
+          <button class="btn btn-gold" type="button" id="btn-sync-now">🔄 Sync Sekarang</button>
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--ink-soft); margin-left:auto">
+            <input type="checkbox" id="auto-sync-toggle" /> Auto-sync tiap 5 menit
+          </label>
+        </div>
+        <div id="cloud-status" style="font-size:12px; padding:10px; background:var(--bg-deep); border-radius:8px"></div>
       </form>
     </div>
+
   </section>
 
 </main>
@@ -295,6 +317,27 @@
     <h3 id="modal-product-title">Tambah Barang</h3>
     <form id="form-product" class="form">
       <input type="hidden" name="id" />
+      <input type="hidden" name="fotoUrl" />
+      <div class="foto-uploader">
+        <div class="foto-preview-wrap">
+          <img id="foto-preview" class="foto-preview" alt="" hidden />
+          <div id="foto-placeholder" class="foto-placeholder">📦</div>
+        </div>
+        <div class="foto-actions">
+          <div class="foto-buttons">
+            <label class="btn btn-ghost btn-small foto-btn">
+              📸 Jepret Kamera
+              <input type="file" id="foto-camera" accept="image/*" capture="environment" hidden />
+            </label>
+            <label class="btn btn-ghost btn-small foto-btn">
+              🖼️ Galeri
+              <input type="file" id="foto-input" accept="image/*" hidden />
+            </label>
+            <button type="button" class="btn btn-small btn-danger" id="btn-foto-remove" hidden>Hapus</button>
+          </div>
+          <small style="color:var(--ink-soft); font-size:11px">Foto otomatis dikecilkan ke 300px (~30KB)</small>
+        </div>
+      </div>
       <div class="grid-2-form">
         <label>SKU / Kode<input name="sku" required placeholder="mis. IDM-001" /></label>
         <label>Satuan<input name="satuan" placeholder="pcs / kg / liter" value="pcs" /></label>
@@ -385,11 +428,12 @@
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=1"></script>
 <script src="js/storage.js?v=1"></script>
-<script src="js/products.js?v=1"></script>
-<script src="js/sales.js?v=1"></script>
+<script src="js/products.js?v=4"></script>
+<script src="js/sales.js?v=2"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=1"></script>
-<script src="js/app.js?v=1"></script>
+<script src="js/cloud-sync.js?v=1"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

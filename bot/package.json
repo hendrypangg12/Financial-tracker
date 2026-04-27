@@ -1,0 +1,22 @@
+{
+  "name": "berstock-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Berstock — AI Agent Stok untuk UMKM Indonesia, via Telegram (Cloudflare Workers + Claude API)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "set:anthropic-key": "wrangler secret put ANTHROPIC_API_KEY",
+    "set:telegram-token": "wrangler secret put TELEGRAM_BOT_TOKEN",
+    "set:webhook-secret": "wrangler secret put TELEGRAM_WEBHOOK_SECRET",
+    "set:admin-key": "wrangler secret put ADMIN_KEY"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.65.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.20.0"
+  }
+}

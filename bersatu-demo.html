@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerSatu Command Center — Multi-Agent Bisnis untuk Korporat</title>
+<meta name="description" content="6 AI Agent siap kerja 24/7 untuk perusahaan Anda: Pembukuan, HRD, Stok, Kasir, Sales, Telegram Bot." />
+<meta name="theme-color" content="#0a0e1a" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-deep: #050816;
+  --bg-mid: #0a0e1a;
+  --ink: #e8eaf6;
+  --ink-soft: #8892b0;
+  --accent-gold: #f5b942;
+  --accent-orange: #ff8c42;
+  --grid: rgba(125, 211, 252, 0.06);
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: radial-gradient(ellipse at center, #0f1729 0%, #050816 70%);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== ANIMATED STARFIELD ===== */
+.stars {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 80%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 70% 20%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 85% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 10% 70%, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 35% 50%, rgba(245,185,66,.5), transparent),
+    radial-gradient(1px 1px at 95% 90%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 60% 10%, #fff, transparent),
+    radial-gradient(1px 1px at 25% 95%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 80% 40%, rgba(125,211,252,.4), transparent);
+  background-size: 800px 800px, 600px 600px, 1000px 1000px, 700px 700px, 900px 900px, 500px 500px, 750px 750px, 850px 850px, 650px 650px, 950px 950px;
+  animation: starfield 200s linear infinite;
+  pointer-events: none;
+}
+@keyframes starfield {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to   { background-position: 800px 800px, -600px 600px, 1000px -1000px, 700px 700px, -900px 900px, 500px -500px, 750px 750px, -850px -850px, 650px 650px, 950px -950px; }
+}
+.stars::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(5,8,22,.6) 100%);
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px;
+  background: linear-gradient(180deg, rgba(5,8,22,.95) 0%, rgba(5,8,22,.7) 70%, transparent 100%);
+  backdrop-filter: blur(8px);
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.brand-logo {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 0 20px rgba(245,185,66,.5), inset 0 0 12px rgba(255,255,255,.2);
+  border: 2px solid rgba(245,185,66,.4);
+  overflow: hidden;
+}
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+.brand-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--ink-soft); letter-spacing: 2px;
+}
+.brand-text b { color: var(--accent-gold); font-size: 14px; letter-spacing: 3px; }
+
+.status-pills {
+  display: flex; gap: 12px; align-items: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+}
+.pill {
+  padding: 6px 14px; border-radius: 999px;
+  background: rgba(125,211,252,.08); border: 1px solid rgba(125,211,252,.2);
+  color: #7dd3fc; letter-spacing: 1.5px;
+}
+.pill-active {
+  background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #4ade80;
+}
+.pill-dot::before {
+  content: '●'; margin-right: 6px; color: #4ade80;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+#clock { color: var(--accent-gold); font-weight: 700; }
+
+/* ===== MAIN COMMAND CENTER ===== */
+.command-center {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 100px 20px 100px;
+}
+.center-title {
+  text-align: center; margin-bottom: 30px;
+}
+.center-title h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px; font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 50%, var(--accent-orange) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 6px; margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(245,185,66,.3);
+}
+.center-title p {
+  color: var(--ink-soft); font-size: 13px; letter-spacing: 2px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ===== GALAXY VIEW ===== */
+.galaxy {
+  position: relative;
+  width: min(700px, 90vw);
+  height: min(700px, 90vw);
+  margin: 20px 0;
+}
+
+/* Orbital rings */
+.orbit {
+  position: absolute; inset: 0;
+  border: 1px dashed rgba(125,211,252,.15);
+  border-radius: 50%;
+  animation: rotate-orbit linear infinite;
+}
+.orbit-1 { inset: 25%; animation-duration: 40s; }
+.orbit-2 { inset: 12%; animation-duration: 60s; animation-direction: reverse; }
+.orbit-3 { inset: 0;   animation-duration: 80s; }
+@keyframes rotate-orbit { to { transform: rotate(360deg); } }
+
+/* Center orchestrator */
+.orchestrator {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff5e0 0%, #fde7c3 50%, #f5d896 100%);
+  display: grid; place-items: center;
+  box-shadow:
+    0 0 0 4px rgba(245,185,66,.2),
+    0 0 60px rgba(245,185,66,.6),
+    0 0 120px rgba(255,140,66,.3),
+    inset 10px 10px 30px rgba(255,255,255,.3);
+  z-index: 5;
+  cursor: pointer;
+  transition: transform .3s;
+  overflow: visible;
+}
+.orchestrator img {
+  width: 75%; height: 75%; object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.2));
+}
+.orchestrator:hover { transform: translate(-50%, -50%) scale(1.05); }
+.orchestrator::before {
+  content: '👑'; position: absolute; top: -20px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px rgba(245,185,66,.8));
+  animation: bob 3s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
+.orchestrator-label {
+  position: absolute; top: calc(50% + 90px); left: 50%;
+  transform: translateX(-50%);
+  text-align: center; white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: 2px; color: var(--accent-gold);
+  text-shadow: 0 0 10px rgba(245,185,66,.5);
+}
+.orchestrator-label b { display: block; font-size: 14px; color: #fff; letter-spacing: 3px; }
+.orchestrator-label small { color: var(--ink-soft); font-size: 9px; }
+
+/* Agents — orbit positions */
+.agent {
+  position: absolute;
+  width: 80px; height: 80px;
+  cursor: pointer;
+  z-index: 4;
+}
+.agent-orb {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 32px;
+  position: relative;
+  transition: transform .25s;
+  animation: counter-rotate linear infinite;
+}
+.agent:hover .agent-orb { transform: scale(1.15); }
+@keyframes counter-rotate { to { transform: rotate(-360deg); } }
+
+.agent-label {
+  position: absolute; top: 88px; left: 50%;
+  transform: translateX(-50%);
+  text-align: center; white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.agent-label b { display: block; font-weight: 700; font-size: 12px; }
+.agent-label .status {
+  font-size: 8px; opacity: .7;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(34,197,94,.15); color: #4ade80;
+  border: 1px solid rgba(34,197,94,.3);
+  display: inline-block; margin-top: 2px;
+}
+
+/* Agent colors */
+.agent-pembukuan .agent-orb { background: radial-gradient(circle at 30% 30%, #34d399, #047857); box-shadow: 0 0 30px rgba(16,185,129,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-pembukuan .agent-label b { color: #34d399; }
+
+.agent-hrd .agent-orb { background: radial-gradient(circle at 30% 30%, #c084fc, #6b21a8); box-shadow: 0 0 30px rgba(147,51,234,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-hrd .agent-label b { color: #c084fc; }
+
+.agent-stok .agent-orb { background: radial-gradient(circle at 30% 30%, #60a5fa, #1e40af); box-shadow: 0 0 30px rgba(59,130,246,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-stok .agent-label b { color: #60a5fa; }
+
+.agent-kasir .agent-orb { background: radial-gradient(circle at 30% 30%, #fb923c, #c2410c); box-shadow: 0 0 30px rgba(251,146,60,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-kasir .agent-label b { color: #fb923c; }
+
+.agent-sales .agent-orb { background: radial-gradient(circle at 30% 30%, #f87171, #991b1b); box-shadow: 0 0 30px rgba(248,113,113,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-sales .agent-label b { color: #f87171; }
+
+.agent-telegram .agent-orb { background: radial-gradient(circle at 30% 30%, #38bdf8, #0e7490); box-shadow: 0 0 30px rgba(56,189,248,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
+.agent-telegram .agent-label b { color: #38bdf8; }
+
+/* Connection lines (faint) */
+.connection-line {
+  position: absolute; top: 50%; left: 50%;
+  width: 2px; transform-origin: top center;
+  background: linear-gradient(180deg, rgba(125,211,252,.3) 0%, transparent 100%);
+  z-index: 1; pointer-events: none;
+  animation: pulse-line 3s ease-in-out infinite;
+}
+@keyframes pulse-line {
+  0%, 100% { opacity: .3; }
+  50% { opacity: .8; }
+}
+
+/* ===== BOTTOM INFO ===== */
+.bottom-info {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 16px 32px;
+  background: linear-gradient(0deg, rgba(5,8,22,.95) 0%, rgba(5,8,22,.7) 60%, transparent 100%);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ink-soft);
+}
+.infrastructure { display: flex; gap: 8px; align-items: center; }
+.infrastructure b { color: #7dd3fc; letter-spacing: 2px; }
+.cta-button {
+  padding: 10px 22px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+  color: #1a1a2e; font-weight: 800; font-family: 'Inter', sans-serif;
+  font-size: 13px; cursor: pointer;
+  letter-spacing: .5px;
+  box-shadow: 0 0 20px rgba(245,185,66,.4);
+  transition: all .2s;
+}
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 30px rgba(245,185,66,.6);
+}
+
+/* ===== AGENT DETAIL MODAL ===== */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(5,8,22,.85);
+  backdrop-filter: blur(12px);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fade-in .2s;
+}
+.modal-backdrop.active { display: flex; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card {
+  background: linear-gradient(180deg, #131c30 0%, #0a0e1a 100%);
+  border: 1px solid rgba(125,211,252,.2);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 540px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 80px rgba(0,0,0,.6), 0 0 60px rgba(125,211,252,.1);
+  animation: slide-up .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px) scale(.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05);
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: grid; place-items: center;
+}
+.modal-close:hover { background: rgba(255,255,255,.1); }
+
+.modal-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.modal-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 32px;
+  flex: 0 0 auto;
+}
+.modal-title h2 {
+  font-size: 22px; font-weight: 800; color: #fff;
+  margin-bottom: 4px;
+}
+.modal-title small {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; color: var(--ink-soft);
+}
+
+.modal-section { margin-bottom: 22px; }
+.modal-section h4 {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.modal-section p {
+  font-size: 14px; line-height: 1.6; color: var(--ink);
+}
+
+.task-list { list-style: none; }
+.task-list li {
+  padding: 10px 14px;
+  background: rgba(255,255,255,.03);
+  border-left: 3px solid;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 13px; color: var(--ink);
+}
+
+.query-list { list-style: none; }
+.query-list li {
+  padding: 12px 16px;
+  background: rgba(56,189,248,.06);
+  border: 1px solid rgba(56,189,248,.15);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: #bae6fd; line-height: 1.5;
+  position: relative;
+  padding-left: 38px;
+}
+.query-list li::before {
+  content: '💬'; position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+  .topbar { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+  .brand-text b { font-size: 12px; letter-spacing: 2px; }
+  .status-pills { gap: 6px; flex-wrap: wrap; }
+  .pill { padding: 4px 10px; font-size: 9px; }
+  .center-title h1 { font-size: 22px; letter-spacing: 4px; }
+  .center-title p { font-size: 11px; }
+  .orchestrator { width: 100px; height: 100px; font-size: 44px; }
+  .agent { width: 60px; height: 60px; }
+  .agent-orb { font-size: 24px; }
+  .agent-label b { font-size: 10px; }
+  .agent-label .status { font-size: 7px; }
+  .bottom-info { padding: 12px 16px; flex-direction: column; gap: 8px; font-size: 9px; }
+  .cta-button { font-size: 12px; padding: 8px 16px; }
+}
+
+/* Hint indicator */
+.hint {
+  position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--ink-soft); letter-spacing: 2px;
+  animation: hint-pulse 2s ease-in-out infinite;
+  text-align: center; white-space: nowrap;
+}
+@keyframes hint-pulse {
+  0%, 100% { opacity: .5; }
+  50% { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo"><img src="assets/logo-berbisnis.png?v=3" alt="BerSatu" /></div>
+    <div class="brand-text">
+      <b>BERSATU</b><br />
+      COMMAND CENTER
+    </div>
+  </div>
+  <div class="status-pills">
+    <div class="pill pill-active pill-dot">6/6 ACTIVE</div>
+    <div class="pill">v1.0.0-BETA</div>
+    <div class="pill" id="clock">--:--</div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="command-center">
+  <div class="center-title">
+    <h1>GALAXY COMMAND CENTER</h1>
+    <p>6 AI AGENT · 24/7 STANDBY · MULTI-DEPARTMENT INTELLIGENCE</p>
+  </div>
+
+  <div class="galaxy">
+    <!-- Orbital rings -->
+    <div class="orbit orbit-1"></div>
+    <div class="orbit orbit-2"></div>
+    <div class="orbit orbit-3"></div>
+
+    <!-- Center: Orchestrator -->
+    <div class="orchestrator" data-agent="orchestrator">
+      <img src="assets/logo-berbisnis.png?v=3" alt="BerSatu Orchestrator" />
+      <div class="orchestrator-label">
+        <b>ORCHESTRATOR</b>
+        BerSatu Core
+        <small>Claude Opus 4.7</small>
+      </div>
+    </div>
+
+    <!-- 6 Agents positioned in a hexagon around the center -->
+    <!-- Inner orbit (top) -->
+    <div class="agent agent-pembukuan" style="top: 8%; left: 50%; transform: translate(-50%, 0);" data-agent="pembukuan">
+      <div class="agent-orb">📒</div>
+      <div class="agent-label"><b>Pembukuan</b><span class="status">IDLE</span></div>
+    </div>
+
+    <!-- Top right -->
+    <div class="agent agent-hrd" style="top: 25%; right: 8%;" data-agent="hrd">
+      <div class="agent-orb">👥</div>
+      <div class="agent-label"><b>HRD</b><span class="status">IDLE</span></div>
+    </div>
+
+    <!-- Bottom right -->
+    <div class="agent agent-stok" style="bottom: 25%; right: 8%;" data-agent="stok">
+      <div class="agent-orb">📦</div>
+      <div class="agent-label"><b>Stok</b><span class="status">RUNNING</span></div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="agent agent-kasir" style="bottom: 8%; left: 50%; transform: translate(-50%, 0);" data-agent="kasir">
+      <div class="agent-orb">💳</div>
+      <div class="agent-label"><b>Kasir</b><span class="status">RUNNING</span></div>
+    </div>
+
+    <!-- Bottom left -->
+    <div class="agent agent-sales" style="bottom: 25%; left: 8%;" data-agent="sales">
+      <div class="agent-orb">📈</div>
+      <div class="agent-label"><b>Sales/CRM</b><span class="status">IDLE</span></div>
+    </div>
+
+    <!-- Top left -->
+    <div class="agent agent-telegram" style="top: 25%; left: 8%;" data-agent="telegram">
+      <div class="agent-orb">💬</div>
+      <div class="agent-label"><b>Telegram Bot</b><span class="status">LIVE</span></div>
+    </div>
+
+    <div class="hint">⟶ KLIK AGENT UNTUK LIHAT DETAIL ⟵</div>
+  </div>
+</main>
+
+<!-- ===== BOTTOM INFO ===== -->
+<footer class="bottom-info">
+  <div class="infrastructure">
+    <span style="color:#4ade80;">●</span>
+    <b>INFRASTRUCTURE NODE</b> · CLOUDFLARE WORKERS · FIRESTORE · ANTHROPIC API
+  </div>
+  <button class="cta-button" onclick="openContact()">📞 Demo & Konsultasi</button>
+</footer>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ===== Clock =====
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${hh}:${mm}:${ss} WIB`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ===== Agent Data =====
+const AGENTS = {
+  orchestrator: {
+    icon: '🐻', color: '#f5b942', name: 'Orchestrator BerSatu',
+    code: 'CORE.MAIN.ORCHESTRATOR',
+    desc: 'Otak utama yang routing pertanyaan owner ke agent yang tepat. Pakai Claude Opus 4.7 dengan adaptive thinking untuk decision making cepat dan akurat.',
+    tasks: [
+      'Routing pertanyaan ke agent yang sesuai',
+      'Konsolidasi data dari multi-agent',
+      'Decision making untuk multi-step query',
+      'Format response natural dalam Bahasa Indonesia',
+      'Memori jangka panjang per perusahaan',
+    ],
+    queries: [
+      'Bagaimana kondisi bisnis hari ini?',
+      'Buatkan laporan eksekutif minggu ini',
+      'Ada masalah apa yang perlu saya tahu?',
+    ],
+  },
+  pembukuan: {
+    icon: '📒', color: '#34d399', name: 'Agent Pembukuan',
+    code: 'AGT.FINANCE.BOOKKEEPING',
+    desc: 'Kelola pembukuan otomatis: jurnal, neraca, laba rugi, dan persiapan pajak. Terintegrasi langsung dengan transaksi penjualan dan biaya operasional.',
+    tasks: [
+      'Pencatatan jurnal otomatis dari transaksi',
+      'Neraca & Laporan Laba Rugi real-time',
+      'Tracking biaya operasional & pajak',
+      'Rekonsiliasi bank otomatis',
+      'Reminder jatuh tempo pajak (PPh, PPN)',
+    ],
+    queries: [
+      'Total pendapatan bulan ini berapa?',
+      'Berapa pajak PPh yang harus dibayar?',
+      'Buatkan laba-rugi minggu ini',
+      'Biaya operasional terbesar bulan ini apa?',
+    ],
+  },
+  hrd: {
+    icon: '👥', color: '#c084fc', name: 'Agent HRD',
+    code: 'AGT.HR.MANAGEMENT',
+    desc: 'Manajemen karyawan terpadu: absensi, gaji, slip, BPJS, dan cuti. Owner bisa tanya kapanpun via Telegram tanpa harus buka HRIS.',
+    tasks: [
+      'Real-time tracking kehadiran karyawan',
+      'Hitung gaji + lembur + tunjangan otomatis',
+      'Generate slip gaji + setor BPJS',
+      'Manajemen cuti & izin',
+      'Alert karyawan terlambat / tidak hadir',
+    ],
+    queries: [
+      'Hari ini siapa yang masuk siang?',
+      'Siapa yang tidak masuk dan alasannya?',
+      'Total gaji bulan ini berapa?',
+      'Berapa karyawan yang lembur minggu ini?',
+    ],
+  },
+  stok: {
+    icon: '📦', color: '#60a5fa', name: 'Agent Stok',
+    code: 'AGT.INVENTORY.STOCK',
+    desc: 'Pantau inventaris real-time, deteksi stok kritis, dan sarankan restock berdasarkan velocity penjualan. Hitung HPP dengan weighted average otomatis.',
+    tasks: [
+      'Monitor stok real-time per gudang/cabang',
+      'Alert stok menipis & overstock',
+      'Hitung HPP dengan weighted average',
+      'Saran restock berdasarkan trend penjualan',
+      'Tracking barang slow moving > 30 hari',
+    ],
+    queries: [
+      'Stok apa yang habis hari ini?',
+      'Barang mana yang harus dipromo?',
+      'Berapa nilai stok sekarang?',
+      'Top 5 barang slow moving apa?',
+    ],
+  },
+  kasir: {
+    icon: '💳', color: '#fb923c', name: 'Agent Kasir',
+    code: 'AGT.POS.CASHIER',
+    desc: 'Sistem POS profesional dengan struk thermal, multi-pembayaran (tunai, transfer, QRIS, e-wallet), dan integrasi langsung ke pembukuan.',
+    tasks: [
+      'Process transaksi multi-pembayaran',
+      'Print struk thermal otomatis',
+      'Tracking penjualan per kasir/cabang',
+      'Hitung profit per transaksi real-time',
+      'Sync ke pembukuan otomatis',
+    ],
+    queries: [
+      'Penjualan hari ini berapa?',
+      'Top seller minggu ini apa?',
+      'Margin profit bulan ini berapa?',
+      'Kasir mana yang paling produktif?',
+    ],
+  },
+  sales: {
+    icon: '📈', color: '#f87171', name: 'Agent Sales/CRM',
+    code: 'AGT.CRM.SALES',
+    desc: 'Manajemen lead, follow-up otomatis, target sales rep, dan customer retention. Cocok untuk B2B & B2C dengan pipeline panjang.',
+    tasks: [
+      'Track lead dari semua channel (WA, IG, web)',
+      'Auto follow-up via WhatsApp/Telegram',
+      'Target & komisi sales rep real-time',
+      'Customer churn prediction',
+      'Pipeline forecast (deals Q-by-Q)',
+    ],
+    queries: [
+      'Lead baru hari ini berapa?',
+      'Customer mana yang lama tidak order?',
+      'Siapa sales rep performer terbaik bulan ini?',
+      'Forecast penjualan kuartal depan?',
+    ],
+  },
+  telegram: {
+    icon: '💬', color: '#38bdf8', name: 'Telegram Bot Interface',
+    code: 'IO.MESSAGING.TELEGRAM',
+    desc: 'Antarmuka chat 24/7 yang menghubungkan owner dengan semua 5 agent. Tinggal ketik pertanyaan natural — bot routes ke agent yang tepat dan jawab dengan ringkas.',
+    tasks: [
+      'Receive message dari owner via Telegram',
+      'Route ke agent yang sesuai (via Orchestrator)',
+      'Format response untuk mobile (concise)',
+      'Send notifikasi otomatis (alert stok, transaksi besar)',
+      'Approval workflow (refund, diskon besar)',
+    ],
+    queries: [
+      'Hai, bagaimana bisnis hari ini?',
+      'Ada yang perlu saya cek?',
+      'Approval refund Rp 5jt untuk customer A',
+      'Set reminder bayar pajak besok jam 10',
+    ],
+  },
+};
+
+// ===== Modal =====
+function openModal(agentId) {
+  const agent = AGENTS[agentId];
+  if (!agent) return;
+
+  const iconHtml = agentId === 'orchestrator'
+    ? `<img src="assets/logo-berbisnis.png?v=3" alt="${agent.name}" style="width:100%;height:100%;object-fit:contain;padding:6px;" />`
+    : agent.icon;
+  const iconBg = agentId === 'orchestrator'
+    ? `background: radial-gradient(circle at 35% 30%, #fff5e0, #f5d896); box-shadow: 0 0 30px ${agent.color}80;`
+    : `background: radial-gradient(circle at 30% 30%, ${agent.color}, ${shade(agent.color, -40)}); box-shadow: 0 0 30px ${agent.color}60;`;
+  const html = `
+    <div class="modal-header">
+      <div class="modal-icon" style="${iconBg}">
+        ${iconHtml}
+      </div>
+      <div class="modal-title">
+        <h2 style="color: ${agent.color}">${agent.name}</h2>
+        <small>${agent.code}</small>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>📋 DESKRIPSI</h4>
+      <p>${agent.desc}</p>
+    </div>
+
+    <div class="modal-section">
+      <h4>⚡ TUGAS UTAMA</h4>
+      <ul class="task-list">
+        ${agent.tasks.map(t => `<li style="border-left-color: ${agent.color}">${t}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="modal-section">
+      <h4>💬 CONTOH PERTANYAAN OWNER</h4>
+      <ul class="query-list">
+        ${agent.queries.map(q => `<li>"${q}"</li>`).join('')}
+      </ul>
+    </div>
+  `;
+
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+// Bind clicks
+document.querySelectorAll('[data-agent]').forEach(el => {
+  el.addEventListener('click', () => openModal(el.dataset.agent));
+});
+
+function shade(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, Math.min(255, (num >> 16) + percent));
+  const g = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + percent));
+  const b = Math.max(0, Math.min(255, (num & 0xff) + percent));
+  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+}
+
+// ===== CTA =====
+function openContact() {
+  window.open('https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20tertarik%20dengan%20BerSatu%20dan%20mau%20jadwalkan%20demo.', '_blank');
+}
+</script>
+
+</body>
+</html>

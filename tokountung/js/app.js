@@ -2,36 +2,67 @@
 function init() {
   loadState();
   setupTabs();
-  setupProductForm();
-  setupCheckoutForm();
-  setupRestockForm();
-  setupSettingsForms();
 
-  // Event handlers global
-  document.getElementById('btn-add-product').onclick = () => openProductModal(null);
-  document.getElementById('stok-search').addEventListener('input', renderStok);
-  document.getElementById('stok-filter-kat').addEventListener('change', renderStok);
+  // BIND TOMBOL GLOBAL DULU — supaya kalau ada error di setup form,
+  // tombol-tombol utama tetap berfungsi.
+  bindGlobalButtons();
 
-  document.getElementById('pos-search').addEventListener('input', renderPOSProducts);
-  document.getElementById('cart-diskon').addEventListener('input', renderCart);
-  document.getElementById('btn-clear-cart').onclick = () => {
+  // Setup form (wrapped supaya 1 error tidak block yang lain)
+  safeRun('setupProductForm', () => setupProductForm());
+  safeRun('setupCheckoutForm', () => setupCheckoutForm());
+  safeRun('setupRestockForm', () => setupRestockForm());
+  safeRun('setupSettingsForms', () => setupSettingsForms());
+  if (typeof setupCloudSyncForm === 'function') {
+    safeRun('setupCloudSyncForm', () => setupCloudSyncForm());
+  }
+
+  renderAll();
+}
+
+function safeRun(label, fn) {
+  try { fn(); }
+  catch (err) {
+    console.error(`[init:${label}] error:`, err);
+    if (typeof showToast === 'function') {
+      showToast(`Init warning: ${label} gagal — fitur lain tetap jalan`, 'error');
+    }
+  }
+}
+
+function bindGlobalButtons() {
+  const $ = (id) => document.getElementById(id);
+
+  if ($('btn-add-product')) {
+    $('btn-add-product').addEventListener('click', (e) => {
+      e.preventDefault();
+      try { openProductModal(null); }
+      catch (err) {
+        console.error('btn-add-product click error:', err);
+        alert('Error: ' + (err.message || err));
+      }
+    });
+  }
+  if ($('stok-search')) $('stok-search').addEventListener('input', renderStok);
+  if ($('stok-filter-kat')) $('stok-filter-kat').addEventListener('change', renderStok);
+
+  if ($('pos-search')) $('pos-search').addEventListener('input', renderPOSProducts);
+  if ($('cart-diskon')) $('cart-diskon').addEventListener('input', renderCart);
+  if ($('btn-clear-cart')) $('btn-clear-cart').onclick = () => {
     if (state.cart.length && !confirm('Kosongkan keranjang?')) return;
     clearCart();
   };
-  document.getElementById('btn-checkout').onclick = openCheckoutModal;
+  if ($('btn-checkout')) $('btn-checkout').onclick = openCheckoutModal;
 
-  document.getElementById('laporan-periode').addEventListener('change', renderLaporan);
+  if ($('laporan-periode')) $('laporan-periode').addEventListener('change', renderLaporan);
 
-  document.getElementById('btn-export').onclick = exportData;
-  document.getElementById('btn-import').onclick = () => document.getElementById('file-import').click();
-  document.getElementById('file-import').onchange = async (e) => {
+  if ($('btn-export')) $('btn-export').onclick = exportData;
+  if ($('btn-import')) $('btn-import').onclick = () => $('file-import').click();
+  if ($('file-import')) $('file-import').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
     try { await importData(f); renderAll(); showToast('Data berhasil diimpor', 'success'); }
     catch (err) { showToast('Gagal impor: ' + (err.message || 'file invalid'), 'error'); }
     e.target.value = '';
   };
-
-  renderAll();
 }
 
 function setupTabs() {
