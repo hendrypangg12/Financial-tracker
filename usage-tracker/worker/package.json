@@ -1,0 +1,17 @@
+{
+  "name": "claude-usage-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker proxy untuk Anthropic Admin API (usage + cost report). Dipakai oleh dashboard /usage-tracker/.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "set:admin-key": "wrangler secret put ANTHROPIC_ADMIN_KEY",
+    "set:dashboard-key": "wrangler secret put DASHBOARD_KEY"
+  },
+  "devDependencies": {
+    "wrangler": "^4.20.0"
+  }
+}

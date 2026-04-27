@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Usage Tracker · BerSatu</title>
+  <link rel="icon" href="../assets/logo-beruang.png?v=2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=1" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="../assets/logo-beruang.png?v=2" alt="" class="brand-icon-img" />
+      <div>
+        <div class="brand-title">Usage Tracker</div>
+        <div class="brand-sub">Pemakaian token & biaya Claude API</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" id="btnSettings" type="button">⚙️ Pengaturan</button>
+      <button class="btn btn-primary" id="btnRefresh" type="button">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="filter-bar">
+      <label class="field">
+        <span>Dari</span>
+        <input type="date" id="dateFrom" />
+      </label>
+      <label class="field">
+        <span>Sampai</span>
+        <input type="date" id="dateTo" />
+      </label>
+      <label class="field">
+        <span>Granularity</span>
+        <select id="bucketWidth">
+          <option value="1d" selected>Harian</option>
+          <option value="1h">Per jam</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Group by</span>
+        <select id="groupBy">
+          <option value="model" selected>Model</option>
+          <option value="api_key_id">API Key</option>
+          <option value="workspace_id">Workspace</option>
+          <option value="service_tier">Service Tier</option>
+        </select>
+      </label>
+      <div class="quick-ranges">
+        <button class="chip" data-range="7">7 hari</button>
+        <button class="chip" data-range="14">14 hari</button>
+        <button class="chip active" data-range="30">30 hari</button>
+      </div>
+    </section>
+
+    <section class="cards" id="kpiCards">
+      <div class="card kpi" data-tone="balance">
+        <div class="kpi-label">Total Token</div>
+        <div class="kpi-value" id="kpiTotalTokens">—</div>
+        <div class="kpi-hint" id="kpiTokenBreakdown">input + output + cache</div>
+      </div>
+      <div class="card kpi" data-tone="expense">
+        <div class="kpi-label">Total Biaya</div>
+        <div class="kpi-value" id="kpiTotalCost">—</div>
+        <div class="kpi-hint" id="kpiCostIdr">Rp —</div>
+      </div>
+      <div class="card kpi" data-tone="income">
+        <div class="kpi-label">Cache Hit Rate</div>
+        <div class="kpi-value" id="kpiCacheHit">—</div>
+        <div class="kpi-hint">cache_read / total input</div>
+      </div>
+      <div class="card kpi" data-tone="count">
+        <div class="kpi-label">Model Teratas</div>
+        <div class="kpi-value" id="kpiTopModel">—</div>
+        <div class="kpi-hint" id="kpiTopModelShare">— dari total</div>
+      </div>
+    </section>
+
+    <section class="chart-grid">
+      <div class="card chart-card">
+        <div class="chart-head">
+          <h3>Token harian</h3>
+          <span class="muted">stacked: input · output · cache</span>
+        </div>
+        <div class="chart-box"><canvas id="chartTokens"></canvas></div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="chart-head">
+          <h3>Biaya harian (USD)</h3>
+          <span class="muted">total per hari</span>
+        </div>
+        <div class="chart-box"><canvas id="chartCost"></canvas></div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="chart-head">
+          <h3>Distribusi per Model</h3>
+          <span class="muted">share token</span>
+        </div>
+        <div class="chart-box"><canvas id="chartModel"></canvas></div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="chart-head">
+          <h3>Komposisi Token</h3>
+          <span class="muted">input vs output vs cache</span>
+        </div>
+        <div class="chart-box"><canvas id="chartComposition"></canvas></div>
+      </div>
+    </section>
+
+    <section class="card table-card">
+      <div class="chart-head">
+        <h3>Detail per bucket</h3>
+        <span class="muted" id="rowCount">0 baris</span>
+      </div>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th id="thGroup">Model</th>
+              <th class="num">Input (uncached)</th>
+              <th class="num">Cache write</th>
+              <th class="num">Cache read</th>
+              <th class="num">Output</th>
+              <th class="num">Total Token</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="footnote" id="lastFetched">Belum ada data. Klik <strong>Pengaturan</strong> untuk konfigurasi worker URL & dashboard key.</p>
+  </main>
+
+  <!-- Settings dialog -->
+  <dialog id="dlgSettings">
+    <form method="dialog" class="dlg-form" id="formSettings">
+      <header class="dlg-head">
+        <h3>Pengaturan</h3>
+        <button class="btn-close" type="button" data-close>✕</button>
+      </header>
+      <label class="field">
+        <span>Worker URL</span>
+        <input type="url" name="workerUrl" placeholder="https://claude-usage-proxy.<sub>.workers.dev" required />
+        <small class="muted">URL deploy worker (lihat README).</small>
+      </label>
+      <label class="field">
+        <span>Dashboard Key</span>
+        <input type="password" name="dashboardKey" placeholder="rahasia yang sama di worker secret" required autocomplete="off" />
+        <small class="muted">Cocok dengan secret <code>DASHBOARD_KEY</code> di worker.</small>
+      </label>
+      <label class="field">
+        <span>Kurs IDR per USD</span>
+        <input type="number" name="idrRate" min="1" step="1" value="16500" />
+        <small class="muted">Dipakai cuma untuk konversi tampilan.</small>
+      </label>
+      <footer class="dlg-foot">
+        <button type="button" class="btn" data-close>Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/app.js?v=1" type="module"></script>
+</body>
+</html>

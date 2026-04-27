@@ -1,0 +1,14 @@
+name = "claude-usage-proxy"
+main = "src/index.js"
+compatibility_date = "2025-04-01"
+
+[vars]
+# Origin allowlist untuk CORS. Tambah URL preview/dev kalau perlu.
+ALLOWED_ORIGINS = "https://hendrypangg12.github.io,https://raw.githack.com"
+
+# Secrets (set via `wrangler secret put`):
+# - ANTHROPIC_ADMIN_KEY  (sk-ant-admin01-...) — dari console.anthropic.com → Settings → Admin Keys
+# - DASHBOARD_KEY        (random string buatan sendiri, untuk auth dashboard ke worker)
+
+[observability]
+enabled = true
