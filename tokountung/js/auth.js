@@ -90,12 +90,20 @@ async function registerEmailPassword(email, password) {
 async function loginGoogle() {
   if (!fbAuth) throw new Error('Firebase belum siap');
   const provider = new firebase.auth.GoogleAuthProvider();
-  // iOS Safari sering blok popup → pakai redirect untuk mobile
-  const isMobileSafari = /iP(ad|hone|od)/.test(navigator.userAgent) && /WebKit/.test(navigator.userAgent);
-  if (isMobileSafari) {
-    await fbAuth.signInWithRedirect(provider);
-  } else {
+  provider.addScope('email');
+  // Pattern: popup dulu (paling smooth), fallback redirect kalau popup di-block
+  try {
     await fbAuth.signInWithPopup(provider);
+  } catch (err) {
+    if (err.code === 'auth/popup-blocked' ||
+        err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request' ||
+        err.code === 'auth/operation-not-supported-in-this-environment') {
+      console.log('Popup blocked, falling back to redirect:', err.code);
+      await fbAuth.signInWithRedirect(provider);
+    } else {
+      throw err;
+    }
   }
 }
 
