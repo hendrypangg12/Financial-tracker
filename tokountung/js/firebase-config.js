@@ -48,7 +48,13 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 const fbAuth = typeof firebase !== 'undefined' ? firebase.auth() : null;
 const fbDb = typeof firebase !== 'undefined' ? firebase.firestore() : null;
 
-// Offline persistence untuk Firestore (data tetap bisa diakses tanpa internet)
-if (fbDb) {
-  fbDb.enablePersistence({ synchronizeTabs: true }).catch(() => { /* ignore multi-tab error */ });
+// Force Auth persistence ke LOCAL — supaya login bertahan setelah refresh
+// Tanpa ini, iOS Safari/Chrome bisa flap antara login-logout
+if (fbAuth) {
+  fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+    console.warn('Cannot set auth persistence:', err);
+  });
 }
+
+// JANGAN aktifkan fbDb.enablePersistence() — bikin masalah di iOS Safari/Chrome
+// (IndexedDB bisa di-block, bikin auth flap)

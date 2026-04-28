@@ -218,14 +218,32 @@ document.addEventListener('DOMContentLoaded', () => {
     handleGoogleRedirectResult();
   }
 
+  // Debug overlay
+  const debugBox = document.createElement('div');
+  debugBox.id = 'debug-auth';
+  debugBox.style.cssText = 'position:fixed;bottom:8px;left:8px;background:rgba(0,0,0,.85);color:#0f0;padding:6px 10px;font:11px monospace;z-index:9999;border-radius:6px;max-width:90vw;display:none';
+  document.body.appendChild(debugBox);
+  function debug(msg) {
+    const t = new Date().toLocaleTimeString();
+    debugBox.style.display = 'block';
+    debugBox.innerHTML = `[${t}] ${msg}<br>` + (debugBox.innerHTML || '');
+    debugBox.innerHTML = debugBox.innerHTML.split('<br>').slice(0, 5).join('<br>');
+  }
+  window.debugAuth = debug;
+
+  let lastAuthState = null;
   onBerbisnisAuthStateChanged((user, profile) => {
+    const newState = user ? user.uid : null;
+    debug(`Auth: ${user ? 'IN ' + user.email : 'OUT'} (was ${lastAuthState ? 'IN' : 'OUT'})`);
     console.log('[Auth] state:', user ? `logged in as ${user.email}` : 'logged out');
+    lastAuthState = newState;
     if (user) {
       try {
         showApp(user, profile);
       } catch (err) {
         console.error('showApp error:', err);
-        alert('Error masuk app: ' + err.message + '\n\nCoba refresh halaman.');
+        debug('showApp ERR: ' + err.message);
+        alert('Error masuk app: ' + err.message);
       }
     } else {
       showLoginScreen();
