@@ -169,4 +169,55 @@ function renderAll() {
   renderPengaturan();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// =============================================================================
+// AUTH GATE — show login or app based on auth state
+// =============================================================================
+
+function showLoginScreen() {
+  const ls = document.getElementById('login-screen');
+  const am = document.getElementById('app-main');
+  if (ls) ls.hidden = false;
+  if (am) am.hidden = true;
+  if (typeof setupAuthUI === 'function') setupAuthUI();
+}
+
+function showApp(user, profile) {
+  const ls = document.getElementById('login-screen');
+  const am = document.getElementById('app-main');
+  if (ls) ls.hidden = true;
+  if (am) am.hidden = false;
+
+  // Display user info di topbar
+  const userInfoEl = document.getElementById('user-info');
+  if (userInfoEl && user) {
+    const days = (typeof daysRemainingBerbisnis === 'function') ? daysRemainingBerbisnis(profile) : 0;
+    const planLabel = profile?.plan === 'trial' ? `Trial (${days} hari)` : (profile?.plan || 'Active');
+    userInfoEl.textContent = `${user.email} · ${planLabel}`;
+  }
+
+  // Bind logout button
+  const btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) btnLogout.onclick = () => {
+    if (confirm('Yakin logout?')) logout();
+  };
+
+  // Init app
+  init();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof onBerbisnisAuthStateChanged !== 'function' || typeof fbAuth === 'undefined' || !fbAuth) {
+    // Firebase tidak load (offline / blocked) — fallback ke mode lama tanpa login
+    console.warn('Firebase not loaded — running in offline mode');
+    init();
+    return;
+  }
+
+  onBerbisnisAuthStateChanged((user, profile) => {
+    if (user) {
+      showApp(user, profile);
+    } else {
+      showLoginScreen();
+    }
+  });
+});

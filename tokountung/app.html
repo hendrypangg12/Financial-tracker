@@ -12,9 +12,56 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=4" />
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+<link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="login-screen" class="login-screen" hidden>
+  <div class="login-card">
+    <img class="login-logo" src="assets/logo-berbisnis.png?v=3" alt="BerBisnis" />
+    <h1 class="login-brand">BerBisnis <span class="brand-pro">PRO</span></h1>
+    <p class="login-tag"><i>Beruang Bisnis · Atur stok, untung pasti masuk</i></p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" data-auth-tab="login">Masuk</button>
+      <button class="login-tab" data-auth-tab="register">Daftar</button>
+    </div>
+
+    <form id="form-login" class="auth-form">
+      <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
+      <label>Password<input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" minlength="6" /></label>
+      <button class="btn btn-primary btn-block" type="submit">Masuk</button>
+      <a href="#" id="link-forgot">Lupa password?</a>
+    </form>
+
+    <form id="form-register" class="auth-form" hidden>
+      <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
+      <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
+      <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
+      <button class="btn btn-primary btn-block" type="submit">Buat Akun (Free Trial 3 Hari)</button>
+      <small style="color:var(--ink-soft)">Setelah trial, pilih Starter Rp 99rb/bulan atau Pro Rp 500rb/bulan.</small>
+    </form>
+
+    <div class="auth-divider"><span>atau</span></div>
+
+    <button class="btn btn-google btn-block" id="btn-google-login">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.8 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.3 0-9.8-3.6-11.3-8.4l-6.6 5.1C9.5 39.7 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.8-3.7 5.2l6.2 5.2C41.3 35.3 44 30 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
+      Login dengan Google
+    </button>
+
+    <div id="auth-error" class="auth-error" hidden></div>
+    <div id="auth-info" class="auth-info" hidden></div>
+  </div>
+  <div class="login-footer">💼 BerBisnis — Data aman tersimpan di cloud, sync semua device</div>
+</div>
+
+<!-- ============ APP UTAMA (hidden sampai user login) ============ -->
+<div id="app-main" hidden>
 
 <header class="topbar">
   <div class="brand">
@@ -36,6 +83,8 @@
     <button class="btn btn-ghost" id="btn-export">Export</button>
     <button class="btn btn-ghost" id="btn-import">Import</button>
     <input type="file" id="file-import" accept=".json" hidden />
+    <button class="btn btn-ghost" id="btn-logout" title="Logout">🚪</button>
+    <span id="user-info" style="font-size:11px; color:var(--ink-soft); padding:4px 8px"></span>
   </div>
 </header>
 
@@ -315,6 +364,8 @@
 
 </main>
 
+</div><!-- /#app-main -->
+
 <footer class="footer">
   <b>BerBisnis</b> — Beruang Bisnis untuk UMKM Indonesia<br>
   <small>Data tersimpan di browser Anda. Gunakan <b>Export</b> untuk backup.</small>
@@ -435,6 +486,8 @@
 
 <div id="toast" class="toast" hidden></div>
 
+<script src="js/firebase-config.js?v=1"></script>
+<script src="js/auth.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=1"></script>
 <script src="js/storage.js?v=1"></script>
@@ -444,6 +497,6 @@
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=1"></script>
 <script src="js/cloud-sync.js?v=2"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
