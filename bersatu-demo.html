@@ -3,376 +3,328 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BerSatu Command Center — Multi-Agent Bisnis untuk Korporat</title>
-<meta name="description" content="6 AI Agent siap kerja 24/7 untuk perusahaan Anda: Pembukuan, HRD, Stok, Kasir, Sales, Telegram Bot." />
-<meta name="theme-color" content="#0a0e1a" />
+<title>Neural Command — BerSatu AI Agent Orchestration</title>
+<meta name="description" content="6 AI Agent terhubung dalam jaringan neural. Pembukuan, HRD, Stok, Sales, Telegram Bot — semua di satu command center." />
+<meta name="theme-color" content="#0a0218" />
+<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg-deep: #050816;
-  --bg-mid: #0a0e1a;
+  --bg: #0a0218;
+  --bg-deep: #050010;
   --ink: #e8eaf6;
   --ink-soft: #8892b0;
-  --accent-gold: #f5b942;
-  --accent-orange: #ff8c42;
-  --grid: rgba(125, 211, 252, 0.06);
+  --neural-cyan: #22d3ee;
+  --neural-purple: #a855f7;
+  --neural-pink: #ec4899;
+  --neural-blue: #60a5fa;
+  --neural-green: #22c55e;
+  --neural-red: #f43f5e;
 }
 html, body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: radial-gradient(ellipse at center, #0f1729 0%, #050816 70%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  position: relative;
 }
 
-/* ===== ANIMATED STARFIELD ===== */
-.stars {
+/* ===== NEBULA BACKGROUND ===== */
+.nebula {
   position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 70%, rgba(168,85,247,.35), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 80% 30%, rgba(34,211,238,.25), transparent 60%),
+    radial-gradient(ellipse 600px 400px at 50% 50%, rgba(236,72,153,.18), transparent 70%),
+    radial-gradient(ellipse 900px 700px at 90% 90%, rgba(96,165,250,.20), transparent 60%),
+    radial-gradient(ellipse 500px 800px at 10% 20%, rgba(139,92,246,.25), transparent 70%),
+    linear-gradient(180deg, #0a0218 0%, #1a0a2e 50%, #0a0218 100%);
+  animation: nebula-drift 30s ease-in-out infinite alternate;
+}
+@keyframes nebula-drift {
+  0%   { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+  100% { background-position: 5% 10%, -5% -8%, 8% -5%, -8% 5%, 4% -10%, 0% 0%; }
+}
+
+/* Flowing neural strands — SVG layered */
+.strands {
+  position: fixed; inset: 0; z-index: 1;
+  pointer-events: none; opacity: .55;
+}
+.strand-path {
+  fill: none; stroke-width: 1; stroke-linecap: round;
+  stroke-dasharray: 4 8;
+  animation: flow 20s linear infinite;
+}
+@keyframes flow { to { stroke-dashoffset: -240; } }
+
+/* Subtle particle dots */
+.particles {
+  position: fixed; inset: 0; z-index: 1;
   background-image:
-    radial-gradient(1px 1px at 20% 30%, #fff, transparent),
-    radial-gradient(1px 1px at 50% 80%, rgba(255,255,255,.7), transparent),
-    radial-gradient(2px 2px at 70% 20%, rgba(255,255,255,.9), transparent),
-    radial-gradient(1px 1px at 85% 60%, #fff, transparent),
-    radial-gradient(1px 1px at 10% 70%, rgba(255,255,255,.8), transparent),
-    radial-gradient(2px 2px at 35% 50%, rgba(245,185,66,.5), transparent),
-    radial-gradient(1px 1px at 95% 90%, rgba(255,255,255,.6), transparent),
-    radial-gradient(1px 1px at 60% 10%, #fff, transparent),
-    radial-gradient(1px 1px at 25% 95%, rgba(255,255,255,.7), transparent),
-    radial-gradient(2px 2px at 80% 40%, rgba(125,211,252,.4), transparent);
-  background-size: 800px 800px, 600px 600px, 1000px 1000px, 700px 700px, 900px 900px, 500px 500px, 750px 750px, 850px 850px, 650px 650px, 950px 950px;
-  animation: starfield 200s linear infinite;
+    radial-gradient(2px 2px at 15% 25%, rgba(34,211,238,.6), transparent),
+    radial-gradient(1px 1px at 70% 60%, rgba(236,72,153,.7), transparent),
+    radial-gradient(2px 2px at 40% 80%, rgba(168,85,247,.5), transparent),
+    radial-gradient(1px 1px at 85% 15%, rgba(96,165,250,.6), transparent),
+    radial-gradient(1px 1px at 25% 90%, rgba(255,255,255,.4), transparent),
+    radial-gradient(2px 2px at 95% 50%, rgba(34,211,238,.4), transparent);
+  background-size: 100% 100%;
+  animation: twinkle 6s ease-in-out infinite alternate;
   pointer-events: none;
 }
-@keyframes starfield {
-  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
-  to   { background-position: 800px 800px, -600px 600px, 1000px -1000px, 700px 700px, -900px 900px, 500px -500px, 750px 750px, -850px -850px, 650px 650px, 950px -950px; }
-}
-.stars::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(5,8,22,.6) 100%);
-}
+@keyframes twinkle { 0%,100% { opacity: .6 } 50% { opacity: 1 } }
 
 /* ===== TOPBAR ===== */
 .topbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  position: relative; z-index: 10;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 32px;
-  background: linear-gradient(180deg, rgba(5,8,22,.95) 0%, rgba(5,8,22,.7) 70%, transparent 100%);
-  backdrop-filter: blur(8px);
+  padding: 22px 32px;
+  flex-wrap: wrap; gap: 16px;
 }
-.brand {
-  display: flex; align-items: center; gap: 12px;
-}
+.brand { display: flex; align-items: center; gap: 14px; }
 .brand-logo {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: #fff;
-  display: grid; place-items: center;
-  box-shadow: 0 0 20px rgba(245,185,66,.5), inset 0 0 12px rgba(255,255,255,.2);
-  border: 2px solid rgba(245,185,66,.4);
-  overflow: hidden;
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: grid; place-items: center; font-size: 28px;
+  box-shadow: 0 0 30px rgba(139,92,246,.6), inset 0 0 12px rgba(255,255,255,.15);
+  border: 1px solid rgba(139,92,246,.4);
 }
-.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
-.brand-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; color: var(--ink-soft); letter-spacing: 2px;
-}
-.brand-text b { color: var(--accent-gold); font-size: 14px; letter-spacing: 3px; }
-
-.status-pills {
-  display: flex; gap: 12px; align-items: center;
-  font-family: 'JetBrains Mono', monospace; font-size: 11px;
-}
-.pill {
-  padding: 6px 14px; border-radius: 999px;
-  background: rgba(125,211,252,.08); border: 1px solid rgba(125,211,252,.2);
-  color: #7dd3fc; letter-spacing: 1.5px;
-}
-.pill-active {
-  background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #4ade80;
-}
-.pill-dot::before {
-  content: '●'; margin-right: 6px; color: #4ade80;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-#clock { color: var(--accent-gold); font-weight: 700; }
-
-/* ===== MAIN COMMAND CENTER ===== */
-.command-center {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 100px 20px 100px;
-}
-.center-title {
-  text-align: center; margin-bottom: 30px;
-}
-.center-title h1 {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 32px; font-weight: 700;
-  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 50%, var(--accent-orange) 100%);
+.brand-text { font-family: 'JetBrains Mono', monospace; }
+.brand-text .name {
+  font-weight: 800; font-size: 20px; letter-spacing: 4px;
+  background: linear-gradient(135deg, #fff, #c4b5fd);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 6px; margin-bottom: 8px;
-  text-shadow: 0 0 40px rgba(245,185,66,.3);
 }
-.center-title p {
-  color: var(--ink-soft); font-size: 13px; letter-spacing: 2px;
-  font-family: 'JetBrains Mono', monospace;
+.brand-text .sub {
+  font-size: 11px; color: var(--ink-soft); letter-spacing: 2px;
+  margin-top: 2px;
 }
 
-/* ===== GALAXY VIEW ===== */
-.galaxy {
+.pills { display: flex; gap: 10px; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.pill {
+  padding: 7px 14px; border-radius: 999px; letter-spacing: 1.5px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04);
+  backdrop-filter: blur(6px);
+}
+.pill-live { color: #4ade80; border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.08); }
+.pill-live::before {
+  content: '●'; margin-right: 6px;
+  animation: pulse 2s ease-in-out infinite;
+}
+.pill-version { color: var(--neural-cyan); border-color: rgba(34,211,238,.25); }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+
+/* ===== MAIN GRID — hub & spoke ===== */
+.command-area {
+  position: relative; z-index: 5;
+  min-height: calc(100vh - 200px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px 60px;
+}
+.cluster {
   position: relative;
-  width: min(700px, 90vw);
-  height: min(700px, 90vw);
-  margin: 20px 0;
+  width: min(720px, 95vw);
+  height: min(720px, 95vw);
+  max-height: 80vh;
 }
 
-/* Orbital rings */
-.orbit {
-  position: absolute; inset: 0;
-  border: 1px dashed rgba(125,211,252,.15);
-  border-radius: 50%;
-  animation: rotate-orbit linear infinite;
+/* Connection lines (drawn behind agents) */
+.connections-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: 1; pointer-events: none;
 }
-.orbit-1 { inset: 25%; animation-duration: 40s; }
-.orbit-2 { inset: 12%; animation-duration: 60s; animation-direction: reverse; }
-.orbit-3 { inset: 0;   animation-duration: 80s; }
-@keyframes rotate-orbit { to { transform: rotate(360deg); } }
+.conn-line {
+  fill: none; stroke-width: 1.5; opacity: .5;
+  stroke-dasharray: 3 5;
+  animation: flow-line 8s linear infinite;
+}
+@keyframes flow-line { to { stroke-dashoffset: -160; } }
 
-/* Center orchestrator */
-.orchestrator {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff5e0 0%, #fde7c3 50%, #f5d896 100%);
-  display: grid; place-items: center;
-  box-shadow:
-    0 0 0 4px rgba(245,185,66,.2),
-    0 0 60px rgba(245,185,66,.6),
-    0 0 120px rgba(255,140,66,.3),
-    inset 10px 10px 30px rgba(255,255,255,.3);
-  z-index: 5;
-  cursor: pointer;
-  transition: transform .3s;
-  overflow: visible;
-}
-.orchestrator img {
-  width: 75%; height: 75%; object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,.2));
-}
-.orchestrator:hover { transform: translate(-50%, -50%) scale(1.05); }
-.orchestrator::before {
-  content: '👑'; position: absolute; top: -20px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 28px;
-  filter: drop-shadow(0 0 8px rgba(245,185,66,.8));
-  animation: bob 3s ease-in-out infinite;
-}
-@keyframes bob {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-4px); }
-}
-.orchestrator-label {
-  position: absolute; top: calc(50% + 90px); left: 50%;
-  transform: translateX(-50%);
-  text-align: center; white-space: nowrap;
-  font-family: 'JetBrains Mono', monospace; font-size: 11px;
-  letter-spacing: 2px; color: var(--accent-gold);
-  text-shadow: 0 0 10px rgba(245,185,66,.5);
-}
-.orchestrator-label b { display: block; font-size: 14px; color: #fff; letter-spacing: 3px; }
-.orchestrator-label small { color: var(--ink-soft); font-size: 9px; }
-
-/* Agents — orbit positions */
+/* Agent orbs */
 .agent {
   position: absolute;
-  width: 80px; height: 80px;
+  width: 132px; height: 160px;
   cursor: pointer;
-  z-index: 4;
+  z-index: 5;
+  display: flex; flex-direction: column; align-items: center;
+  transition: transform .3s ease;
 }
-.agent-orb {
-  width: 100%; height: 100%;
+.agent:hover { transform: translateY(-3px) scale(1.05); }
+
+.orb {
+  width: 110px; height: 110px;
   border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #1a1230 0%, #0a0218 70%);
+  border: 2px solid;
   display: grid; place-items: center;
-  font-size: 32px;
   position: relative;
-  transition: transform .25s;
-  animation: counter-rotate linear infinite;
+  transition: all .3s;
 }
-.agent:hover .agent-orb { transform: scale(1.15); }
-@keyframes counter-rotate { to { transform: rotate(-360deg); } }
-
-.agent-label {
-  position: absolute; top: 88px; left: 50%;
-  transform: translateX(-50%);
-  text-align: center; white-space: nowrap;
+.orb .ico { font-size: 42px; filter: drop-shadow(0 0 8px rgba(255,255,255,.3)); }
+.orb .badge {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
   font-family: 'JetBrains Mono', monospace; font-size: 10px;
-  letter-spacing: 1.5px;
+  font-weight: 700; letter-spacing: 1px;
+  padding: 2px 9px; border-radius: 8px;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(6px);
+  display: flex; align-items: center; gap: 4px;
 }
-.agent-label b { display: block; font-weight: 700; font-size: 12px; }
-.agent-label .status {
-  font-size: 8px; opacity: .7;
-  padding: 2px 8px; border-radius: 999px;
-  background: rgba(34,197,94,.15); color: #4ade80;
-  border: 1px solid rgba(34,197,94,.3);
-  display: inline-block; margin-top: 2px;
+.orb .badge::before {
+  content: '●'; font-size: 10px;
 }
 
-/* Agent colors */
-.agent-pembukuan .agent-orb { background: radial-gradient(circle at 30% 30%, #34d399, #047857); box-shadow: 0 0 30px rgba(16,185,129,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-pembukuan .agent-label b { color: #34d399; }
-
-.agent-hrd .agent-orb { background: radial-gradient(circle at 30% 30%, #c084fc, #6b21a8); box-shadow: 0 0 30px rgba(147,51,234,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-hrd .agent-label b { color: #c084fc; }
-
-.agent-stok .agent-orb { background: radial-gradient(circle at 30% 30%, #60a5fa, #1e40af); box-shadow: 0 0 30px rgba(59,130,246,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-stok .agent-label b { color: #60a5fa; }
-
-.agent-kasir .agent-orb { background: radial-gradient(circle at 30% 30%, #fb923c, #c2410c); box-shadow: 0 0 30px rgba(251,146,60,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-kasir .agent-label b { color: #fb923c; }
-
-.agent-sales .agent-orb { background: radial-gradient(circle at 30% 30%, #f87171, #991b1b); box-shadow: 0 0 30px rgba(248,113,113,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-sales .agent-label b { color: #f87171; }
-
-.agent-telegram .agent-orb { background: radial-gradient(circle at 30% 30%, #38bdf8, #0e7490); box-shadow: 0 0 30px rgba(56,189,248,.6), inset -6px -6px 20px rgba(0,0,0,.3); }
-.agent-telegram .agent-label b { color: #38bdf8; }
-
-/* Connection lines (faint) */
-.connection-line {
-  position: absolute; top: 50%; left: 50%;
-  width: 2px; transform-origin: top center;
-  background: linear-gradient(180deg, rgba(125,211,252,.3) 0%, transparent 100%);
-  z-index: 1; pointer-events: none;
-  animation: pulse-line 3s ease-in-out infinite;
+.label {
+  margin-top: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  white-space: nowrap;
 }
-@keyframes pulse-line {
-  0%, 100% { opacity: .3; }
-  50% { opacity: .8; }
+.label .name { font-size: 13px; color: #fff; font-weight: 600; letter-spacing: .5px; }
+.label .status {
+  font-size: 9px; color: var(--ink-soft); letter-spacing: 2px;
+  margin-top: 2px;
 }
 
-/* ===== BOTTOM INFO ===== */
-.bottom-info {
+/* Agent variants — colors */
+.agent-active .orb {
+  box-shadow: 0 0 0 4px rgba(255,255,255,.05);
+}
+.agent-stok .orb { border-color: var(--neural-green); box-shadow: 0 0 30px rgba(34,197,94,.5), 0 0 60px rgba(34,197,94,.2); }
+.agent-stok .badge { color: var(--neural-green); }
+.agent-stok .label .status { color: var(--neural-green); }
+
+.agent-orchestrator .orb { border-color: var(--neural-cyan); box-shadow: 0 0 35px rgba(34,211,238,.6), 0 0 70px rgba(34,211,238,.25); }
+.agent-orchestrator .badge { color: var(--neural-cyan); }
+.agent-orchestrator .label .status { color: var(--neural-cyan); }
+
+.agent-telegram .orb { border-color: var(--neural-cyan); box-shadow: 0 0 30px rgba(6,182,212,.5); }
+.agent-telegram .badge { color: var(--neural-cyan); }
+.agent-telegram .label .status { color: var(--neural-cyan); }
+
+.agent-pembukuan .orb { border-color: rgba(96,165,250,.5); box-shadow: 0 0 12px rgba(96,165,250,.2); }
+.agent-pembukuan .badge { color: var(--neural-blue); }
+
+.agent-sales .orb { border-color: rgba(244,63,94,.5); box-shadow: 0 0 12px rgba(244,63,94,.2); }
+.agent-sales .badge { color: var(--neural-red); }
+
+.agent-hrd .orb { border-color: rgba(168,85,247,.5); box-shadow: 0 0 12px rgba(168,85,247,.2); }
+.agent-hrd .badge { color: var(--neural-purple); }
+
+/* Position agents in 6-cluster */
+.pos-stok        { top: 8%;  left: 28%; }
+.pos-pembukuan   { top: 8%;  right: 12%; }
+.pos-orchestrator{ top: 42%; left: 33%; }
+.pos-telegram    { top: 42%; right: 12%; }
+.pos-sales       { bottom: 8%; left: 28%; }
+.pos-hrd         { bottom: 8%; right: 12%; }
+
+/* Idle pulse for non-active orbs */
+.agent-idle .orb { opacity: .85; }
+.agent-idle:hover .orb { opacity: 1; }
+
+/* ===== BOTTOM BAR ===== */
+.statusbar {
   position: fixed; bottom: 0; left: 0; right: 0;
   z-index: 10;
-  padding: 16px 32px;
-  background: linear-gradient(0deg, rgba(5,8,22,.95) 0%, rgba(5,8,22,.7) 60%, transparent 100%);
   display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 28px;
+  background: linear-gradient(0deg, rgba(5,0,16,.9), rgba(5,0,16,0));
   font-family: 'JetBrains Mono', monospace; font-size: 11px;
   color: var(--ink-soft);
+  letter-spacing: 1.5px;
+  flex-wrap: wrap; gap: 12px;
 }
-.infrastructure { display: flex; gap: 8px; align-items: center; }
-.infrastructure b { color: #7dd3fc; letter-spacing: 2px; }
+.statusbar .infra { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.statusbar .infra b { color: var(--neural-cyan); }
 .cta-button {
-  padding: 10px 22px; border-radius: 8px; border: none;
-  background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
-  color: #1a1a2e; font-weight: 800; font-family: 'Inter', sans-serif;
-  font-size: 13px; cursor: pointer;
-  letter-spacing: .5px;
-  box-shadow: 0 0 20px rgba(245,185,66,.4);
+  padding: 11px 22px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff; font-weight: 800; font-size: 12px; letter-spacing: 1.5px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  box-shadow: 0 0 25px rgba(139,92,246,.4);
   transition: all .2s;
 }
 .cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 30px rgba(245,185,66,.6);
+  box-shadow: 0 4px 35px rgba(139,92,246,.6);
 }
 
-/* ===== AGENT DETAIL MODAL ===== */
+/* ===== MODAL ===== */
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 100;
-  background: rgba(5,8,22,.85);
-  backdrop-filter: blur(12px);
-  display: none;
-  align-items: center; justify-content: center;
+  background: rgba(5,0,16,.85); backdrop-filter: blur(12px);
+  display: none; align-items: center; justify-content: center;
   padding: 20px;
-  animation: fade-in .2s;
 }
-.modal-backdrop.active { display: flex; }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.modal-backdrop.active { display: flex; animation: fade-in .2s; }
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
 
 .modal-card {
-  background: linear-gradient(180deg, #131c30 0%, #0a0e1a 100%);
-  border: 1px solid rgba(125,211,252,.2);
-  border-radius: 24px;
-  padding: 32px;
-  max-width: 540px; width: 100%;
-  max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(180deg, #1a0a2e, #0a0218);
+  border: 1px solid rgba(168,85,247,.3);
+  border-radius: 22px; padding: 30px;
+  max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 80px rgba(0,0,0,.6), 0 0 60px rgba(125,211,252,.1);
+  box-shadow: 0 20px 80px rgba(0,0,0,.6), 0 0 60px rgba(168,85,247,.15);
   animation: slide-up .3s cubic-bezier(.4,0,.2,1);
 }
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(30px) scale(.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(20px) scale(.96) }
+  to { opacity: 1; transform: translateY(0) scale(1) }
 }
 .modal-close {
-  position: absolute; top: 16px; right: 16px;
+  position: absolute; top: 14px; right: 16px;
   width: 36px; height: 36px; border-radius: 50%;
   border: 1px solid rgba(255,255,255,.1);
-  background: rgba(255,255,255,.05);
-  color: #fff; font-size: 20px; cursor: pointer;
-  display: grid; place-items: center;
+  background: rgba(255,255,255,.04); color: #fff;
+  font-size: 20px; cursor: pointer; line-height: 1;
 }
 .modal-close:hover { background: rgba(255,255,255,.1); }
 
 .modal-header {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 22px; padding-bottom: 18px;
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .modal-icon {
-  width: 64px; height: 64px; border-radius: 50%;
-  display: grid; place-items: center; font-size: 32px;
-  flex: 0 0 auto;
+  width: 60px; height: 60px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 28px;
+  flex: 0 0 auto; border: 2px solid;
 }
-.modal-title h2 {
-  font-size: 22px; font-weight: 800; color: #fff;
-  margin-bottom: 4px;
-}
+.modal-title h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 2px; }
 .modal-title small {
   font-family: 'JetBrains Mono', monospace; font-size: 10px;
   letter-spacing: 2px; color: var(--ink-soft);
 }
 
-.modal-section { margin-bottom: 22px; }
+.modal-section { margin-bottom: 20px; }
 .modal-section h4 {
   font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
   color: var(--ink-soft); margin-bottom: 10px;
   font-family: 'JetBrains Mono', monospace;
 }
-.modal-section p {
-  font-size: 14px; line-height: 1.6; color: var(--ink);
-}
+.modal-section p { font-size: 14px; line-height: 1.6; color: var(--ink); }
 
 .task-list { list-style: none; }
 .task-list li {
-  padding: 10px 14px;
-  background: rgba(255,255,255,.03);
-  border-left: 3px solid;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  font-size: 13px; color: var(--ink);
+  padding: 9px 14px; background: rgba(255,255,255,.03);
+  border-left: 3px solid; border-radius: 6px;
+  margin-bottom: 6px; font-size: 13px;
 }
-
 .query-list { list-style: none; }
 .query-list li {
-  padding: 12px 16px;
-  background: rgba(56,189,248,.06);
-  border: 1px solid rgba(56,189,248,.15);
-  border-radius: 10px;
-  margin-bottom: 8px;
+  padding: 11px 16px;
+  background: rgba(34,211,238,.05);
+  border: 1px solid rgba(34,211,238,.15);
+  border-radius: 10px; margin-bottom: 7px;
   font-family: 'JetBrains Mono', monospace; font-size: 12px;
   color: #bae6fd; line-height: 1.5;
-  position: relative;
-  padding-left: 38px;
+  position: relative; padding-left: 36px;
 }
 .query-list li::before {
   content: '💬'; position: absolute; left: 12px; top: 50%;
@@ -381,129 +333,152 @@ html, body {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 700px) {
-  .topbar { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
-  .brand-text b { font-size: 12px; letter-spacing: 2px; }
-  .status-pills { gap: 6px; flex-wrap: wrap; }
-  .pill { padding: 4px 10px; font-size: 9px; }
-  .center-title h1 { font-size: 22px; letter-spacing: 4px; }
-  .center-title p { font-size: 11px; }
-  .orchestrator { width: 100px; height: 100px; font-size: 44px; }
-  .agent { width: 60px; height: 60px; }
-  .agent-orb { font-size: 24px; }
-  .agent-label b { font-size: 10px; }
-  .agent-label .status { font-size: 7px; }
-  .bottom-info { padding: 12px 16px; flex-direction: column; gap: 8px; font-size: 9px; }
-  .cta-button { font-size: 12px; padding: 8px 16px; }
-}
-
-/* Hint indicator */
-.hint {
-  position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
-  font-family: 'JetBrains Mono', monospace; font-size: 10px;
-  color: var(--ink-soft); letter-spacing: 2px;
-  animation: hint-pulse 2s ease-in-out infinite;
-  text-align: center; white-space: nowrap;
-}
-@keyframes hint-pulse {
-  0%, 100% { opacity: .5; }
-  50% { opacity: 1; }
+  .topbar { padding: 16px 18px; }
+  .brand-logo { width: 44px; height: 44px; font-size: 22px; }
+  .brand-text .name { font-size: 16px; letter-spacing: 3px; }
+  .brand-text .sub { font-size: 9px; }
+  .pills { gap: 6px; font-size: 10px; }
+  .pill { padding: 5px 10px; }
+  .agent { width: 100px; height: 130px; }
+  .orb { width: 84px; height: 84px; }
+  .orb .ico { font-size: 32px; }
+  .label .name { font-size: 11px; }
+  .statusbar { padding: 12px 16px; font-size: 9px; flex-direction: column; }
+  .cta-button { padding: 9px 16px; font-size: 11px; }
+  .modal-card { padding: 22px; }
+  .modal-title h2 { font-size: 17px; }
 }
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<div class="nebula"></div>
+<div class="particles"></div>
 
-<!-- ===== TOPBAR ===== -->
+<!-- Background flowing strands -->
+<svg class="strands" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+  <path class="strand-path" d="M-100,500 Q300,200 700,500 T1500,500" stroke="rgba(168,85,247,.6)" />
+  <path class="strand-path" d="M-100,300 Q400,600 900,300 T1500,300" stroke="rgba(34,211,238,.5)" />
+  <path class="strand-path" d="M-100,700 Q500,400 1000,700 T1500,700" stroke="rgba(236,72,153,.5)" />
+  <path class="strand-path" d="M200,-100 Q400,500 700,1000" stroke="rgba(96,165,250,.4)" />
+  <path class="strand-path" d="M1100,-100 Q900,500 1300,1000" stroke="rgba(139,92,246,.4)" />
+</svg>
+
+<!-- TOPBAR -->
 <header class="topbar">
   <div class="brand">
-    <div class="brand-logo"><img src="assets/logo-berbisnis.png?v=3" alt="BerSatu" /></div>
+    <div class="brand-logo">⚡</div>
     <div class="brand-text">
-      <b>BERSATU</b><br />
-      COMMAND CENTER
+      <div class="name">NEURAL COMMAND</div>
+      <div class="sub">AI Agent Orchestration</div>
     </div>
   </div>
-  <div class="status-pills">
-    <div class="pill pill-active pill-dot">6/6 ACTIVE</div>
-    <div class="pill">v1.0.0-BETA</div>
-    <div class="pill" id="clock">--:--</div>
+  <div class="pills">
+    <div class="pill pill-live">6/6 ACTIVE</div>
+    <div class="pill pill-version">v1.0.0-NEURAL</div>
   </div>
 </header>
 
-<!-- ===== MAIN ===== -->
-<main class="command-center">
-  <div class="center-title">
-    <h1>GALAXY COMMAND CENTER</h1>
-    <p>6 AI AGENT · 24/7 STANDBY · MULTI-DEPARTMENT INTELLIGENCE</p>
-  </div>
+<!-- MAIN COMMAND AREA -->
+<main class="command-area">
+  <div class="cluster">
+    <!-- Connection lines (SVG curves connecting agents) -->
+    <svg class="connections-svg" viewBox="0 0 720 720" preserveAspectRatio="none">
+      <!-- center to all -->
+      <path class="conn-line" d="M280,160 Q400,300 360,360" stroke="rgba(34,197,94,.6)" />
+      <path class="conn-line" d="M540,160 Q470,260 360,360" stroke="rgba(96,165,250,.5)" />
+      <path class="conn-line" d="M540,360 Q450,360 360,360" stroke="rgba(34,211,238,.7)" />
+      <path class="conn-line" d="M280,560 Q330,460 360,360" stroke="rgba(244,63,94,.5)" />
+      <path class="conn-line" d="M540,560 Q470,460 360,360" stroke="rgba(168,85,247,.5)" />
+      <!-- additional decorative -->
+      <path class="conn-line" d="M280,160 Q420,80 540,160" stroke="rgba(255,255,255,.15)" />
+      <path class="conn-line" d="M280,560 Q420,640 540,560" stroke="rgba(255,255,255,.15)" />
+    </svg>
 
-  <div class="galaxy">
-    <!-- Orbital rings -->
-    <div class="orbit orbit-1"></div>
-    <div class="orbit orbit-2"></div>
-    <div class="orbit orbit-3"></div>
-
-    <!-- Center: Orchestrator -->
-    <div class="orchestrator" data-agent="orchestrator">
-      <img src="assets/logo-berbisnis.png?v=3" alt="BerSatu Orchestrator" />
-      <div class="orchestrator-label">
-        <b>ORCHESTRATOR</b>
-        BerSatu Core
-        <small>Claude Opus 4.7</small>
+    <!-- Stok Manager (top-left) — ACTIVE -->
+    <div class="agent agent-stok agent-active pos-stok" data-agent="stok">
+      <div class="orb">
+        <div class="ico">📦</div>
+        <div class="badge">ACT</div>
+      </div>
+      <div class="label">
+        <div class="name">Stok Manager</div>
+        <div class="status">LIVE</div>
       </div>
     </div>
 
-    <!-- 6 Agents positioned in a hexagon around the center -->
-    <!-- Inner orbit (top) -->
-    <div class="agent agent-pembukuan" style="top: 8%; left: 50%; transform: translate(-50%, 0);" data-agent="pembukuan">
-      <div class="agent-orb">📒</div>
-      <div class="agent-label"><b>Pembukuan</b><span class="status">IDLE</span></div>
+    <!-- Pembukuan (top-right) — IDLE -->
+    <div class="agent agent-pembukuan agent-idle pos-pembukuan" data-agent="pembukuan">
+      <div class="orb">
+        <div class="ico">📒</div>
+        <div class="badge">IDL</div>
+      </div>
+      <div class="label">
+        <div class="name">Pembukuan</div>
+        <div class="status">IDLE</div>
+      </div>
     </div>
 
-    <!-- Top right -->
-    <div class="agent agent-hrd" style="top: 25%; right: 8%;" data-agent="hrd">
-      <div class="agent-orb">👥</div>
-      <div class="agent-label"><b>HRD</b><span class="status">IDLE</span></div>
+    <!-- Orchestrator (center-left) — ACTIVE -->
+    <div class="agent agent-orchestrator agent-active pos-orchestrator" data-agent="orchestrator">
+      <div class="orb">
+        <div class="ico">🤖</div>
+        <div class="badge">ACT</div>
+      </div>
+      <div class="label">
+        <div class="name">Orchestrator</div>
+        <div class="status">LIVE</div>
+      </div>
     </div>
 
-    <!-- Bottom right -->
-    <div class="agent agent-stok" style="bottom: 25%; right: 8%;" data-agent="stok">
-      <div class="agent-orb">📦</div>
-      <div class="agent-label"><b>Stok</b><span class="status">RUNNING</span></div>
+    <!-- Telegram Bot (center-right) — ACTIVE -->
+    <div class="agent agent-telegram agent-active pos-telegram" data-agent="telegram">
+      <div class="orb">
+        <div class="ico">💬</div>
+        <div class="badge">ACT</div>
+      </div>
+      <div class="label">
+        <div class="name">Telegram Bot</div>
+        <div class="status">LIVE</div>
+      </div>
     </div>
 
-    <!-- Bottom -->
-    <div class="agent agent-kasir" style="bottom: 8%; left: 50%; transform: translate(-50%, 0);" data-agent="kasir">
-      <div class="agent-orb">💳</div>
-      <div class="agent-label"><b>Kasir</b><span class="status">RUNNING</span></div>
+    <!-- Sales/CRM (bottom-left) — IDLE -->
+    <div class="agent agent-sales agent-idle pos-sales" data-agent="sales">
+      <div class="orb">
+        <div class="ico">📊</div>
+        <div class="badge">IDL</div>
+      </div>
+      <div class="label">
+        <div class="name">Sales/CRM</div>
+        <div class="status">IDLE</div>
+      </div>
     </div>
 
-    <!-- Bottom left -->
-    <div class="agent agent-sales" style="bottom: 25%; left: 8%;" data-agent="sales">
-      <div class="agent-orb">📈</div>
-      <div class="agent-label"><b>Sales/CRM</b><span class="status">IDLE</span></div>
+    <!-- HRD System (bottom-right) — IDLE -->
+    <div class="agent agent-hrd agent-idle pos-hrd" data-agent="hrd">
+      <div class="orb">
+        <div class="ico">👥</div>
+        <div class="badge">IDL</div>
+      </div>
+      <div class="label">
+        <div class="name">HRD System</div>
+        <div class="status">IDLE</div>
+      </div>
     </div>
-
-    <!-- Top left -->
-    <div class="agent agent-telegram" style="top: 25%; left: 8%;" data-agent="telegram">
-      <div class="agent-orb">💬</div>
-      <div class="agent-label"><b>Telegram Bot</b><span class="status">LIVE</span></div>
-    </div>
-
-    <div class="hint">⟶ KLIK AGENT UNTUK LIHAT DETAIL ⟵</div>
   </div>
 </main>
 
-<!-- ===== BOTTOM INFO ===== -->
-<footer class="bottom-info">
-  <div class="infrastructure">
-    <span style="color:#4ade80;">●</span>
-    <b>INFRASTRUCTURE NODE</b> · CLOUDFLARE WORKERS · FIRESTORE · ANTHROPIC API
+<!-- BOTTOM STATUS BAR -->
+<footer class="statusbar">
+  <div class="infra">
+    <span style="color:#4ade80">●</span>
+    <b>INFRASTRUCTURE</b> CLOUDFLARE WORKERS · FIRESTORE · ANTHROPIC API
   </div>
-  <button class="cta-button" onclick="openContact()">📞 Demo & Konsultasi</button>
+  <button class="cta-button" onclick="openContact()">DEMO &amp; KONSULTASI →</button>
 </footer>
 
-<!-- ===== MODAL ===== -->
+<!-- MODAL -->
 <div class="modal-backdrop" id="modal">
   <div class="modal-card">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -512,28 +487,16 @@ html, body {
 </div>
 
 <script>
-// ===== Clock =====
-function updateClock() {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('clock').textContent = `${hh}:${mm}:${ss} WIB`;
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-// ===== Agent Data =====
 const AGENTS = {
   orchestrator: {
-    icon: '🐻', color: '#f5b942', name: 'Orchestrator BerSatu',
-    code: 'CORE.MAIN.ORCHESTRATOR',
-    desc: 'Otak utama yang routing pertanyaan owner ke agent yang tepat. Pakai Claude Opus 4.7 dengan adaptive thinking untuk decision making cepat dan akurat.',
+    icon: '🤖', color: '#22d3ee', name: 'Orchestrator BerSatu',
+    code: 'CORE.NEURAL.ORCHESTRATOR',
+    desc: 'Otak utama yang routing pertanyaan owner ke agent yang tepat. Pakai Claude Sonnet 4.6 dengan adaptive thinking untuk decision making cepat dan akurat.',
     tasks: [
       'Routing pertanyaan ke agent yang sesuai',
       'Konsolidasi data dari multi-agent',
       'Decision making untuk multi-step query',
-      'Format response natural dalam Bahasa Indonesia',
+      'Format response natural Bahasa Indonesia',
       'Memori jangka panjang per perusahaan',
     ],
     queries: [
@@ -542,8 +505,44 @@ const AGENTS = {
       'Ada masalah apa yang perlu saya tahu?',
     ],
   },
+  stok: {
+    icon: '📦', color: '#22c55e', name: 'Stok Manager (Berstock)',
+    code: 'AGT.INVENTORY.STOCK',
+    desc: 'Pantau inventaris real-time, deteksi stok kritis, dan sarankan restock berdasarkan velocity penjualan. Hitung HPP dengan weighted average otomatis. Sudah live dan siap deploy ke klien pertama.',
+    tasks: [
+      'Monitor stok real-time per gudang/cabang',
+      'Alert stok menipis & overstock',
+      'Hitung HPP dengan weighted average',
+      'Saran restock berdasarkan tren penjualan',
+      'Tracking barang slow moving > 30 hari',
+    ],
+    queries: [
+      'Stok apa yang habis hari ini?',
+      'Barang mana yang harus dipromo?',
+      'Berapa nilai stok sekarang?',
+      'Top 5 barang slow moving apa?',
+    ],
+  },
+  telegram: {
+    icon: '💬', color: '#06b6d4', name: 'Telegram Bot Interface',
+    code: 'IO.MESSAGING.TELEGRAM',
+    desc: 'Antarmuka chat 24/7 yang menghubungkan owner dengan semua agent. Tinggal ketik pertanyaan natural — bot routes ke agent yang tepat dan jawab dengan ringkas.',
+    tasks: [
+      'Receive message dari owner via Telegram',
+      'Route ke agent sesuai (via Orchestrator)',
+      'Format response untuk mobile (concise)',
+      'Send notifikasi otomatis (alert kritis)',
+      'Approval workflow untuk transaksi besar',
+    ],
+    queries: [
+      'Hai, bagaimana bisnis hari ini?',
+      'Ada yang perlu saya cek?',
+      'Approval refund Rp 5jt',
+      'Set reminder bayar pajak besok',
+    ],
+  },
   pembukuan: {
-    icon: '📒', color: '#34d399', name: 'Agent Pembukuan',
+    icon: '📒', color: '#60a5fa', name: 'Agent Pembukuan',
     code: 'AGT.FINANCE.BOOKKEEPING',
     desc: 'Kelola pembukuan otomatis: jurnal, neraca, laba rugi, dan persiapan pajak. Terintegrasi langsung dengan transaksi penjualan dan biaya operasional.',
     tasks: [
@@ -557,11 +556,29 @@ const AGENTS = {
       'Total pendapatan bulan ini berapa?',
       'Berapa pajak PPh yang harus dibayar?',
       'Buatkan laba-rugi minggu ini',
-      'Biaya operasional terbesar bulan ini apa?',
+      'Biaya operasional terbesar bulan ini?',
+    ],
+  },
+  sales: {
+    icon: '📊', color: '#f43f5e', name: 'Agent Sales/CRM',
+    code: 'AGT.CRM.SALES',
+    desc: 'Manajemen lead, follow-up otomatis, target sales rep, dan customer retention. Cocok untuk B2B & B2C dengan pipeline panjang.',
+    tasks: [
+      'Track lead dari semua channel (WA, IG, web)',
+      'Auto follow-up via WhatsApp/Telegram',
+      'Target & komisi sales rep real-time',
+      'Customer churn prediction',
+      'Pipeline forecast (deals Q-by-Q)',
+    ],
+    queries: [
+      'Lead baru hari ini berapa?',
+      'Customer mana yang lama tidak order?',
+      'Sales rep terbaik bulan ini siapa?',
+      'Forecast penjualan kuartal depan?',
     ],
   },
   hrd: {
-    icon: '👥', color: '#c084fc', name: 'Agent HRD',
+    icon: '👥', color: '#a855f7', name: 'Agent HRD',
     code: 'AGT.HR.MANAGEMENT',
     desc: 'Manajemen karyawan terpadu: absensi, gaji, slip, BPJS, dan cuti. Owner bisa tanya kapanpun via Telegram tanpa harus buka HRIS.',
     tasks: [
@@ -575,125 +592,40 @@ const AGENTS = {
       'Hari ini siapa yang masuk siang?',
       'Siapa yang tidak masuk dan alasannya?',
       'Total gaji bulan ini berapa?',
-      'Berapa karyawan yang lembur minggu ini?',
-    ],
-  },
-  stok: {
-    icon: '📦', color: '#60a5fa', name: 'Agent Stok',
-    code: 'AGT.INVENTORY.STOCK',
-    desc: 'Pantau inventaris real-time, deteksi stok kritis, dan sarankan restock berdasarkan velocity penjualan. Hitung HPP dengan weighted average otomatis.',
-    tasks: [
-      'Monitor stok real-time per gudang/cabang',
-      'Alert stok menipis & overstock',
-      'Hitung HPP dengan weighted average',
-      'Saran restock berdasarkan trend penjualan',
-      'Tracking barang slow moving > 30 hari',
-    ],
-    queries: [
-      'Stok apa yang habis hari ini?',
-      'Barang mana yang harus dipromo?',
-      'Berapa nilai stok sekarang?',
-      'Top 5 barang slow moving apa?',
-    ],
-  },
-  kasir: {
-    icon: '💳', color: '#fb923c', name: 'Agent Kasir',
-    code: 'AGT.POS.CASHIER',
-    desc: 'Sistem POS profesional dengan struk thermal, multi-pembayaran (tunai, transfer, QRIS, e-wallet), dan integrasi langsung ke pembukuan.',
-    tasks: [
-      'Process transaksi multi-pembayaran',
-      'Print struk thermal otomatis',
-      'Tracking penjualan per kasir/cabang',
-      'Hitung profit per transaksi real-time',
-      'Sync ke pembukuan otomatis',
-    ],
-    queries: [
-      'Penjualan hari ini berapa?',
-      'Top seller minggu ini apa?',
-      'Margin profit bulan ini berapa?',
-      'Kasir mana yang paling produktif?',
-    ],
-  },
-  sales: {
-    icon: '📈', color: '#f87171', name: 'Agent Sales/CRM',
-    code: 'AGT.CRM.SALES',
-    desc: 'Manajemen lead, follow-up otomatis, target sales rep, dan customer retention. Cocok untuk B2B & B2C dengan pipeline panjang.',
-    tasks: [
-      'Track lead dari semua channel (WA, IG, web)',
-      'Auto follow-up via WhatsApp/Telegram',
-      'Target & komisi sales rep real-time',
-      'Customer churn prediction',
-      'Pipeline forecast (deals Q-by-Q)',
-    ],
-    queries: [
-      'Lead baru hari ini berapa?',
-      'Customer mana yang lama tidak order?',
-      'Siapa sales rep performer terbaik bulan ini?',
-      'Forecast penjualan kuartal depan?',
-    ],
-  },
-  telegram: {
-    icon: '💬', color: '#38bdf8', name: 'Telegram Bot Interface',
-    code: 'IO.MESSAGING.TELEGRAM',
-    desc: 'Antarmuka chat 24/7 yang menghubungkan owner dengan semua 5 agent. Tinggal ketik pertanyaan natural — bot routes ke agent yang tepat dan jawab dengan ringkas.',
-    tasks: [
-      'Receive message dari owner via Telegram',
-      'Route ke agent yang sesuai (via Orchestrator)',
-      'Format response untuk mobile (concise)',
-      'Send notifikasi otomatis (alert stok, transaksi besar)',
-      'Approval workflow (refund, diskon besar)',
-    ],
-    queries: [
-      'Hai, bagaimana bisnis hari ini?',
-      'Ada yang perlu saya cek?',
-      'Approval refund Rp 5jt untuk customer A',
-      'Set reminder bayar pajak besok jam 10',
+      'Karyawan yang lembur minggu ini berapa?',
     ],
   },
 };
 
-// ===== Modal =====
 function openModal(agentId) {
-  const agent = AGENTS[agentId];
-  if (!agent) return;
-
-  const iconHtml = agentId === 'orchestrator'
-    ? `<img src="assets/logo-berbisnis.png?v=3" alt="${agent.name}" style="width:100%;height:100%;object-fit:contain;padding:6px;" />`
-    : agent.icon;
-  const iconBg = agentId === 'orchestrator'
-    ? `background: radial-gradient(circle at 35% 30%, #fff5e0, #f5d896); box-shadow: 0 0 30px ${agent.color}80;`
-    : `background: radial-gradient(circle at 30% 30%, ${agent.color}, ${shade(agent.color, -40)}); box-shadow: 0 0 30px ${agent.color}60;`;
+  const a = AGENTS[agentId];
+  if (!a) return;
   const html = `
     <div class="modal-header">
-      <div class="modal-icon" style="${iconBg}">
-        ${iconHtml}
+      <div class="modal-icon" style="background: radial-gradient(circle at 30% 30%, ${a.color}30, ${a.color}08); border-color: ${a.color}; box-shadow: 0 0 25px ${a.color}50;">
+        ${a.icon}
       </div>
       <div class="modal-title">
-        <h2 style="color: ${agent.color}">${agent.name}</h2>
-        <small>${agent.code}</small>
+        <h2 style="color:${a.color}">${a.name}</h2>
+        <small>${a.code}</small>
       </div>
     </div>
-
     <div class="modal-section">
       <h4>📋 DESKRIPSI</h4>
-      <p>${agent.desc}</p>
+      <p>${a.desc}</p>
     </div>
-
     <div class="modal-section">
       <h4>⚡ TUGAS UTAMA</h4>
       <ul class="task-list">
-        ${agent.tasks.map(t => `<li style="border-left-color: ${agent.color}">${t}</li>`).join('')}
+        ${a.tasks.map(t => `<li style="border-left-color:${a.color}">${t}</li>`).join('')}
       </ul>
     </div>
-
     <div class="modal-section">
       <h4>💬 CONTOH PERTANYAAN OWNER</h4>
       <ul class="query-list">
-        ${agent.queries.map(q => `<li>"${q}"</li>`).join('')}
+        ${a.queries.map(q => `<li>"${q}"</li>`).join('')}
       </ul>
-    </div>
-  `;
-
+    </div>`;
   document.getElementById('modal-content').innerHTML = html;
   document.getElementById('modal').classList.add('active');
 }
@@ -702,23 +634,12 @@ document.getElementById('modal').addEventListener('click', (e) => {
   if (e.target.id === 'modal') closeModal();
 });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
-// Bind clicks
 document.querySelectorAll('[data-agent]').forEach(el => {
   el.addEventListener('click', () => openModal(el.dataset.agent));
 });
 
-function shade(hex, percent) {
-  const num = parseInt(hex.replace('#', ''), 16);
-  const r = Math.max(0, Math.min(255, (num >> 16) + percent));
-  const g = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + percent));
-  const b = Math.max(0, Math.min(255, (num & 0xff) + percent));
-  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-}
-
-// ===== CTA =====
 function openContact() {
-  window.open('https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20tertarik%20dengan%20BerSatu%20dan%20mau%20jadwalkan%20demo.', '_blank');
+  window.open('https://wa.me/6282124848924?text=Halo%20saya%20mau%20demo%20BerSatu%20Neural%20Command', '_blank');
 }
 </script>
 
