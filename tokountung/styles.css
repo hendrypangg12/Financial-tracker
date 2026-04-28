@@ -541,6 +541,8 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   flex-direction: column;
   overflow-y: auto;
 }
+.login-screen[hidden] { display: none !important; }
+#app-main[hidden] { display: none !important; }
 .login-card {
   background: #fff; border-radius: 22px;
   padding: 36px 30px; max-width: 420px; width: 100%;
