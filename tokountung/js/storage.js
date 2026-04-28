@@ -34,6 +34,10 @@ function saveState() {
       kategori: state.kategori,
       settings: state.settings,
     }));
+    // Trigger Firestore push (debounced)
+    if (typeof schedulePushToFirestore === 'function') {
+      schedulePushToFirestore();
+    }
   } catch (e) { console.warn('Save failed:', e); }
 }
 
