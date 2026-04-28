@@ -173,26 +173,79 @@ function renderAll() {
 // AUTH GATE — show login or app based on auth state
 // =============================================================================
 
-function showLoginScreen() {
+function hideAllScreens() {
   const ls = document.getElementById('login-screen');
+  const pw = document.getElementById('paywall-screen');
   const am = document.getElementById('app-main');
-  if (ls) ls.hidden = false;
+  if (ls) ls.hidden = true;
+  if (pw) pw.hidden = true;
   if (am) am.hidden = true;
+}
+
+function showLoginScreen() {
+  hideAllScreens();
+  const ls = document.getElementById('login-screen');
+  if (ls) ls.hidden = false;
   if (typeof setupAuthUI === 'function') setupAuthUI();
 }
 
+function showPaywallScreen(user, profile) {
+  hideAllScreens();
+  const pw = document.getElementById('paywall-screen');
+  if (pw) pw.hidden = false;
+
+  const emailEl = document.getElementById('paywall-email');
+  if (emailEl) emailEl.textContent = user.email || '';
+
+  const titleEl = document.getElementById('paywall-title');
+  if (titleEl) {
+    titleEl.textContent = profile?.plan === 'expired'
+      ? 'Langganan Habis — Perpanjang Sekarang'
+      : 'Trial Habis — Pilih Paket Langganan';
+  }
+
+  // Bind paket selection → WA admin
+  document.querySelectorAll('.btn-buy').forEach(btn => {
+    btn.onclick = () => {
+      const paket = btn.dataset.paket;
+      if (typeof adminWhatsAppLink === 'function') {
+        window.open(adminWhatsAppLink(paket), '_blank');
+      }
+    };
+  });
+
+  // WA admin button (umum)
+  const btnWa = document.getElementById('btn-wa-admin');
+  if (btnWa && typeof adminWhatsAppLink === 'function') {
+    btnWa.href = adminWhatsAppLink();
+  }
+
+  // Logout dari paywall
+  const btnPwLogout = document.getElementById('btn-paywall-logout');
+  if (btnPwLogout) btnPwLogout.onclick = () => logout();
+}
+
 function showApp(user, profile) {
-  const ls = document.getElementById('login-screen');
+  hideAllScreens();
   const am = document.getElementById('app-main');
-  if (ls) ls.hidden = true;
   if (am) am.hidden = false;
 
   // Display user info di topbar
   const userInfoEl = document.getElementById('user-info');
   if (userInfoEl && user) {
     const days = (typeof daysRemainingBerbisnis === 'function') ? daysRemainingBerbisnis(profile) : 0;
-    const planLabel = profile?.plan === 'trial' ? `Trial (${days} hari)` : (profile?.plan || 'Active');
+    let planLabel;
+    if (profile?.plan === 'trial') {
+      planLabel = days <= 1 ? `⚠️ Trial ${days} hari` : `Trial (${days} hari)`;
+    } else if (profile?.plan === 'starter') {
+      planLabel = `Starter (${days} hari)`;
+    } else if (profile?.plan === 'pro') {
+      planLabel = `🔥 Pro (${days} hari)`;
+    } else {
+      planLabel = profile?.plan || 'Active';
+    }
     userInfoEl.textContent = `${user.email} · ${planLabel}`;
+    userInfoEl.title = `${user.email}\nPlan: ${profile?.plan || '-'}\nExpires: ${profile?.expiresAt || '-'}`;
   }
 
   // Bind logout button
@@ -200,6 +253,9 @@ function showApp(user, profile) {
   if (btnLogout) btnLogout.onclick = () => {
     if (confirm('Yakin logout?')) logout();
   };
+
+  // Setup admin panel kalau email Anda admin
+  if (typeof setupAdminPanel === 'function') setupAdminPanel(user);
 
   // Init app
   init();
@@ -241,7 +297,14 @@ document.addEventListener('DOMContentLoaded', () => {
     lastAuthState = newState;
     if (user) {
       try {
-        showApp(user, profile);
+        // Cek subscription — kalau expired/pending tampilkan paywall
+        const isActive = (typeof isBerbisnisActive === 'function') ? isBerbisnisActive(profile) : true;
+        const isAdmin = (typeof isBerbisnisAdmin === 'function') && isBerbisnisAdmin(user);
+        if (!isActive && !isAdmin) {
+          showPaywallScreen(user, profile);
+        } else {
+          showApp(user, profile);
+        }
       } catch (err) {
         console.error('showApp error:', err);
         debug('showApp ERR: ' + err.message);

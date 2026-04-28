@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=8" />
+<link rel="stylesheet" href="styles.css?v=9" />
 </head>
 <body>
 
@@ -60,6 +60,62 @@
   <div class="login-footer">💼 BerBisnis — Data aman tersimpan di cloud, sync semua device</div>
 </div>
 
+<!-- ============ PAYWALL SCREEN (tampil saat trial habis) ============ -->
+<div id="paywall-screen" class="login-screen" hidden>
+  <div class="login-card paywall-card">
+    <img class="login-logo" src="assets/logo-berbisnis.png?v=3" alt="BerBisnis" />
+    <h2 id="paywall-title">Trial Habis — Pilih Paket Langganan</h2>
+    <p style="color:var(--ink-soft); margin: 0 0 20px; font-size:13px">
+      Akun <b id="paywall-email">—</b> sudah expired. Pilih paket, transfer, lalu kirim bukti ke Admin.
+    </p>
+
+    <div class="paywall-prices">
+      <div class="price-card-pw" data-paket="starter">
+        <b>Starter</b>
+        <div class="pw-price">Rp 99.000<small>/bulan</small></div>
+        <ul class="pw-features">
+          <li>BerBisnis web app</li>
+          <li>POS &amp; manajemen stok</li>
+          <li>Laporan dasar</li>
+        </ul>
+        <button class="btn btn-primary btn-block btn-buy" data-paket="starter">Pilih Starter</button>
+      </div>
+      <div class="price-card-pw highlight" data-paket="pro">
+        <span class="pw-badge">🔥 EARLY BIRD</span>
+        <b>Pro Early Bird</b>
+        <div class="pw-price"><s style="opacity:.5">Rp 1,5jt</s> Rp 500.000<small>/bulan</small></div>
+        <ul class="pw-features">
+          <li><b>Semua fitur Starter</b></li>
+          <li>Berstock AI Telegram bot</li>
+          <li>Multi-device sync</li>
+          <li>Priority support WA</li>
+        </ul>
+        <button class="btn btn-gold btn-block btn-buy" data-paket="pro">Pilih Pro Early Bird</button>
+      </div>
+    </div>
+
+    <div class="payment-info">
+      <div class="payment-title">💰 Cara Pembayaran</div>
+      <div class="payment-row">
+        <span>Bank BCA</span>
+        <code id="bank-account">7130902183</code>
+      </div>
+      <div class="payment-row"><span>Atas Nama</span><b>HENDRY</b></div>
+      <div class="payment-row"><span>QRIS</span><b>Minta ke Admin via WA</b></div>
+    </div>
+
+    <div class="paywall-actions">
+      <a class="btn btn-wa btn-block" id="btn-wa-admin" target="_blank" rel="noopener">💬 Kirim Bukti via WhatsApp</a>
+      <button class="btn btn-ghost btn-block" id="btn-paywall-logout">Logout</button>
+    </div>
+
+    <p class="paywall-note">
+      ⏱️ Akun aktif dalam ~5 menit setelah bukti transfer diterima.<br>
+      🔒 Data Anda aman tersimpan — tidak akan hilang.
+    </p>
+  </div>
+</div>
+
 <!-- ============ APP UTAMA (hidden sampai user login) ============ -->
 <div id="app-main" hidden>
 
@@ -78,6 +134,7 @@
     <button class="tab" data-tab="restock">Restock</button>
     <button class="tab" data-tab="laporan">Laporan</button>
     <button class="tab" data-tab="pengaturan">Pengaturan</button>
+    <button class="tab" data-tab="admin" id="tab-btn-admin" hidden>👑 Admin</button>
   </nav>
   <div class="topbar-actions">
     <button class="btn btn-ghost" id="btn-export">Export</button>
@@ -362,6 +419,53 @@
 
   </section>
 
+  <!-- ============ ADMIN PANEL (hanya untuk admin emails) ============ -->
+  <section id="tab-admin" class="tab-panel">
+    <div class="page-head">
+      <h1>👑 Admin Panel</h1>
+      <button class="btn btn-ghost" id="btn-refresh-admin">🔄 Refresh</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Daftar User BerBisnis</h3>
+        <span id="admin-count" style="font-size:12px; color:var(--ink-soft)">—</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Nama Bisnis</th>
+            <th>Plan</th>
+            <th>Expires</th>
+            <th>Daftar</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-users-body">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>Quick Activation</h3></div>
+      <p style="color:var(--ink-soft); font-size:13px">
+        Format perintah cepat untuk aktivasi (klik tombol di tabel di atas, atau pakai input manual):
+      </p>
+      <form id="form-activate" class="form">
+        <label>Email User<input name="email" type="email" required placeholder="user@example.com" /></label>
+        <div class="grid-2-form">
+          <label>Plan<select name="plan">
+            <option value="starter">Starter (Rp 99rb/bln)</option>
+            <option value="pro">Pro Early Bird (Rp 500rb/bln)</option>
+          </select></label>
+          <label>Durasi (hari)<input name="days" type="number" value="30" min="1" /></label>
+        </div>
+        <button class="btn btn-primary" type="submit">✅ Aktivasi User</button>
+      </form>
+    </div>
+  </section>
+
 </main>
 
 </div><!-- /#app-main -->
@@ -488,6 +592,7 @@
 
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/auth.js?v=5"></script>
+<script src="js/admin.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=1"></script>
 <script src="js/storage.js?v=1"></script>
@@ -497,6 +602,6 @@
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=1"></script>
 <script src="js/cloud-sync.js?v=2"></script>
-<script src="js/app.js?v=9"></script>
+<script src="js/app.js?v=10"></script>
 </body>
 </html>

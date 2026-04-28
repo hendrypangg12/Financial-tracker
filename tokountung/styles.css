@@ -627,6 +627,64 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   margin-top: 18px; color: var(--ink-soft); font-size: 11px;
 }
 
+/* ===================== PAYWALL ===================== */
+.paywall-card { max-width: 540px !important; }
+.paywall-card h2 { font-size: 22px; margin-bottom: 6px; color: var(--primary); }
+.paywall-prices {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin: 16px 0;
+}
+.price-card-pw {
+  background: #fff; border: 1.5px solid var(--line); border-radius: 14px;
+  padding: 20px 18px; text-align: left; position: relative;
+  display: flex; flex-direction: column;
+}
+.price-card-pw.highlight {
+  border: 2px solid var(--accent);
+  box-shadow: 0 8px 24px rgba(201,163,82,.18);
+}
+.pw-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 1px;
+  padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+}
+.price-card-pw b { font-size: 14px; color: var(--ink); display: block; margin-bottom: 6px; }
+.pw-price { font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 12px; letter-spacing: -.5px; }
+.pw-price small { font-size: 11px; font-weight: 500; color: var(--ink-soft); margin-left: 4px; }
+.pw-features { list-style: none; padding: 0; margin: 0 0 14px; flex: 1; }
+.pw-features li { padding: 3px 0; font-size: 12px; color: var(--ink); }
+.pw-features li::before { content: '✓ '; color: var(--green); font-weight: 800; }
+
+.payment-info {
+  background: var(--bg-deep); border-radius: 12px; padding: 14px;
+  margin: 14px 0; text-align: left;
+}
+.payment-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; color: var(--primary); }
+.payment-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; padding: 4px 0;
+}
+.payment-row code {
+  background: #fff; padding: 2px 8px; border-radius: 4px;
+  font-family: ui-monospace, monospace; font-size: 12px;
+}
+.paywall-actions { display: grid; gap: 8px; margin-top: 12px; }
+.btn-wa { background: #25D366; color: #fff; border-color: #25D366; }
+.btn-wa:hover { background: #1da851; border-color: #1da851; }
+.paywall-note {
+  font-size: 11px; color: var(--ink-soft); margin-top: 14px; line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .paywall-prices { grid-template-columns: 1fr; }
+}
+
+/* ===================== ADMIN PANEL ===================== */
+#tab-admin { background: linear-gradient(135deg, rgba(201,163,82,.04), transparent); }
+#tab-btn-admin { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff !important; }
+#tab-btn-admin.active { background: #fff; color: var(--accent-dark) !important; }
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 1100px) {
   .topbar { padding: 12px 16px; gap: 14px; }
