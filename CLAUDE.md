@@ -6,8 +6,10 @@
 
 ## 👤 OWNER PROYEK
 
-- **Nama:** Hendry
-- **Email:** hendrypangg12@gmail.com (admin di BerUang: hendryphang12@gmail.com — beda 1 huruf!)
+- **Nama:** Hendry Phang
+- **Email primary:** hendrypangg12@gmail.com
+- **Email Anthropic:** hendrypangg12@icloud.com (akun API Claude)
+- **Email admin BerUang:** hendryphang12@gmail.com (beda 1 huruf!)
 - **WA:** +62 821-2484-8924 (untuk CTA & support)
 - **IG:** @hendrypangg
 - **Pembayaran:** BCA 7130902183 a/n HENDRY (atau QRIS)
