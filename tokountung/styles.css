@@ -82,7 +82,14 @@ html, body {
   box-shadow: 0 1px 3px rgba(26,34,56,.08), 0 0 0 1px rgba(26,34,56,.04);
 }
 
-.topbar-actions { display: flex; gap: 8px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.topbar-actions #user-info {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 180px;
+}
+@media (max-width: 1200px) {
+  .topbar-actions #user-info { max-width: 120px; font-size: 10px !important; }
+}
 
 /* ===================== BUTTONS ===================== */
 .btn {
