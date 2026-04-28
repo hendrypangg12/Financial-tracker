@@ -128,27 +128,35 @@ function setupSettingsForms() {
 }
 
 function renderPengaturan() {
-  // Pre-fill form Toko
+  // Pre-fill form Toko (defensive)
   const ft = document.getElementById('form-toko');
-  ft.querySelector('[name="namaToko"]').value = state.settings.namaToko || '';
-  ft.querySelector('[name="alamat"]').value = state.settings.alamat || '';
-  ft.querySelector('[name="telepon"]').value = state.settings.telepon || '';
-  ft.querySelector('[name="footerStruk"]').value = state.settings.footerStruk || '';
+  if (ft) {
+    const setVal = (name, val) => { const el = ft.querySelector(`[name="${name}"]`); if (el) el.value = val; };
+    setVal('namaToko', state.settings.namaToko || '');
+    setVal('alamat', state.settings.alamat || '');
+    setVal('telepon', state.settings.telepon || '');
+    setVal('footerStruk', state.settings.footerStruk || '');
+  }
   // Pre-fill form BEP
   const fb = document.getElementById('form-bep');
-  fb.querySelector('[name="biayaTetap"]').value = state.settings.biayaTetap || 0;
-  fb.querySelector('[name="targetUntung"]').value = state.settings.targetUntung || 0;
+  if (fb) {
+    const setVal = (name, val) => { const el = fb.querySelector(`[name="${name}"]`); if (el) el.value = val; };
+    setVal('biayaTetap', state.settings.biayaTetap || 0);
+    setVal('targetUntung', state.settings.targetUntung || 0);
+  }
   // Render kategori list
   const kl = document.getElementById('kategori-list');
-  kl.innerHTML = state.kategori.map(k => `
-    <span class="kat-pill">${escapeHtml(k)} <button data-del-kat="${escapeHtml(k)}" title="Hapus">×</button></span>
-  `).join('');
-  kl.querySelectorAll('[data-del-kat]').forEach(b => b.onclick = () => {
-    if (confirm(`Hapus kategori "${b.dataset.delKat}"?`)) {
-      deleteKategori(b.dataset.delKat);
-      renderPengaturan();
-    }
-  });
+  if (kl) {
+    kl.innerHTML = (state.kategori || []).map(k => `
+      <span class="kat-pill">${escapeHtml(k)} <button data-del-kat="${escapeHtml(k)}" title="Hapus">×</button></span>
+    `).join('');
+    kl.querySelectorAll('[data-del-kat]').forEach(b => b.onclick = () => {
+      if (confirm(`Hapus kategori "${b.dataset.delKat}"?`)) {
+        deleteKategori(b.dataset.delKat);
+        renderPengaturan();
+      }
+    });
+  }
 }
 
 function renderAll() {
