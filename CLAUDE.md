@@ -32,25 +32,40 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 ### 2. **BerBisnis** — Kasir & Stok UMKM (`/tokountung/`)
 - **Tagline:** "Beruang Bisnis · Atur stok, untung pasti masuk"
 - **Target:** UMKM 50-200 SKU (toko sembako, kelontong, FnB)
-- **Pricing:** Rp 99rb/bulan (Starter) → Rp 1,5jt/bulan (Pro) → Rp 7,5jt+/bulan (Enterprise)
+- **Pricing:** Rp 99rb/bulan (Starter) → Rp 500rb/bln (Pro Early Bird, 50 klien pertama) → Rp 1,5jt/bulan (Pro) → Rp 7,5jt+/bulan (Enterprise)
 - **Fitur:** POS, manajemen stok dengan foto, restock dengan HPP weighted average, laporan, BEP tracker, struk thermal
+- **AUTH:** ✅ Login Firebase (email/password + Google), Trial 3 hari, Paywall, Admin Panel, per-user Firestore sync
 - **File utama:** `tokountung/app.html`, `tokountung/styles.css`, `tokountung/js/*.js`
-- **Storage:** localStorage (offline-first) + cloud sync (via Berstock Bot endpoint)
+- **Storage:** localStorage (offline-first) + Firestore per-user (auto-sync) + cloud sync ke Berstock bot
 
-### 3. **Berstock** — AI Agent Stok via Telegram (`/bot/`)
+### 3. **Berstock** — AI Agent Stok via Telegram (`/bot/`) — ✅ LIVE PRODUCTION
 - **Tagline:** "Tanya stok & sales kapanpun via chat"
 - **Target:** Owner BerBisnis yang butuh akses cepat dari HP
 - **Pricing:** Rp 500rb/bulan early bird, Rp 1,5jt/bulan Pro
 - **Tech:** Cloudflare Workers + Anthropic Claude Sonnet 4.6 + KV storage
 - **Bot username:** `@BerstockBot` (✅ confirmed, dibuat via @BotFather)
-- **8 tools:** get_low_stock, get_product_info, get_today_sales, get_period_summary, get_top_sellers, get_slow_moving, get_restock_suggestion, get_business_overview
-- **System prompt:** `bot/src/prompt.js` (Bahasa Indonesia, casual-profesional)
+- **Worker URL:** `https://berstock-bot.hendrypangg12.workers.dev`
+- **Cloudflare Account ID:** `55dcdad9595a282a448413e8167a21bf`
+- **KV Namespaces:** BOT_DATA + BOT_AUTH (sudah dibuat)
+- **9 tools:** get_low_stock, get_product_info, get_today_sales, get_period_summary, get_top_sellers, get_slow_moving, get_restock_suggestion, get_business_overview, **list_all_products** (NEW)
+- **System prompt:** `bot/src/prompt.js` (Bahasa Indonesia, casual-profesional, satuan dari data)
 - **Setup guide:** `bot/README.md`
+- **Tenant pertama:** PT SPC = `tnt_a82328a860e4` (api_key disimpan terpisah)
+- **Token rotation:** Cloudflare API token expired 1 Jun 2026, Anthropic + Telegram WAJIB di-rotate (sempat lewat chat hari ini)
 
-### 4. **BerSatu** — Galaxy Command Center Demo (`/bersatu-demo.html`)
+### 4. **BerSatu Neural Command** — Pitch Demo (`/bersatu-demo.html`)
 - **Untuk:** Pitch deck visual ke calon klien enterprise
-- **Konsep:** 6 AI agent mengorbit orchestrator beruang (Pembukuan, HRD, Stok, Kasir, Sales, Telegram Bot)
-- **Belum dibangun:** Pembukuan, HRD, Sales — masih roadmap
+- **Konsep:** 6 AI agent terhubung neural network ke **CEO PT SPC** (logo beruang berdasi)
+- **Layout:** Hub-and-spoke (bukan orbital ring)
+- **Background:** Nebula curves + flowing strands (purple/cyan/pink)
+- **Agents:** Stok Manager (LIVE), Telegram Bot (LIVE), CEO PT SPC (LIVE), Pembukuan/Sales/HRD (IDLE — roadmap)
+- **Brand top-left:** "PT SPC" dengan logo beruang
+- **Status badges:** ACT (live, glowing) / IDL (idle, dim)
+
+### 5. **Berstock Landing Page** (`/landing-berstock.html`)
+- Sales page singkat untuk closing klien
+- Section: Hero + chat mockup, Problem, How it works (3 steps), Features (6 cards), Pricing (Starter/Pro Early Bird/Enterprise), FAQ, CTA WhatsApp
+- Theme: Navy + gold (BerBisnis brand)
 
 ---
 
@@ -108,9 +123,11 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 - Accents: gold + orange (orchestrator), per-agent colors
 
 ### Logo
-- **File:** `assets/logo-beruang.png`, `mascot-beruang.png`, `mascot-alt.png`, `tokountung/assets/logo-berbisnis.png` — semua identik (akuntan gemoy: beruang coklat pakai kacamata pegang buku)
+- **BerUang (akuntan gemoy):** `assets/logo-beruang.png`, `mascot-beruang.png` — beruang coklat pakai kacamata pegang buku (FRIENDLY untuk personal user)
+- **BerBisnis & Berstock & BerSatu (beruang berdasi):** `tokountung/assets/logo-berbisnis.png`, `assets/logo-berbisnis.png` — beruang dasi navy + clipboard chart + briefcase (PROFESSIONAL untuk B2B)
+- **Two-logo strategy:** BerUang = friendly, BerBisnis suite = corporate
 - **Size:** 512×512 PNG with transparency
-- **Cache buster:** sekarang di `?v=2` (bump kalau ganti logo)
+- **Cache buster:** sekarang di `?v=3` (bump kalau ganti logo)
 
 ---
 
@@ -185,10 +202,20 @@ state = {
 - iOS: `apple-mobile-web-app-capable` + `apple-touch-icon` wajib untuk add to homescreen
 
 ### F. Firebase
-- Project sudah set up untuk BerUang
-- Admin email: `hendryphang12@gmail.com` (perhatikan typo!)
-- Collection group query butuh rules: `match /{path=**}/meta/{docId} { allow read: if isAdmin(); }`
-- TRIAL_DAYS=0, PRICE_MONTHLY=35000, PRICE_LIFETIME=125000
+- Project: `ber-uang-735b3` (di-share BerUang + BerBisnis)
+- Admin email BerUang: `hendryphang12@gmail.com` (perhatikan typo!)
+- Admin email BerBisnis (3): `hendryphang12@gmail.com`, `hendrypangg12@gmail.com`, `hendrypangg12@icloud.com`
+- Firestore Rules: ada `function isAdmin()` + collectionGroup query untuk admin panel — lihat config terbaru di Firebase Console
+- BerBisnis path: `users/{uid}/meta/berbisnis-profile` (subscription) + `users/{uid}/meta/berbisnis-data` (state)
+- BerUang path: `users/{uid}/meta/profile` + `users/{uid}/transactions/{docId}`
+- TRIAL_DAYS BerUang=0, BerBisnis=3
+- BerBisnis pricing: Starter 99rb, Pro Early Bird 500rb, Pro 1.5jt
+- iOS Safari/Chrome: SKIP `fbDb.enablePersistence()` — bikin auth flap
+
+### G. CSS Hidden Override Pattern (BUG KAMBUHAN!)
+- **Setiap container dengan `display: flex/grid/block` HARUS punya `[hidden] { display: none !important }`**
+- Sudah kena 4× di proyek ini: `.modal`, `.auth-form`, `.login-screen`, `#app-main`
+- **CHECKLIST baru:** kalau bikin container yang punya display rule, langsung tambah hidden override
 
 ---
 
@@ -213,11 +240,21 @@ state = {
 | BerUang Firebase auth + sync | ✅ Done | Admin panel works |
 | BerBisnis core (POS, stok, laporan) | ✅ Done | Live di subfolder |
 | BerBisnis foto produk | ✅ Done | dengan kamera capture |
-| Berstock Bot (kode) | ✅ Done | Tinggal deploy |
-| Berstock deployment | ⏳ Pending | User perlu setup tokens (30 menit) |
-| BerSatu Galaxy demo | ✅ Done | Untuk pitch ke klien |
-| Logo akuntan-gemoy semua app | ✅ Done | v=2 |
-| Agent Pembukuan | 📋 Roadmap | Setelah Berstock validated |
+| BerBisnis Login Auth | ✅ Done | Firebase email/password (Google ada bug) |
+| BerBisnis Trial 3 hari + Paywall | ✅ Done | Pricing Starter 99rb / Pro EB 500rb |
+| BerBisnis Admin Panel | ✅ Done | List user + aktivasi/deaktivasi |
+| BerBisnis Per-user Firestore sync | ✅ Done | Cross-device, auto-migrate |
+| Berstock Bot — kode | ✅ Done | 9 tools |
+| Berstock Bot — DEPLOYED | ✅ LIVE | berstock-bot.hendrypangg12.workers.dev |
+| Berstock Bot — tenant PT SPC | ✅ Done | tnt_a82328a860e4 active |
+| Berstock landing page | ✅ Done | /landing-berstock.html |
+| BerSatu Neural Command demo | ✅ Done | CEO PT SPC + 6 agents, hub-spoke |
+| Two-logo strategy | ✅ Done | BerUang gemoy / BerBisnis berdasi |
+| Restore from Cloud BerBisnis | ✅ Done | Pull data dari KV ke localStorage |
+| Bot satuan fix (karton vs pcs) | ✅ Done | satuan dari products lookup |
+| Google Login BerBisnis | ⚠️ Bug | Email/password works, Google fail (popup-redirect issue) |
+| Token rotation (Anthropic + Telegram) | ⏳ Pending | Sempat lewat chat hari ini, WAJIB rotate dalam 1-2 hari |
+| Agent Pembukuan | 📋 Roadmap | Setelah Berstock validated 3+ paying customers |
 | Agent HRD | 📋 Roadmap | Phase 2 |
 | Agent Sales/CRM | 📋 Roadmap | Phase 3 |
 | WhatsApp Business integration | 📋 Roadmap | Setelah 10+ paying customers |
@@ -242,3 +279,22 @@ state = {
 - **Branch dev:** claude/financial-tracking-app-QUmrz
 - **Preview link (githack):** raw.githack.com/hendrypangg12/Financial-tracker/claude/financial-tracking-app-QUmrz/
 - **Anthropic console:** console.anthropic.com (model: claude-sonnet-4-6 default untuk chat)
+
+### Live Production Links
+- **BerUang app:** hendrypangg12.github.io/Financial-tracker/app.html
+- **BerUang landing:** hendrypangg12.github.io/Financial-tracker/landing.html
+- **BerUang link-in-bio:** hendrypangg12.github.io/Financial-tracker/index.html
+- **BerBisnis app:** hendrypangg12.github.io/Financial-tracker/tokountung/app.html
+- **Berstock landing:** hendrypangg12.github.io/Financial-tracker/landing-berstock.html
+- **BerSatu Neural Command:** hendrypangg12.github.io/Financial-tracker/bersatu-demo.html
+- **Berstock Bot Telegram:** https://t.me/BerstockBot
+- **Berstock Worker:** https://berstock-bot.hendrypangg12.workers.dev
+
+### IG Bio Berstock (recommended Versi 2)
+```
+🤖 Pusing pantau stok 24/7?
+💬 Tinggal chat di Telegram, AI jawab
+✅ Sales · Stok · Profit realtime
+🔥 Early Bird 50 klien pertama
+👇 Cek demo
+```
