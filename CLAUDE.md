@@ -40,7 +40,7 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 - **Target:** Owner BerBisnis yang butuh akses cepat dari HP
 - **Pricing:** Rp 500rb/bulan early bird, Rp 1,5jt/bulan Pro
 - **Tech:** Cloudflare Workers + Anthropic Claude Sonnet 4.6 + KV storage
-- **Bot username:** `@BerstockBot` (target, bisa fallback `@BerstockApp_bot`)
+- **Bot username:** `@BerstockBot` (✅ confirmed, dibuat via @BotFather)
 - **8 tools:** get_low_stock, get_product_info, get_today_sales, get_period_summary, get_top_sellers, get_slow_moving, get_restock_suggestion, get_business_overview
 - **System prompt:** `bot/src/prompt.js` (Bahasa Indonesia, casual-profesional)
 - **Setup guide:** `bot/README.md`
