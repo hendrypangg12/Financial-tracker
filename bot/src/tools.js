@@ -134,11 +134,11 @@ export async function executeTool(name, input, data) {
     case "get_product_info":
       return handleProductInfo(products, sales, input);
     case "get_today_sales":
-      return handleTodaySales(sales);
+      return handleTodaySales(sales, products);
     case "get_period_summary":
       return handlePeriodSummary(sales, products, input);
     case "get_top_sellers":
-      return handleTopSellers(sales, input);
+      return handleTopSellers(sales, input, products);
     case "get_slow_moving":
       return handleSlowMoving(products, sales, input);
     case "get_restock_suggestion":
@@ -222,13 +222,13 @@ function handleProductInfo(products, sales, input) {
   };
 }
 
-function handleTodaySales(sales) {
+function handleTodaySales(sales, products) {
   const today = todayISO();
   const todaySales = sales.filter(s => s.tanggal === today);
   const revenue = todaySales.reduce((a, s) => a + (s.total || 0), 0);
   const profit = todaySales.reduce((a, s) => a + (s.profit || 0), 0);
   const margin = revenue > 0 ? (profit / revenue * 100) : 0;
-  const counts = aggregateBySoldQty(todaySales);
+  const counts = aggregateBySoldQty(todaySales, products);
   const top = Object.values(counts).sort((a, b) => b.qty - a.qty).slice(0, 3);
 
   return {
@@ -237,7 +237,7 @@ function handleTodaySales(sales) {
     revenue,
     profit,
     margin_pct: +margin.toFixed(1),
-    top_seller: top.map(t => ({ nama: t.nama, qty: t.qty, revenue: t.revenue })),
+    top_seller: top.map(t => ({ nama: t.nama, qty: t.qty, satuan: t.satuan, revenue: t.revenue })),
   };
 }
 
@@ -267,7 +267,7 @@ function handlePeriodSummary(sales, products, input) {
   };
 }
 
-function handleTopSellers(sales, input) {
+function handleTopSellers(sales, input, products) {
   const period = input.period || "month";
   const limit = Math.min(input.limit || 5, 20);
   const range = getDateRange(period);
@@ -275,7 +275,7 @@ function handleTopSellers(sales, input) {
     const d = parseISO(s.tanggal);
     return d >= range.start && d <= range.end;
   });
-  const counts = aggregateBySoldQty(periodSales);
+  const counts = aggregateBySoldQty(periodSales, products);
   const top = Object.values(counts).sort((a, b) => b.qty - a.qty).slice(0, limit);
 
   return {
@@ -284,6 +284,7 @@ function handleTopSellers(sales, input) {
     items: top.map(t => ({
       nama: t.nama,
       qty_terjual: t.qty,
+      satuan: t.satuan,
       revenue: t.revenue,
     })),
   };
@@ -499,12 +500,22 @@ function getDateRange(period) {
   return { start, end };
 }
 
-function aggregateBySoldQty(salesList) {
+function aggregateBySoldQty(salesList, products) {
+  // Bikin lookup productId → satuan dari products
+  const satuanMap = {};
+  if (Array.isArray(products)) {
+    for (const p of products) satuanMap[p.id] = p.satuan || 'pcs';
+  }
   const counts = {};
   for (const s of salesList) {
     for (const it of (s.items || [])) {
       const key = it.productId;
-      if (!counts[key]) counts[key] = { nama: it.nama, qty: 0, revenue: 0 };
+      if (!counts[key]) counts[key] = {
+        nama: it.nama,
+        qty: 0,
+        revenue: 0,
+        satuan: satuanMap[key] || it.satuan || 'pcs',
+      };
       counts[key].qty += (it.qty || 0);
       counts[key].revenue += (it.qty || 0) * (it.hargaJual || 0);
     }
