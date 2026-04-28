@@ -219,8 +219,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   onBerbisnisAuthStateChanged((user, profile) => {
+    console.log('[Auth] state:', user ? `logged in as ${user.email}` : 'logged out');
     if (user) {
-      showApp(user, profile);
+      try {
+        showApp(user, profile);
+      } catch (err) {
+        console.error('showApp error:', err);
+        alert('Error masuk app: ' + err.message + '\n\nCoba refresh halaman.');
+      }
     } else {
       showLoginScreen();
     }

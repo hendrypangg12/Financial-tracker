@@ -10,7 +10,13 @@ function onBerbisnisAuthStateChanged(callback) {
   return fbAuth.onAuthStateChanged(async (user) => {
     currentUser = user;
     if (user) {
-      currentProfile = await ensureBerbisnisProfile(user);
+      try {
+        currentProfile = await ensureBerbisnisProfile(user);
+      } catch (err) {
+        console.error('ensureBerbisnisProfile failed:', err);
+        // Fallback: pakai data dari user object kalau Firestore gagal
+        currentProfile = makeFallbackProfile(user);
+      }
     } else {
       currentProfile = null;
     }
@@ -19,28 +25,38 @@ function onBerbisnisAuthStateChanged(callback) {
   });
 }
 
-// Bikin/ambil profile BerBisnis user di Firestore
-async function ensureBerbisnisProfile(user) {
-  if (!fbDb) return null;
-  const ref = fbDb.collection('users').doc(user.uid).collection('berbisnis').doc('profile');
-  const snap = await ref.get();
-  if (snap.exists) {
-    const data = snap.data();
-    return data;
-  }
-  // Profile baru: trial 3 hari
+function makeFallbackProfile(user) {
   const now = new Date();
   const expires = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
-  const profile = {
+  return {
     email: user.email || '',
     displayName: user.displayName || user.email?.split('@')[0] || 'User',
     photoURL: user.photoURL || '',
     createdAt: now.toISOString(),
     plan: 'trial',
     expiresAt: expires.toISOString(),
-    bizName: '',  // diisi user nanti
+    bizName: '',
+    _fallback: true,  // tanda kalau Firestore tidak accessible
   };
-  await ref.set(profile);
+}
+
+// Bikin/ambil profile BerBisnis user di Firestore (di subcollection 'meta' supaya match Firestore Rules BerUang)
+async function ensureBerbisnisProfile(user) {
+  if (!fbDb) return makeFallbackProfile(user);
+  const ref = fbDb.collection('users').doc(user.uid).collection('meta').doc('berbisnis-profile');
+  const snap = await ref.get();
+  if (snap.exists) {
+    return snap.data();
+  }
+  // Profile baru: trial 3 hari
+  const profile = makeFallbackProfile(user);
+  delete profile._fallback;
+  try {
+    await ref.set(profile);
+  } catch (err) {
+    console.warn('Cannot write BerBisnis profile to Firestore:', err);
+    profile._fallback = true;
+  }
   return profile;
 }
 
