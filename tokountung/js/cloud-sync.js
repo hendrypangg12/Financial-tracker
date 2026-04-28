@@ -49,6 +49,30 @@ async function syncToCloud(opts = {}) {
   return result;
 }
 
+async function pullFromCloud() {
+  const cfg = loadCloudConfig();
+  if (!cfg.workerUrl || !cfg.tenantId || !cfg.apiKey) {
+    throw new Error("Cloud sync belum dikonfigurasi. Isi di Pengaturan dulu.");
+  }
+
+  const url = cfg.workerUrl.replace(/\/$/, "")
+    + "/api/pull?tenant_id=" + encodeURIComponent(cfg.tenantId)
+    + "&api_key=" + encodeURIComponent(cfg.apiKey);
+
+  const res = await fetch(url);
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || `HTTP ${res.status}`);
+
+  // Replace state with cloud data
+  if (Array.isArray(result.data.products)) state.products = result.data.products;
+  if (Array.isArray(result.data.sales)) state.sales = result.data.sales;
+  if (Array.isArray(result.data.kategori)) state.kategori = result.data.kategori;
+  if (result.data.settings) state.settings = { ...state.settings, ...result.data.settings };
+
+  saveState();
+  return result;
+}
+
 function setupCloudSyncForm() {
   const form = document.getElementById("form-cloud-sync");
   if (!form) return;
@@ -91,6 +115,26 @@ function setupCloudSyncForm() {
     } finally {
       btn.disabled = false;
       btn.textContent = original;
+    }
+  };
+
+  // Pull from cloud button
+  const btnPull = document.getElementById("btn-pull-cloud");
+  if (btnPull) btnPull.onclick = async () => {
+    if (!confirm('⚠️ Akan REPLACE data di browser ini dengan data dari cloud.\n\nGunakan kalau Anda buka di device baru atau data hilang.\n\nLanjutkan?')) return;
+    const original = btnPull.textContent;
+    btnPull.disabled = true;
+    btnPull.textContent = '⬇️ Pull...';
+    try {
+      const result = await pullFromCloud();
+      showToast(`✅ Restored! ${result.counts.products} produk, ${result.counts.sales} transaksi dari cloud`, 'success');
+      if (typeof renderAll === 'function') renderAll();
+      updateCloudStatus();
+    } catch (err) {
+      showToast(`❌ Gagal pull: ${err.message}`, 'error');
+    } finally {
+      btnPull.disabled = false;
+      btnPull.textContent = original;
     }
   };
 

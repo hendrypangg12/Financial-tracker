@@ -23,6 +23,7 @@ export default {
       switch (url.pathname) {
         case "/webhook":   return await handleTelegramWebhook(request, env, ctx);
         case "/api/sync":  return await handleSync(request, env);
+        case "/api/pull":  return await handlePull(request, env);
         case "/api/provision": return await handleProvision(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
@@ -224,6 +225,42 @@ async function handleSync(request, env) {
     syncedAt: meta.lastSync,
     counts: {
       products: data.products.length,
+      sales: (data.sales || []).length,
+    },
+  });
+}
+
+// =============================================================================
+// PULL ENDPOINT (BerBisnis web app TARIK data dari cloud, untuk restore di device baru)
+// =============================================================================
+
+async function handlePull(request, env) {
+  const url = new URL(request.url);
+  const tenant_id = url.searchParams.get("tenant_id");
+  const api_key = url.searchParams.get("api_key");
+
+  if (!tenant_id || !api_key) {
+    return jsonResponse({ error: "Missing tenant_id or api_key" }, 400);
+  }
+
+  const meta = await getTenantMeta(env, tenant_id);
+  if (!meta) return jsonResponse({ error: "Tenant not found" }, 404);
+  if (meta.apiKey !== api_key) return jsonResponse({ error: "Invalid API key" }, 401);
+
+  const data = await getTenantData(env, tenant_id);
+
+  return jsonResponse({
+    ok: true,
+    bizName: meta.bizName,
+    lastSync: meta.lastSync,
+    data: {
+      products: data.products || [],
+      sales: data.sales || [],
+      settings: data.settings || {},
+      kategori: data.kategori || [],
+    },
+    counts: {
+      products: (data.products || []).length,
       sales: (data.sales || []).length,
     },
   });

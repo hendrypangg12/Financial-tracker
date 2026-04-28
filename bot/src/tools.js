@@ -94,6 +94,25 @@ export const TOOLS = [
   },
 
   {
+    name: "list_all_products",
+    description: "List SEMUA produk dengan stok dan harga, dalam bentuk tabel. PAKAI INI saat owner tanya pertanyaan stok yang umum atau ingin lihat detail seluruh inventaris (mis. 'stok berapa', 'detail stok masing-masing', 'list semua barang', 'inventaris keseluruhan').",
+    input_schema: {
+      type: "object",
+      properties: {
+        sort_by: {
+          type: "string",
+          enum: ["nama", "stok_terbanyak", "stok_terkecil", "kategori"],
+          description: "Cara sort. Default: nama (alfabetis)."
+        },
+        kategori: {
+          type: "string",
+          description: "Optional filter berdasarkan kategori tertentu."
+        }
+      }
+    }
+  },
+
+  {
     name: "get_business_overview",
     description: "Snapshot keseluruhan bisnis: total produk, nilai stok, jumlah kategori, transaksi total, status BEP bulan ini. PAKAI INI saat owner tanya kondisi umum, kesehatan bisnis, atau pertanyaan luas seperti 'gimana toko hari ini'.",
     input_schema: { type: "object", properties: {} }
@@ -124,6 +143,8 @@ export async function executeTool(name, input, data) {
       return handleSlowMoving(products, sales, input);
     case "get_restock_suggestion":
       return handleRestockSuggestion(products, sales, input);
+    case "list_all_products":
+      return handleListAllProducts(products, input);
     case "get_business_overview":
       return handleBusinessOverview(products, sales, settings);
     default:
@@ -350,6 +371,39 @@ function handleRestockSuggestion(products, sales, input) {
     days_window: days,
     count: suggestions.length,
     suggestions,
+  };
+}
+
+function handleListAllProducts(products, input) {
+  let list = [...products];
+
+  // Filter kategori (kalau ada)
+  if (input?.kategori) {
+    const k = input.kategori.toLowerCase();
+    list = list.filter(p => (p.kategori || "").toLowerCase().includes(k));
+  }
+
+  // Sort
+  const sortBy = input?.sort_by || "nama";
+  if (sortBy === "stok_terbanyak") list.sort((a, b) => (b.stok || 0) - (a.stok || 0));
+  else if (sortBy === "stok_terkecil") list.sort((a, b) => (a.stok || 0) - (b.stok || 0));
+  else if (sortBy === "kategori") list.sort((a, b) => (a.kategori || "").localeCompare(b.kategori || ""));
+  else list.sort((a, b) => (a.nama || "").localeCompare(b.nama || ""));
+
+  return {
+    total_produk: list.length,
+    total_nilai_stok: list.reduce((a, p) => a + (p.stok || 0) * (p.hargaModal || 0), 0),
+    items: list.map(p => ({
+      nama: p.nama,
+      sku: p.sku,
+      kategori: p.kategori || "-",
+      stok: p.stok || 0,
+      satuan: p.satuan || "pcs",
+      hargaJual: p.hargaJual || 0,
+      hargaModal: p.hargaModal || 0,
+      nilai_stok: (p.stok || 0) * (p.hargaModal || 0),
+      stok_kritis: (p.stok || 0) <= (p.minStok || 5),
+    })),
   };
 }
 
