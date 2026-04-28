@@ -225,7 +225,7 @@ function showPaywallScreen(user, profile) {
   if (btnPwLogout) btnPwLogout.onclick = () => logout();
 }
 
-function showApp(user, profile) {
+async function showApp(user, profile) {
   hideAllScreens();
   const am = document.getElementById('app-main');
   if (am) am.hidden = false;
@@ -257,7 +257,13 @@ function showApp(user, profile) {
   // Setup admin panel kalau email Anda admin
   if (typeof setupAdminPanel === 'function') setupAdminPanel(user);
 
-  // Init app
+  // Sync data dari Firestore SEBELUM init() supaya data fresh
+  if (typeof syncOnLogin === 'function') {
+    try { await syncOnLogin(user); }
+    catch (err) { console.warn('syncOnLogin failed:', err); }
+  }
+
+  // Init app (render dengan data yang sudah ter-sync)
   init();
 }
 

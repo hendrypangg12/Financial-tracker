@@ -139,6 +139,7 @@
     <button class="btn btn-ghost" id="btn-export">Export</button>
     <button class="btn btn-ghost" id="btn-import">Import</button>
     <input type="file" id="file-import" accept=".json" hidden />
+    <span id="sync-indicator" style="font-size:10px; padding:0 4px"></span>
     <button class="btn btn-ghost" id="btn-logout" title="Logout">🚪</button>
     <span id="user-info" style="font-size:11px; color:var(--ink-soft); padding:4px 8px"></span>
   </div>
@@ -592,15 +593,16 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/auth.js?v=5"></script>
 <script src="js/admin.js?v=1"></script>
+<script src="js/firestore-sync.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=1"></script>
-<script src="js/storage.js?v=1"></script>
+<script src="js/storage.js?v=2"></script>
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=2"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=1"></script>
 <script src="js/cloud-sync.js?v=2"></script>
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </body>
 </html>
