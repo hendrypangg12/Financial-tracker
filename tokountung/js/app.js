@@ -218,12 +218,14 @@ document.addEventListener('DOMContentLoaded', () => {
     handleGoogleRedirectResult();
   }
 
-  // Debug overlay
+  // Debug overlay (cuma muncul kalau URL pakai ?debug=1)
+  const debugMode = new URLSearchParams(location.search).has('debug');
   const debugBox = document.createElement('div');
   debugBox.id = 'debug-auth';
   debugBox.style.cssText = 'position:fixed;bottom:8px;left:8px;background:rgba(0,0,0,.85);color:#0f0;padding:6px 10px;font:11px monospace;z-index:9999;border-radius:6px;max-width:90vw;display:none';
-  document.body.appendChild(debugBox);
+  if (debugMode) document.body.appendChild(debugBox);
   function debug(msg) {
+    if (!debugMode) return;
     const t = new Date().toLocaleTimeString();
     debugBox.style.display = 'block';
     debugBox.innerHTML = `[${t}] ${msg}<br>` + (debugBox.innerHTML || '');
