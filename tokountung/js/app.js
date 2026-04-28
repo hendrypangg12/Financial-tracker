@@ -213,6 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Handle return dari Google redirect (kalau ada)
+  if (typeof handleGoogleRedirectResult === 'function') {
+    handleGoogleRedirectResult();
+  }
+
   onBerbisnisAuthStateChanged((user, profile) => {
     if (user) {
       showApp(user, profile);

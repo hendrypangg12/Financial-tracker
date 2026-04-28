@@ -74,7 +74,31 @@ async function registerEmailPassword(email, password) {
 async function loginGoogle() {
   if (!fbAuth) throw new Error('Firebase belum siap');
   const provider = new firebase.auth.GoogleAuthProvider();
-  await fbAuth.signInWithPopup(provider);
+  // iOS Safari sering blok popup → pakai redirect untuk mobile
+  const isMobileSafari = /iP(ad|hone|od)/.test(navigator.userAgent) && /WebKit/.test(navigator.userAgent);
+  if (isMobileSafari) {
+    await fbAuth.signInWithRedirect(provider);
+  } else {
+    await fbAuth.signInWithPopup(provider);
+  }
+}
+
+// Handle redirect return dari Google login
+async function handleGoogleRedirectResult() {
+  if (!fbAuth) return;
+  try {
+    const result = await fbAuth.getRedirectResult();
+    if (result && result.user) {
+      console.log('Google login redirect success:', result.user.email);
+    }
+  } catch (err) {
+    const errorEl = document.getElementById('auth-error');
+    if (errorEl) {
+      errorEl.textContent = authErrorMessage(err);
+      errorEl.hidden = false;
+    }
+    console.warn('Google redirect error:', err);
+  }
 }
 
 async function resetPassword(email) {
