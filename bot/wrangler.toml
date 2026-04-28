@@ -3,14 +3,14 @@ main = "src/index.js"
 compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
 
-# KV Namespaces — diisi setelah `wrangler kv:namespace create` (lihat README)
-# [[kv_namespaces]]
-# binding = "BOT_DATA"
-# id = "<paste_id_here>"
-#
-# [[kv_namespaces]]
-# binding = "BOT_AUTH"
-# id = "<paste_id_here>"
+# KV Namespaces — sudah dibuat 28 Apr 2026
+[[kv_namespaces]]
+binding = "BOT_DATA"
+id = "9ca47054eecf4b25b9714b1555b80d6b"
+
+[[kv_namespaces]]
+binding = "BOT_AUTH"
+id = "59016f42dc314b02ba508cf5025cd09f"
 
 [vars]
 BOT_NAME = "Berstock"
