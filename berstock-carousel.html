@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Berstock — Carousel IG (Screenshot Each Slide)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #1e3a5f;
+  --navy-dark: #0f1f3d;
+  --gold: #c9a352;
+  --gold-dark: #a3823a;
+  --cream: #f7f6f2;
+  --green: #22c55e;
+  --red: #f43f5e;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a; color: #fff;
+  min-height: 100vh; padding: 30px 0;
+}
+
+.guide {
+  text-align: center; padding: 20px; margin-bottom: 30px;
+  max-width: 700px; margin: 0 auto 30px;
+  background: #2a2a2a; border-radius: 16px;
+  font-size: 14px; color: #ccc;
+}
+.guide h1 { color: var(--gold); margin-bottom: 8px; font-size: 22px; }
+
+.slides {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 30px;
+}
+
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 80px;
+  border-radius: 0;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+
+/* SLIDE 1 — COVER */
+.slide-1 {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  align-items: center; justify-content: center; text-align: center;
+}
+.slide-1::before {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,163,82,.4), transparent 70%);
+}
+.slide-1::after {
+  content: ''; position: absolute; bottom: -150px; left: -150px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,163,82,.2), transparent 70%);
+}
+.slide-1 .logo-circle {
+  width: 200px; height: 200px; border-radius: 30px;
+  background: #fff; padding: 12px; margin-bottom: 30px;
+  box-shadow: 0 20px 60px rgba(201,163,82,.4);
+  position: relative; z-index: 2;
+}
+.slide-1 .logo-circle img { width: 100%; height: 100%; object-fit: contain; }
+.slide-1 h1 {
+  font-size: 110px; font-weight: 900; letter-spacing: -3px;
+  color: #fff; line-height: 0.95; margin-bottom: 20px;
+  position: relative; z-index: 2;
+}
+.slide-1 h1 span { color: var(--gold); display: block; }
+.slide-1 .sub {
+  font-size: 28px; color: rgba(255,255,255,.85); font-weight: 500;
+  margin-bottom: 50px; max-width: 700px; line-height: 1.4;
+  position: relative; z-index: 2;
+}
+.slide-1 .swipe {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 32px; border-radius: 999px;
+  background: rgba(201,163,82,.2); border: 2px solid var(--gold);
+  color: var(--gold); font-weight: 700; font-size: 22px;
+  position: relative; z-index: 2;
+  animation: swipe-pulse 1.5s infinite;
+}
+@keyframes swipe-pulse { 0%,100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+
+/* SLIDE 2 — PROBLEM */
+.slide-2 {
+  background: linear-gradient(180deg, var(--cream) 0%, #ecebe5 100%);
+  color: var(--navy);
+}
+.slide-2 h2 {
+  font-size: 80px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.1; margin-bottom: 20px; color: var(--navy);
+}
+.slide-2 .tag {
+  display: inline-block; padding: 8px 20px; border-radius: 999px;
+  background: var(--navy); color: var(--gold);
+  font-size: 18px; font-weight: 700; letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+.problems {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 25px;
+  margin-top: 50px;
+}
+.prob {
+  background: #fff; padding: 35px; border-radius: 24px;
+  border-left: 6px solid var(--red);
+  box-shadow: 0 8px 30px rgba(30,58,95,.08);
+}
+.prob .ico { font-size: 56px; margin-bottom: 10px; }
+.prob h4 { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.prob p { font-size: 18px; color: #5a6275; line-height: 1.4; }
+
+/* SLIDE 3 — SOLUTION */
+.slide-3 {
+  background: linear-gradient(135deg, var(--navy) 0%, #2c4d7d 100%);
+  align-items: center; justify-content: center; text-align: center;
+  color: #fff;
+}
+.slide-3 .tag {
+  background: var(--gold); color: var(--navy);
+  padding: 10px 24px; border-radius: 999px;
+  font-size: 18px; font-weight: 800; letter-spacing: 2px;
+  margin-bottom: 40px;
+}
+.slide-3 h2 {
+  font-size: 100px; font-weight: 900; letter-spacing: -3px;
+  line-height: 1; margin-bottom: 30px;
+}
+.slide-3 h2 .accent { color: var(--gold); }
+.slide-3 .flow {
+  display: flex; align-items: center; gap: 30px;
+  margin: 40px 0; font-size: 32px; font-weight: 700;
+}
+.slide-3 .flow-box {
+  padding: 30px 40px; border-radius: 24px;
+  background: rgba(255,255,255,.1); border: 2px solid rgba(201,163,82,.4);
+}
+.slide-3 .flow-arrow { font-size: 56px; color: var(--gold); }
+.slide-3 .timer {
+  margin-top: 30px; padding: 20px 40px; border-radius: 999px;
+  background: var(--gold); color: var(--navy);
+  font-size: 32px; font-weight: 900;
+}
+
+/* SLIDE 4 — DEMO CHAT */
+.slide-4 {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+  align-items: center; justify-content: center;
+}
+.slide-4 .label {
+  font-size: 28px; font-weight: 700; color: var(--gold);
+  margin-bottom: 30px; text-align: center;
+  letter-spacing: 2px;
+}
+.chat-window {
+  background: #1e1e2e; border-radius: 32px; width: 700px;
+  padding: 40px; box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  border: 3px solid rgba(201,163,82,.2);
+}
+.chat-header {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 24px;
+}
+.chat-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #fff; padding: 6px;
+}
+.chat-avatar img { width: 100%; height: 100%; object-fit: contain; }
+.chat-name { font-weight: 700; font-size: 22px; color: #fff; }
+.chat-name small { display: block; font-size: 14px; color: #4ade80; font-weight: 500; margin-top: 2px; }
+.msg { padding: 16px 22px; border-radius: 22px; max-width: 85%; font-size: 22px; margin-bottom: 14px; line-height: 1.45; }
+.msg.me { background: var(--gold); color: var(--navy); margin-left: auto; border-bottom-right-radius: 6px; font-weight: 600; }
+.msg.bot { background: rgba(255,255,255,.1); color: #fff; border-bottom-left-radius: 6px; }
+.msg.bot b { color: var(--gold); }
+
+/* SLIDE 5 — FEATURES */
+.slide-5 {
+  background: var(--cream); color: var(--navy);
+}
+.slide-5 h2 {
+  font-size: 70px; font-weight: 900; letter-spacing: -2px;
+  margin-bottom: 50px; line-height: 1.05;
+}
+.slide-5 h2 span { color: var(--gold); }
+.feat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.feat {
+  background: #fff; padding: 30px 25px; border-radius: 22px;
+  border: 2px solid rgba(30,58,95,.08);
+  box-shadow: 0 4px 20px rgba(30,58,95,.06);
+}
+.feat:nth-child(1) { background: linear-gradient(135deg, #fff, #fef3c7); border-color: #fbbf24; }
+.feat:nth-child(5) { background: linear-gradient(135deg, #fff, #dbeafe); border-color: #60a5fa; }
+.feat:nth-child(9) { background: linear-gradient(135deg, #fff, #d1fae5); border-color: #34d399; }
+.feat .ico { font-size: 50px; margin-bottom: 12px; }
+.feat h4 { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.feat p { font-size: 16px; color: #5a6275; line-height: 1.4; }
+
+/* SLIDE 6 — PRICING */
+.slide-6 {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: #fff;
+  align-items: center; justify-content: center;
+}
+.slide-6 .badge {
+  display: inline-block; padding: 12px 32px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--navy); font-weight: 900; font-size: 22px; letter-spacing: 2px;
+  margin-bottom: 40px; box-shadow: 0 10px 30px rgba(201,163,82,.5);
+}
+.slide-6 h2 {
+  font-size: 50px; font-weight: 700; margin-bottom: 30px;
+  color: rgba(255,255,255,.7);
+}
+.slide-6 .price-old {
+  font-size: 60px; color: rgba(255,255,255,.4); text-decoration: line-through;
+  margin-bottom: 10px;
+}
+.slide-6 .price-new {
+  font-size: 180px; font-weight: 900; color: var(--gold);
+  letter-spacing: -6px; line-height: 0.9; margin-bottom: 8px;
+}
+.slide-6 .price-period {
+  font-size: 36px; color: rgba(255,255,255,.85); margin-bottom: 50px;
+}
+.slide-6 .compare {
+  background: rgba(255,255,255,.08); padding: 24px 40px;
+  border-radius: 16px; font-size: 24px;
+  border: 1px solid rgba(255,255,255,.2);
+  text-align: center; line-height: 1.5;
+}
+.slide-6 .compare b { color: var(--gold); }
+.slide-6 .limited {
+  margin-top: 30px; padding: 14px 30px; border-radius: 999px;
+  background: rgba(244,63,94,.2); color: #fda4af;
+  border: 1px solid rgba(244,63,94,.4);
+  font-size: 22px; font-weight: 700;
+}
+
+/* SLIDE 7 — CTA */
+.slide-7 {
+  background: linear-gradient(180deg, var(--cream) 0%, #fff 100%);
+  color: var(--navy);
+  align-items: center; justify-content: center; text-align: center;
+}
+.slide-7 .logo-circle {
+  width: 160px; height: 160px; border-radius: 30px;
+  background: var(--cream); padding: 12px; margin-bottom: 30px;
+  box-shadow: 0 12px 40px rgba(30,58,95,.15);
+}
+.slide-7 .logo-circle img { width: 100%; height: 100%; object-fit: contain; }
+.slide-7 h2 {
+  font-size: 90px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1; margin-bottom: 16px; color: var(--navy);
+}
+.slide-7 h2 span { color: var(--gold); }
+.slide-7 .sub { font-size: 28px; color: #5a6275; margin-bottom: 50px; }
+.slide-7 .wa-cta {
+  display: inline-flex; align-items: center; gap: 16px;
+  padding: 28px 50px; border-radius: 100px;
+  background: #25D366; color: #fff;
+  font-size: 36px; font-weight: 800;
+  box-shadow: 0 20px 60px rgba(37,211,102,.4);
+  margin-bottom: 30px;
+}
+.slide-7 .wa-cta::before { content: '💬'; font-size: 42px; }
+.slide-7 .links {
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 22px; color: #5a6275;
+}
+.slide-7 .links b { color: var(--navy); }
+.slide-7 .ig { color: var(--gold); font-weight: 700; margin-top: 16px; }
+
+.slide-num {
+  position: absolute; top: 30px; right: 40px;
+  font-size: 18px; font-weight: 700;
+  color: rgba(0,0,0,.3); letter-spacing: 2px;
+}
+.slide-1 .slide-num,
+.slide-3 .slide-num,
+.slide-4 .slide-num,
+.slide-6 .slide-num { color: rgba(255,255,255,.4); }
+
+.slide-watermark {
+  position: absolute; bottom: 30px; right: 40px;
+  font-size: 14px; font-weight: 600; opacity: .5;
+  display: flex; align-items: center; gap: 8px;
+}
+.slide-watermark img { width: 24px; height: 24px; border-radius: 4px; }
+.slide-1 .slide-watermark,
+.slide-3 .slide-watermark,
+.slide-4 .slide-watermark,
+.slide-6 .slide-watermark { color: rgba(255,255,255,.6); }
+
+@media (max-width: 1100px) {
+  .slide { transform: scale(0.4); transform-origin: top center; margin-bottom: -650px; }
+}
+@media print {
+  body { background: #fff; padding: 0; }
+  .guide { display: none; }
+  .slide { box-shadow: none; page-break-after: always; transform: none; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="guide">
+  <h1>📸 Berstock IG Carousel — 7 Slides</h1>
+  <p>Screenshot tiap slide (1080×1080) → upload ke IG sebagai carousel post.</p>
+  <p style="margin-top:8px;font-size:12px;opacity:.7">💡 Tip: pakai Chrome desktop, full-screen 1080px width, screenshot per slide. Atau Print → Save as PDF.</p>
+</div>
+
+<div class="slides">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide slide-1">
+    <div class="slide-num">01 / 07</div>
+    <div class="logo-circle"><img src="assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+    <h1>AI ASISTEN<span>TOKO ANDA</span></h1>
+    <div class="sub">Berstock — Tanya stok, sales &amp; profit kapanpun via Telegram</div>
+    <div class="swipe">Swipe →</div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> @hendrypangg</div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide slide-2">
+    <div class="slide-num">02 / 07</div>
+    <div class="tag">⚠️ MASALAH UMKM</div>
+    <h2>Owner UMKM,<br>ngerasa ini ga?</h2>
+    <div class="problems">
+      <div class="prob">
+        <div class="ico">😴</div>
+        <h4>Lapor stok lambat</h4>
+        <p>Karyawan baru lapor stok kosong setelah customer marah</p>
+      </div>
+      <div class="prob">
+        <div class="ico">📱</div>
+        <h4>Buka aplikasi malas</h4>
+        <p>Aplikasi kasir punya, tapi owner ga sempat buka tiap hari</p>
+      </div>
+      <div class="prob">
+        <div class="ico">📊</div>
+        <h4>Bingung restock apa</h4>
+        <p>Tiap minggu order, tapi ga yakin barang mana yang prioritas</p>
+      </div>
+      <div class="prob">
+        <div class="ico">💸</div>
+        <h4>Gaji admin Rp 3jt+</h4>
+        <p>Bayar admin cuma untuk monitoring stok &amp; sales — mahal!</p>
+      </div>
+    </div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+  <!-- SLIDE 3: SOLUTION -->
+  <div class="slide slide-3">
+    <div class="slide-num">03 / 07</div>
+    <div class="tag">SOLUSINYA</div>
+    <h2>Tinggal CHAT di<br><span class="accent">TELEGRAM</span></h2>
+    <div class="flow">
+      <div class="flow-box">📱 Tanya</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">🤖 AI Mikir</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">✅ Jawab</div>
+    </div>
+    <div class="timer">⚡ Jawaban dalam 5 detik</div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+  <!-- SLIDE 4: DEMO CHAT -->
+  <div class="slide slide-4">
+    <div class="slide-num">04 / 07</div>
+    <div class="label">📲 LIVE DEMO — di Telegram</div>
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar"><img src="assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+        <div class="chat-name">Berstock<small>● online · powered by AI</small></div>
+      </div>
+      <div class="msg me">Stok yang habis apa?</div>
+      <div class="msg bot">🔥 <b>3 barang stok kritis:</b><br>• Indomie — sisa 3 dus<br>• Beras — sisa 2 karung ⚠️<br>• Kopi — <b>HABIS!</b><br><br>💡 Restock Beras &amp; Kopi minggu ini ya bos.</div>
+      <div class="msg me">Sales hari ini gimana?</div>
+      <div class="msg bot">📊 <b>Hari ini:</b><br>💰 Rp 2.450.000 (15 trx)<br>📈 Profit Rp 580.000 (margin 23.7%)<br><br>Naik 18% dari kemarin — solid! 👍</div>
+    </div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+  <!-- SLIDE 5: FEATURES -->
+  <div class="slide slide-5">
+    <div class="slide-num">05 / 07</div>
+    <h2>Bot bisa jawab<br><span>9 hal penting:</span></h2>
+    <div class="feat-grid">
+      <div class="feat"><div class="ico">🔥</div><h4>Stok Kritis</h4><p>Auto-detect barang &lt; min stok</p></div>
+      <div class="feat"><div class="ico">📊</div><h4>Sales Realtime</h4><p>Hari ini, minggu, bulan</p></div>
+      <div class="feat"><div class="ico">🏆</div><h4>Best Seller</h4><p>Top barang per periode</p></div>
+      <div class="feat"><div class="ico">🐢</div><h4>Slow Moving</h4><p>Barang tidak laku &gt;30 hari</p></div>
+      <div class="feat"><div class="ico">🛒</div><h4>Saran Restock</h4><p>Otomatis berdasarkan velocity</p></div>
+      <div class="feat"><div class="ico">💰</div><h4>Profit &amp; BEP</h4><p>Margin &amp; target bulanan</p></div>
+      <div class="feat"><div class="ico">📦</div><h4>Detail Barang</h4><p>Cari per nama / SKU</p></div>
+      <div class="feat"><div class="ico">📈</div><h4>Trend Periode</h4><p>Compare hari, minggu, bulan</p></div>
+      <div class="feat"><div class="ico">💬</div><h4>24/7 Standby</h4><p>Jawab kapanpun di chat</p></div>
+    </div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+  <!-- SLIDE 6: PRICING -->
+  <div class="slide slide-6">
+    <div class="slide-num">06 / 07</div>
+    <div class="badge">🔥 EARLY BIRD</div>
+    <h2>Harga normal:</h2>
+    <div class="price-old">Rp 1,5jt</div>
+    <div class="price-new">Rp 500rb</div>
+    <div class="price-period">/bulan · 50 klien pertama</div>
+    <div class="compare">
+      vs gaji admin manual <b>Rp 3jt+/bulan</b><br>
+      Hemat <b>Rp 2,5jt/bulan</b> + bot kerja 24/7 ✨
+    </div>
+    <div class="limited">⏳ Slot terbatas — daftar sekarang!</div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+  <!-- SLIDE 7: CTA -->
+  <div class="slide slide-7">
+    <div class="slide-num">07 / 07</div>
+    <div class="logo-circle"><img src="assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+    <h2>Mulai <span>SEKARANG?</span></h2>
+    <div class="sub">Demo gratis · Setup gratis · Cancel anytime</div>
+    <div class="wa-cta">0821-2484-8924</div>
+    <div class="links">
+      <div><b>Demo Bot:</b> t.me/BerstockBot</div>
+      <div><b>Landing:</b> bit.ly/Berstock-AI</div>
+      <div class="ig">@hendrypangg · PT Sinar Pang Cemerlang</div>
+    </div>
+    <div class="slide-watermark"><img src="assets/logo-berbisnis.png?v=3" alt="" /> Berstock</div>
+  </div>
+
+</div>
+
+<div class="guide" style="margin-top:30px">
+  <p>📥 <b>Cara save sebagai gambar:</b></p>
+  <p style="margin-top:8px">1. Buka di Chrome desktop (atau iPad Chrome landscape)<br>
+  2. Klik kanan slide → "Capture Screenshot"<br>
+  3. Atau: F12 → Device Toolbar → Custom 1080x1080 → screenshot<br>
+  4. Atau: Print → Save as PDF (each slide = 1 page)</p>
+</div>
+
+</body>
+</html>
