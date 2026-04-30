@@ -760,6 +760,16 @@ tr.row-overdue td { border-bottom: 1px solid #fecaca; }
   .cb-value { font-size: 18px; }
 }
 
+/* Laporan tabel per item */
+.lap-item-table tfoot tr.lap-item-total td {
+  background: linear-gradient(135deg, #f1f5f9, #fff);
+  border-top: 2px solid var(--primary, #1e3a5f);
+  padding: 10px 8px;
+  font-size: 14px;
+}
+.lap-item-table th, .lap-item-table td { white-space: nowrap; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+
 /* Laporan filter — custom date/month/year/range */
 .laporan-filters {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;

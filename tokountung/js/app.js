@@ -72,6 +72,7 @@ function bindGlobalButtons() {
   ['laporan-date','laporan-month','laporan-year','laporan-range-from','laporan-range-to'].forEach(id => {
     if ($(id)) $(id).addEventListener('change', renderLaporan);
   });
+  if ($('lap-item-search')) $('lap-item-search').addEventListener('input', renderLaporan);
 
   if ($('btn-export')) $('btn-export').onclick = exportData;
   if ($('btn-import')) $('btn-import').onclick = () => $('file-import').click();

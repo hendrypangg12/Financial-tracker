@@ -231,6 +231,81 @@ function getLaporanRange() {
   return { start, end, label, periode };
 }
 
+// Render laporan penjualan per item (akumulasi sesuai periode aktif)
+function renderLaporanItems(periodSales, totalRevenue) {
+  const search = (document.getElementById('lap-item-search')?.value || '').toLowerCase().trim();
+
+  // Lookup satuan dari product master
+  const satuanMap = {};
+  for (const p of (state.products || [])) satuanMap[p.id] = p.satuan || 'pcs';
+
+  // Aggregate per produk
+  const counts = {};
+  for (const s of periodSales) {
+    for (const it of (s.items || [])) {
+      if (!counts[it.productId]) {
+        counts[it.productId] = {
+          nama: it.nama,
+          satuan: it.satuan || satuanMap[it.productId] || 'pcs',
+          qty: 0, revenue: 0, hpp: 0,
+        };
+      }
+      counts[it.productId].qty += it.qty || 0;
+      counts[it.productId].revenue += (it.qty || 0) * (it.hargaJual || 0);
+      counts[it.productId].hpp += (it.qty || 0) * (it.hargaModal || 0);
+    }
+  }
+  let list = Object.values(counts).map(c => ({
+    ...c,
+    profit: c.revenue - c.hpp,
+    share: totalRevenue > 0 ? (c.revenue / totalRevenue * 100) : 0,
+  }));
+
+  // Filter search
+  if (search) list = list.filter(c => c.nama.toLowerCase().includes(search));
+
+  // Sort by qty desc
+  list.sort((a, b) => b.qty - a.qty);
+
+  const tbody = document.getElementById('lap-item-body');
+  const tfoot = document.getElementById('lap-item-foot');
+  if (!tbody) return;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">${search ? 'Tidak ditemukan' : 'Belum ada penjualan pada periode ini'}</td></tr>`;
+    if (tfoot) tfoot.innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = list.map((c, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><b>${escapeHtml(c.nama)}</b></td>
+      <td class="num">${c.qty} ${escapeHtml(c.satuan)}</td>
+      <td class="num">${formatRupiah(c.revenue)}</td>
+      <td class="num" style="color:#94a3b8">${formatRupiah(c.hpp)}</td>
+      <td class="num"><b style="color:#16a34a">${formatRupiah(c.profit)}</b></td>
+      <td class="num">${c.share.toFixed(1)}%</td>
+    </tr>
+  `).join('');
+
+  // Total row
+  const tQty = list.reduce((a, x) => a + x.qty, 0);
+  const tRev = list.reduce((a, x) => a + x.revenue, 0);
+  const tHpp = list.reduce((a, x) => a + x.hpp, 0);
+  const tProfit = list.reduce((a, x) => a + x.profit, 0);
+  if (tfoot) tfoot.innerHTML = `
+    <tr class="lap-item-total">
+      <td colspan="2"><b>TOTAL (${list.length} produk)</b></td>
+      <td class="num"><b>${tQty}</b></td>
+      <td class="num"><b>${formatRupiah(tRev)}</b></td>
+      <td class="num">${formatRupiah(tHpp)}</td>
+      <td class="num"><b style="color:#16a34a">${formatRupiah(tProfit)}</b></td>
+      <td class="num"><b>100%</b></td>
+    </tr>
+  `;
+}
+
 function renderLaporan() {
   const range = getLaporanRange();
   const labelEl = document.getElementById('laporan-period-label');
@@ -255,20 +330,8 @@ function renderLaporan() {
   document.getElementById('lap-profit').textContent = formatRupiah(profit);
   document.getElementById('lap-margin').textContent = margin.toFixed(1) + '%';
 
-  // Best seller
-  const counts = {};
-  for (const s of periodSales) {
-    for (const it of s.items) {
-      if (!counts[it.productId]) counts[it.productId] = { nama: it.nama, qty: 0, revenue: 0 };
-      counts[it.productId].qty += it.qty;
-      counts[it.productId].revenue += it.qty * it.hargaJual;
-    }
-  }
-  const top = Object.values(counts).sort((a,b) => b.qty - a.qty).slice(0, 10);
-  const ol = document.getElementById('lap-best-seller');
-  ol.innerHTML = top.length
-    ? top.map(t => `<li><span>${escapeHtml(t.nama)}</span><b>${t.qty}× · ${formatRupiah(t.revenue)}</b></li>`).join('')
-    : '<li class="empty">Belum ada penjualan</li>';
+  // === Laporan penjualan per item (akumulasi sesuai periode) ===
+  renderLaporanItems(periodSales, revenue);
 
   // Slow moving (>30 hari tidak laku)
   const sold30 = new Set();
