@@ -12,6 +12,9 @@ function init() {
   safeRun('setupCheckoutForm', () => setupCheckoutForm());
   safeRun('setupRestockForm', () => setupRestockForm());
   safeRun('setupSettingsForms', () => setupSettingsForms());
+  if (typeof setupPiutangFilter === 'function') {
+    safeRun('setupPiutangFilter', () => setupPiutangFilter());
+  }
   if (typeof setupCloudSyncForm === 'function') {
     safeRun('setupCloudSyncForm', () => setupCloudSyncForm());
   }
@@ -78,6 +81,7 @@ function setupTabs() {
       if (t === 'stok') renderStok();
       if (t === 'jual') { renderPOSProducts(); renderCart(); }
       if (t === 'restock') renderRestock();
+      if (t === 'piutang') renderPiutang();
       if (t === 'laporan') renderLaporan();
       if (t === 'pengaturan') renderPengaturan();
     };
@@ -165,6 +169,7 @@ function renderAll() {
   renderPOSProducts();
   renderCart();
   renderRestock();
+  renderPiutang();
   renderLaporan();
   renderPengaturan();
 }

@@ -89,6 +89,26 @@ function deleteSale(id) {
   saveState();
 }
 
+function markSaleLunas(id) {
+  const sale = state.sales.find(s => s.id === id);
+  if (!sale) return;
+  sale.lunas = true;
+  sale.tanggalLunas = todayISO();
+  sale.bayar = sale.total;
+  sale.kembalian = 0;
+  saveState();
+}
+
+function markSaleBelumLunas(id) {
+  const sale = state.sales.find(s => s.id === id);
+  if (!sale) return;
+  sale.lunas = false;
+  delete sale.tanggalLunas;
+  sale.bayar = 0;
+  sale.kembalian = 0;
+  saveState();
+}
+
 // CRUD Restock
 function addRestock(restock) {
   restock.id = restock.id || uid('restock');

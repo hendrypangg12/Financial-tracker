@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=11" />
+<link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body>
 
@@ -131,6 +131,7 @@
     <button class="tab" data-tab="stok">Stok</button>
     <button class="tab" data-tab="jual">Kasir</button>
     <button class="tab" data-tab="restock">Restock</button>
+    <button class="tab" data-tab="piutang">💰 Piutang</button>
     <button class="tab" data-tab="laporan">Laporan</button>
     <button class="tab" data-tab="pengaturan">Pengaturan</button>
     <button class="tab" data-tab="admin" id="tab-btn-admin" hidden>👑 Admin</button>
@@ -295,6 +296,57 @@
         <tbody id="restock-body"></tbody>
       </table>
       <div id="restock-empty" class="empty" hidden>Belum ada catatan restock.</div>
+    </div>
+  </section>
+
+  <!-- ============ PIUTANG / TEMPO ============ -->
+  <section id="tab-piutang" class="tab-panel">
+    <div class="page-head">
+      <h1>💰 Piutang Pelanggan</h1>
+      <div class="page-filters">
+        <select id="piutang-filter">
+          <option value="belum">Belum Lunas</option>
+          <option value="overdue">Lewat Jatuh Tempo</option>
+          <option value="lunas">Sudah Lunas</option>
+          <option value="all">Semua Tempo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="piutang-summary">
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Total Belum Lunas</div>
+        <div class="psum-value" id="psum-belum">Rp 0</div>
+        <div class="psum-meta" id="psum-belum-count">0 invoice</div>
+      </div>
+      <div class="psum-card psum-overdue">
+        <div class="psum-label">Lewat Jatuh Tempo</div>
+        <div class="psum-value" id="psum-overdue">Rp 0</div>
+        <div class="psum-meta" id="psum-overdue-count">0 invoice</div>
+      </div>
+      <div class="psum-card psum-lunas">
+        <div class="psum-label">Sudah Lunas</div>
+        <div class="psum-value" id="psum-lunas">Rp 0</div>
+        <div class="psum-meta" id="psum-lunas-count">0 invoice</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Pelanggan</th>
+            <th>Tgl Jual</th>
+            <th>Jatuh Tempo</th>
+            <th class="num">Total</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="piutang-body"></tbody>
+      </table>
+      <div id="piutang-empty" class="empty" hidden>Belum ada transaksi tempo.</div>
     </div>
   </section>
 
@@ -616,13 +668,14 @@
 <script src="js/firestore-sync.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=2"></script>
-<script src="js/storage.js?v=2"></script>
+<script src="js/storage.js?v=3"></script>
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=4"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
-<script src="js/receipt.js?v=3"></script>
+<script src="js/receipt.js?v=4"></script>
+<script src="js/piutang.js?v=1"></script>
 <script src="js/cloud-sync.js?v=3"></script>
-<script src="js/app.js?v=12"></script>
+<script src="js/app.js?v=13"></script>
 </body>
 </html>

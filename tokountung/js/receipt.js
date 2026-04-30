@@ -88,11 +88,17 @@ function showInvoiceA4(sale) {
 
   // Status pembayaran
   const isTempo = sale.metode === 'tempo';
-  const paymentLabel = isTempo
-    ? `<b style="color:#c44848">TEMPO ⏱️</b>`
-    : `<b style="color:#16a34a">LUNAS ✓</b>`;
+  const isLunas = !isTempo || sale.lunas === true;
+  let paymentLabel;
+  if (!isTempo) {
+    paymentLabel = `<b style="color:#16a34a">LUNAS ✓</b>`;
+  } else if (sale.lunas) {
+    paymentLabel = `<b style="color:#16a34a">LUNAS ✓ (Tempo)</b>`;
+  } else {
+    paymentLabel = `<b style="color:#c44848">TEMPO ⏱️</b>`;
+  }
   const jatuhTempoLabel = isTempo && sale.jatuhTempo
-    ? formatTanggal(sale.jatuhTempo)
+    ? formatTanggal(sale.jatuhTempo) + (sale.lunas && sale.tanggalLunas ? ` · dibayar ${formatTanggal(sale.tanggalLunas)}` : '')
     : (isTempo ? '— belum diatur —' : 'Lunas saat transaksi');
 
   function buildPly(plyLabel, plyColor) {
