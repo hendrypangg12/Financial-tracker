@@ -735,6 +735,31 @@ tr.row-overdue td { border-bottom: 1px solid #fecaca; }
 .btn-success { background: #16a34a; color: #fff; border-color: #15803d; }
 .btn-success:hover { background: #15803d; }
 
+/* Dashboard breakdown: Cash vs Tempo */
+.cash-breakdown {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin: 14px 0 18px;
+}
+.cb-card {
+  display: flex; gap: 14px; align-items: center;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+  padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  border-left: 5px solid #94a3b8;
+}
+.cb-card.cb-cash { border-left-color: #16a34a; background: linear-gradient(135deg, #fff, #f0fdf4); }
+.cb-card.cb-tempo { border-left-color: #f59e0b; background: linear-gradient(135deg, #fff, #fffbeb); }
+.cb-icon { font-size: 32px; flex-shrink: 0; }
+.cb-body { flex: 1; min-width: 0; }
+.cb-label { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.cb-value { font-size: 22px; font-weight: 700; color: #1e293b; margin-top: 2px; }
+.cb-card.cb-cash .cb-value { color: #15803d; }
+.cb-card.cb-tempo .cb-value { color: #b45309; }
+.cb-meta { font-size: 12px; color: #64748b; margin-top: 2px; }
+@media (max-width: 640px) {
+  .cash-breakdown { grid-template-columns: 1fr; }
+  .cb-value { font-size: 18px; }
+}
+
 /* Laporan filter — custom date/month/year/range */
 .laporan-filters {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;

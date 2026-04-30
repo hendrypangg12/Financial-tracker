@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=15" />
+<link rel="stylesheet" href="styles.css?v=16" />
 </head>
 <body>
 
@@ -188,6 +188,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Breakdown pemasukan hari ini: Cash vs Tempo -->
+    <div class="cash-breakdown">
+      <div class="cb-card cb-cash">
+        <div class="cb-icon">💵</div>
+        <div class="cb-body">
+          <div class="cb-label">Pemasukan Cash Hari Ini</div>
+          <div class="cb-value" id="kpi-cash-today">Rp 0</div>
+          <div class="cb-meta" id="kpi-cash-today-meta">0 transaksi · sudah masuk kas</div>
+        </div>
+      </div>
+      <div class="cb-card cb-tempo">
+        <div class="cb-icon">⏱️</div>
+        <div class="cb-body">
+          <div class="cb-label">Tempo Hari Ini (Belum Dibayar)</div>
+          <div class="cb-value" id="kpi-tempo-today">Rp 0</div>
+          <div class="cb-meta" id="kpi-tempo-today-meta">0 invoice · piutang baru</div>
+        </div>
+      </div>
+    </div>
+
     <div class="grid-2">
       <div class="panel">
         <div class="panel-head"><h3>📈 Trend Penjualan 7 Hari</h3></div>
@@ -816,7 +837,7 @@
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=5"></script>
 <script src="js/restock.js?v=1"></script>
-<script src="js/reports.js?v=2"></script>
+<script src="js/reports.js?v=3"></script>
 <script src="js/receipt.js?v=4"></script>
 <script src="js/piutang.js?v=2"></script>
 <script src="js/customers.js?v=2"></script>

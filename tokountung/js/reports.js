@@ -15,6 +15,17 @@ function renderDashboard() {
   document.getElementById('kpi-profit').textContent = formatRupiah(profit);
   document.getElementById('kpi-profit-delta').textContent = `Margin ${margin.toFixed(1)}%`;
 
+  // Breakdown cash vs tempo (untuk hari ini)
+  const cashSales = todaySales.filter(s => s.metode !== 'tempo' || s.lunas === true);
+  const tempoSales = todaySales.filter(s => s.metode === 'tempo' && !s.lunas);
+  const cashTotal = cashSales.reduce((s, x) => s + (x.total || 0), 0);
+  const tempoTotal = tempoSales.reduce((s, x) => s + (x.total || 0), 0);
+  const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setText('kpi-cash-today', formatRupiah(cashTotal));
+  setText('kpi-cash-today-meta', `${cashSales.length} transaksi · sudah masuk kas`);
+  setText('kpi-tempo-today', formatRupiah(tempoTotal));
+  setText('kpi-tempo-today-meta', `${tempoSales.length} invoice · piutang baru`);
+
   const stockValue = state.products.reduce((s, p) => s + p.stok * p.hargaModal, 0);
   document.getElementById('kpi-stock').textContent = formatRupiah(stockValue);
   document.getElementById('kpi-stock-delta').textContent = `${state.products.length} item`;
