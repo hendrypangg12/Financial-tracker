@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=9" />
+<link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
 
@@ -536,17 +536,23 @@
       <label>Bayar (Rp)<input name="bayar" type="number" required autofocus /></label>
       <div id="kembalian-preview" class="kembalian-preview"></div>
       <label>Metode Bayar
-        <select name="metode">
+        <select name="metode" id="checkout-metode">
           <option value="tunai">💵 Tunai</option>
           <option value="transfer">🏦 Transfer</option>
           <option value="qris">📱 QRIS</option>
           <option value="ewallet">💳 E-wallet</option>
+          <option value="tempo">⏱️ Tempo (Bayar Nanti)</option>
         </select>
       </label>
-      <label>Nama Pelanggan (opsional)<input name="pelanggan" placeholder="Anonim" /></label>
+      <label id="label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
+      <label>Nama Pelanggan / Perusahaan (opsional)<input name="pelanggan" placeholder="PT Contoh / Pak Budi" /></label>
+      <div class="grid-2-form">
+        <label>Alamat Pelanggan<input name="pelangganAlamat" placeholder="Jakarta / Surabaya" /></label>
+        <label>Telepon / Kontak<input name="pelangganTelepon" placeholder="0812-xxx (opsional)" /></label>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal('modal-checkout')">Batal</button>
-        <button type="submit" class="btn btn-primary">✅ Selesaikan & Cetak Struk</button>
+        <button type="submit" class="btn btn-primary">✅ Selesaikan & Cetak</button>
       </div>
     </form>
   </div>
@@ -582,8 +588,21 @@
     <button type="button" class="modal-close" onclick="closeModal('modal-receipt')">&times;</button>
     <div id="receipt-content" class="receipt"></div>
     <div class="modal-actions">
-      <button type="button" class="btn btn-ghost" id="btn-share-receipt">📤 Share/WhatsApp</button>
-      <button type="button" class="btn btn-primary" id="btn-print-receipt">🖨️ Cetak/Save PDF</button>
+      <button type="button" class="btn btn-ghost" id="btn-share-receipt">📤 Share/WA</button>
+      <button type="button" class="btn btn-gold" id="btn-show-invoice">📄 Invoice A4</button>
+      <button type="button" class="btn btn-primary" id="btn-print-receipt">🖨️ Cetak Struk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Invoice A4 (formal) -->
+<div class="modal" id="modal-invoice" hidden>
+  <div class="modal-card modal-large">
+    <button type="button" class="modal-close" onclick="closeModal('modal-invoice')">&times;</button>
+    <div id="invoice-content"></div>
+    <div class="modal-actions no-print">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('modal-invoice')">Tutup</button>
+      <button type="button" class="btn btn-primary" id="btn-print-invoice">🖨️ Cetak / Save PDF</button>
     </div>
   </div>
 </div>
@@ -595,13 +614,13 @@
 <script src="js/admin.js?v=1"></script>
 <script src="js/firestore-sync.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
-<script src="js/utils.js?v=1"></script>
+<script src="js/utils.js?v=2"></script>
 <script src="js/storage.js?v=2"></script>
 <script src="js/products.js?v=4"></script>
-<script src="js/sales.js?v=2"></script>
+<script src="js/sales.js?v=3"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
-<script src="js/receipt.js?v=1"></script>
+<script src="js/receipt.js?v=2"></script>
 <script src="js/cloud-sync.js?v=2"></script>
 <script src="js/app.js?v=11"></script>
 </body>

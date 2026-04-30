@@ -90,3 +90,48 @@ function closeModal(id) {
   const m = document.getElementById(id);
   if (m) m.hidden = true;
 }
+
+// =============================================================================
+// TERBILANG — convert angka ke kata-kata Indonesia
+// =============================================================================
+function formatTerbilang(num) {
+  num = Math.floor(Math.abs(Number(num) || 0));
+  if (num === 0) return 'Nol Rupiah';
+  const angka = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan',
+    'Sepuluh', 'Sebelas'];
+  function _terbilang(n) {
+    if (n < 12) return angka[n];
+    if (n < 20) return _terbilang(n - 10) + ' Belas';
+    if (n < 100) {
+      const sisa = n % 10;
+      return _terbilang(Math.floor(n / 10)) + ' Puluh' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 200) {
+      const sisa = n - 100;
+      return 'Seratus' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 1000) {
+      const sisa = n % 100;
+      return _terbilang(Math.floor(n / 100)) + ' Ratus' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 2000) {
+      const sisa = n - 1000;
+      return 'Seribu' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 1000000) {
+      const sisa = n % 1000;
+      return _terbilang(Math.floor(n / 1000)) + ' Ribu' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 1000000000) {
+      const sisa = n % 1000000;
+      return _terbilang(Math.floor(n / 1000000)) + ' Juta' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    if (n < 1000000000000) {
+      const sisa = n % 1000000000;
+      return _terbilang(Math.floor(n / 1000000000)) + ' Miliar' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+    }
+    const sisa = n % 1000000000000;
+    return _terbilang(Math.floor(n / 1000000000000)) + ' Triliun' + (sisa > 0 ? ' ' + _terbilang(sisa) : '');
+  }
+  return _terbilang(num).trim() + ' Rupiah';
+}
