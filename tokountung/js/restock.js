@@ -1,6 +1,56 @@
 // Module: PO Supplier (replace lama "Restock")
 // Fitur: input PO, items dari stok atau item baru (auto-create produk),
 //        metode bayar tunai/transfer/tempo, jatuh tempo, status hutang.
+//        Foto surat jalan / faktur supplier (compressed, viewable).
+
+// Compress image untuk faktur — pakai 800px (lebih besar dari produk 300px)
+// supaya text faktur tetap terbaca.
+function compressFakturImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) { reject(new Error('Bukan gambar')); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 800;
+        let w = img.width, h = img.height;
+        if (w > h && w > max) { h = h * max / w; w = max; }
+        else if (h > max) { w = w * max / h; h = max; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        try { resolve(canvas.toDataURL('image/jpeg', 0.7)); }
+        catch (err) { reject(err); }
+      };
+      img.onerror = () => reject(new Error('Gambar gagal dibaca'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('File gagal dibaca'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function setPOFotoPreview(dataUrl) {
+  const img = document.getElementById('po-foto-preview');
+  const ph = document.getElementById('po-foto-placeholder');
+  const rm = document.getElementById('btn-po-foto-remove');
+  const inp = document.getElementById('po-foto-url');
+  if (inp) inp.value = dataUrl || '';
+  if (!img || !ph || !rm) return;
+  if (dataUrl) {
+    img.src = dataUrl; img.hidden = false; ph.hidden = true; rm.hidden = false;
+  } else {
+    img.src = ''; img.hidden = true; ph.hidden = false; rm.hidden = true;
+  }
+}
+
+function openFotoLightbox(dataUrl, title) {
+  const img = document.getElementById('lightbox-img');
+  const ttl = document.getElementById('lightbox-title');
+  if (img) img.src = dataUrl;
+  if (ttl) ttl.textContent = title || '📷 Foto';
+  openModal('modal-foto-lightbox');
+}
 
 function isPOOverdue(po) {
   if (po.lunas) return false;
@@ -57,6 +107,10 @@ function renderRestock() {
       statusBadge = `<span class="badge badge-warn">${txt}</span>`;
     }
 
+    const fotoCell = r.fotoSuratJalan
+      ? `<img class="po-thumb" src="${r.fotoSuratJalan}" alt="surat jalan" data-act="foto" data-id="${r.id}" title="Klik untuk lihat full" />`
+      : `<span style="color:#cbd5e1; font-size:11px">— tidak ada —</span>`;
+
     return `
       <tr ${isPOOverdue(r) ? 'class="row-overdue"' : ''}>
         <td><b>${escapeHtml(r.nomorPO || '-')}</b></td>
@@ -66,6 +120,7 @@ function renderRestock() {
         <td class="num"><b>${formatRupiah(r.total || 0)}</b></td>
         <td>${statusBadge}</td>
         <td>${isTempo && r.jatuhTempo ? formatTanggal(r.jatuhTempo) : '-'}</td>
+        <td>${fotoCell}</td>
         <td>
           <div class="row-actions">
             ${isTempo && !r.lunas
@@ -104,6 +159,9 @@ function renderRestock() {
       renderStok();
       renderDashboard();
       showToast('🗑️ PO dihapus', 'info');
+    } else if (act === 'foto') {
+      const title = `📷 Surat Jalan/Faktur — ${po.supplier || 'Supplier'} (${formatTanggal(po.tanggal)})`;
+      openFotoLightbox(po.fotoSuratJalan, title);
     }
   });
 }
@@ -128,6 +186,7 @@ function openRestockModal() {
   addRestockItemRow();
   updateRestockTotal();
   togglePOTempo(false);
+  setPOFotoPreview('');
   refreshSupplierDatalist();
   openModal('modal-restock');
 }
@@ -244,6 +303,37 @@ function setupRestockForm() {
   const metode = document.getElementById('po-metode');
   if (metode) metode.onchange = () => togglePOTempo(metode.value === 'tempo');
 
+  // Foto surat jalan upload (kamera + galeri)
+  const onPOFotoChange = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const dataUrl = await compressFakturImage(f);
+      setPOFotoPreview(dataUrl);
+      showToast('✓ Foto faktur ter-upload', 'success');
+    } catch (err) {
+      showToast('Gagal upload foto: ' + (err.message || ''), 'error');
+    }
+    e.target.value = '';
+  };
+  const inpCam = document.getElementById('po-foto-camera');
+  const inpGal = document.getElementById('po-foto-input');
+  const btnRm = document.getElementById('btn-po-foto-remove');
+  if (inpCam) inpCam.addEventListener('change', onPOFotoChange);
+  if (inpGal) inpGal.addEventListener('change', onPOFotoChange);
+  if (btnRm) btnRm.onclick = () => setPOFotoPreview('');
+
+  // Click thumbnail di list → buka lightbox
+  document.addEventListener('click', (e) => {
+    if (e.target?.dataset?.act === 'foto' && e.target?.tagName === 'IMG') {
+      const id = e.target.dataset.id;
+      const po = state.restocks.find(r => r.id === id);
+      if (po && po.fotoSuratJalan) {
+        openFotoLightbox(po.fotoSuratJalan, `📷 Surat Jalan — ${po.supplier || 'Supplier'} (${formatTanggal(po.tanggal)})`);
+      }
+    }
+  });
+
   const form = document.getElementById('form-restock');
   form.onsubmit = (e) => {
     e.preventDefault();
@@ -304,6 +394,7 @@ function setupRestockForm() {
       jatuhTempo: isTempo ? fd.get('jatuhTempo') : '',
       lunas: !isTempo, // tunai/transfer = otomatis lunas
       tanggalLunas: !isTempo ? todayISO() : null,
+      fotoSuratJalan: fd.get('fotoSuratJalan') || '',
     };
     addRestock(po); // existing function — adds stock + weighted-avg HPP
 

@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=18" />
+<link rel="stylesheet" href="styles.css?v=19" />
 </head>
 <body>
 
@@ -320,7 +320,7 @@
     <div class="panel">
       <table class="data-table">
         <thead>
-          <tr><th>No PO</th><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Status</th><th>Jatuh Tempo</th><th></th></tr>
+          <tr><th>No PO</th><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Status</th><th>Jatuh Tempo</th><th>Faktur</th><th></th></tr>
         </thead>
         <tbody id="restock-body"></tbody>
       </table>
@@ -821,6 +821,29 @@
 
       <label>Catatan<textarea name="notes" rows="2" placeholder="Opsional"></textarea></label>
 
+      <div class="po-foto-section">
+        <h4 style="margin:0 0 8px">📷 Foto Surat Jalan / Faktur Supplier</h4>
+        <input type="hidden" name="fotoSuratJalan" id="po-foto-url" />
+        <div class="po-foto-uploader">
+          <div class="po-foto-preview-wrap">
+            <img id="po-foto-preview" class="po-foto-preview" alt="" hidden />
+            <div id="po-foto-placeholder" class="po-foto-placeholder">📄</div>
+          </div>
+          <div class="po-foto-actions">
+            <label class="btn btn-ghost btn-small">
+              📸 Foto Faktur
+              <input type="file" id="po-foto-camera" accept="image/*" capture="environment" hidden />
+            </label>
+            <label class="btn btn-ghost btn-small">
+              🖼️ Galeri
+              <input type="file" id="po-foto-input" accept="image/*" hidden />
+            </label>
+            <button type="button" class="btn btn-small btn-danger" id="btn-po-foto-remove" hidden>Hapus Foto</button>
+          </div>
+          <small style="color:var(--ink-soft); font-size:11px">Foto otomatis dikompres ke 800px (~80KB) supaya text faktur tetap terbaca.</small>
+        </div>
+      </div>
+
       <div class="po-total-box">
         <div>Total Tagihan Supplier:</div>
         <b id="restock-total">Rp 0</b>
@@ -831,6 +854,17 @@
         <button type="submit" class="btn btn-primary">💾 Simpan PO</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal: Foto Lightbox (untuk view surat jalan PO) -->
+<div class="modal" id="modal-foto-lightbox" hidden>
+  <div class="modal-card modal-large foto-lightbox-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-foto-lightbox')">&times;</button>
+    <h3 id="lightbox-title">📷 Foto</h3>
+    <div class="foto-lightbox-wrap">
+      <img id="lightbox-img" alt="" />
+    </div>
   </div>
 </div>
 
@@ -870,7 +904,7 @@
 <script src="js/storage.js?v=3"></script>
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=5"></script>
-<script src="js/restock.js?v=2"></script>
+<script src="js/restock.js?v=3"></script>
 <script src="js/reports.js?v=5"></script>
 <script src="js/receipt.js?v=4"></script>
 <script src="js/piutang.js?v=2"></script>

@@ -828,6 +828,55 @@ tr.row-overdue td { border-bottom: 1px solid #fecaca; }
 }
 .po-total-box b { font-size: 22px; color: var(--primary, #1e3a5f); }
 
+/* Foto Surat Jalan section di modal PO */
+.po-foto-section {
+  background: linear-gradient(135deg, #fefce8, #fff);
+  border: 1px dashed #fbbf24; border-radius: 10px;
+  padding: 12px 14px; margin: 8px 0;
+}
+.po-foto-uploader {
+  display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;
+}
+.po-foto-preview-wrap {
+  width: 110px; height: 110px; flex-shrink: 0;
+  border-radius: 10px; overflow: hidden;
+  background: #f1f5f9; border: 1px solid #e5e7eb;
+  display: flex; align-items: center; justify-content: center;
+}
+.po-foto-preview { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.po-foto-placeholder { font-size: 38px; color: #cbd5e1; }
+.po-foto-actions {
+  flex: 1; min-width: 200px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.po-foto-actions > div { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Thumbnail di list PO */
+.po-thumb {
+  width: 44px; height: 44px; border-radius: 6px;
+  object-fit: cover; cursor: pointer;
+  border: 1px solid #e5e7eb;
+  transition: transform .15s, border-color .15s;
+}
+.po-thumb:hover {
+  transform: scale(1.1);
+  border-color: var(--primary, #1e3a5f);
+}
+
+/* Foto lightbox modal */
+.foto-lightbox-card { max-width: 90vw; }
+.foto-lightbox-wrap {
+  display: flex; align-items: center; justify-content: center;
+  max-height: 80vh; overflow: auto;
+  background: #f1f5f9; border-radius: 8px;
+  padding: 12px;
+}
+.foto-lightbox-wrap img {
+  max-width: 100%; max-height: 75vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 @media (max-width: 768px) {
   .po-item-row,
   .po-item-row.po-item-new {
