@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=17" />
+<link rel="stylesheet" href="styles.css?v=18" />
 </head>
 <body>
 
@@ -130,7 +130,7 @@
     <button class="tab active" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="stok">Stok</button>
     <button class="tab" data-tab="jual">Kasir</button>
-    <button class="tab" data-tab="restock">Restock</button>
+    <button class="tab" data-tab="restock">📥 PO Supplier</button>
     <button class="tab" data-tab="piutang">💰 Piutang</button>
     <button class="tab" data-tab="pelanggan">👥 Pelanggan</button>
     <button class="tab" data-tab="laporan">Laporan</button>
@@ -292,20 +292,39 @@
     </div>
   </section>
 
-  <!-- ============ RESTOCK ============ -->
+  <!-- ============ PO SUPPLIER ============ -->
   <section id="tab-restock" class="tab-panel">
     <div class="page-head">
-      <h1>Restock Barang Masuk</h1>
-      <button class="btn btn-primary" id="btn-add-restock">+ Catat Restock</button>
+      <h1>📥 PO Supplier</h1>
+      <button class="btn btn-primary" id="btn-add-restock">+ Buat PO Baru</button>
     </div>
+
+    <div class="po-summary">
+      <div class="psum-card psum-info">
+        <div class="psum-label">Total PO Aktif</div>
+        <div class="psum-value" id="po-total-count">0</div>
+        <div class="psum-meta" id="po-total-value">Rp 0</div>
+      </div>
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Hutang ke Supplier</div>
+        <div class="psum-value" id="po-hutang-value">Rp 0</div>
+        <div class="psum-meta" id="po-hutang-count">0 PO belum lunas</div>
+      </div>
+      <div class="psum-card psum-overdue">
+        <div class="psum-label">Lewat Jatuh Tempo</div>
+        <div class="psum-value" id="po-overdue-value">Rp 0</div>
+        <div class="psum-meta" id="po-overdue-count">0 PO overdue</div>
+      </div>
+    </div>
+
     <div class="panel">
       <table class="data-table">
         <thead>
-          <tr><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Catatan</th><th></th></tr>
+          <tr><th>No PO</th><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Status</th><th>Jatuh Tempo</th><th></th></tr>
         </thead>
         <tbody id="restock-body"></tbody>
       </table>
-      <div id="restock-empty" class="empty" hidden>Belum ada catatan restock.</div>
+      <div id="restock-empty" class="empty" hidden>Belum ada PO. Klik "+ Buat PO Baru".</div>
     </div>
   </section>
 
@@ -764,25 +783,52 @@
   </div>
 </div>
 
-<!-- Modal: Restock -->
+<!-- Modal: PO Supplier -->
 <div class="modal" id="modal-restock" hidden>
   <div class="modal-card modal-large">
     <button type="button" class="modal-close" onclick="closeModal('modal-restock')">&times;</button>
-    <h3>📥 Catat Restock</h3>
-    <form id="form-restock" class="form">
+    <h3 id="modal-po-title">📥 PO Supplier Baru</h3>
+    <form id="form-restock" class="form po-form">
+      <input type="hidden" name="id" />
       <div class="grid-2-form">
-        <label>Tanggal<input name="tanggal" type="date" required /></label>
-        <label>Supplier<input name="supplier" placeholder="Nama supplier" /></label>
+        <label>Tanggal PO<input name="tanggal" type="date" required /></label>
+        <label>No PO (opsional)<input name="nomorPO" placeholder="PO-2026-001" /></label>
       </div>
-      <div class="restock-items" id="restock-items">
-        <!-- baris item akan ditambahkan dinamis -->
+      <label>Supplier
+        <input name="supplier" id="po-supplier" list="po-supplier-list" placeholder="Nama supplier (ketik atau pilih)" autocomplete="off" />
+        <datalist id="po-supplier-list"></datalist>
+      </label>
+
+      <h4 style="margin:12px 0 6px">📦 Items</h4>
+      <div class="po-items" id="restock-items"></div>
+      <div class="po-actions">
+        <button type="button" class="btn btn-ghost" id="btn-add-restock-item">+ Item dari Stok</button>
+        <button type="button" class="btn btn-ghost" id="btn-add-new-product-row">+ Item Baru (Buat Produk)</button>
       </div>
-      <button type="button" class="btn btn-ghost" id="btn-add-restock-item">+ Tambah Item</button>
-      <label>Catatan<textarea name="notes" rows="2"></textarea></label>
-      <div class="restock-total">Total: <b id="restock-total">Rp 0</b></div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #e5e7eb" />
+
+      <div class="grid-2-form">
+        <label>Metode Bayar
+          <select name="metode" id="po-metode">
+            <option value="tunai">💵 Tunai (Lunas)</option>
+            <option value="transfer">🏦 Transfer (Lunas)</option>
+            <option value="tempo">⏱️ Tempo (Bayar Nanti)</option>
+          </select>
+        </label>
+        <label id="po-label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
+      </div>
+
+      <label>Catatan<textarea name="notes" rows="2" placeholder="Opsional"></textarea></label>
+
+      <div class="po-total-box">
+        <div>Total Tagihan Supplier:</div>
+        <b id="restock-total">Rp 0</b>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal('modal-restock')">Batal</button>
-        <button type="submit" class="btn btn-primary">💾 Simpan Restock</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan PO</button>
       </div>
     </form>
   </div>
@@ -824,7 +870,7 @@
 <script src="js/storage.js?v=3"></script>
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=5"></script>
-<script src="js/restock.js?v=1"></script>
+<script src="js/restock.js?v=2"></script>
 <script src="js/reports.js?v=5"></script>
 <script src="js/receipt.js?v=4"></script>
 <script src="js/piutang.js?v=2"></script>
