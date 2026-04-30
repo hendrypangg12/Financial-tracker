@@ -3,395 +3,293 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BerUang 🐻 — Catat Uangmu, Jadi Ber-uang</title>
-<meta name="description" content="Aplikasi catat keuangan paling simpel. Mulai Rp 35rb/bulan." />
+<title>BerSatu Suite — Hendry Phang</title>
+<meta name="description" content="Ekosistem AI untuk UMKM Indonesia: BerUang · BerBisnis · Berstock" />
 <meta name="theme-color" content="#8b5a2b" />
 <link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=2" />
-<meta property="og:title" content="BerUang — Catat Uangmu, Jadi Ber-uang" />
-<meta property="og:description" content="Aplikasi catat keuangan pribadi paling simpel. Cukup Rp 35rb/bulan atau Rp 125rb lifetime." />
-<meta property="og:image" content="assets/logo-beruang.png" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=2" />
+<meta property="og:title" content="BerSatu Suite — Hendry Phang" />
+<meta property="og:description" content="Personal finance · Kasir UMKM · AI Agent Telegram. Pilih layanan Anda." />
+<meta property="og:image" content="assets/logo-berbisnis.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #fbf6ee;
+  --cream-deep: #f0e9d8;
+  --brown: #8b5a2b;
+  --brown-dark: #5d3a1a;
+  --ink: #4a3328;
+  --ink-soft: #6e5a4a;
+  --gold: #c9a352;
+  --gold-dark: #a3823a;
+  --navy: #1e3a5f;
+  --green: #16a34a;
+}
 html, body {
   font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(180deg, #fef3e2 0%, var(--cream) 50%, #f5ebd4 100%);
+  color: var(--ink);
   min-height: 100vh;
-  background: linear-gradient(180deg, #fdf6e8 0%, #f1e0c6 50%, #d4a373 100%);
-  background-attachment: fixed;
-  color: #3e2d21;
   -webkit-font-smoothing: antialiased;
-  position: relative;
-  overflow-x: hidden;
 }
 
-/* Floating shapes background */
-body::before, body::after {
-  content: ''; position: fixed; pointer-events: none;
-  border-radius: 50%; opacity: .35; filter: blur(60px);
-  animation: float 12s ease-in-out infinite;
-}
-body::before {
-  width: 350px; height: 350px;
-  background: radial-gradient(circle, #f59e0b, transparent);
-  top: -100px; left: -100px;
-}
-body::after {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #c89468, transparent);
-  bottom: -150px; right: -150px;
-  animation-delay: 4s;
-}
-@keyframes float {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  50% { transform: translate(30px, -30px) scale(1.05); }
-}
-
-.container {
+.wrap {
   max-width: 480px; margin: 0 auto;
   padding: 40px 20px 60px;
-  position: relative; z-index: 1;
-}
-
-/* ============ HEADER ============ */
-.header { text-align: center; margin-bottom: 28px; }
-.avatar-wrap {
-  display: inline-block; position: relative;
-  margin-bottom: 16px;
-}
-.avatar {
-  width: 130px; height: 130px;
-  border-radius: 50%;
-  background: #fff; padding: 6px;
-  box-shadow: 0 8px 24px rgba(139,90,43,.25), 0 0 0 4px rgba(255,255,255,.4);
-  display: block;
-}
-.avatar img {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-.online-dot {
-  position: absolute; bottom: 12px; right: 12px;
-  width: 22px; height: 22px;
-  background: #10b981; border: 4px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(16,185,129,.6);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(16,185,129,.6); }
-  70% { box-shadow: 0 0 0 12px rgba(16,185,129,0); }
-  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-}
-
-.brand {
-  font-size: 32px; font-weight: 900; letter-spacing: -.8px;
-  color: #3e2d21; margin-bottom: 4px;
-}
-.brand .heart { color: #ef4444; animation: beat 1.4s infinite; display: inline-block; }
-@keyframes beat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
-.tag {
-  font-size: 14px; color: #6f5f55;
-  margin-bottom: 10px; font-style: italic;
-}
-.bio {
-  font-size: 13px; color: #6f5f55;
-  margin-bottom: 4px;
-  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-}
-.bio span { white-space: nowrap; }
-
-/* ============ TRUST BADGES ============ */
-.badges {
-  display: flex; gap: 8px; justify-content: center;
-  margin-bottom: 24px; flex-wrap: wrap;
-}
-.badge-pill {
-  background: rgba(255,255,255,.7); backdrop-filter: blur(8px);
-  border: 1px solid rgba(139,90,43,.15);
-  padding: 5px 12px; border-radius: 999px;
-  font-size: 11px; font-weight: 700; color: #6f4518;
-  display: inline-flex; align-items: center; gap: 4px;
-}
-
-/* ============ BUTTONS ============ */
-.links { display: grid; gap: 12px; }
-.lnk {
-  background: #fff; color: #3e2d21;
-  padding: 16px 20px; border-radius: 16px;
-  text-decoration: none; font-weight: 700; font-size: 15px;
-  display: flex; align-items: center; gap: 14px;
-  border: 1px solid rgba(139,90,43,.12);
-  box-shadow: 0 2px 8px rgba(139,90,43,.08), 0 8px 24px rgba(139,90,43,.04);
-  transition: all .25s cubic-bezier(.4,0,.2,1);
-  position: relative; overflow: hidden;
-}
-.lnk::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(139,90,43,.06));
-  opacity: 0; transition: opacity .25s;
-}
-.lnk:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 6px 20px rgba(139,90,43,.18), 0 12px 36px rgba(139,90,43,.08);
-}
-.lnk:hover::before { opacity: 1; }
-.lnk:active { transform: translateY(-1px) scale(.99); }
-.lnk-icon {
-  width: 44px; height: 44px; flex: 0 0 auto;
-  border-radius: 12px;
-  display: grid; place-items: center;
-  font-size: 22px;
-}
-.lnk-text { flex: 1; min-width: 0; }
-.lnk-title { display: block; line-height: 1.2; }
-.lnk-sub { display: block; font-size: 11px; color: #8b7355; font-weight: 500; margin-top: 2px; }
-.lnk-arrow { color: #b5835a; font-size: 18px; }
-
-/* Highlighted (featured) button */
-.lnk-featured {
-  background: linear-gradient(135deg, #8b5a2b, #c89468);
-  color: #fff;
-  border: none;
-  box-shadow: 0 6px 20px rgba(139,90,43,.4);
   position: relative;
 }
-.lnk-featured .lnk-icon { background: rgba(255,255,255,.18); }
-.lnk-featured .lnk-sub { color: rgba(255,255,255,.85); }
-.lnk-featured .lnk-arrow { color: rgba(255,255,255,.7); }
-.lnk-featured::after {
-  content: 'POPULER'; position: absolute;
-  top: -8px; right: 16px;
-  background: #f59e0b; color: #fff;
-  font-size: 10px; font-weight: 800;
-  padding: 3px 10px; border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(245,158,11,.5);
+.wrap::before {
+  content: '💰'; position: absolute; top: 60px; right: -10px;
+  font-size: 60px; opacity: .2; transform: rotate(15deg);
+}
+.wrap::after {
+  content: '🪙'; position: absolute; top: 200px; left: -15px;
+  font-size: 50px; opacity: .15; transform: rotate(-20deg);
 }
 
-/* Specific colored icons */
-.icon-app { background: linear-gradient(135deg, #fbf6ee, #f1e0c6); }
-.icon-buy { background: linear-gradient(135deg, #fef3c7, #fde68a); }
-.icon-life { background: linear-gradient(135deg, #d4a373, #8b5a2b); color: #fff; }
-.icon-wa { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
-.icon-ig { background: linear-gradient(135deg, #833AB4, #E1306C, #F77737); color: #fff; }
-.icon-mail { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
-.icon-info { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+.header { text-align: center; margin-bottom: 36px; position: relative; z-index: 1; }
+.avatar {
+  width: 130px; height: 130px; border-radius: 28px;
+  background: #fff; padding: 12px; margin: 0 auto 18px;
+  box-shadow: 0 16px 50px rgba(139,90,43,.3), 0 0 0 6px rgba(255,255,255,.5);
+}
+.avatar img { width: 100%; height: 100%; object-fit: contain; }
+.name {
+  font-size: 28px; font-weight: 900; letter-spacing: -.5px;
+  color: var(--brown-dark); margin-bottom: 6px;
+}
+.handle { font-size: 15px; color: var(--brown); margin-bottom: 12px; }
+.handle a { color: var(--brown); text-decoration: none; }
+.tagline {
+  font-family: 'Caveat', cursive; font-size: 24px;
+  color: var(--gold-dark); font-weight: 700;
+  margin-bottom: 4px;
+}
+.bio {
+  font-size: 14px; color: var(--ink-soft);
+  line-height: 1.5; max-width: 360px; margin: 0 auto;
+}
+.bio b { color: var(--brown-dark); }
 
-/* ============ FOOTER ============ */
-.divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 28px 0 16px;
-  color: #8b7355; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  color: var(--brown); text-transform: uppercase;
+  margin: 28px 4px 14px;
 }
-.divider::before, .divider::after {
-  content: ''; flex: 1; height: 1px;
-  background: rgba(139,90,43,.2);
-}
-.foot {
-  text-align: center; margin-top: 24px;
-  font-size: 12px; color: #8b7355;
-}
-.foot a { color: #6f4518; text-decoration: none; font-weight: 600; }
-.foot-bears { font-size: 24px; margin-bottom: 8px; }
-.share-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  margin-top: 12px; padding: 8px 14px;
-  background: rgba(255,255,255,.6); backdrop-filter: blur(8px);
-  border: 1px solid rgba(139,90,43,.2);
-  border-radius: 999px; font-size: 12px; font-weight: 600;
-  color: #6f4518; text-decoration: none; cursor: pointer;
-}
-.share-btn:hover { background: rgba(255,255,255,.9); }
-
-/* Reveal animation */
-.lnk, .header { animation: fadeUp .6s backwards; }
-.header { animation-delay: .05s; }
-.lnk:nth-child(1) { animation-delay: .15s; }
-.lnk:nth-child(2) { animation-delay: .22s; }
-.lnk:nth-child(3) { animation-delay: .29s; }
-.lnk:nth-child(4) { animation-delay: .36s; }
-.lnk:nth-child(5) { animation-delay: .43s; }
-.lnk:nth-child(6) { animation-delay: .5s; }
-.lnk:nth-child(7) { animation-delay: .57s; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+.section-title::before, .section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--cream-deep);
 }
 
-/* Toast */
-#toast {
-  position: fixed; bottom: 30px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: #3e2d21; color: #fff;
-  padding: 12px 20px; border-radius: 999px;
-  font-size: 13px; font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0,0,0,.2);
-  opacity: 0; transition: all .3s;
-  pointer-events: none;
-  z-index: 100;
+.link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; border-radius: 18px;
+  background: #fff; border: 2px solid var(--cream-deep);
+  text-decoration: none; color: var(--ink);
+  margin-bottom: 12px;
+  transition: all .15s;
+  box-shadow: 0 4px 14px rgba(74,51,40,.06);
 }
-#toast.show {
-  opacity: 1; transform: translateX(-50%) translateY(0);
+.link:hover, .link:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(74,51,40,.12);
+  border-color: var(--gold);
+}
+.link .ico {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 26px;
+  flex: 0 0 auto;
+  background: var(--cream-deep);
+}
+.link .body { flex: 1; min-width: 0; }
+.link .title {
+  font-size: 16px; font-weight: 800; color: var(--brown-dark);
+  margin-bottom: 2px;
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+}
+.link .desc { font-size: 13px; color: var(--ink-soft); line-height: 1.35; }
+.link .arrow { font-size: 22px; color: var(--gold); flex: 0 0 auto; font-weight: 800; }
+
+.pill {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.pill-trial { background: #dbeafe; color: #1e40af; }
+.pill-pro { background: var(--gold); color: var(--brown-dark); }
+.pill-free { background: #d1fae5; color: #065f46; }
+.pill-hot { background: #fee2e2; color: #991b1b; }
+.pill-new { background: #dcfce7; color: #14532d; }
+
+.link.featured {
+  background: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
+  border: 2px solid var(--gold);
+  color: var(--cream);
+}
+.link.featured .title { color: #fff; }
+.link.featured .desc { color: rgba(255,255,255,.85); }
+.link.featured .ico { background: var(--gold); }
+.link.featured .arrow { color: var(--gold); }
+
+.link.berbisnis {
+  background: linear-gradient(135deg, #fff 0%, #f0f4fa 100%);
+}
+.link.berbisnis .ico { background: linear-gradient(135deg, var(--navy), #4d6f99); color: #fff; }
+
+.link.berstock {
+  background: linear-gradient(135deg, #fff 0%, #fef3e2 100%);
+  border-color: var(--gold);
+}
+.link.berstock .ico {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff;
+}
+
+.link.galaxy {
+  background: linear-gradient(135deg, #1a0a2e 0%, #2c1a4e 100%);
+  color: #fff; border-color: rgba(168,85,247,.4);
+}
+.link.galaxy .title { color: #fff; }
+.link.galaxy .desc { color: rgba(255,255,255,.75); }
+.link.galaxy .ico { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; }
+.link.galaxy .arrow { color: #c084fc; }
+
+.link.contact-wa {
+  background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+  color: #fff; border-color: #1da851;
+}
+.link.contact-wa .title { color: #fff; }
+.link.contact-wa .desc { color: rgba(255,255,255,.85); }
+.link.contact-wa .ico { background: rgba(255,255,255,.2); color: #fff; }
+.link.contact-wa .arrow { color: #fff; }
+
+.link.contact-ig {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #fff; border: none;
+}
+.link.contact-ig .title { color: #fff; }
+.link.contact-ig .desc { color: rgba(255,255,255,.9); }
+.link.contact-ig .ico { background: rgba(255,255,255,.2); color: #fff; }
+.link.contact-ig .arrow { color: #fff; }
+
+.footer {
+  text-align: center; margin-top: 40px;
+  padding-top: 20px; border-top: 1px dashed var(--cream-deep);
+  font-size: 12px; color: var(--ink-soft); line-height: 1.6;
+}
+.footer b { color: var(--brown-dark); }
+.copy-link {
+  margin-top: 16px; padding: 8px 16px;
+  background: var(--cream-deep); border-radius: 999px;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  color: var(--brown); display: inline-block;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- ===== HEADER ===== -->
-  <div class="header">
-    <div class="avatar-wrap">
-      <div class="avatar">
-        <img src="assets/mascot-beruang.png?v=2" alt="BerUang" />
-      </div>
-      <span class="online-dot"></span>
+<div class="wrap">
+
+  <header class="header">
+    <div class="avatar"><img src="assets/logo-berbisnis.png?v=3" alt="Hendry Phang" /></div>
+    <h1 class="name">Hendry Phang</h1>
+    <p class="handle"><a href="https://instagram.com/hendrypangg" target="_blank">@hendrypangg</a> · PT Sinar Pang Cemerlang</p>
+    <p class="tagline">"Catet dulu, biar beneran ber-uang"</p>
+    <p class="bio">
+      Founder <b>BerSatu Suite</b> 🐻<br>
+      Ekosistem AI &amp; tools untuk UMKM Indonesia. Pilih layanan di bawah ⬇️
+    </p>
+  </header>
+
+  <div class="section-title">💰 Personal Finance</div>
+
+  <a href="app.html" class="link">
+    <div class="ico">🐻</div>
+    <div class="body">
+      <div class="title">BerUang App <span class="pill pill-free">Trial Gratis</span></div>
+      <div class="desc">Catet keuangan pribadi pakai chat / foto struk · Auto-kategorisasi</div>
     </div>
-    <h1 class="brand">BerUang <span class="heart">🐻</span></h1>
-    <div class="tag">"Catet dulu, biar beneran ber-uang"</div>
-    <div class="bio">
-      <span>📱 Aplikasi Web</span>
-      <span>•</span>
-      <span>💸 Mulai Rp 35rb</span>
-      <span>•</span>
-      <span>☁️ Sync Multi-Device</span>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="landing.html" class="link">
+    <div class="ico">📄</div>
+    <div class="body">
+      <div class="title">Cara Beli BerUang</div>
+      <div class="desc">Bulanan Rp 35rb / Lifetime Rp 125rb (hemat 70%)</div>
     </div>
-    <div class="badges">
-      <span class="badge-pill">⚡ Setup 5 menit</span>
-      <span class="badge-pill">🔒 Data Aman</span>
-      <span class="badge-pill">♾️ Update Gratis</span>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">🏪 UMKM &amp; Bisnis</div>
+
+  <a href="tokountung/app.html" class="link berbisnis">
+    <div class="ico">💼</div>
+    <div class="body">
+      <div class="title">BerBisnis App <span class="pill pill-pro">PRO</span></div>
+      <div class="desc">Kasir + stok + laporan UMKM 50–200 SKU · Trial 3 hari gratis</div>
     </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="landing-berstock.html" class="link berstock featured">
+    <div class="ico">🤖</div>
+    <div class="body">
+      <div class="title">Berstock — AI Agent <span class="pill pill-hot">EARLY BIRD</span></div>
+      <div class="desc">Tanya stok &amp; sales via Telegram · Rp 500rb/bln (50 klien pertama)</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="https://t.me/BerstockBot" target="_blank" class="link berstock">
+    <div class="ico">💬</div>
+    <div class="body">
+      <div class="title">Demo Bot di Telegram <span class="pill pill-new">LIVE</span></div>
+      <div class="desc">Test langsung @BerstockBot · Demo data PT SPC tersedia</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">🌌 Enterprise / Pitch</div>
+
+  <a href="bersatu-demo.html" class="link galaxy">
+    <div class="ico">⚡</div>
+    <div class="body">
+      <div class="title">Neural Command Demo</div>
+      <div class="desc">6 AI Agent terhubung — pitch deck visual untuk korporat</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">📞 Hubungi Saya</div>
+
+  <a href="https://wa.me/6282124848924?text=Halo%20Pak%20Hendry%2C%20saya%20mau%20tanya%20tentang%20BerSatu%20Suite" target="_blank" class="link contact-wa">
+    <div class="ico">💬</div>
+    <div class="body">
+      <div class="title">WhatsApp Saya</div>
+      <div class="desc">0821-2484-8924 · Konsultasi &amp; demo</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="https://instagram.com/hendrypangg" target="_blank" class="link contact-ig">
+    <div class="ico">📷</div>
+    <div class="body">
+      <div class="title">Instagram</div>
+      <div class="desc">@hendrypangg · Behind the scenes BerSatu</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="footer">
+    🐻 <b>BerSatu Suite</b> — Made with ❤️ for UMKM Indonesia<br>
+    © 2026 PT Sinar Pang Cemerlang
+    <div class="copy-link">hendrypangg12.github.io/Financial-tracker</div>
   </div>
 
-  <!-- ===== LINKS ===== -->
-  <div class="links">
-
-    <!-- 1. Lihat Aplikasi (Featured) -->
-    <a href="landing.html" class="lnk lnk-featured">
-      <span class="lnk-icon">🚀</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Lihat Aplikasi & Fitur Lengkap</span>
-        <span class="lnk-sub">Demo, harga, FAQ — semua di sini</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 2. Beli Lifetime -->
-    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*LIFETIME%20Rp%20125.000*%0A%0AEmail%20akun%3A%20...%0A%0ABerikut%20bukti%20transfer%3A%0A%5Blampirkan%20foto%20transfer%5D" class="lnk">
-      <span class="lnk-icon icon-life">⭐</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Beli LIFETIME — Rp 125.000</span>
-        <span class="lnk-sub">Sekali bayar, pakai selamanya • HEMAT 70%</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 3. Beli Bulanan -->
-    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20aktivasi%20paket%20*BULANAN%20Rp%2035.000*%0A%0AEmail%20akun%3A%20...%0A%0ABerikut%20bukti%20transfer%3A%0A%5Blampirkan%20foto%20transfer%5D" class="lnk">
-      <span class="lnk-icon icon-buy">📅</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Beli Bulanan — Rp 35.000/bln</span>
-        <span class="lnk-sub">Coba dulu, mantap baru lifetime</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 4. Buka Aplikasi langsung -->
-    <a href="app.html" class="lnk">
-      <span class="lnk-icon icon-app">🐻</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Buka Aplikasi BerUang</span>
-        <span class="lnk-sub">Sudah punya akun? Login di sini</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 5. WhatsApp -->
-    <a href="https://wa.me/6282124848924?text=Halo%20Admin%20BerUang%20%F0%9F%90%BB%2C%20saya%20mau%20bertanya..." class="lnk">
-      <span class="lnk-icon icon-wa">💬</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Chat WhatsApp Admin</span>
-        <span class="lnk-sub">Tanya-tanya / kirim bukti transfer</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 6. Instagram -->
-    <a href="https://instagram.com/hendrypangg" class="lnk" target="_blank" rel="noopener">
-      <span class="lnk-icon icon-ig">📷</span>
-      <span class="lnk-text">
-        <span class="lnk-title">Follow Instagram</span>
-        <span class="lnk-sub">@hendrypangg • Tips keuangan harian</span>
-      </span>
-      <span class="lnk-arrow">→</span>
-    </a>
-
-    <!-- 7. Cara Bayar -->
-    <div class="divider">Cara Pembayaran</div>
-    <a href="javascript:void(0)" class="lnk" id="copy-bca">
-      <span class="lnk-icon icon-info">🏦</span>
-      <span class="lnk-text">
-        <span class="lnk-title">BCA <code style="background:#fbf6ee;padding:2px 6px;border-radius:4px;font-family:ui-monospace,monospace;font-size:13px">7130902183</code></span>
-        <span class="lnk-sub">a/n HENDRY • tap untuk copy</span>
-      </span>
-      <span class="lnk-arrow">📋</span>
-    </a>
-
-  </div>
-
-  <!-- ===== FOOTER ===== -->
-  <div class="foot">
-    <div class="foot-bears">🐻 🐻‍❄️ 🧸</div>
-    <p>© 2026 <a href="landing.html">BerUang</a> — Made with 💛 by <a href="https://instagram.com/hendrypangg">@hendrypangg</a></p>
-    <button class="share-btn" id="share-btn">📤 Bagikan halaman ini</button>
-  </div>
 </div>
-
-<div id="toast"></div>
-
-<script>
-// Copy BCA account
-document.getElementById('copy-bca').addEventListener('click', async (e) => {
-  e.preventDefault();
-  try {
-    await navigator.clipboard.writeText('7130902183');
-    showToast('✅ Nomor BCA tersalin: 7130902183');
-  } catch {
-    showToast('Salin manual: 7130902183');
-  }
-});
-
-// Share button
-document.getElementById('share-btn').addEventListener('click', async () => {
-  const url = window.location.href;
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'BerUang — Catat Uangmu, Jadi Ber-uang',
-        text: 'Cek aplikasi catat keuangan paling simpel ini 🐻💰',
-        url: url,
-      });
-    } catch {}
-  } else {
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast('✅ Link tersalin, paste ke teman!');
-    } catch {
-      showToast('Link: ' + url);
-    }
-  }
-});
-
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => el.classList.remove('show'), 2500);
-}
-</script>
 
 </body>
 </html>
