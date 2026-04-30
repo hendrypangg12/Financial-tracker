@@ -263,6 +263,12 @@ async function showApp(user, profile) {
     catch (err) { console.warn('syncOnLogin failed:', err); }
   }
 
+  // Restore Cloud Sync config dari Firestore (kalau localStorage kosong)
+  if (typeof restoreCloudConfigOnLogin === 'function') {
+    try { await restoreCloudConfigOnLogin(); }
+    catch (err) { console.warn('restoreCloudConfig failed:', err); }
+  }
+
   // Init app (render dengan data yang sudah ter-sync)
   init();
 }
