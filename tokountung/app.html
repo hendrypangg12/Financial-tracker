@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=13" />
+<link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
 
@@ -659,14 +659,84 @@
         </select>
       </label>
       <label id="label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
-      <label>Nama Pelanggan / Perusahaan (opsional)<input name="pelanggan" placeholder="PT Contoh / Pak Budi" /></label>
+      <label>
+        Nama Pelanggan / Perusahaan (opsional)
+        <div class="customer-input-row">
+          <input name="pelanggan" id="checkout-pelanggan" list="checkout-pelanggan-list" placeholder="PT Contoh / Pak Budi (ketik atau pilih)" autocomplete="off" />
+          <button type="button" class="btn btn-small btn-ghost" id="btn-pick-customer" title="Pilih dari daftar pelanggan">📋</button>
+        </div>
+        <datalist id="checkout-pelanggan-list"></datalist>
+      </label>
       <div class="grid-2-form">
-        <label>Alamat Pelanggan<input name="pelangganAlamat" placeholder="Jakarta / Surabaya" /></label>
-        <label>Telepon / Kontak<input name="pelangganTelepon" placeholder="0812-xxx (opsional)" /></label>
+        <label>Alamat Pelanggan<input name="pelangganAlamat" id="checkout-alamat" placeholder="Jakarta / Surabaya" /></label>
+        <label>Telepon / Kontak<input name="pelangganTelepon" id="checkout-telepon" placeholder="0812-xxx (opsional)" /></label>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal('modal-checkout')">Batal</button>
         <button type="submit" class="btn btn-primary">✅ Selesaikan & Cetak</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Customer Picker -->
+<div class="modal" id="modal-customer-picker" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-customer-picker')">&times;</button>
+    <h3>📋 Pilih Pelanggan</h3>
+    <input type="search" id="customer-picker-search" placeholder="🔍 Cari nama / telepon..." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:12px" />
+    <div id="customer-picker-list" class="customer-picker-list"></div>
+  </div>
+</div>
+
+<!-- Modal: Edit Invoice -->
+<div class="modal" id="modal-edit-sale" hidden>
+  <div class="modal-card modal-large">
+    <button type="button" class="modal-close" onclick="closeModal('modal-edit-sale')">&times;</button>
+    <h3>✏️ Edit Invoice</h3>
+    <form id="form-edit-sale" class="form">
+      <input type="hidden" name="id" />
+      <div class="grid-2-form">
+        <label>No Invoice<input name="nomor" /></label>
+        <label>Tanggal<input name="tanggal" type="date" /></label>
+      </div>
+      <label>
+        Nama Pelanggan
+        <div class="customer-input-row">
+          <input name="pelanggan" id="edit-pelanggan" list="edit-pelanggan-list" autocomplete="off" />
+          <button type="button" class="btn btn-small btn-ghost" id="btn-edit-pick-customer" title="Pilih dari daftar">📋</button>
+        </div>
+        <datalist id="edit-pelanggan-list"></datalist>
+      </label>
+      <div class="grid-2-form">
+        <label>Alamat<input name="pelangganAlamat" id="edit-alamat" /></label>
+        <label>Telepon<input name="pelangganTelepon" id="edit-telepon" /></label>
+      </div>
+      <div class="grid-2-form">
+        <label>Metode Bayar
+          <select name="metode" id="edit-metode">
+            <option value="tunai">💵 Tunai</option>
+            <option value="transfer">🏦 Transfer</option>
+            <option value="qris">📱 QRIS</option>
+            <option value="ewallet">💳 E-wallet</option>
+            <option value="tempo">⏱️ Tempo</option>
+          </select>
+        </label>
+        <label id="edit-label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
+      </div>
+      <h4 style="margin:8px 0 6px">Items</h4>
+      <div id="edit-items-list" class="edit-items-list"></div>
+      <div class="grid-2-form">
+        <label>Diskon (Rp)<input name="diskon" type="number" min="0" /></label>
+        <div class="edit-total-display">
+          <div class="cell-meta">Subtotal: <span id="edit-subtotal">Rp 0</span></div>
+          <div style="font-size:18px"><b>Total: <span id="edit-total">Rp 0</span></b></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="btn-delete-sale">🗑️ Hapus Invoice</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modal-edit-sale')">Batal</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan</button>
       </div>
     </form>
   </div>
@@ -731,13 +801,14 @@
 <script src="js/utils.js?v=2"></script>
 <script src="js/storage.js?v=3"></script>
 <script src="js/products.js?v=4"></script>
-<script src="js/sales.js?v=4"></script>
+<script src="js/sales.js?v=5"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=4"></script>
-<script src="js/piutang.js?v=1"></script>
-<script src="js/customers.js?v=1"></script>
+<script src="js/piutang.js?v=2"></script>
+<script src="js/customers.js?v=2"></script>
+<script src="js/edit-sale.js?v=1"></script>
 <script src="js/cloud-sync.js?v=3"></script>
-<script src="js/app.js?v=14"></script>
+<script src="js/app.js?v=15"></script>
 </body>
 </html>

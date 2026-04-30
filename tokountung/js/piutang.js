@@ -102,6 +102,7 @@ function renderPiutang() {
         <td>
           <div class="row-actions">
             <button class="btn btn-small" data-act="invoice" data-id="${s.id}" title="Lihat invoice">📄</button>
+            <button class="btn btn-small btn-ghost" data-act="edit" data-id="${s.id}" title="Edit invoice">✏️</button>
             ${actionBtn}
           </div>
         </td>
@@ -129,6 +130,8 @@ function renderPiutang() {
       renderDashboard();
     } else if (act === 'invoice') {
       if (typeof showInvoiceA4 === 'function') showInvoiceA4(sale);
+    } else if (act === 'edit') {
+      if (typeof openEditSale === 'function') openEditSale(id);
     }
   });
 }

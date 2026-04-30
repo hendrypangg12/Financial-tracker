@@ -141,6 +141,7 @@ function openCheckoutModal() {
   form.reset();
   form.querySelector('[name="bayar"]').value = total;
   document.getElementById('kembalian-preview').textContent = 'Kembalian: Rp 0';
+  if (typeof refreshCustomerDatalist === 'function') refreshCustomerDatalist('checkout-pelanggan-list');
   openModal('modal-checkout');
   setTimeout(() => form.querySelector('[name="bayar"]').select(), 100);
 }

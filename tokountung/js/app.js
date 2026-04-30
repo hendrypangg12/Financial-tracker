@@ -18,6 +18,12 @@ function init() {
   if (typeof setupPelangganFilter === 'function') {
     safeRun('setupPelangganFilter', () => setupPelangganFilter());
   }
+  if (typeof setupCustomerPickerButtons === 'function') {
+    safeRun('setupCustomerPickerButtons', () => setupCustomerPickerButtons());
+  }
+  if (typeof setupEditSaleForm === 'function') {
+    safeRun('setupEditSaleForm', () => setupEditSaleForm());
+  }
   if (typeof setupCloudSyncForm === 'function') {
     safeRun('setupCloudSyncForm', () => setupCloudSyncForm());
   }

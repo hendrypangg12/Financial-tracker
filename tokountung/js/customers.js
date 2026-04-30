@@ -164,6 +164,12 @@ function showCustomerDetail(customer) {
     const sale = state.sales.find(x => x.id === btn.dataset.invId);
     if (sale && typeof showInvoiceA4 === 'function') showInvoiceA4(sale);
   });
+  document.querySelectorAll('[data-edit-id]').forEach(btn => btn.onclick = () => {
+    closeModal('modal-customer-detail');
+    setTimeout(() => {
+      if (typeof openEditSale === 'function') openEditSale(btn.dataset.editId);
+    }, 200);
+  });
 }
 
 function buildHistoryCard(sale) {
@@ -199,7 +205,8 @@ function buildHistoryCard(sale) {
         </div>
         <div class="hist-total">
           <b>${formatRupiah(sale.total)}</b>
-          <button class="btn btn-small" data-inv-id="${sale.id}">📄 Invoice</button>
+          <button class="btn btn-small" data-inv-id="${sale.id}" title="Lihat invoice">📄</button>
+          <button class="btn btn-small btn-ghost" data-edit-id="${sale.id}" title="Edit invoice">✏️</button>
         </div>
       </div>
     </div>
@@ -211,4 +218,122 @@ function setupPelangganFilter() {
   const sort = document.getElementById('pelanggan-sort');
   if (search) search.oninput = renderPelanggan;
   if (sort) sort.onchange = renderPelanggan;
+}
+
+// =============================================================================
+// CUSTOMER PICKER — datalist autocomplete + modal picker
+// =============================================================================
+
+function refreshCustomerDatalist(datalistId) {
+  const dl = document.getElementById(datalistId);
+  if (!dl) return;
+  const customers = aggregateCustomers();
+  customers.sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''));
+  dl.innerHTML = customers.map(c => {
+    const label = c.telepon ? `${c.nama} — ${c.telepon}` : c.nama;
+    return `<option value="${escapeHtml(c.nama)}" data-key="${escapeHtml(c.key)}" label="${escapeHtml(label)}"></option>`;
+  }).join('');
+}
+
+// Auto-fill alamat/telepon kalau nama match exact dengan pelanggan existing
+function bindCustomerAutofill(namaInputId, alamatInputId, teleponInputId) {
+  const namaEl = document.getElementById(namaInputId);
+  const alamatEl = document.getElementById(alamatInputId);
+  const teleponEl = document.getElementById(teleponInputId);
+  if (!namaEl) return;
+
+  const tryAutofill = () => {
+    const val = (namaEl.value || '').trim().toLowerCase();
+    if (!val) return;
+    const customers = aggregateCustomers();
+    const match = customers.find(c => c.nama.toLowerCase() === val);
+    if (match) {
+      if (alamatEl && !alamatEl.value) alamatEl.value = match.alamat || '';
+      if (teleponEl && !teleponEl.value) teleponEl.value = match.telepon || '';
+    }
+  };
+  namaEl.addEventListener('change', tryAutofill);
+  namaEl.addEventListener('blur', tryAutofill);
+}
+
+// Open picker modal — onPick(customer) callback
+function openCustomerPicker(onPick) {
+  const search = document.getElementById('customer-picker-search');
+  const list = document.getElementById('customer-picker-list');
+  if (!list) return;
+
+  const renderList = () => {
+    const q = (search?.value || '').toLowerCase().trim();
+    let customers = aggregateCustomers();
+    customers.sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''));
+    if (q) customers = customers.filter(c =>
+      c.nama.toLowerCase().includes(q) ||
+      (c.telepon || '').toLowerCase().includes(q)
+    );
+    if (!customers.length) {
+      list.innerHTML = '<div class="empty">Tidak ada pelanggan. Ketik nama baru di kolom checkout.</div>';
+      return;
+    }
+    list.innerHTML = customers.map(c => `
+      <button type="button" class="customer-picker-item" data-key="${escapeHtml(c.key)}">
+        <div class="cpi-avatar">${escapeHtml((c.nama || '?').charAt(0).toUpperCase())}</div>
+        <div class="cpi-info">
+          <div class="cpi-nama">${escapeHtml(c.nama)}</div>
+          <div class="cpi-meta">
+            ${c.telepon ? `📱 ${escapeHtml(c.telepon)}` : ''}
+            ${c.telepon && c.alamat ? ' · ' : ''}
+            ${c.alamat ? `📍 ${escapeHtml(c.alamat).slice(0, 30)}` : ''}
+          </div>
+          <div class="cpi-stat">${c.countTrx}× belanja · ${formatRupiah(c.totalBelanja)}</div>
+        </div>
+      </button>
+    `).join('');
+    list.querySelectorAll('.customer-picker-item').forEach(btn => btn.onclick = () => {
+      const c = customers.find(x => x.key === btn.dataset.key);
+      if (c) {
+        onPick(c);
+        closeModal('modal-customer-picker');
+      }
+    });
+  };
+
+  if (search) {
+    search.value = '';
+    search.oninput = renderList;
+  }
+  renderList();
+  openModal('modal-customer-picker');
+  setTimeout(() => search?.focus(), 100);
+}
+
+function setupCustomerPickerButtons() {
+  const btnCheckout = document.getElementById('btn-pick-customer');
+  if (btnCheckout) btnCheckout.onclick = () => {
+    openCustomerPicker((c) => {
+      const nama = document.getElementById('checkout-pelanggan');
+      const alamat = document.getElementById('checkout-alamat');
+      const telp = document.getElementById('checkout-telepon');
+      if (nama) nama.value = c.nama;
+      if (alamat) alamat.value = c.alamat || '';
+      if (telp) telp.value = c.telepon || '';
+      showToast(`✓ ${c.nama} dipilih`, 'success');
+    });
+  };
+
+  const btnEdit = document.getElementById('btn-edit-pick-customer');
+  if (btnEdit) btnEdit.onclick = () => {
+    openCustomerPicker((c) => {
+      const nama = document.getElementById('edit-pelanggan');
+      const alamat = document.getElementById('edit-alamat');
+      const telp = document.getElementById('edit-telepon');
+      if (nama) nama.value = c.nama;
+      if (alamat) alamat.value = c.alamat || '';
+      if (telp) telp.value = c.telepon || '';
+    });
+  };
+
+  // Datalist + autofill
+  refreshCustomerDatalist('checkout-pelanggan-list');
+  bindCustomerAutofill('checkout-pelanggan', 'checkout-alamat', 'checkout-telepon');
+  bindCustomerAutofill('edit-pelanggan', 'edit-alamat', 'edit-telepon');
 }
