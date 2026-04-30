@@ -41,9 +41,6 @@ function renderDashboard() {
 
   // Low stock list
   renderLowStock(lowStock);
-
-  // BEP
-  renderBEP();
 }
 
 function renderTrend7Days() {
@@ -98,31 +95,6 @@ function renderLowStock(list) {
   ul.innerHTML = list.slice(0, 10).map(p => `
     <li>⚠️ <b>${escapeHtml(p.nama)}</b> — sisa ${p.stok} ${escapeHtml(p.satuan)} (min: ${p.minStok || 5})</li>
   `).join('');
-}
-
-function renderBEP() {
-  const biaya = +state.settings.biayaTetap || 0;
-  if (biaya <= 0) {
-    document.getElementById('bep-status').innerHTML = '⚠️ Atur biaya tetap di tab Pengaturan untuk hitung BEP';
-    document.getElementById('bep-target').textContent = '-';
-    document.getElementById('bep-achieved').textContent = '-';
-    document.getElementById('bep-remaining').textContent = '-';
-    document.getElementById('bep-fill').style.width = '0%';
-    return;
-  }
-  const now = new Date();
-  const start = startOfMonth(now);
-  const monthSales = state.sales.filter(s => parseISO(s.tanggal) >= start);
-  const monthProfit = monthSales.reduce((s, sale) => s + sale.profit, 0);
-  document.getElementById('bep-target').textContent = formatRupiah(biaya);
-  document.getElementById('bep-achieved').textContent = formatRupiah(monthProfit);
-  const remain = biaya - monthProfit;
-  document.getElementById('bep-remaining').textContent = remain > 0 ? formatRupiah(remain) : '✅ BEP TERCAPAI';
-  const pct = Math.min(100, (monthProfit / biaya) * 100);
-  document.getElementById('bep-fill').style.width = pct + '%';
-  document.getElementById('bep-status').textContent =
-    pct >= 100 ? `🎉 Sudah BEP! Profit kotor: ${formatRupiah(monthProfit - biaya)} untuk Anda` :
-    `${pct.toFixed(0)}% menuju BEP bulan ini`;
 }
 
 // === LAPORAN — filter UI helpers ===

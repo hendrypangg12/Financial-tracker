@@ -121,20 +121,6 @@ function setupSettingsForms() {
     saveState();
     showToast('Info toko disimpan', 'success');
   };
-  // Form BEP
-  const formBep = document.getElementById('form-bep');
-  formBep.onsubmit = (e) => {
-    e.preventDefault();
-    const fd = new FormData(formBep);
-    state.settings = {
-      ...state.settings,
-      biayaTetap: +fd.get('biayaTetap') || 0,
-      targetUntung: +fd.get('targetUntung') || 0,
-    };
-    saveState();
-    renderDashboard();
-    showToast('Target & BEP disimpan', 'success');
-  };
   // Form Kategori
   document.getElementById('form-add-kat').onsubmit = (e) => {
     e.preventDefault();
@@ -157,13 +143,6 @@ function renderPengaturan() {
     setVal('alamat', state.settings.alamat || '');
     setVal('telepon', state.settings.telepon || '');
     setVal('footerStruk', state.settings.footerStruk || '');
-  }
-  // Pre-fill form BEP
-  const fb = document.getElementById('form-bep');
-  if (fb) {
-    const setVal = (name, val) => { const el = fb.querySelector(`[name="${name}"]`); if (el) el.value = val; };
-    setVal('biayaTetap', state.settings.biayaTetap || 0);
-    setVal('targetUntung', state.settings.targetUntung || 0);
   }
   // Render kategori list
   const kl = document.getElementById('kategori-list');
