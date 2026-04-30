@@ -1,5 +1,5 @@
 // Cloud Sync untuk BerBisnis ↔ Berstock Bot
-// Push data localStorage ke Cloudflare Worker supaya bot Telegram bisa baca.
+// Config disimpan di localStorage + Firestore (per user) supaya persisten cross-device
 
 const CLOUD_SYNC_KEY = "tokountung-cloud-config";
 
@@ -11,6 +11,52 @@ function loadCloudConfig() {
 
 function saveCloudConfig(cfg) {
   localStorage.setItem(CLOUD_SYNC_KEY, JSON.stringify(cfg));
+  // Sync juga ke Firestore (best-effort, async)
+  if (typeof saveCloudConfigToFirestore === 'function') {
+    saveCloudConfigToFirestore(cfg).catch(err => console.warn('Save cloud config to Firestore failed:', err));
+  }
+}
+
+// Sync config ke Firestore (per user) supaya persisten cross-device
+async function saveCloudConfigToFirestore(cfg) {
+  if (typeof fbDb === 'undefined' || !fbDb) return;
+  if (typeof currentUser === 'undefined' || !currentUser) return;
+  const ref = fbDb.collection('users').doc(currentUser.uid).collection('meta').doc('berbisnis-cloud-config');
+  await ref.set({
+    workerUrl: cfg.workerUrl || '',
+    tenantId: cfg.tenantId || '',
+    apiKey: cfg.apiKey || '',
+    autoSync: !!cfg.autoSync,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+// Load config dari Firestore (kalau localStorage kosong, ambil dari sini)
+async function loadCloudConfigFromFirestore() {
+  if (typeof fbDb === 'undefined' || !fbDb) return null;
+  if (typeof currentUser === 'undefined' || !currentUser) return null;
+  try {
+    const ref = fbDb.collection('users').doc(currentUser.uid).collection('meta').doc('berbisnis-cloud-config');
+    const snap = await ref.get();
+    return snap.exists ? snap.data() : null;
+  } catch (err) {
+    console.warn('Load cloud config from Firestore failed:', err);
+    return null;
+  }
+}
+
+// Auto-restore cloud config dari Firestore saat user login (kalau localStorage empty)
+async function restoreCloudConfigOnLogin() {
+  const local = loadCloudConfig();
+  if (local.tenantId && local.apiKey) return; // Sudah ada di localStorage, skip
+  const fsCfg = await loadCloudConfigFromFirestore();
+  if (fsCfg && fsCfg.tenantId) {
+    localStorage.setItem(CLOUD_SYNC_KEY, JSON.stringify(fsCfg));
+    console.log('[CloudSync] Config restored dari Firestore:', fsCfg.tenantId);
+    if (typeof showToast === 'function') {
+      showToast('☁️ Cloud Sync config ter-restore otomatis', 'info');
+    }
+  }
 }
 
 function getCloudConfig() { return loadCloudConfig(); }
