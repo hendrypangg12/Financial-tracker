@@ -15,6 +15,9 @@ function init() {
   if (typeof setupPiutangFilter === 'function') {
     safeRun('setupPiutangFilter', () => setupPiutangFilter());
   }
+  if (typeof setupPelangganFilter === 'function') {
+    safeRun('setupPelangganFilter', () => setupPelangganFilter());
+  }
   if (typeof setupCloudSyncForm === 'function') {
     safeRun('setupCloudSyncForm', () => setupCloudSyncForm());
   }
@@ -82,6 +85,7 @@ function setupTabs() {
       if (t === 'jual') { renderPOSProducts(); renderCart(); }
       if (t === 'restock') renderRestock();
       if (t === 'piutang') renderPiutang();
+      if (t === 'pelanggan') renderPelanggan();
       if (t === 'laporan') renderLaporan();
       if (t === 'pengaturan') renderPengaturan();
     };
@@ -170,6 +174,7 @@ function renderAll() {
   renderCart();
   renderRestock();
   renderPiutang();
+  renderPelanggan();
   renderLaporan();
   renderPengaturan();
 }

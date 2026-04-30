@@ -735,6 +735,82 @@ tr.row-overdue td { border-bottom: 1px solid #fecaca; }
 .btn-success { background: #16a34a; color: #fff; border-color: #15803d; }
 .btn-success:hover { background: #15803d; }
 
+/* ===================== PELANGGAN TAB ===================== */
+.pelanggan-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin-bottom: 18px;
+}
+.psum-card.psum-info { border-left-color: #3b82f6; }
+@media (max-width: 640px) {
+  .pelanggan-summary { grid-template-columns: 1fr; }
+}
+
+#pelanggan-search {
+  padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; min-width: 220px;
+}
+
+/* Customer detail modal */
+.cust-detail-head {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+.cust-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #1e3a5f), var(--accent, #c9a352));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; flex-shrink: 0;
+}
+.cust-info h2 { margin: 0 0 4px; font-size: 22px; }
+.cust-meta { font-size: 13px; color: #64748b; margin-top: 2px; }
+.cust-actions { margin-top: 8px; display: flex; gap: 8px; }
+
+.cust-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 8px;
+}
+.cstat {
+  background: #f8fafc; border: 1px solid #e5e7eb;
+  border-radius: 10px; padding: 10px 12px;
+}
+.cstat.cstat-warn { background: #fff7ed; border-color: #fed7aa; }
+.cstat-label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+.cstat-value { font-size: 16px; font-weight: 700; color: #1e293b; margin-top: 2px; }
+.cstat-warn .cstat-value { color: #c2410c; }
+@media (max-width: 640px) {
+  .cust-stats { grid-template-columns: repeat(2, 1fr); }
+  .cust-detail-head { flex-direction: column; align-items: center; text-align: center; }
+}
+
+.cust-history {
+  display: flex; flex-direction: column; gap: 12px;
+  max-height: 50vh; overflow-y: auto;
+}
+.hist-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+  padding: 12px 14px;
+}
+.hist-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.hist-head .cell-meta { display: block; }
+.hist-status { display: flex; gap: 6px; flex-wrap: wrap; }
+.hist-items {
+  list-style: none; padding: 8px 12px; margin: 0;
+  background: #f8fafc; border-radius: 8px;
+  font-size: 13px;
+}
+.hist-items li { padding: 2px 0; }
+.hist-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb;
+  flex-wrap: wrap; gap: 8px;
+}
+.hist-total { display: flex; align-items: center; gap: 8px; }
+.hist-total b { font-size: 16px; color: var(--primary, #1e3a5f); }
+
 /* ===================== INVOICE A4 (3-PLY) ===================== */
 .invoice-3ply {
   display: flex; flex-direction: column;

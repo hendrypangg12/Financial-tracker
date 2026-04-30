@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=12" />
+<link rel="stylesheet" href="styles.css?v=13" />
 </head>
 <body>
 
@@ -132,6 +132,7 @@
     <button class="tab" data-tab="jual">Kasir</button>
     <button class="tab" data-tab="restock">Restock</button>
     <button class="tab" data-tab="piutang">💰 Piutang</button>
+    <button class="tab" data-tab="pelanggan">👥 Pelanggan</button>
     <button class="tab" data-tab="laporan">Laporan</button>
     <button class="tab" data-tab="pengaturan">Pengaturan</button>
     <button class="tab" data-tab="admin" id="tab-btn-admin" hidden>👑 Admin</button>
@@ -349,6 +350,66 @@
       <div id="piutang-empty" class="empty" hidden>Belum ada transaksi tempo.</div>
     </div>
   </section>
+
+  <!-- ============ PELANGGAN / CUSTOMER LIST ============ -->
+  <section id="tab-pelanggan" class="tab-panel">
+    <div class="page-head">
+      <h1>👥 Daftar Pelanggan</h1>
+      <div class="page-filters">
+        <input type="search" id="pelanggan-search" placeholder="🔍 Cari nama / telepon..." />
+        <select id="pelanggan-sort">
+          <option value="spent">Total Belanja</option>
+          <option value="recent">Terakhir Beli</option>
+          <option value="trx">Jumlah Transaksi</option>
+          <option value="nama">Nama A-Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pelanggan-summary">
+      <div class="psum-card psum-info">
+        <div class="psum-label">Total Pelanggan</div>
+        <div class="psum-value" id="cust-total-count">0</div>
+        <div class="psum-meta">unique customer</div>
+      </div>
+      <div class="psum-card psum-lunas">
+        <div class="psum-label">Total Omzet</div>
+        <div class="psum-value" id="cust-total-omzet">Rp 0</div>
+        <div class="psum-meta" id="cust-total-trx">0 transaksi</div>
+      </div>
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Total Outstanding</div>
+        <div class="psum-value" id="cust-total-piutang">Rp 0</div>
+        <div class="psum-meta">piutang aktif</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pelanggan</th>
+            <th>Kontak</th>
+            <th class="num">Transaksi</th>
+            <th class="num">Total Belanja</th>
+            <th class="num">Outstanding</th>
+            <th>Terakhir Beli</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="pelanggan-body"></tbody>
+      </table>
+      <div id="pelanggan-empty" class="empty" hidden>Belum ada pelanggan.</div>
+    </div>
+  </section>
+
+  <!-- Modal: Detail Pelanggan -->
+  <div class="modal" id="modal-customer-detail" hidden>
+    <div class="modal-card modal-large">
+      <button type="button" class="modal-close" onclick="closeModal('modal-customer-detail')">&times;</button>
+      <div id="customer-detail-content"></div>
+    </div>
+  </div>
 
   <!-- ============ LAPORAN ============ -->
   <section id="tab-laporan" class="tab-panel">
@@ -675,7 +736,8 @@
 <script src="js/reports.js?v=1"></script>
 <script src="js/receipt.js?v=4"></script>
 <script src="js/piutang.js?v=1"></script>
+<script src="js/customers.js?v=1"></script>
 <script src="js/cloud-sync.js?v=3"></script>
-<script src="js/app.js?v=13"></script>
+<script src="js/app.js?v=14"></script>
 </body>
 </html>
