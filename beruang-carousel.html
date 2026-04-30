@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerUang — Carousel IG (7 Slides)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #fbf6ee;
+  --cream-deep: #f0e9d8;
+  --brown: #8b5a2b;
+  --brown-dark: #5d3a1a;
+  --ink: #4a3328;
+  --gold: #c9a352;
+  --gold-dark: #a3823a;
+  --orange: #e8842a;
+  --green: #5b8a3a;
+  --red: #c44848;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a; color: #fff;
+  min-height: 100vh; padding: 30px 0;
+}
+.guide {
+  text-align: center; padding: 20px; margin: 0 auto 30px;
+  max-width: 700px; background: #2a2a2a; border-radius: 16px;
+  font-size: 14px; color: #ccc;
+}
+.guide h1 { color: var(--gold); margin-bottom: 8px; font-size: 22px; }
+
+.slides { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 80px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+
+.slide-num {
+  position: absolute; top: 30px; right: 40px;
+  font-size: 18px; font-weight: 700;
+  color: rgba(74,51,40,.4); letter-spacing: 2px;
+  z-index: 10;
+}
+.slide-watermark {
+  position: absolute; bottom: 30px; right: 40px;
+  font-size: 14px; font-weight: 600; opacity: .6;
+  display: flex; align-items: center; gap: 8px; z-index: 10;
+  color: var(--brown);
+}
+.slide-watermark img { width: 28px; height: 28px; border-radius: 6px; }
+
+/* Decorative coin/money pattern background */
+.coins-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(201,163,82,.15) 0, rgba(201,163,82,.15) 22px, transparent 23px),
+    radial-gradient(circle at 88% 25%, rgba(232,132,42,.1) 0, rgba(232,132,42,.1) 16px, transparent 17px),
+    radial-gradient(circle at 78% 88%, rgba(201,163,82,.12) 0, rgba(201,163,82,.12) 28px, transparent 29px),
+    radial-gradient(circle at 18% 78%, rgba(91,138,58,.1) 0, rgba(91,138,58,.1) 18px, transparent 19px);
+}
+
+/* ===== SLIDE 1 — COVER ===== */
+.slide-1 {
+  background: linear-gradient(135deg, var(--cream) 0%, #f5ebd4 100%);
+  align-items: center; justify-content: center; text-align: center;
+  color: var(--ink);
+}
+.slide-1::before {
+  content: '💰'; position: absolute; top: 80px; left: 100px;
+  font-size: 100px; opacity: .15; transform: rotate(-15deg);
+}
+.slide-1::after {
+  content: '🐷'; position: absolute; bottom: 100px; right: 80px;
+  font-size: 110px; opacity: .15; transform: rotate(10deg);
+}
+.s1-coin1 { position: absolute; top: 200px; right: 130px; font-size: 70px; opacity: .2; transform: rotate(20deg); }
+.s1-coin2 { position: absolute; bottom: 250px; left: 80px; font-size: 80px; opacity: .15; transform: rotate(-25deg); }
+.slide-1 .mascot {
+  width: 280px; height: 280px; border-radius: 36px;
+  background: #fff; padding: 16px; margin-bottom: 30px;
+  box-shadow: 0 24px 70px rgba(139,90,43,.3), 0 0 0 8px rgba(255,255,255,.5);
+  position: relative; z-index: 2;
+}
+.slide-1 .mascot img { width: 100%; height: 100%; object-fit: contain; }
+.slide-1 h1 {
+  font-size: 130px; font-weight: 900; letter-spacing: -4px;
+  color: var(--brown-dark); line-height: 0.92; margin-bottom: 24px;
+  position: relative; z-index: 2;
+}
+.slide-1 h1 .accent {
+  display: inline-block; color: var(--gold);
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: 110%;
+}
+.slide-1 .sub {
+  font-size: 32px; color: var(--brown); font-weight: 500;
+  margin-bottom: 50px; max-width: 750px; line-height: 1.4;
+  position: relative; z-index: 2;
+}
+.slide-1 .swipe {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 18px 40px; border-radius: 999px;
+  background: var(--brown); color: var(--cream);
+  font-weight: 700; font-size: 24px;
+  position: relative; z-index: 2;
+  box-shadow: 0 10px 30px rgba(139,90,43,.4);
+  animation: swipe-pulse 1.5s infinite;
+}
+@keyframes swipe-pulse { 0%,100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+
+/* ===== SLIDE 2 — PROBLEM ===== */
+.slide-2 {
+  background: linear-gradient(180deg, #fef3e2 0%, var(--cream-deep) 100%);
+  color: var(--ink);
+}
+.slide-2 h2 {
+  font-size: 78px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.05; margin-bottom: 20px; color: var(--brown-dark);
+}
+.slide-2 h2 span {
+  font-family: 'Caveat', cursive; color: var(--red); font-size: 110%;
+}
+.slide-2 .tag {
+  display: inline-block; padding: 8px 22px; border-radius: 999px;
+  background: var(--red); color: #fff;
+  font-size: 18px; font-weight: 700; letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+.problems-list {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+  margin-top: 50px;
+}
+.prob-card {
+  background: #fff; padding: 32px 28px; border-radius: 24px;
+  border: 3px solid var(--cream-deep);
+  box-shadow: 0 8px 24px rgba(74,51,40,.08);
+  position: relative;
+}
+.prob-card::before {
+  content: ''; position: absolute; top: 0; left: 32px;
+  width: 60px; height: 8px; background: var(--red);
+  border-radius: 0 0 8px 8px;
+}
+.prob-card .ico {
+  font-size: 64px; margin-bottom: 12px;
+  display: inline-block;
+  filter: drop-shadow(0 4px 8px rgba(74,51,40,.15));
+}
+.prob-card h4 { font-size: 26px; font-weight: 800; color: var(--brown-dark); margin-bottom: 8px; }
+.prob-card p { font-size: 18px; color: #6e5a4a; line-height: 1.4; }
+
+/* ===== SLIDE 3 — SOLUTION (3 input methods) ===== */
+.slide-3 {
+  background: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
+  color: var(--cream);
+  align-items: center; text-align: center;
+  justify-content: center;
+}
+.slide-3::before {
+  content: '✨'; position: absolute; top: 100px; right: 120px;
+  font-size: 80px; opacity: .3; transform: rotate(-10deg);
+}
+.slide-3::after {
+  content: '✨'; position: absolute; bottom: 200px; left: 100px;
+  font-size: 60px; opacity: .25; transform: rotate(15deg);
+}
+.slide-3 .tag {
+  background: var(--gold); color: var(--brown-dark);
+  padding: 10px 26px; border-radius: 999px;
+  font-size: 18px; font-weight: 800; letter-spacing: 2px;
+  margin-bottom: 30px;
+}
+.slide-3 h2 {
+  font-size: 70px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.05; margin-bottom: 20px;
+}
+.slide-3 h2 span {
+  display: block; color: var(--gold);
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: 130%; margin-top: 10px;
+}
+.input-methods {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+  margin-top: 60px; width: 100%;
+}
+.method {
+  background: rgba(255,255,255,.1); border: 2px solid rgba(201,163,82,.4);
+  border-radius: 24px; padding: 36px 24px; text-align: center;
+  backdrop-filter: blur(8px);
+}
+.method .ico-big {
+  font-size: 90px; margin-bottom: 14px;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.3));
+}
+.method h4 { font-size: 28px; font-weight: 900; color: var(--gold); margin-bottom: 8px; }
+.method p { font-size: 17px; color: rgba(255,255,255,.85); line-height: 1.4; }
+
+/* ===== SLIDE 4 — FEATURES ===== */
+.slide-4 {
+  background: var(--cream);
+  color: var(--ink);
+}
+.slide-4 h2 {
+  font-size: 70px; font-weight: 900; letter-spacing: -2px;
+  margin-bottom: 18px; line-height: 1.05; color: var(--brown-dark);
+}
+.slide-4 h2 span { color: var(--gold); }
+.slide-4 .sub-h2 { font-size: 24px; color: #6e5a4a; margin-bottom: 40px; }
+.feat-list {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+}
+.feat-item {
+  background: #fff; padding: 24px 26px; border-radius: 18px;
+  display: flex; gap: 16px; align-items: flex-start;
+  border: 2px solid var(--cream-deep);
+  box-shadow: 0 4px 14px rgba(74,51,40,.06);
+}
+.feat-item .ico {
+  width: 60px; height: 60px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: grid; place-items: center; font-size: 30px;
+  flex: 0 0 auto;
+  box-shadow: 0 4px 12px rgba(201,163,82,.4);
+}
+.feat-item h4 { font-size: 22px; font-weight: 800; color: var(--brown-dark); margin-bottom: 4px; }
+.feat-item p { font-size: 16px; color: #6e5a4a; line-height: 1.4; }
+
+/* ===== SLIDE 5 — DEMO CHAT INPUT ===== */
+.slide-5 {
+  background: linear-gradient(180deg, #fff8e8 0%, var(--cream) 100%);
+  color: var(--ink);
+  align-items: center; justify-content: center;
+}
+.slide-5 .label {
+  font-size: 26px; font-weight: 700; color: var(--brown);
+  margin-bottom: 24px; text-align: center;
+  letter-spacing: 1px;
+}
+.slide-5 .label b { color: var(--gold); }
+.phone-frame {
+  background: var(--ink); padding: 16px 16px 30px;
+  border-radius: 50px;
+  width: 580px;
+  box-shadow: 0 30px 80px rgba(74,51,40,.3);
+  border: 3px solid var(--brown);
+}
+.phone-screen {
+  background: #fff; border-radius: 36px;
+  padding: 40px 28px;
+  position: relative;
+}
+.phone-screen::before {
+  content: ''; position: absolute; top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 100px; height: 6px; border-radius: 4px;
+  background: var(--ink);
+}
+.chat-msg { padding: 14px 20px; border-radius: 20px; max-width: 85%; font-size: 19px; margin-bottom: 12px; line-height: 1.45; }
+.chat-msg.me { background: var(--brown); color: #fff; margin-left: auto; border-bottom-right-radius: 6px; font-weight: 500; }
+.chat-msg.bot { background: var(--cream-deep); color: var(--ink); border-bottom-left-radius: 6px; }
+.chat-msg.bot b { color: var(--brown); }
+.chat-msg.bot .pill {
+  display: inline-block; background: var(--gold); color: #fff;
+  padding: 2px 10px; border-radius: 999px; font-size: 14px; font-weight: 700;
+  margin-left: 4px;
+}
+.slide-5 .footer-note {
+  margin-top: 30px; font-size: 22px; color: var(--brown);
+  font-weight: 600; text-align: center;
+}
+.slide-5 .footer-note span {
+  font-family: 'Caveat', cursive; color: var(--gold);
+  font-size: 130%; font-weight: 700;
+}
+
+/* ===== SLIDE 6 — PRICING ===== */
+.slide-6 {
+  background: linear-gradient(135deg, var(--cream) 0%, #f5ebd4 100%);
+  color: var(--ink);
+  align-items: center; justify-content: center; text-align: center;
+}
+.slide-6 h2 {
+  font-size: 60px; font-weight: 900; letter-spacing: -2px;
+  margin-bottom: 50px; color: var(--brown-dark);
+}
+.slide-6 h2 span { color: var(--gold); }
+.price-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+  width: 100%;
+}
+.price-pkg {
+  background: #fff; padding: 50px 36px; border-radius: 28px;
+  border: 3px solid var(--cream-deep);
+  box-shadow: 0 10px 30px rgba(74,51,40,.08);
+  position: relative;
+  display: flex; flex-direction: column;
+}
+.price-pkg.highlight {
+  background: linear-gradient(135deg, var(--brown), var(--brown-dark));
+  color: #fff; border: none;
+  box-shadow: 0 20px 50px rgba(139,90,43,.4);
+  transform: scale(1.05);
+}
+.price-pkg.highlight::before {
+  content: '🔥 BEST VALUE'; position: absolute; top: -18px; left: 50%;
+  transform: translateX(-50%); white-space: nowrap;
+  background: var(--gold); color: var(--brown-dark);
+  padding: 8px 22px; border-radius: 999px;
+  font-size: 16px; font-weight: 900; letter-spacing: 1.5px;
+  box-shadow: 0 6px 16px rgba(201,163,82,.4);
+}
+.price-pkg .name {
+  font-size: 28px; font-weight: 800; margin-bottom: 18px;
+}
+.price-pkg.highlight .name { color: var(--gold); }
+.price-pkg .amount {
+  font-size: 70px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1; margin-bottom: 6px;
+}
+.price-pkg .period { font-size: 22px; color: rgba(74,51,40,.6); margin-bottom: 30px; }
+.price-pkg.highlight .period { color: rgba(255,255,255,.7); }
+.price-pkg ul { list-style: none; text-align: left; }
+.price-pkg ul li { padding: 7px 0; font-size: 18px; }
+.price-pkg ul li::before { content: '✓ '; color: var(--green); font-weight: 800; margin-right: 4px; }
+.price-pkg.highlight ul li::before { color: var(--gold); }
+.slide-6 .save-badge {
+  position: absolute; top: 20px; right: 20px;
+  background: var(--green); color: #fff;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 14px; font-weight: 800;
+}
+
+/* ===== SLIDE 7 — CTA ===== */
+.slide-7 {
+  background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown) 60%, var(--gold-dark) 100%);
+  color: var(--cream);
+  align-items: center; justify-content: center; text-align: center;
+}
+.slide-7::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(201,163,82,.4) 0, rgba(201,163,82,.4) 80px, transparent 81px),
+    radial-gradient(circle at 88% 75%, rgba(255,255,255,.15) 0, rgba(255,255,255,.15) 100px, transparent 101px);
+  filter: blur(40px);
+}
+.slide-7 .mascot {
+  width: 200px; height: 200px; border-radius: 30px;
+  background: var(--cream); padding: 14px; margin-bottom: 30px;
+  box-shadow: 0 16px 50px rgba(0,0,0,.4);
+  position: relative; z-index: 2;
+}
+.slide-7 .mascot img { width: 100%; height: 100%; object-fit: contain; }
+.slide-7 h2 {
+  font-size: 90px; font-weight: 900; letter-spacing: -3px;
+  line-height: 0.95; margin-bottom: 12px;
+  position: relative; z-index: 2;
+}
+.slide-7 h2 span {
+  display: block; color: var(--gold);
+  font-family: 'Caveat', cursive; font-size: 110%;
+}
+.slide-7 .sub {
+  font-size: 28px; color: rgba(255,255,255,.85);
+  margin-bottom: 50px; position: relative; z-index: 2;
+}
+.cta-buttons {
+  display: flex; flex-direction: column; gap: 16px;
+  position: relative; z-index: 2;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 16px;
+  padding: 24px 50px; border-radius: 100px;
+  font-size: 28px; font-weight: 800;
+  background: var(--cream); color: var(--brown-dark);
+  box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  min-width: 580px; justify-content: center;
+}
+.cta-btn.wa { background: #25D366; color: #fff; }
+.cta-btn .ico { font-size: 36px; }
+.slide-7 .footer-info {
+  margin-top: 40px; font-size: 20px;
+  color: rgba(255,255,255,.7);
+  position: relative; z-index: 2;
+}
+.slide-7 .footer-info b { color: var(--cream); }
+
+@media (max-width: 1100px) {
+  .slide { transform: scale(0.4); transform-origin: top center; margin-bottom: -650px; }
+}
+@media print {
+  body { background: #fff; padding: 0; }
+  .guide { display: none; }
+  .slide { box-shadow: none; page-break-after: always; transform: none; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="guide">
+  <h1>🐻 BerUang IG Carousel — 7 Slides</h1>
+  <p>Screenshot tiap slide (1080×1080) → upload IG sebagai carousel post.</p>
+  <p style="margin-top:8px;font-size:12px;opacity:.7">💡 Pakai Chrome desktop, F12 → Device Toolbar → 1080×1080 → screenshot per slide.</p>
+</div>
+
+<div class="slides">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide slide-1">
+    <div class="slide-num">01 / 07</div>
+    <div class="s1-coin1">💰</div>
+    <div class="s1-coin2">🪙</div>
+    <div class="mascot"><img src="assets/mascot-beruang.png?v=2" alt="BerUang" /></div>
+    <h1>HIDUP HEMAT?<br><span class="accent">Catet dulu.</span></h1>
+    <div class="sub">Biar duit beneran <b>ber-uang</b> 💰<br>Aplikasi catat keuangan untuk personal &amp; UMKM</div>
+    <div class="swipe">Swipe →</div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> @hendrypangg</div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide slide-2">
+    <div class="slide-num">02 / 07</div>
+    <div class="tag">⚠️ MASALAH KITA SEMUA</div>
+    <h2>Pernah ngerasa <span>ini ga?</span></h2>
+    <div class="problems-list">
+      <div class="prob-card">
+        <div class="ico">😱</div>
+        <h4>Gaji baru masuk...</h4>
+        <p>...eh tanggal 10 udah tipis. Bingung kemana habisnya!</p>
+      </div>
+      <div class="prob-card">
+        <div class="ico">🔍</div>
+        <h4>Uang ke mana ya?</h4>
+        <p>Lupa tracking pengeluaran, akhir bulan baru sadar boros</p>
+      </div>
+      <div class="prob-card">
+        <div class="ico">💳</div>
+        <h4>Utang bertumpuk</h4>
+        <p>Pinjem temen, paylater, kartu kredit — ga keingetan bayar</p>
+      </div>
+      <div class="prob-card">
+        <div class="ico">📉</div>
+        <h4>Tabungan nol</h4>
+        <p>Pengen nabung tapi ga pernah jadi. Stress akhir bulan!</p>
+      </div>
+    </div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+  <!-- SLIDE 3: SOLUTION (3 input methods) -->
+  <div class="slide slide-3">
+    <div class="slide-num">03 / 07</div>
+    <div class="tag">SOLUSINYA SIMPEL</div>
+    <h2>Catat tiap pengeluaran<br><span>cuma 3 cara!</span></h2>
+    <div class="input-methods">
+      <div class="method">
+        <div class="ico-big">📝</div>
+        <h4>FORM</h4>
+        <p>Isi manual: nominal, kategori, tanggal — selesai 5 detik</p>
+      </div>
+      <div class="method">
+        <div class="ico-big">💬</div>
+        <h4>CHAT</h4>
+        <p>Ketik kayak nge-chat: "habis 50rb bensin" → auto-tercatat</p>
+      </div>
+      <div class="method">
+        <div class="ico-big">📸</div>
+        <h4>FOTO STRUK</h4>
+        <p>Snap struk belanja → AI baca otomatis (OCR pintar)</p>
+      </div>
+    </div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+  <!-- SLIDE 4: FEATURES -->
+  <div class="slide slide-4">
+    <div class="slide-num">04 / 07</div>
+    <h2>Yang Anda dapat<br>setelah <span>catat</span>:</h2>
+    <div class="sub-h2">8 fitur powerful, cuma di BerUang</div>
+    <div class="feat-list">
+      <div class="feat-item">
+        <div class="ico">📊</div>
+        <div><h4>Dashboard Real-time</h4><p>Pengeluaran harian, mingguan, bulanan dalam grafik</p></div>
+      </div>
+      <div class="feat-item">
+        <div class="ico">🏷️</div>
+        <div><h4>50+ Kategori Otomatis</h4><p>AI bantu kategorisasi: makanan, transport, hiburan, dll</p></div>
+      </div>
+      <div class="feat-item">
+        <div class="ico">🎯</div>
+        <div><h4>Rule 50/30/20</h4><p>Auto-split: kebutuhan, keinginan, savings — sehat finansial</p></div>
+      </div>
+      <div class="feat-item">
+        <div class="ico">💳</div>
+        <div><h4>Track Utang &amp; Piutang</h4><p>Siapa hutang ke siapa — auto-detect dari kata-kata</p></div>
+      </div>
+      <div class="feat-item">
+        <div class="ico">☁️</div>
+        <div><h4>Sync Semua Device</h4><p>HP, tablet, laptop — data sama di mana saja</p></div>
+      </div>
+      <div class="feat-item">
+        <div class="ico">📤</div>
+        <div><h4>Export Excel/PDF</h4><p>Laporan rapi siap kirim ke akuntan / istri / suami</p></div>
+      </div>
+    </div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+  <!-- SLIDE 5: DEMO CHAT INPUT -->
+  <div class="slide slide-5">
+    <div class="slide-num">05 / 07</div>
+    <div class="label">📲 LIVE DEMO — <b>Chat Input</b></div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="chat-msg me">habis 35rb makan siang</div>
+        <div class="chat-msg bot">✅ <b>Tercatat!</b><br>Makan siang Rp 35.000 <span class="pill">🍽️ Makanan</span></div>
+        <div class="chat-msg me">terima salary 5 juta</div>
+        <div class="chat-msg bot">💰 <b>Income masuk!</b><br>Salary Rp 5.000.000 <span class="pill">💼 Income</span></div>
+        <div class="chat-msg me">rizky bayar utang 200rb</div>
+        <div class="chat-msg bot">📥 <b>Piutang ditagih!</b><br>+Rp 200.000 dari Rizky <span class="pill">💳 Utang</span></div>
+      </div>
+    </div>
+    <div class="footer-note">AI auto-detect kategori dari kata-kata Anda <span>se-simpel itu!</span></div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+  <!-- SLIDE 6: PRICING -->
+  <div class="slide slide-6">
+    <div class="slide-num">06 / 07</div>
+    <h2>Pilih paket Anda:<br><span>Murah banget kok!</span></h2>
+    <div class="price-cards">
+      <div class="price-pkg">
+        <div class="name">📅 Bulanan</div>
+        <div class="amount">Rp 35rb</div>
+        <div class="period">/bulan</div>
+        <ul>
+          <li>Semua fitur unlock</li>
+          <li>Sync cloud unlimited</li>
+          <li>OCR struk belanja</li>
+          <li>Export Excel/PDF</li>
+          <li>Cancel kapanpun</li>
+        </ul>
+      </div>
+      <div class="price-pkg highlight">
+        <span class="save-badge">HEMAT 70%</span>
+        <div class="name">⭐ Lifetime</div>
+        <div class="amount">Rp 125rb</div>
+        <div class="period">sekali bayar · seumur hidup</div>
+        <ul>
+          <li>Semua fitur Bulanan</li>
+          <li>Akses selamanya</li>
+          <li>Update gratis</li>
+          <li>Priority support</li>
+          <li>Hemat Rp 295rb/tahun!</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-watermark"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+  <!-- SLIDE 7: CTA -->
+  <div class="slide slide-7">
+    <div class="slide-num">07 / 07</div>
+    <div class="mascot"><img src="assets/mascot-beruang.png?v=2" alt="BerUang" /></div>
+    <h2>Siap jadi<br><span>BER-UANG?</span></h2>
+    <div class="sub">Coba gratis · Mudah · Aman di cloud ☁️</div>
+    <div class="cta-buttons">
+      <div class="cta-btn"><span class="ico">🐻</span> Coba di hendrypangg12.github.io</div>
+      <a class="cta-btn wa"><span class="ico">💬</span> WA: 0821-2484-8924</a>
+    </div>
+    <div class="footer-info">
+      Follow <b>@hendrypangg</b> · BerUang by PT Sinar Pang Cemerlang
+    </div>
+    <div class="slide-watermark" style="color:rgba(255,255,255,.7)"><img src="assets/mascot-beruang.png?v=2" alt="" /> BerUang</div>
+  </div>
+
+</div>
+
+<div class="guide" style="margin-top:30px">
+  <p>📥 <b>Caption IG yang Recommended:</b></p>
+  <p style="margin-top:8px;font-size:13px;text-align:left;background:#1a1a1a;padding:14px;border-radius:8px;color:#aaa;font-family:monospace;">
+🐻 Akhirnya keluar BerUang — aplikasi catat keuangan paling simple buat orang Indonesia!<br><br>
+Pernah ngerasa gaji baru masuk udah tipis? Bingung uang ke mana hilangnya? BerUang fix masalah itu.<br><br>
+✨ 3 cara catat: form / chat / foto struk<br>
+✨ Auto-kategorisasi pakai AI<br>
+✨ Track utang &amp; piutang<br>
+✨ Sync semua device<br><br>
+💰 Bulanan Rp 35rb<br>
+⭐ Lifetime Rp 125rb (HEMAT 70%)<br><br>
+Try sekarang: hendrypangg12.github.io<br>
+WA: 0821-2484-8924<br><br>
+#KeuanganPribadi #FinancialPlanning #UMKMIndonesia #CatatKeuangan #BerUang #BerSatuSuite
+  </p>
+</div>
+
+</body>
+</html>
