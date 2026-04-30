@@ -19,6 +19,19 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // CORS preflight — browser kirim OPTIONS sebelum POST application/json
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key, Authorization",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
+
     try {
       switch (url.pathname) {
         case "/webhook":   return await handleTelegramWebhook(request, env, ctx);
