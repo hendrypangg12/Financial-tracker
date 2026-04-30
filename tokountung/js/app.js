@@ -65,7 +65,13 @@ function bindGlobalButtons() {
   };
   if ($('btn-checkout')) $('btn-checkout').onclick = openCheckoutModal;
 
-  if ($('laporan-periode')) $('laporan-periode').addEventListener('change', renderLaporan);
+  if ($('laporan-periode')) $('laporan-periode').addEventListener('change', () => {
+    updateLaporanFilterUI();
+    renderLaporan();
+  });
+  ['laporan-date','laporan-month','laporan-year','laporan-range-from','laporan-range-to'].forEach(id => {
+    if ($(id)) $(id).addEventListener('change', renderLaporan);
+  });
 
   if ($('btn-export')) $('btn-export').onclick = exportData;
   if ($('btn-import')) $('btn-import').onclick = () => $('file-import').click();

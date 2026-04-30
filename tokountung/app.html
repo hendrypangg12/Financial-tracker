@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=14" />
+<link rel="stylesheet" href="styles.css?v=15" />
 </head>
 <body>
 
@@ -415,15 +415,28 @@
   <section id="tab-laporan" class="tab-panel">
     <div class="page-head">
       <h1>Laporan</h1>
-      <div class="page-filters">
+      <div class="page-filters laporan-filters">
         <select id="laporan-periode">
           <option value="hari">Hari Ini</option>
           <option value="minggu">Minggu Ini</option>
           <option value="bulan" selected>Bulan Ini</option>
           <option value="tahun">Tahun Ini</option>
+          <option value="custom-date">📅 Pilih Tanggal</option>
+          <option value="custom-month">📆 Pilih Bulan</option>
+          <option value="custom-year">🗓️ Pilih Tahun</option>
+          <option value="custom-range">↔️ Range Custom</option>
         </select>
+        <input type="date" id="laporan-date" hidden />
+        <input type="month" id="laporan-month" hidden />
+        <select id="laporan-year" hidden></select>
+        <div id="laporan-range" class="laporan-range-wrap" hidden>
+          <input type="date" id="laporan-range-from" />
+          <span>s/d</span>
+          <input type="date" id="laporan-range-to" />
+        </div>
       </div>
     </div>
+    <div id="laporan-period-label" class="laporan-period-label"></div>
     <div class="cards">
       <div class="card"><div class="card-body">
         <div class="card-label">REVENUE</div>
@@ -803,12 +816,12 @@
 <script src="js/products.js?v=4"></script>
 <script src="js/sales.js?v=5"></script>
 <script src="js/restock.js?v=1"></script>
-<script src="js/reports.js?v=1"></script>
+<script src="js/reports.js?v=2"></script>
 <script src="js/receipt.js?v=4"></script>
 <script src="js/piutang.js?v=2"></script>
 <script src="js/customers.js?v=2"></script>
 <script src="js/edit-sale.js?v=1"></script>
 <script src="js/cloud-sync.js?v=3"></script>
-<script src="js/app.js?v=15"></script>
+<script src="js/app.js?v=16"></script>
 </body>
 </html>

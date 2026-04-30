@@ -114,17 +114,126 @@ function renderBEP() {
     `${pct.toFixed(0)}% menuju BEP bulan ini`;
 }
 
+// === LAPORAN — filter UI helpers ===
+function populateYearOptions() {
+  const sel = document.getElementById('laporan-year');
+  if (!sel) return;
+  const currentYear = new Date().getFullYear();
+  const yearsFromSales = new Set();
+  for (const s of (state.sales || [])) {
+    if (s.tanggal) yearsFromSales.add(parseInt(s.tanggal.slice(0, 4), 10));
+  }
+  yearsFromSales.add(currentYear);
+  const years = [...yearsFromSales].sort((a, b) => b - a);
+  sel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+}
+
+function updateLaporanFilterUI() {
+  const periode = document.getElementById('laporan-periode').value;
+  const dateInp = document.getElementById('laporan-date');
+  const monthInp = document.getElementById('laporan-month');
+  const yearSel = document.getElementById('laporan-year');
+  const rangeWrap = document.getElementById('laporan-range');
+
+  if (dateInp) dateInp.hidden = periode !== 'custom-date';
+  if (monthInp) monthInp.hidden = periode !== 'custom-month';
+  if (yearSel) yearSel.hidden = periode !== 'custom-year';
+  if (rangeWrap) rangeWrap.hidden = periode !== 'custom-range';
+
+  // Set default values
+  const today = new Date();
+  if (periode === 'custom-date' && dateInp && !dateInp.value) {
+    dateInp.value = toISODate(today);
+  }
+  if (periode === 'custom-month' && monthInp && !monthInp.value) {
+    monthInp.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  }
+  if (periode === 'custom-year' && yearSel) {
+    populateYearOptions();
+    if (!yearSel.value) yearSel.value = today.getFullYear();
+  }
+  if (periode === 'custom-range') {
+    const from = document.getElementById('laporan-range-from');
+    const to = document.getElementById('laporan-range-to');
+    if (from && !from.value) {
+      const d = new Date(); d.setDate(d.getDate() - 7);
+      from.value = toISODate(d);
+    }
+    if (to && !to.value) to.value = toISODate(today);
+  }
+}
+
 // === LAPORAN ===
-function renderLaporan() {
+function getLaporanRange() {
   const periode = document.getElementById('laporan-periode').value;
   const now = new Date();
-  let start;
-  if (periode === 'hari') start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  else if (periode === 'minggu') start = startOfWeek(now);
-  else if (periode === 'tahun') start = startOfYear(now);
-  else start = startOfMonth(now);
+  const endOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  let start, end, label;
 
-  const periodSales = state.sales.filter(s => parseISO(s.tanggal) >= start);
+  if (periode === 'hari') {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    end = endOfDay(now);
+    label = `📅 ${formatTanggalLong(toISODate(start))}`;
+  } else if (periode === 'minggu') {
+    start = startOfWeek(now);
+    end = endOfDay(now);
+    label = `📅 Minggu ini (${formatTanggal(toISODate(start))} - ${formatTanggal(toISODate(now))})`;
+  } else if (periode === 'tahun') {
+    start = startOfYear(now);
+    end = endOfDay(now);
+    label = `🗓️ Tahun ${now.getFullYear()}`;
+  } else if (periode === 'custom-date') {
+    const v = document.getElementById('laporan-date').value;
+    if (!v) return null;
+    const d = parseISO(v);
+    start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    end = endOfDay(start);
+    label = `📅 ${formatTanggalLong(v)}`;
+  } else if (periode === 'custom-month') {
+    const v = document.getElementById('laporan-month').value;
+    if (!v) return null;
+    const [y, m] = v.split('-').map(Number);
+    start = new Date(y, m - 1, 1);
+    end = endOfDay(new Date(y, m, 0));
+    const bulanNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    label = `📆 ${bulanNames[m-1]} ${y}`;
+  } else if (periode === 'custom-year') {
+    const v = +document.getElementById('laporan-year').value;
+    if (!v) return null;
+    start = new Date(v, 0, 1);
+    end = endOfDay(new Date(v, 11, 31));
+    label = `🗓️ Tahun ${v}`;
+  } else if (periode === 'custom-range') {
+    const from = document.getElementById('laporan-range-from').value;
+    const to = document.getElementById('laporan-range-to').value;
+    if (!from || !to) return null;
+    start = parseISO(from);
+    end = endOfDay(parseISO(to));
+    if (end < start) return null;
+    label = `↔️ ${formatTanggal(from)} s/d ${formatTanggal(to)}`;
+  } else {
+    start = startOfMonth(now);
+    end = endOfDay(now);
+    const bulanNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    label = `📆 ${bulanNames[now.getMonth()]} ${now.getFullYear()}`;
+  }
+  return { start, end, label, periode };
+}
+
+function renderLaporan() {
+  const range = getLaporanRange();
+  const labelEl = document.getElementById('laporan-period-label');
+  if (!range) {
+    if (labelEl) labelEl.textContent = '⚠️ Pilih periode dulu';
+    return;
+  }
+  if (labelEl) labelEl.textContent = range.label;
+  const { start, end } = range;
+
+  const periodSales = state.sales.filter(s => {
+    const d = parseISO(s.tanggal);
+    return d >= start && d <= end;
+  });
   const revenue = periodSales.reduce((s, x) => s + x.total, 0);
   const hpp = periodSales.reduce((s, x) => s + x.items.reduce((a,it) => a + it.hargaModal * it.qty, 0), 0);
   const profit = periodSales.reduce((s, x) => s + x.profit, 0);
