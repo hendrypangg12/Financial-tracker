@@ -148,6 +148,28 @@ function openCheckoutModal() {
 function setupCheckoutForm() {
   const form = document.getElementById('form-checkout');
   const bayarInput = form.querySelector('[name="bayar"]');
+
+  // Toggle field "Jatuh Tempo" hanya saat metode = tempo
+  const metodeSel = document.getElementById('checkout-metode');
+  const labelTempo = document.getElementById('label-jatuh-tempo');
+  if (metodeSel && labelTempo) {
+    const toggleTempo = () => {
+      const isTempo = metodeSel.value === 'tempo';
+      labelTempo.hidden = !isTempo;
+      if (isTempo) {
+        const inp = labelTempo.querySelector('input');
+        if (inp && !inp.value) {
+          // Default 30 hari dari hari ini
+          const d = new Date();
+          d.setDate(d.getDate() + 30);
+          inp.value = d.toISOString().slice(0, 10);
+        }
+      }
+    };
+    metodeSel.addEventListener('change', toggleTempo);
+    toggleTempo();
+  }
+
   bayarInput.addEventListener('input', () => {
     const subtotal = state.cart.reduce((s, it) => s + (it.hargaJual * it.qty), 0);
     const diskon = +document.getElementById('cart-diskon').value || 0;
@@ -183,6 +205,9 @@ function setupCheckoutForm() {
       kembalian: bayar - total,
       metode: fd.get('metode'),
       pelanggan: fd.get('pelanggan') || 'Anonim',
+      pelangganAlamat: fd.get('pelangganAlamat') || '',
+      pelangganTelepon: fd.get('pelangganTelepon') || '',
+      jatuhTempo: fd.get('jatuhTempo') || '',
       profit,
     };
     addSale(sale);

@@ -685,6 +685,170 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
 #tab-btn-admin { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff !important; }
 #tab-btn-admin.active { background: #fff; color: var(--accent-dark) !important; }
 
+/* ===================== INVOICE A4 (3-PLY) ===================== */
+.invoice-3ply {
+  display: flex; flex-direction: column;
+  gap: 24px;
+  background: #e5e5e5;
+  padding: 20px 0;
+  max-height: 75vh; overflow-y: auto;
+}
+.invoice-ply {
+  width: 21cm; min-height: 29.7cm;
+  margin: 0 auto;
+  background: #fff;
+  padding: 1.6cm 1.4cm;
+  font-family: 'Inter', sans-serif;
+  color: #111;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  position: relative;
+  font-size: 11pt;
+}
+.ply-stamp {
+  position: absolute; top: 0.6cm; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9pt; font-weight: 800; letter-spacing: 2px;
+  padding: 4px 14px; border-radius: 999px;
+  background: #f3f4f6; border: 2px solid currentColor;
+  white-space: nowrap;
+}
+.invoice-ply .inv-title {
+  text-align: center; font-size: 24pt; font-weight: 900;
+  letter-spacing: 4px; margin-bottom: 18px;
+  color: #1a2238;
+}
+.invoice-ply .inv-header-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-bottom: 28px;
+}
+.invoice-ply .inv-company h2 {
+  font-size: 13pt; font-weight: 800; margin-bottom: 4px;
+  color: #1a2238; letter-spacing: -.2px;
+}
+.invoice-ply .inv-company p {
+  font-size: 10pt; line-height: 1.4; margin-bottom: 2px; color: #444;
+}
+.invoice-ply .inv-meta { font-size: 10pt; }
+.invoice-ply .meta-row {
+  display: flex; padding: 2px 0;
+  align-items: baseline;
+}
+.invoice-ply .meta-row span {
+  display: inline-block; min-width: 95px; color: #555;
+}
+.invoice-ply .inv-customer {
+  margin-bottom: 16px; padding: 8px 0;
+  border-top: 1px dashed #ccc;
+}
+.invoice-ply .kepada-label { font-size: 10pt; color: #555; margin-bottom: 2px; }
+.invoice-ply .inv-customer h3 {
+  font-size: 12pt; font-weight: 800; margin: 2px 0;
+  color: #1a2238;
+}
+.invoice-ply .inv-customer p {
+  font-size: 10pt; line-height: 1.4; color: #444;
+}
+.invoice-ply .inv-table {
+  width: 100%; border-collapse: collapse;
+  margin-bottom: 20px; font-size: 10pt;
+}
+.invoice-ply .inv-table thead th {
+  background: #1e3a5f; color: #fff;
+  padding: 10px 6px; font-weight: 700;
+  text-align: left; vertical-align: middle;
+  border: 1px solid #1e3a5f;
+}
+.invoice-ply .inv-table thead th.r { text-align: right; padding-right: 10px; }
+.invoice-ply .inv-table tbody td {
+  padding: 6px 8px; border: 1px solid #ccc;
+  font-size: 10pt; height: 32px;
+}
+.invoice-ply .inv-table tbody td.c { text-align: center; }
+.invoice-ply .inv-table tbody td.r { text-align: right; }
+.invoice-ply .inv-table tbody tr.subtotal-row td {
+  background: #f9f8f3; font-weight: 600;
+}
+.invoice-ply .inv-table tbody tr.discount-row td {
+  background: #fef9f3; color: #c44848;
+}
+.invoice-ply .inv-bottom {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;
+  margin-bottom: 28px;
+}
+.invoice-ply .inv-terbilang { font-size: 10pt; }
+.invoice-ply .terbilang-label { color: #555; margin-bottom: 4px; }
+.invoice-ply .terbilang-box {
+  border: 1px solid #999; padding: 10px 14px;
+  border-radius: 4px; min-height: 50px;
+  background: #fafafa; font-size: 10pt;
+  line-height: 1.5;
+}
+.invoice-ply .inv-total {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: #1e3a5f; color: #fff;
+  border-radius: 4px; min-height: 60px;
+}
+.invoice-ply .inv-total .total-label {
+  font-size: 11pt; font-weight: 600;
+}
+.invoice-ply .inv-total .total-amount {
+  font-size: 14pt; font-weight: 900; letter-spacing: -.3px;
+}
+.invoice-ply .inv-signatures {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  margin-bottom: 16px;
+  font-size: 10pt;
+}
+.invoice-ply .sign-box { text-align: center; }
+.invoice-ply .sign-box p { margin-bottom: 4px; color: #444; }
+.invoice-ply .sign-space { height: 50px; }
+.invoice-ply .sign-line { color: #333; font-size: 9pt; }
+.invoice-ply .inv-footer-note {
+  border-top: 1px dashed #ccc; padding-top: 8px;
+  font-size: 9pt; color: #888;
+  display: flex; justify-content: space-between;
+}
+.invoice-ply .powered { font-style: italic; }
+
+@media print {
+  /* Hide everything except invoice content */
+  body * { visibility: hidden; }
+  .modal#modal-invoice, .modal#modal-invoice * { visibility: visible; }
+  .modal#modal-invoice {
+    position: absolute; inset: 0; background: #fff !important;
+    backdrop-filter: none !important;
+  }
+  .modal-card.modal-large {
+    box-shadow: none; border-radius: 0;
+    padding: 0; max-width: none; width: 100%;
+    max-height: none; overflow: visible;
+  }
+  .modal-close, .modal-actions, .no-print { display: none !important; }
+  .invoice-3ply {
+    background: #fff; padding: 0; gap: 0;
+    max-height: none; overflow: visible;
+  }
+  .invoice-ply {
+    box-shadow: none; padding: 1.5cm 1.4cm;
+    page-break-after: always;
+    break-after: page;
+    margin: 0;
+    width: 100%; min-height: auto;
+  }
+  .invoice-ply:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  @page { size: A4; margin: 0; }
+}
+
+@media (max-width: 1100px) {
+  .invoice-ply {
+    transform: scale(0.5); transform-origin: top center;
+    margin-bottom: -50%;
+  }
+}
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 1100px) {
   .topbar { padding: 12px 16px; gap: 14px; }
