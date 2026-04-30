@@ -149,21 +149,41 @@ function setupCheckoutForm() {
   const form = document.getElementById('form-checkout');
   const bayarInput = form.querySelector('[name="bayar"]');
 
-  // Toggle field "Jatuh Tempo" hanya saat metode = tempo
+  // Toggle field "Jatuh Tempo" + "Bayar" tergantung metode
   const metodeSel = document.getElementById('checkout-metode');
   const labelTempo = document.getElementById('label-jatuh-tempo');
-  if (metodeSel && labelTempo) {
+  const labelBayar = bayarInput.closest('label');
+  const kembalianPreview = document.getElementById('kembalian-preview');
+  const tagihanInfo = document.getElementById('tagihan-info');
+
+  if (metodeSel) {
     const toggleTempo = () => {
       const isTempo = metodeSel.value === 'tempo';
-      labelTempo.hidden = !isTempo;
-      if (isTempo) {
-        const inp = labelTempo.querySelector('input');
-        if (inp && !inp.value) {
-          // Default 30 hari dari hari ini
-          const d = new Date();
-          d.setDate(d.getDate() + 30);
-          inp.value = d.toISOString().slice(0, 10);
+
+      // Field Jatuh Tempo — muncul cuma saat tempo
+      if (labelTempo) {
+        labelTempo.hidden = !isTempo;
+        if (isTempo) {
+          const inp = labelTempo.querySelector('input');
+          if (inp && !inp.value) {
+            const d = new Date();
+            d.setDate(d.getDate() + 30);
+            inp.value = d.toISOString().slice(0, 10);
+          }
         }
+      }
+
+      // Bayar field — sembunyikan saat tempo (customer belum bayar)
+      if (labelBayar) labelBayar.hidden = isTempo;
+      if (kembalianPreview) kembalianPreview.hidden = isTempo;
+      if (tagihanInfo) tagihanInfo.hidden = !isTempo;
+
+      // Saat tempo, set bayar = 0 supaya tidak kena validasi "Pembayaran kurang"
+      if (isTempo) {
+        bayarInput.required = false;
+        bayarInput.value = 0;
+      } else {
+        bayarInput.required = true;
       }
     };
     metodeSel.addEventListener('change', toggleTempo);
@@ -186,8 +206,10 @@ function setupCheckoutForm() {
     const subtotal = state.cart.reduce((s, it) => s + (it.hargaJual * it.qty), 0);
     const diskon = +document.getElementById('cart-diskon').value || 0;
     const total = Math.max(0, subtotal - diskon);
-    const bayar = +fd.get('bayar');
-    if (bayar < total) { showToast('Pembayaran kurang!', 'error'); return; }
+    const isTempo = fd.get('metode') === 'tempo';
+    const bayar = isTempo ? 0 : +fd.get('bayar');
+    if (!isTempo && bayar < total) { showToast('Pembayaran kurang!', 'error'); return; }
+    if (isTempo && !fd.get('jatuhTempo')) { showToast('Pilih tanggal jatuh tempo dulu!', 'error'); return; }
     const profit = state.cart.reduce((s, it) => s + (it.hargaJual - it.hargaModal) * it.qty, 0) - diskon;
     const sale = {
       tanggal: todayISO(),
@@ -199,10 +221,11 @@ function setupCheckoutForm() {
         qty: c.qty,
         hargaJual: c.hargaJual,
         hargaModal: c.hargaModal,
+        satuan: c.satuan || 'pcs',
       })),
       subtotal, diskon, total,
       bayar,
-      kembalian: bayar - total,
+      kembalian: isTempo ? 0 : (bayar - total),
       metode: fd.get('metode'),
       pelanggan: fd.get('pelanggan') || 'Anonim',
       pelangganAlamat: fd.get('pelangganAlamat') || '',

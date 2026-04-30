@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=10" />
+<link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
 
@@ -535,6 +535,7 @@
     <form id="form-checkout" class="form">
       <label>Bayar (Rp)<input name="bayar" type="number" required autofocus /></label>
       <div id="kembalian-preview" class="kembalian-preview"></div>
+      <div id="tagihan-info" class="tagihan-info" hidden>⏱️ Belum dibayar — invoice akan keluar dengan status TEMPO. Tidak perlu input nominal bayar.</div>
       <label>Metode Bayar
         <select name="metode" id="checkout-metode">
           <option value="tunai">💵 Tunai</option>
@@ -617,10 +618,10 @@
 <script src="js/utils.js?v=2"></script>
 <script src="js/storage.js?v=2"></script>
 <script src="js/products.js?v=4"></script>
-<script src="js/sales.js?v=3"></script>
+<script src="js/sales.js?v=4"></script>
 <script src="js/restock.js?v=1"></script>
 <script src="js/reports.js?v=1"></script>
-<script src="js/receipt.js?v=2"></script>
+<script src="js/receipt.js?v=3"></script>
 <script src="js/cloud-sync.js?v=3"></script>
 <script src="js/app.js?v=12"></script>
 </body>
