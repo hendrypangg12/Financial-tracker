@@ -95,7 +95,7 @@ function setupTabs() {
       const t = btn.dataset.tab;
       if (t === 'dashboard') renderDashboard();
       if (t === 'stok') renderStok();
-      if (t === 'jual') { renderPOSProducts(); renderCart(); }
+      if (t === 'jual') { renderCategoryTabs(); renderPOSProducts(); renderCart(); }
       if (t === 'restock') renderRestock();
       if (t === 'piutang') renderPiutang();
       if (t === 'pelanggan') renderPelanggan();
@@ -162,6 +162,7 @@ function renderPengaturan() {
 function renderAll() {
   renderDashboard();
   renderStok();
+  renderCategoryTabs();
   renderPOSProducts();
   renderCart();
   renderRestock();

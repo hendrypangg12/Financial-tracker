@@ -6,9 +6,51 @@ function cartQty(productId) {
   return item ? item.qty : 0;
 }
 
+// State filter kategori aktif (default 'all')
+let activeKategoriFilter = 'all';
+
+function renderCategoryTabs() {
+  const wrap = document.getElementById('pos-category-tabs');
+  if (!wrap) return;
+
+  // Hitung jumlah produk per kategori (yang stoknya > 0)
+  const counts = { all: state.products.length };
+  for (const p of state.products) {
+    const k = p.kategori || 'Lain-lain';
+    counts[k] = (counts[k] || 0) + 1;
+  }
+
+  // Sort kategori dari list state.kategori, plus "Lain-lain" kalau ada
+  const kategoriList = [...(state.kategori || [])];
+  if (counts['Lain-lain']) kategoriList.push('Lain-lain');
+
+  wrap.innerHTML = `
+    <button class="pos-cat-tab ${activeKategoriFilter === 'all' ? 'active' : ''}" data-kat="all">
+      📦 Semua <small>(${counts.all || 0})</small>
+    </button>
+    ${kategoriList.map(k => `
+      <button class="pos-cat-tab ${activeKategoriFilter === k ? 'active' : ''}" data-kat="${escapeHtml(k)}">
+        ${escapeHtml(k)} <small>(${counts[k] || 0})</small>
+      </button>
+    `).join('')}
+  `;
+
+  wrap.querySelectorAll('.pos-cat-tab').forEach(btn => btn.onclick = () => {
+    activeKategoriFilter = btn.dataset.kat;
+    renderCategoryTabs();
+    renderPOSProducts();
+  });
+}
+
 function renderPOSProducts() {
   const search = (document.getElementById('pos-search')?.value || '').toLowerCase();
   let list = [...state.products];
+
+  // Filter kategori (kalau bukan "all")
+  if (activeKategoriFilter && activeKategoriFilter !== 'all') {
+    list = list.filter(p => (p.kategori || 'Lain-lain') === activeKategoriFilter);
+  }
+
   if (search) {
     list = list.filter(p =>
       (p.nama || '').toLowerCase().includes(search) ||
@@ -26,7 +68,7 @@ function renderPOSProducts() {
   }
   grid.innerHTML = list.map(p => {
     const inCart = cartQty(p.id);
-    const sisa = p.stok - inCart; // stok efektif (dikurangi qty di cart)
+    const sisa = p.stok - inCart;
     const photo = p.fotoUrl
       ? `<img class="pphoto" src="${p.fotoUrl}" alt="" loading="lazy" />`
       : `<div class="pphoto pphoto-empty">📦</div>`;
@@ -49,6 +91,9 @@ function renderPOSProducts() {
       if (!p) return;
       const sisa = p.stok - cartQty(p.id);
       if (sisa <= 0) { showToast('Stok habis!', 'error'); return; }
+      // Animasi bounce — tambah class adding, hapus setelah 300ms
+      card.classList.add('adding');
+      setTimeout(() => card.classList.remove('adding'), 300);
       addToCart(p);
     };
   });
