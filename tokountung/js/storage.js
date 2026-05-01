@@ -38,6 +38,10 @@ function saveState() {
     if (typeof schedulePushToFirestore === 'function') {
       schedulePushToFirestore();
     }
+    // Trigger Cloud Sync ke Berstock bot (debounced 30s, kalau auto-sync aktif)
+    if (typeof triggerAutoSyncDebounced === 'function') {
+      triggerAutoSyncDebounced();
+    }
   } catch (e) { console.warn('Save failed:', e); }
 }
 
