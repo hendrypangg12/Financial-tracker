@@ -25,6 +25,48 @@ function onBerbisnisAuthStateChanged(callback) {
   });
 }
 
+// =============================================================================
+// FEATURE FLAGS — customization per klien
+// Setiap flag default OFF supaya klien lama tidak tiba-tiba dapat fitur baru.
+// =============================================================================
+
+const FEATURE_DEFINITIONS = {
+  multi_gudang: {
+    label: 'Multi Gudang',
+    desc: 'Pilih gudang di stok & PO supplier',
+    icon: '🏢',
+  },
+  kredit_limit: {
+    label: 'Kredit Limit Pelanggan',
+    desc: 'Set limit kredit per pelanggan + alert kalau over',
+    icon: '💳',
+  },
+  menu_modifier: {
+    label: 'Menu Modifier (F&B)',
+    desc: 'Tambah opsi es/panas, level pedas, extra topping',
+    icon: '☕',
+  },
+  custom_bot_prompt: {
+    label: 'Custom Bot Prompt',
+    desc: 'Klien bisa atur prompt tambahan untuk bot AI',
+    icon: '🤖',
+  },
+};
+
+function defaultFeatures() {
+  const features = {};
+  for (const key of Object.keys(FEATURE_DEFINITIONS)) {
+    features[key] = false;
+  }
+  return features;
+}
+
+// Helper: cek apakah flag aktif (handle profile lama yang belum punya features)
+function hasFeature(profile, flagName) {
+  if (!profile || !profile.features) return false;
+  return profile.features[flagName] === true;
+}
+
 function makeFallbackProfile(user) {
   const now = new Date();
   const expires = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
@@ -36,6 +78,8 @@ function makeFallbackProfile(user) {
     plan: 'trial',
     expiresAt: expires.toISOString(),
     bizName: '',
+    // Feature flags — admin bisa toggle per klien dari Admin Panel
+    features: defaultFeatures(),
     _fallback: true,  // tanda kalau Firestore tidak accessible
   };
 }
