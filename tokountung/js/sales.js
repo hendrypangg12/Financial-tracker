@@ -1,4 +1,11 @@
 // Module: Jual / POS / Cart
+
+// Helper: berapa qty produk ini sudah masuk cart
+function cartQty(productId) {
+  const item = (state.cart || []).find(c => c.productId === productId);
+  return item ? item.qty : 0;
+}
+
 function renderPOSProducts() {
   const search = (document.getElementById('pos-search')?.value || '').toLowerCase();
   let list = [...state.products];
@@ -18,15 +25,20 @@ function renderPOSProducts() {
     return;
   }
   grid.innerHTML = list.map(p => {
+    const inCart = cartQty(p.id);
+    const sisa = p.stok - inCart; // stok efektif (dikurangi qty di cart)
     const photo = p.fotoUrl
       ? `<img class="pphoto" src="${p.fotoUrl}" alt="" loading="lazy" />`
       : `<div class="pphoto pphoto-empty">📦</div>`;
+    const cartBadge = inCart > 0 ? `<div class="pcart-badge">${inCart}</div>` : '';
+    const stokColor = sisa <= 0 ? 'pstok-zero' : (sisa <= (p.minStok || 5) ? 'pstok-low' : '');
     return `
-    <div class="product-card ${p.stok <= 0 ? 'out-of-stock' : ''}" data-pid="${p.id}">
+    <div class="product-card ${sisa <= 0 ? 'out-of-stock' : ''}" data-pid="${p.id}">
+      ${cartBadge}
       ${photo}
       <div class="pname">${escapeHtml(p.nama)}</div>
       <div class="pprice">${formatRupiah(p.hargaJual)}</div>
-      <div class="pstok">Stok: ${p.stok} ${escapeHtml(p.satuan || 'pcs')}</div>
+      <div class="pstok ${stokColor}">Sisa: ${sisa} ${escapeHtml(p.satuan || 'pcs')}${inCart > 0 ? ` <small>(cart: ${inCart})</small>` : ''}</div>
     </div>
   `;
   }).join('');
@@ -34,7 +46,9 @@ function renderPOSProducts() {
     card.onclick = () => {
       const id = card.dataset.pid;
       const p = getProduct(id);
-      if (!p || p.stok <= 0) { showToast('Stok habis!', 'error'); return; }
+      if (!p) return;
+      const sisa = p.stok - cartQty(p.id);
+      if (sisa <= 0) { showToast('Stok habis!', 'error'); return; }
       addToCart(p);
     };
   });
@@ -61,6 +75,7 @@ function addToCart(product) {
     });
   }
   renderCart();
+  renderPOSProducts(); // refresh stok display di card
   showToast(`+ ${product.nama}`, 'success');
 }
 
@@ -103,6 +118,7 @@ function renderCart() {
     }
     else if (act === 'rm') state.cart.splice(i, 1);
     renderCart();
+    renderPOSProducts();
   });
   ul.querySelectorAll('input[data-i]').forEach(inp => inp.onchange = () => {
     const i = +inp.dataset.i;
@@ -110,6 +126,7 @@ function renderCart() {
     q = Math.max(q, 1);
     state.cart[i].qty = q;
     renderCart();
+    renderPOSProducts();
   });
   // Summary
   const subtotal = state.cart.reduce((s, it) => s + (it.hargaJual * it.qty), 0);

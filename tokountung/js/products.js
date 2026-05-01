@@ -150,7 +150,7 @@ function handleFileUpload(file) {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const max = 300;
+        const max = 500; // naik dari 300 — quality lebih baik
         let w = img.width, h = img.height;
         if (w > h) {
           if (w > max) { h = h * max / w; w = max; }
@@ -161,7 +161,7 @@ function handleFileUpload(file) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
         try {
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
           resolve(dataUrl);
         } catch (err) {
           reject(err);
@@ -200,27 +200,34 @@ function setupProductForm() {
   form.querySelector('[name="hargaModal"]').addEventListener('input', updateMarginPreview);
   form.querySelector('[name="hargaJual"]').addEventListener('input', updateMarginPreview);
 
-  // Foto upload (galeri & kamera)
+  // Foto upload (galeri & kamera) — dengan loading state
   const onFotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
-      showToast('Foto terlalu besar (max 8MB)', 'error');
+    if (file.size > 12 * 1024 * 1024) {
+      showToast('Foto terlalu besar (max 12MB)', 'error');
       e.target.value = '';
       return;
     }
+    const loading = document.getElementById('foto-loading');
+    if (loading) loading.hidden = false;
     try {
       const dataUrl = await handleFileUpload(file);
       setFotoPreview(dataUrl);
-      showToast('Foto siap disimpan', 'success');
+      showToast('✓ Foto siap disimpan', 'success');
     } catch (err) {
       showToast('Gagal proses foto: ' + err.message, 'error');
+    } finally {
+      if (loading) loading.hidden = true;
     }
     e.target.value = '';
   };
   document.getElementById('foto-input').addEventListener('change', onFotoChange);
   document.getElementById('foto-camera').addEventListener('change', onFotoChange);
-  document.getElementById('btn-foto-remove').onclick = () => setFotoPreview('');
+  document.getElementById('btn-foto-remove').onclick = (e) => {
+    e.preventDefault();
+    setFotoPreview('');
+  };
 
   form.onsubmit = (e) => {
     e.preventDefault();
