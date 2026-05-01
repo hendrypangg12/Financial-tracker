@@ -713,6 +713,124 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   .paywall-prices { grid-template-columns: 1fr; }
 }
 
+/* ===================== MOBILE COMPACT (< 640px) ===================== */
+@media (max-width: 640px) {
+  /* Container padding lebih ramping */
+  body { font-size: 14px; }
+  main, .container, section.tab-panel { padding: 10px !important; }
+  .page-head { gap: 8px; }
+  .page-head h1 { font-size: 20px; }
+
+  /* KPI cards — 2 kolom (bukan 1) supaya muat lebih banyak di 1 layar */
+  .cards {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+  .card {
+    padding: 12px !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+  }
+  .card-icon {
+    width: 32px !important; height: 32px !important;
+    font-size: 18px !important;
+  }
+  .card-label {
+    font-size: 9px !important;
+    letter-spacing: .5px;
+  }
+  .card-value {
+    font-size: 15px !important;
+    line-height: 1.1 !important;
+    margin: 2px 0 0 !important;
+    word-break: break-all;
+  }
+  .card-delta {
+    font-size: 10px !important;
+    line-height: 1.2;
+  }
+
+  /* Cash vs Tempo breakdown — 1 kolom + lebih padat */
+  .cash-breakdown {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin: 8px 0 12px !important;
+  }
+  .cb-card { padding: 10px 12px !important; gap: 10px !important; }
+  .cb-icon { font-size: 22px !important; }
+  .cb-label { font-size: 10px !important; }
+  .cb-value { font-size: 16px !important; word-break: break-all; }
+  .cb-meta { font-size: 10px !important; }
+
+  /* Trend chart — kurangi tinggi */
+  .chart-box { height: 200px !important; }
+  .panel { padding: 12px !important; }
+  .panel-head h3 { font-size: 14px !important; }
+
+  /* Tab nav — bisa scroll horizontal, padding kecil */
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+  }
+  .tab {
+    flex-shrink: 0;
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Header */
+  .app-header { padding: 8px 10px !important; gap: 8px !important; }
+  .app-header img { width: 32px !important; height: 32px !important; }
+  .app-header .app-title { font-size: 15px !important; }
+
+  /* Tabel data lebih ramping */
+  .data-table { font-size: 12px !important; }
+  .data-table th, .data-table td { padding: 6px 8px !important; }
+
+  /* Summary card piutang/PO/pelanggan jadi 2 kolom kecil */
+  .piutang-summary, .po-summary, .pelanggan-summary {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .psum-card { padding: 10px 12px !important; }
+  .psum-label { font-size: 9px !important; }
+  .psum-value { font-size: 14px !important; word-break: break-all; }
+  .psum-meta { font-size: 10px !important; }
+
+  /* Product card di kasir */
+  .product-card { padding: 8px !important; }
+  .pname { font-size: 12px !important; }
+  .pprice { font-size: 13px !important; }
+  .pstok { font-size: 11px !important; }
+
+  /* Modal lebih ramping */
+  .modal-card { padding: 16px !important; }
+  .form label { font-size: 13px; }
+  .modal-actions { gap: 6px; }
+  .modal-actions .btn { font-size: 13px; padding: 8px 12px; }
+
+  /* Logout/export buttons di header */
+  .header-actions {
+    flex-wrap: wrap;
+    gap: 4px !important;
+  }
+  .header-actions .btn {
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+}
+
+/* Extra-small phones (< 380px iPhone SE) */
+@media (max-width: 380px) {
+  .cards { grid-template-columns: 1fr !important; }
+  .piutang-summary, .po-summary, .pelanggan-summary { grid-template-columns: 1fr !important; }
+  .card-value { font-size: 18px !important; }
+}
+
 /* ===================== ADMIN PANEL ===================== */
 #tab-admin { background: linear-gradient(135deg, rgba(201,163,82,.04), transparent); }
 #tab-btn-admin { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff !important; }
