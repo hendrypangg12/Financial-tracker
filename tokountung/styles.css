@@ -787,9 +787,27 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   .app-header img { width: 32px !important; height: 32px !important; }
   .app-header .app-title { font-size: 15px !important; }
 
-  /* Tabel data lebih ramping */
-  .data-table { font-size: 12px !important; }
-  .data-table th, .data-table td { padding: 6px 8px !important; }
+  /* Tabel data: scroll horizontal supaya tidak kepotong */
+  .panel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table {
+    font-size: 12px !important;
+    min-width: 600px; /* paksa lebar minimum biar muat columns */
+  }
+  .data-table th, .data-table td {
+    padding: 6px 8px !important;
+    white-space: nowrap; /* jangan pecah ke baris baru */
+  }
+  /* Sembunyikan kolom non-essential di tabel Stok */
+  #stok-body tr td:nth-child(2),  /* SKU */
+  #stok-body tr td:nth-child(6),  /* H. Modal */
+  #stok-body tr td:nth-child(8),  /* Margin */
+  .panel:has(#stok-body) thead th:nth-child(2),
+  .panel:has(#stok-body) thead th:nth-child(6),
+  .panel:has(#stok-body) thead th:nth-child(8) {
+    display: none;
+  }
+  /* Setelah hide columns, min-width bisa lebih kecil */
+  .panel:has(#stok-body) .data-table { min-width: 0; }
 
   /* Summary card piutang/PO/pelanggan jadi 2 kolom kecil */
   .piutang-summary, .po-summary, .pelanggan-summary {
