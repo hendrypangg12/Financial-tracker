@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Berstock × BerBisnis — Business Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #1e3a5f;
+  --navy-dark: #0f1f3d;
+  --gold: #c9a352;
+  --gold-bright: #d4af37;
+  --cyan: #06b6d4;
+  --green: #10b981;
+  --red: #ef4444;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-300: #cbd5e1;
+  --gray-500: #64748b;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
+}
+
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.print-guide {
+  background: #1a2540; color: #fff;
+  padding: 24px; text-align: center;
+  max-width: 900px; margin: 30px auto;
+  border-radius: 16px;
+  border: 1px solid #2a3960;
+}
+.print-guide h1 { color: var(--gold-bright); margin-bottom: 8px; font-size: 22px; }
+.print-guide p { color: #cbd5e1; line-height: 1.6; font-size: 14px; }
+.print-guide kbd { background: #2a3960; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+.print-guide button {
+  background: var(--gold); color: #fff;
+  padding: 12px 24px; border-radius: 8px;
+  font-size: 16px; font-weight: 700;
+  border: none; cursor: pointer; margin-top: 12px;
+}
+
+.deck { display: flex; flex-direction: column; gap: 30px; align-items: center; padding: 30px 0; }
+
+.slide {
+  width: 297mm; height: 210mm;
+  background: #fff;
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 24mm 28mm;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  break-after: page;
+  page-break-after: always;
+  overflow: hidden;
+}
+
+.slide-num {
+  position: absolute; bottom: 14mm; right: 18mm;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt; color: var(--gray-500);
+}
+.slide-brand {
+  position: absolute; bottom: 14mm; left: 18mm;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11pt; color: var(--gray-500);
+}
+.slide-brand .logo {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.slide-brand b { color: var(--navy); }
+
+/* ================ SLIDE 1 — COVER ================ */
+.s1 {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: #fff;
+  align-items: center; justify-content: center; text-align: center;
+}
+.s1::before {
+  content: ''; position: absolute;
+  top: -10%; right: -10%; width: 60%; height: 80%;
+  background: radial-gradient(circle, rgba(212,175,55,.25), transparent 60%);
+}
+.s1::after {
+  content: ''; position: absolute;
+  bottom: -10%; left: -10%; width: 60%; height: 80%;
+  background: radial-gradient(circle, rgba(6,182,212,.18), transparent 60%);
+}
+.s1 .content { position: relative; z-index: 2; }
+.s1 .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(212,175,55,.15);
+  border: 1px solid rgba(212,175,55,.5);
+  color: var(--gold-bright);
+  padding: 8px 18px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11pt; letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.s1 h1 {
+  font-size: 56pt; font-weight: 900; line-height: 1;
+  letter-spacing: -2px; margin-bottom: 16px;
+}
+.s1 h1 .grad {
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s1 .tagline {
+  font-size: 18pt; color: #e2e8f0;
+  max-width: 700px; line-height: 1.4;
+  margin: 0 auto 30px;
+  font-weight: 500;
+}
+.s1 .meta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #cbd5e1;
+  font-size: 11pt; letter-spacing: 1px;
+}
+.s1 .meta b { color: var(--gold-bright); }
+.s1 .slide-brand b, .s1 .slide-brand { color: rgba(255,255,255,.6); }
+
+/* ================ COMMON HEADERS ================ */
+.s-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt; letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.s-title {
+  font-size: 32pt; font-weight: 900; line-height: 1.05;
+  color: var(--navy);
+  margin-bottom: 24px;
+  letter-spacing: -1px;
+}
+.s-title .grad {
+  background: linear-gradient(135deg, var(--navy), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s-subtitle {
+  font-size: 14pt; color: var(--gray-700);
+  line-height: 1.5; margin-bottom: 24px;
+  max-width: 90%;
+}
+
+/* ================ SLIDE 2 — PROBLEM ================ */
+.s2 {}
+.s2 .grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  flex: 1;
+}
+.s2 .card {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid var(--red);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.s2 .card .icon { font-size: 28pt; }
+.s2 .card h3 {
+  font-size: 14pt; color: var(--gray-900); font-weight: 800;
+  margin: 4px 0 4px;
+}
+.s2 .card p {
+  font-size: 11pt; color: var(--gray-700); line-height: 1.4;
+}
+
+/* ================ SLIDE 3 — SOLUTION (POS+AI) ================ */
+.s3 {}
+.s3 .pair {
+  display: grid; grid-template-columns: 1fr 50px 1fr; gap: 12px;
+  flex: 1; align-items: stretch;
+}
+.s3 .pair-box {
+  border-radius: 14px; padding: 20px 22px;
+  display: flex; flex-direction: column;
+}
+.s3 .pair-box.pos {
+  background: linear-gradient(135deg, #ecfeff, #fff);
+  border: 2px solid var(--cyan);
+}
+.s3 .pair-box.ai {
+  background: linear-gradient(135deg, #fefce8, #fff);
+  border: 2px solid var(--gold);
+}
+.s3 .pair-box h2 {
+  font-size: 18pt; font-weight: 800;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.s3 .pair-box.pos h2 { color: var(--cyan); }
+.s3 .pair-box.ai h2 { color: var(--gold); }
+.s3 .pair-box ul { list-style: none; }
+.s3 .pair-box li {
+  font-size: 11pt; line-height: 1.6; color: var(--gray-700);
+  padding: 3px 0;
+  display: flex; gap: 6px;
+}
+.s3 .pair-box li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.s3 .connector {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 28pt; color: var(--gold);
+}
+.s3 .bottom-banner {
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13pt; font-weight: 600;
+}
+.s3 .bottom-banner b { color: var(--gold-bright); }
+
+/* ================ SLIDE 4 — KEUNGGULAN INTEGRASI ================ */
+.s4 {}
+.s4 .points {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+  flex: 1;
+}
+.s4 .point {
+  background: linear-gradient(180deg, #fff 0%, var(--gray-50) 100%);
+  border: 1px solid var(--gray-300);
+  border-radius: 14px; padding: 20px;
+  display: flex; flex-direction: column;
+}
+.s4 .point .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32pt; font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+.s4 .point h3 {
+  font-size: 15pt; font-weight: 800;
+  color: var(--navy);
+  margin: 6px 0 6px;
+}
+.s4 .point p {
+  font-size: 10.5pt; line-height: 1.5; color: var(--gray-700);
+  flex: 1;
+}
+.s4 .point .quote {
+  margin-top: 10px;
+  background: var(--navy);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-style: italic;
+}
+.s4 .point .quote b { color: var(--gold-bright); }
+
+/* ================ SLIDE 5 — FEATURE: POS ================ */
+.feat-row {
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px;
+  flex: 1;
+}
+.feat-list h4 {
+  font-size: 12pt; font-weight: 800;
+  color: var(--navy);
+  margin: 14px 0 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.feat-list .item {
+  font-size: 11pt; line-height: 1.5; color: var(--gray-700);
+  padding: 4px 0 4px 18px;
+  position: relative;
+}
+.feat-list .item::before {
+  content: ''; position: absolute; left: 4px; top: 11px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold);
+}
+.feat-mockup {
+  background: linear-gradient(135deg, var(--gray-50), #fff);
+  border: 1px solid var(--gray-300);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex; flex-direction: column;
+  font-size: 10pt;
+}
+.mockup-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  color: var(--gray-500);
+  border-bottom: 1px solid var(--gray-300);
+  padding-bottom: 8px; margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.mockup-row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--gray-300);
+}
+.mockup-row b { color: var(--navy); }
+.mockup-row.total {
+  border-bottom: none;
+  padding-top: 12px; margin-top: 4px;
+  border-top: 2px solid var(--navy);
+  font-size: 13pt; font-weight: 800;
+}
+.mockup-row.total b { color: var(--green); font-size: 14pt; }
+.mockup-row.danger b { color: var(--red); }
+.mockup-row.warn b { color: var(--gold); }
+.mockup-stat {
+  background: #fff;
+  border: 1px solid var(--gray-300);
+  border-left: 4px solid var(--cyan);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.mockup-stat .lbl { font-size: 9pt; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.mockup-stat .val { font-size: 18pt; font-weight: 900; color: var(--navy); }
+.mockup-stat .meta { font-size: 9pt; color: var(--gray-500); }
+
+/* AI Chat mockup */
+.chat-mockup {
+  background: #17212b;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex; flex-direction: column;
+  gap: 8px;
+}
+.chat-head {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 6px;
+}
+.chat-head .av {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.chat-head .name { font-weight: 700; color: #fff; font-size: 11pt; }
+.chat-head .status {
+  font-size: 8pt; color: var(--green);
+  display: flex; align-items: center; gap: 4px;
+}
+.chat-head .status::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+}
+.bubble {
+  padding: 8px 12px; border-radius: 12px;
+  font-size: 9.5pt; line-height: 1.4;
+  max-width: 80%;
+}
+.bubble.user { background: #2b5278; color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+.bubble.bot { background: #182533; color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 3px; border: 1px solid rgba(255,255,255,.06); }
+.bubble b { color: var(--gold-bright); }
+.bubble .red { color: var(--red); }
+.bubble .green { color: var(--green); }
+
+/* ================ SLIDE 8 — ROI ================ */
+.s8 {}
+.roi-table {
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+}
+.roi-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--gray-300);
+  align-items: center;
+}
+.roi-row.head {
+  background: var(--navy);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt; letter-spacing: 1px;
+}
+.roi-row:last-child { border-bottom: none; }
+.roi-row.total {
+  background: linear-gradient(135deg, #fefce8, #fff);
+  border-top: 2px solid var(--gold);
+  font-size: 13pt; font-weight: 800;
+}
+.roi-cell { font-size: 11.5pt; color: var(--gray-700); }
+.roi-cell.lama { color: var(--red); font-weight: 700; }
+.roi-cell.kami { color: var(--green); font-weight: 700; }
+.roi-cell b { display: block; font-size: 14pt; }
+
+/* ================ SLIDE 9 — PRICING ================ */
+.s9 {}
+.s9 .plans {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+  flex: 1;
+}
+.plan-card {
+  background: #fff;
+  border: 2px solid var(--gray-300);
+  border-radius: 14px;
+  padding: 20px 18px;
+  display: flex; flex-direction: column;
+}
+.plan-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, #fefce8 0%, #fff 100%);
+  box-shadow: 0 10px 30px rgba(212,175,55,.2);
+  position: relative;
+}
+.plan-card.featured::before {
+  content: '🔥 EARLY BIRD'; position: absolute; top: -10px; left: 18px;
+  background: var(--gold); color: #fff;
+  font-size: 9pt; letter-spacing: 1px; font-weight: 800;
+  padding: 3px 10px; border-radius: 6px;
+}
+.plan-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11pt; letter-spacing: 2px;
+  color: var(--gold); font-weight: 700;
+}
+.plan-price {
+  font-size: 28pt; font-weight: 900;
+  color: var(--navy);
+  line-height: 1;
+  margin: 4px 0;
+}
+.plan-price small { font-size: 11pt; color: var(--gray-500); font-weight: 500; }
+.plan-desc { font-size: 10pt; color: var(--gray-700); margin-bottom: 12px; }
+.plan-card ul { list-style: none; flex: 1; }
+.plan-card li {
+  font-size: 10pt; line-height: 1.5; color: var(--gray-700);
+  padding: 3px 0;
+  display: flex; gap: 6px;
+}
+.plan-card li::before { content: '✓'; color: var(--green); font-weight: 700; }
+
+/* ================ SLIDE 10 — CLOSING ================ */
+.s10 {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: #fff;
+  align-items: center; justify-content: center; text-align: center;
+}
+.s10::before {
+  content: ''; position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(212,175,55,.2), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(6,182,212,.15), transparent 50%);
+}
+.s10 .content { position: relative; z-index: 2; }
+.s10 h1 {
+  font-size: 44pt; font-weight: 900; line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -1.5px;
+}
+.s10 h1 .grad {
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s10 p {
+  font-size: 15pt; color: #cbd5e1; line-height: 1.5;
+  max-width: 700px; margin: 0 auto 30px;
+}
+.s10 .cta-row {
+  display: inline-flex; gap: 16px;
+  margin-bottom: 12px;
+}
+.s10 .cta {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 800; font-size: 14pt;
+  padding: 14px 24px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(212,175,55,.3);
+}
+.s10 .contact {
+  font-family: 'JetBrains Mono', monospace;
+  color: #cbd5e1; font-size: 11pt;
+  margin-top: 10px;
+}
+.s10 .contact b { color: var(--gold-bright); }
+.s10 .slide-brand b, .s10 .slide-brand { color: rgba(255,255,255,.6); }
+.s10 .slide-num { color: rgba(255,255,255,.5); }
+
+/* ================ PRINT STYLES ================ */
+@media print {
+  body { background: #fff; padding: 0; }
+  .print-guide { display: none; }
+  .deck { gap: 0; padding: 0; }
+  .slide {
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+  .slide:last-child { page-break-after: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="print-guide">
+  <h1>📄 Pitch Deck Berstock — Cara Export ke PDF</h1>
+  <p>
+    1. Tekan <kbd>Cmd+P</kbd> (Mac) atau <kbd>Ctrl+P</kbd> (Windows). Di iPad: tap <kbd>Share</kbd> → <kbd>Print</kbd>.<br>
+    2. Pilih <b>"Save as PDF"</b> sebagai destination.<br>
+    3. Page size: <b>A4 Landscape</b>. Margin: <b>None / Default</b>. Centang <b>"Background graphics"</b>.<br>
+    4. Klik <b>Save</b> — file PDF siap dipakai presentasi atau email.
+  </p>
+  <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+</div>
+
+<div class="deck">
+
+<!-- ============ SLIDE 1 — COVER ============ -->
+<div class="slide s1">
+  <div class="content">
+    <div class="badge">⚡ POWERED BY CLAUDE AI</div>
+    <h1>Berstock <span class="grad">×</span> BerBisnis</h1>
+    <p class="tagline">POS System pertama yang terintegrasi dengan AI Assistant 24/7. Kelola toko Anda dari mana saja, kapan saja — tinggal chat.</p>
+    <div class="meta">📊 BUSINESS PITCH DECK · <b>Edisi Q2 2026</b></div>
+  </div>
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">01 / 10</div>
+</div>
+
+<!-- ============ SLIDE 2 — PROBLEM ============ -->
+<div class="slide s2">
+  <div class="s-header">PROBLEM</div>
+  <h1 class="s-title">Owner UMKM kerepotan di <span style="color:var(--red)">4 hal</span> ini.</h1>
+  <p class="s-subtitle">Bisnis udah jalan, tapi waktu owner habis untuk hal-hal manual yang harusnya bisa otomatis.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="icon">📵</div>
+      <h3>Tidak bisa pantau dari luar</h3>
+      <p>Lagi di luar kota, mau cek "stok beras berapa?" — harus telepon karyawan. Lambat & ribet.</p>
+    </div>
+    <div class="card">
+      <div class="icon">😵</div>
+      <h3>Piutang pelanggan numpuk</h3>
+      <p>Siapa yang belum bayar tempo? Berapa overdue? Cari di buku catatan satu-satu.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📦</div>
+      <h3>Hutang supplier kelewat</h3>
+      <p>Faktur supplier hilang. Pas dikejar baru sadar lupa bayar. Cash flow berantakan.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h3>Laporan manual tiap bulan</h3>
+      <p>Bikin laporan untung-rugi pakai Excel. Mau cek "best seller" — buka 5 file dulu.</p>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">02 / 10</div>
+</div>
+
+<!-- ============ SLIDE 3 — SOLUTION ============ -->
+<div class="slide s3">
+  <div class="s-header">SOLUTION</div>
+  <h1 class="s-title">POS App + AI Bot, <span class="grad">terintegrasi penuh.</span></h1>
+  <p class="s-subtitle">Semua data dari kasir Anda otomatis dibaca AI. Owner tinggal chat di Telegram — AI yang jawab.</p>
+
+  <div class="pair">
+    <div class="pair-box pos">
+      <h2>📱 BerBisnis POS</h2>
+      <ul>
+        <li>Kasir + manajemen stok unlimited</li>
+        <li>HPP weighted average otomatis</li>
+        <li>Faktur A4 3-ply (Asli/Copy/Arsip)</li>
+        <li>Piutang pelanggan tracker</li>
+        <li>PO Supplier + foto faktur</li>
+        <li>Pelanggan database + history</li>
+        <li>Laporan custom range</li>
+        <li>Cloud sync cross-device</li>
+      </ul>
+    </div>
+    <div class="connector">
+      <div>⟷</div>
+      <div style="font-family:monospace; font-size:9pt; color:var(--gray-500); letter-spacing:2px; margin-top:6px;">SYNC</div>
+    </div>
+    <div class="pair-box ai">
+      <h2>🤖 Berstock AI Bot</h2>
+      <ul>
+        <li>Chat di Telegram, akses 24/7</li>
+        <li>Powered by Claude Sonnet 4.6</li>
+        <li>Bahasa Indonesia natural</li>
+        <li>12 jenis pertanyaan</li>
+        <li>Real-time data dari POS</li>
+        <li>Read-only (aman, tidak ubah data)</li>
+        <li>Multi-tenant per bisnis</li>
+        <li>Akses dari HP saja, ga perlu laptop</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bottom-banner">
+    💡 Bukan POS biasa + AI tempelan. Ini <b>arsitektur terintegrasi</b> — data POS = brain AI Anda.
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">03 / 10</div>
+</div>
+
+<!-- ============ SLIDE 4 — KEUNGGULAN INTEGRASI ============ -->
+<div class="slide s4">
+  <div class="s-header">WHY INTEGRATED?</div>
+  <h1 class="s-title">3 Keunggulan <span class="grad">POS + AI Terintegrasi</span></h1>
+
+  <div class="points">
+    <div class="point">
+      <div class="num">01</div>
+      <h3>Lebih HEMAT 💰</h3>
+      <p>1 app gantikan 5 tools terpisah: kasir, akuntansi, CRM, manajemen supplier, asisten admin. Tidak perlu hire admin tambahan untuk rekap.</p>
+      <div class="quote">Sebelum: 5 software × Rp 200rb = <b>Rp 1jt/bulan</b><br>Sekarang: BerBisnis Pro = <b>Rp 500rb/bulan</b></div>
+    </div>
+    <div class="point">
+      <div class="num">02</div>
+      <h3>Lebih AMAN 🔒</h3>
+      <p>Data otomatis backup ke cloud. Foto faktur supplier tersimpan permanen. Piutang ke-track real-time — tidak ada lagi yang "lupa belum bayar".</p>
+      <div class="quote">"Kemarin titip karyawan, datanya hilang."<br>→ Sekarang: <b>cloud sync, akses dari mana aja</b></div>
+    </div>
+    <div class="point">
+      <div class="num">03</div>
+      <h3>Lebih CEPAT ⚡</h3>
+      <p>Pertanyaan "stok apa habis?" yang tadinya butuh 5 menit cek manual, sekarang 5 detik via Telegram chat. Owner fokus strategi, bukan operational.</p>
+      <div class="quote">Tanya stok manual: <b>5 menit</b><br>Tanya AI bot: <b>5 detik</b> ⚡</div>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">04 / 10</div>
+</div>
+
+<!-- ============ SLIDE 5 — FEATURE: KASIR + STOK ============ -->
+<div class="slide">
+  <div class="s-header">FEATURE 01 — POS CORE</div>
+  <h1 class="s-title">Kasir + Stok = <span class="grad">Otomatis Sinkron</span></h1>
+
+  <div class="feat-row">
+    <div class="feat-list">
+      <h4>🛒 Modul Kasir (Point of Sale)</h4>
+      <div class="item">Search produk by nama / SKU / kategori</div>
+      <div class="item">Foto produk visual untuk fast-pick</div>
+      <div class="item">Diskon per transaksi + multi-pembayaran</div>
+      <div class="item">Faktur A4 3-ply siap print</div>
+
+      <h4>📦 Manajemen Stok</h4>
+      <div class="item">Stok auto-update saat penjualan</div>
+      <div class="item">HPP weighted average pakai metode FIFO</div>
+      <div class="item">Alert stok minimum + foto produk</div>
+      <div class="item">Multi-satuan (pcs, dus, karton, liter)</div>
+    </div>
+
+    <div class="feat-mockup">
+      <div class="mockup-head">📱 SAMPLE INVOICE — PT SPC</div>
+      <div class="mockup-row"><span>Anggur Merah Gold</span><b>4 ktn × 730rb</b></div>
+      <div class="mockup-row"><span>Vic 500 Orange</span><b>7 ktn × 823rb</b></div>
+      <div class="mockup-row"><span>Konig Dunkle 620ml</span><b>1 ktn × 621rb</b></div>
+      <div class="mockup-row"><span>Subtotal</span><b>Rp 11.460.000</b></div>
+      <div class="mockup-row"><span>Diskon</span><b>-Rp 200.000</b></div>
+      <div class="mockup-row total"><span>TOTAL</span><b>Rp 11.260.000</b></div>
+      <div style="margin-top:10px; font-size:9pt; color:var(--gray-500); text-align:center; font-style:italic">
+        ✓ Stok 12 produk auto-update<br>
+        ✓ Profit Rp 487.000 ke-rekam<br>
+        ✓ Faktur PDF generated
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">05 / 10</div>
+</div>
+
+<!-- ============ SLIDE 6 — FEATURE: PIUTANG + PO SUPPLIER ============ -->
+<div class="slide">
+  <div class="s-header">FEATURE 02 — CASH FLOW MANAGEMENT</div>
+  <h1 class="s-title">Piutang + Hutang Supplier <span class="grad">Tertata Rapi</span></h1>
+
+  <div class="feat-row">
+    <div class="feat-list">
+      <h4>💰 Piutang Pelanggan</h4>
+      <div class="item">List otomatis pelanggan tempo</div>
+      <div class="item">Status: Lunas / Tempo / Overdue</div>
+      <div class="item">Tandai lunas 1-klik</div>
+      <div class="item">Re-print invoice kapan aja</div>
+
+      <h4>📥 PO Supplier</h4>
+      <div class="item">Catat hutang ke supplier + jatuh tempo</div>
+      <div class="item">Foto surat jalan / faktur supplier</div>
+      <div class="item">Auto-create produk baru saat catat PO</div>
+      <div class="item">Status hutang: Lunas / Outstanding / Overdue</div>
+    </div>
+
+    <div class="feat-mockup">
+      <div class="mockup-head">💰 PIUTANG AKTIF — APRIL 2026</div>
+      <div class="mockup-stat">
+        <div class="lbl">Total Outstanding</div>
+        <div class="val">Rp 18.500.000</div>
+        <div class="meta">5 invoice belum lunas</div>
+      </div>
+      <div class="mockup-row danger"><span>⚠️ Pak Budi (overdue 7 hr)</span><b>Rp 4.200.000</b></div>
+      <div class="mockup-row warn"><span>⏱️ PT Maju (tempo 5/5)</span><b>Rp 8.500.000</b></div>
+      <div class="mockup-row warn"><span>⏱️ Edwin Abraham</span><b>Rp 3.100.000</b></div>
+      <div class="mockup-row warn"><span>⏱️ Toko Sumber</span><b>Rp 1.600.000</b></div>
+      <div class="mockup-row"><span>✓ Pak Joni (lunas hari ini)</span><b style="color:var(--green)">Rp 1.100.000</b></div>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">06 / 10</div>
+</div>
+
+<!-- ============ SLIDE 7 — FEATURE: AI BOT TELEGRAM ============ -->
+<div class="slide">
+  <div class="s-header">FEATURE 03 — AI ASSISTANT 24/7</div>
+  <h1 class="s-title">Tanya AI <span class="grad">selayaknya</span> tanya karyawan.</h1>
+
+  <div class="feat-row">
+    <div class="feat-list">
+      <h4>🤖 Berstock AI Bot di Telegram</h4>
+      <div class="item">Chat 24/7 pakai bahasa Indonesia natural</div>
+      <div class="item">Powered by Claude Sonnet 4.6 (model latest)</div>
+      <div class="item">12 jenis pertanyaan (stok, sales, piutang, dll)</div>
+      <div class="item">Read-only — AMAN, tidak bisa ubah data</div>
+      <div class="item">Real-time sync dengan POS</div>
+      <div class="item">Multi-tenant — 1 bot, multi bisnis</div>
+
+      <h4>📊 Pertanyaan yang bisa dijawab:</h4>
+      <div class="item">"Piutang gimana?" / "Siapa belum bayar?"</div>
+      <div class="item">"Stok yang habis apa aja?"</div>
+      <div class="item">"Best seller minggu ini?"</div>
+      <div class="item">"Edwin Abraham belanja apa aja?"</div>
+      <div class="item">"Cash hari ini berapa?"</div>
+      <div class="item">"Apa yang harus saya restock?"</div>
+    </div>
+
+    <div class="chat-mockup">
+      <div class="chat-head">
+        <div class="av">🐻</div>
+        <div>
+          <div class="name">@BerstockBot</div>
+          <div class="status">online · Claude AI</div>
+        </div>
+      </div>
+      <div class="bubble user">Piutang gimana?</div>
+      <div class="bubble bot">
+        💰 <b>Total Piutang: Rp 18.500.000</b><br>
+        ⚠️ <span class="red">Overdue: Rp 4.200.000 (2 invoice)</span><br><br>
+        Top piutang:<br>
+        • Pak Budi — Rp 8.500.000<br>
+        • PT Maju — <span class="red">lewat 7 hari!</span><br><br>
+        💡 Follow up Pak Budi & PT Maju dulu bos.
+      </div>
+      <div class="bubble user">Cash hari ini?</div>
+      <div class="bubble bot">
+        💵 <span class="green"><b>Cash: Rp 285.000.000</b></span><br>
+        ⏱️ Tempo: Rp 130.000.000<br><br>
+        Total revenue 415jt, masuk kas 285jt.
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">07 / 10</div>
+</div>
+
+<!-- ============ SLIDE 8 — ROI / SAVINGS ============ -->
+<div class="slide s8">
+  <div class="s-header">ROI ANALYSIS</div>
+  <h1 class="s-title">Hitungan Hemat <span class="grad">Tiap Bulan</span></h1>
+  <p class="s-subtitle">Bandingin biaya operasional sebelum & sesudah pakai BerBisnis × Berstock.</p>
+
+  <div class="roi-table">
+    <div class="roi-row head">
+      <div class="roi-cell">KEBUTUHAN BISNIS</div>
+      <div class="roi-cell">CARA LAMA</div>
+      <div class="roi-cell">BERBISNIS × BERSTOCK</div>
+    </div>
+    <div class="roi-row">
+      <div class="roi-cell">Software kasir / POS</div>
+      <div class="roi-cell lama">Rp 200.000</div>
+      <div class="roi-cell kami">✓ Included</div>
+    </div>
+    <div class="roi-row">
+      <div class="roi-cell">Tracker piutang & hutang</div>
+      <div class="roi-cell lama">Rp 150.000</div>
+      <div class="roi-cell kami">✓ Included</div>
+    </div>
+    <div class="roi-row">
+      <div class="roi-cell">CRM pelanggan + history</div>
+      <div class="roi-cell lama">Rp 250.000</div>
+      <div class="roi-cell kami">✓ Included</div>
+    </div>
+    <div class="roi-row">
+      <div class="roi-cell">Admin part-time (rekap data)</div>
+      <div class="roi-cell lama">Rp 1.500.000</div>
+      <div class="roi-cell kami">✓ Auto by AI</div>
+    </div>
+    <div class="roi-row">
+      <div class="roi-cell">AI Assistant 24/7</div>
+      <div class="roi-cell lama">— tidak ada —</div>
+      <div class="roi-cell kami">✓ Built-in</div>
+    </div>
+    <div class="roi-row total">
+      <div class="roi-cell">TOTAL / BULAN</div>
+      <div class="roi-cell lama"><b>Rp 2.100.000</b></div>
+      <div class="roi-cell kami"><b>Rp 500.000</b></div>
+    </div>
+  </div>
+
+  <div style="background: linear-gradient(135deg, #ecfeff, #fff); border: 2px solid var(--cyan); border-radius: 12px; padding: 14px 22px; margin-top: 14px; text-align: center; font-size: 14pt; font-weight: 700; color: var(--navy)">
+    💚 Hemat <span style="color:var(--green)">Rp 1.600.000/bulan</span> — atau <span style="color:var(--green)">Rp 19.200.000/tahun</span>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">08 / 10</div>
+</div>
+
+<!-- ============ SLIDE 9 — PRICING ============ -->
+<div class="slide s9">
+  <div class="s-header">PRICING</div>
+  <h1 class="s-title">Pilih paket sesuai <span class="grad">skala bisnis Anda</span></h1>
+  <p class="s-subtitle">Mulai dari Rp 99rb/bulan. Tidak ada kontrak panjang — bisa upgrade kapan aja.</p>
+
+  <div class="plans">
+    <div class="plan-card">
+      <div class="plan-name">STARTER</div>
+      <div class="plan-price">Rp 99rb<small>/bulan</small></div>
+      <div class="plan-desc">Untuk toko kecil (< 50 SKU)</div>
+      <ul>
+        <li>POS Kasir & Stok</li>
+        <li>Faktur thermal</li>
+        <li>Laporan dasar</li>
+        <li>Cloud sync 1 device</li>
+        <li>Email support</li>
+      </ul>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-name">PRO + AI</div>
+      <div class="plan-price">Rp 500rb<small>/bulan</small></div>
+      <div class="plan-desc">Untuk UMKM aktif (50-200 SKU)</div>
+      <ul>
+        <li>Semua fitur Starter</li>
+        <li>🤖 <b>AI Bot Telegram 24/7</b></li>
+        <li>Faktur A4 3-ply</li>
+        <li>Piutang + PO Supplier</li>
+        <li>Pelanggan 360 + history</li>
+        <li>Laporan custom range</li>
+        <li>Cloud sync multi-device</li>
+        <li>Priority support WhatsApp</li>
+      </ul>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">ENTERPRISE</div>
+      <div class="plan-price">Rp 1,5jt+<small>/bulan</small></div>
+      <div class="plan-desc">Multi-cabang / 200+ SKU</div>
+      <ul>
+        <li>Semua fitur Pro+AI</li>
+        <li>Multi-cabang</li>
+        <li>Custom integrasi</li>
+        <li>Onboarding 1-on-1</li>
+        <li>Dedicated account manager</li>
+        <li>SLA 99% uptime</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">09 / 10</div>
+</div>
+
+<!-- ============ SLIDE 10 — CLOSING / CTA ============ -->
+<div class="slide s10">
+  <div class="content">
+    <h1>Siap upgrade <span class="grad">bisnis Anda?</span></h1>
+    <p>Demo gratis 7 hari. Setup 15 menit. Tanpa kontrak panjang.<br>Hubungi tim kami untuk konsultasi & live demo via Zoom atau langsung ke toko Anda.</p>
+
+    <div class="cta-row">
+      <div class="cta">💬 WhatsApp Sekarang</div>
+    </div>
+    <div class="contact">
+      📱 <b>+62 821-2484-8924</b> · IG <b>@hendrypangg</b><br>
+      🌐 <b>hendrypangg12.github.io/Financial-tracker</b>
+    </div>
+  </div>
+  <div class="slide-brand"><div class="logo">🐻</div><b>BerSatu Suite</b></div>
+  <div class="slide-num">10 / 10</div>
+</div>
+
+</div>
+
+</body>
+</html>
