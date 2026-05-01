@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🐻 Berstock Admin — Provision Tenant Baru</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #1e3a5f;
+  --navy-dark: #0f1f3d;
+  --gold: #c9a352;
+  --green: #16a34a;
+  --red: #dc2626;
+  --gray-100: #f1f5f9;
+  --gray-300: #cbd5e1;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+  color: #fff;
+  min-height: 100vh;
+  padding: 30px 20px;
+}
+.container { max-width: 720px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 30px; }
+.header h1 {
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, #d4af37, #ffd76a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header p { color: #cbd5e1; margin-top: 6px; font-size: 14px; }
+
+.card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 18px;
+}
+
+label { display: block; margin-bottom: 14px; }
+label .lbl {
+  font-size: 13px; font-weight: 600; color: #cbd5e1;
+  margin-bottom: 6px; display: block;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  color: #fff; font-size: 15px;
+  font-family: inherit;
+}
+input:focus, select:focus {
+  outline: none; border-color: var(--gold);
+  background: rgba(255,255,255,.12);
+}
+input::placeholder { color: #64748b; }
+
+.btn {
+  background: linear-gradient(135deg, var(--gold), #ffd76a);
+  color: var(--navy-dark);
+  border: none; padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 16px; font-weight: 800;
+  cursor: pointer; width: 100%;
+  margin-top: 8px;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.result {
+  margin-top: 20px;
+  background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(255,255,255,.03));
+  border: 1px solid var(--green);
+  border-radius: 14px;
+  padding: 22px;
+}
+.result.error {
+  background: linear-gradient(135deg, rgba(220,38,38,.15), rgba(255,255,255,.03));
+  border-color: var(--red);
+}
+.result h3 {
+  font-size: 18px; font-weight: 700;
+  color: #4ade80; margin-bottom: 14px;
+}
+.result.error h3 { color: #f87171; }
+.copy-row {
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 10px;
+}
+.copy-row .lbl { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+.copy-row .val { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #fff; word-break: break-all; }
+.copy-row button {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font-size: 12px; font-weight: 700;
+  padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; flex-shrink: 0;
+}
+.copy-row button:active { background: var(--gold); color: var(--navy-dark); }
+
+.message-template {
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap;
+  color: #e2e8f0;
+  margin-top: 12px;
+}
+
+details {
+  margin-top: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+summary { cursor: pointer; font-weight: 600; color: #cbd5e1; }
+details ol { margin: 10px 0 0 20px; color: #cbd5e1; font-size: 13px; line-height: 1.6; }
+
+.tenant-list {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+.tenant-list .item {
+  padding: 8px 12px;
+  background: rgba(255,255,255,.04);
+  border-radius: 8px; margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🐻 Berstock Admin Console</h1>
+    <p>Provision tenant baru untuk klien yang mau pakai AI Bot Telegram</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px; margin-bottom:18px; color:#d4af37">📝 Provision Tenant Baru</h2>
+
+    <form id="form-provision">
+      <label>
+        <span class="lbl">Nama Bisnis Klien</span>
+        <input name="bizName" placeholder="Contoh: PT Toko Sembako Jaya" required />
+      </label>
+
+      <label>
+        <span class="lbl">Nama Owner</span>
+        <input name="ownerName" placeholder="Contoh: Pak Budi" />
+      </label>
+
+      <label>
+        <span class="lbl">Plan</span>
+        <select name="plan">
+          <option value="Pro Early Bird">Pro Early Bird (Rp 500rb/bulan)</option>
+          <option value="Pro">Pro (Rp 1.5jt/bulan)</option>
+          <option value="Enterprise">Enterprise (custom)</option>
+          <option value="Trial">Trial (free 7 hari)</option>
+        </select>
+      </label>
+
+      <label>
+        <span class="lbl">🔐 Admin Key (rahasia, secret di Worker)</span>
+        <input name="adminKey" type="password" placeholder="Admin key bos" required />
+      </label>
+
+      <button type="submit" class="btn" id="btn-submit">⚡ Generate Tenant ID</button>
+    </form>
+
+    <div id="result"></div>
+
+    <details>
+      <summary>ℹ️ Cara dapat Admin Key</summary>
+      <ol>
+        <li>Admin Key disimpan sebagai secret di Cloudflare Worker</li>
+        <li>Lihat / set ulang dengan: <code>wrangler secret put ADMIN_KEY</code> di folder bot</li>
+        <li>Belum pernah set? Bos bisa set baru dari laptop atau saya bantu bikin lewat Cloudflare dashboard</li>
+      </ol>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px; margin-bottom:14px; color:#d4af37">📋 2 Klien Bos Sekarang</h2>
+    <p style="color:#cbd5e1; font-size:14px; line-height:1.6">
+      Workflow per klien (5 langkah, ~10 menit):
+    </p>
+    <ol style="color:#e2e8f0; padding-left:20px; margin-top:10px; line-height:1.8; font-size:14px">
+      <li>Generate tenant di form atas → catat <b>tenant_id</b> + <b>api_key</b></li>
+      <li>Klien daftar di <a href="https://hendrypangg12.github.io/Financial-tracker/tokountung/app.html" style="color:#ffd76a" target="_blank">BerBisnis app</a> (email mereka sendiri)</li>
+      <li>Bos buka tab <b>Admin</b> di app → cari email klien → tombol <b>"Aktifkan Pro+AI"</b></li>
+      <li>Bos copy "📩 Pesan untuk Klien" yang muncul di hasil → kirim via WhatsApp</li>
+      <li>Klien follow instruksi: setup di Pengaturan + chat <code>/start</code> ke bot Telegram</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+const WORKER_URL = "https://berstock-bot.hendrypangg12.workers.dev";
+
+const form = document.getElementById('form-provision');
+const btn = document.getElementById('btn-submit');
+const resultEl = document.getElementById('result');
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(form);
+  const adminKey = fd.get('adminKey');
+  const payload = {
+    bizName: fd.get('bizName'),
+    ownerName: fd.get('ownerName'),
+    plan: fd.get('plan'),
+  };
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating...';
+  resultEl.innerHTML = '';
+
+  try {
+    const res = await fetch(WORKER_URL + '/api/provision', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Key': adminKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      resultEl.innerHTML = `
+        <div class="result error">
+          <h3>❌ Gagal</h3>
+          <p>${data.error || 'HTTP ' + res.status + ' — Admin key salah?'}</p>
+        </div>`;
+      return;
+    }
+
+    const tenantId = data.tenant_id;
+    const apiKey = data.api_key;
+    const message = `Halo bos! ✨
+
+Akun BerBisnis Pro+AI Anda sudah aktif. Berikut data setup:
+
+📦 Tenant ID:
+${tenantId}
+
+🔑 API Key:
+${apiKey}
+
+📱 Cara Setup (5 menit):
+
+1️⃣ Buka aplikasi:
+https://hendrypangg12.github.io/Financial-tracker/tokountung/app.html
+
+2️⃣ Daftar / login dengan email Anda
+
+3️⃣ Tab Pengaturan → scroll ke "Cloud Sync (Berstock Bot)" → isi:
+   • Worker URL: ${WORKER_URL}
+   • Tenant ID: ${tenantId}
+   • API Key: ${apiKey}
+   → Klik "💾 Simpan Config" lalu "🔄 Sync ke Cloud"
+
+4️⃣ Buka Telegram → cari @BerstockBot → /start ${tenantId}
+
+5️⃣ Done! Tinggal chat: "Stok hari ini gimana?"
+
+Pertanyaan? WA saya 0821-2484-8924 🐻`;
+
+    resultEl.innerHTML = `
+      <div class="result">
+        <h3>✅ Tenant berhasil dibuat untuk "${payload.bizName}"</h3>
+
+        <div class="copy-row">
+          <div>
+            <div class="lbl">Tenant ID</div>
+            <div class="val" id="t-tid">${tenantId}</div>
+          </div>
+          <button onclick="copyText('${tenantId}', this)">Copy</button>
+        </div>
+
+        <div class="copy-row">
+          <div>
+            <div class="lbl">API Key</div>
+            <div class="val" id="t-akey">${apiKey}</div>
+          </div>
+          <button onclick="copyText('${apiKey}', this)">Copy</button>
+        </div>
+
+        <div style="margin-top:18px">
+          <div class="lbl" style="font-size:12px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px">📩 Pesan siap kirim ke Klien (WhatsApp)</div>
+          <textarea class="message-template" id="t-msg" rows="22" readonly>${message}</textarea>
+          <button onclick="copyMessage()" class="btn" style="margin-top:8px">📋 Copy Pesan ke Clipboard</button>
+        </div>
+      </div>`;
+
+    form.reset();
+  } catch (err) {
+    resultEl.innerHTML = `
+      <div class="result error">
+        <h3>❌ Network Error</h3>
+        <p>${err.message}</p>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Generate Tenant ID';
+  }
+};
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    btn.style.background = '#16a34a';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+  });
+}
+
+function copyMessage() {
+  const txt = document.getElementById('t-msg').value;
+  navigator.clipboard.writeText(txt).then(() => {
+    alert('✅ Pesan ter-copy. Tinggal paste ke WhatsApp klien!');
+  });
+}
+</script>
+
+</body>
+</html>
