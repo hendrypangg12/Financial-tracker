@@ -18,7 +18,7 @@ const ADMIN_CONTACT = {
 
 // Pricing BerBisnis (per bulan dalam Rupiah)
 const BERBISNIS_PRICE = {
-  starter: 99000,
+  starter: 149999,
   pro: 1500000,           // Pro normal
   pro_early_bird: 500000, // Early bird 50 klien pertama
 };

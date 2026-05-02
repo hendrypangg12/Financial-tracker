@@ -205,7 +205,7 @@ function authErrorMessage(err) {
 function adminWhatsAppLink(paket = '') {
   const email = currentUser?.email || '(email)';
   const text = paket === 'starter'
-    ? `Halo Admin BerBisnis 💼\n\nSaya mau aktivasi paket *STARTER Rp 99.000/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
+    ? `Halo Admin BerBisnis 💼\n\nSaya mau aktivasi paket *STARTER Rp 149.999/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
     : paket === 'pro'
     ? `Halo Admin BerBisnis 💼\n\nSaya mau aktivasi paket *PRO EARLY BIRD Rp 500.000/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
     : `Halo Admin BerBisnis 💼\n\nSaya ${email} ingin tanya/aktivasi langganan BerBisnis.`;
