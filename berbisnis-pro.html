@@ -532,104 +532,239 @@ footer .links {
 footer a { color: #cbd5e1; text-decoration: none; font-size: 14px; }
 footer a:hover { color: var(--gold-bright); }
 footer .copy { font-size: 12px; }
-/* ================ FLOATING MASCOT CHAT BUBBLE ================ */
+/* ================ FLOATING MASCOT CHAT (Premium) ================ */
 .mascot-widget {
   position: fixed;
   bottom: 24px; right: 24px;
   z-index: 9999;
-  display: flex; align-items: flex-end; gap: 12px;
   pointer-events: none;
 }
-.mascot-bubble {
-  background: #fff;
-  color: var(--gray-900);
-  padding: 16px 18px;
-  border-radius: 20px;
-  border-bottom-right-radius: 4px;
-  max-width: 280px;
-  font-size: 14px; line-height: 1.5;
-  box-shadow: 0 12px 40px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04);
-  position: relative;
-  pointer-events: auto;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(20px) scale(.85);
-  transform-origin: bottom right;
-  transition: opacity .4s, transform .4s cubic-bezier(.34,1.56,.64,1);
-}
-.mascot-bubble.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-.mascot-bubble .greeting {
-  display: block;
-  font-size: 13px; color: var(--gold);
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-.mascot-bubble strong {
-  color: var(--magenta, #e91e63);
-  font-weight: 700;
-}
-.mascot-bubble .cta-line {
-  margin-top: 10px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #25d366, #128c7e);
-  color: #fff;
-  border-radius: 8px;
-  font-size: 12px; font-weight: 700;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.mascot-bubble .close-x {
+
+/* Avatar floating */
+.mascot-avatar-float {
   position: absolute;
-  top: -8px; right: -8px;
-  width: 26px; height: 26px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--gray-500);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.1);
-}
-.mascot-avatar-wrap {
-  width: 80px; height: 80px;
-  flex-shrink: 0;
+  bottom: 0; right: 0;
+  width: 72px; height: 72px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold), var(--gold-bright));
   padding: 4px;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(212,175,55,.4);
+  box-shadow: 0 8px 24px rgba(212,175,55,.45);
   pointer-events: auto;
-  position: relative;
-  animation: mascot-pulse 2s infinite;
+  animation: mascot-pulse 2.5s infinite;
+  z-index: 2;
 }
 @keyframes mascot-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(212,175,55,.4); }
-  50% { transform: scale(1.05); box-shadow: 0 8px 32px rgba(212,175,55,.6); }
+  0%, 100% { box-shadow: 0 8px 24px rgba(212,175,55,.4), 0 0 0 0 rgba(212,175,55,.4); }
+  50% { box-shadow: 0 8px 32px rgba(212,175,55,.6), 0 0 0 16px rgba(212,175,55,0); }
 }
-.mascot-avatar-wrap img {
+.mascot-avatar-float img {
   width: 100%; height: 100%;
   border-radius: 50%;
   object-fit: cover;
   background: #fff;
 }
-.mascot-avatar-wrap .notif-dot {
+.mascot-avatar-float .online-dot {
   position: absolute;
-  top: 0; right: 0;
+  bottom: 4px; right: 4px;
   width: 18px; height: 18px;
+  background: #22c55e;
+  border: 3px solid #fff;
+  border-radius: 50%;
+}
+.mascot-avatar-float .notif-dot {
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 22px; height: 22px;
   background: #ef4444;
   border: 2px solid #fff;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 11px; font-weight: 800;
+  animation: notif-bounce 1s infinite;
 }
-.mascot-widget.minimized .mascot-bubble { display: none; }
+@keyframes notif-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
 
-@media (max-width: 640px) {
+/* Chat panel */
+.mascot-chat-panel {
+  position: absolute;
+  bottom: 90px; right: 0;
+  width: 340px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04);
+  overflow: hidden;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px) scale(.9);
+  transform-origin: bottom right;
+  transition: opacity .35s, transform .35s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+.mascot-chat-panel.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Header */
+.mcp-head {
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  color: #fff;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.mcp-head .avatar-mini {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  padding: 2px;
+  position: relative;
+  flex-shrink: 0;
+}
+.mcp-head .avatar-mini img {
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff;
+}
+.mcp-head .avatar-mini::after {
+  content: '';
+  position: absolute; bottom: -2px; right: -2px;
+  width: 12px; height: 12px;
+  background: #22c55e; border: 2px solid var(--navy);
+  border-radius: 50%;
+}
+.mcp-head .info { flex: 1; min-width: 0; }
+.mcp-head .info .name { font-weight: 800; font-size: 14px; }
+.mcp-head .info .status {
+  font-size: 11px;
+  display: flex; align-items: center; gap: 4px;
+  color: #4ade80;
+}
+.mcp-head .info .status::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+}
+.mcp-head .close-x {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.1);
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.mcp-head .close-x:hover { background: rgba(255,255,255,.2); }
+
+/* Body — chat area */
+.mcp-body {
+  padding: 18px;
+  background: linear-gradient(180deg, #f8fafc, #fff);
+  max-height: 360px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.mcp-msg {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--gray-900);
+  max-width: 90%;
+  align-self: flex-start;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: msg-in .3s ease forwards;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+@keyframes msg-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+.mcp-msg strong { color: var(--magenta, #e91e63); }
+.mcp-msg .grad-text {
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+.mcp-msg .time {
+  display: block;
+  font-size: 10px; color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* Typing indicator */
+.mcp-typing {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  padding: 12px 16px;
+  align-self: flex-start;
+  display: inline-flex; gap: 5px;
+  opacity: 0;
+  animation: msg-in .3s ease forwards;
+}
+.mcp-typing span {
+  width: 7px; height: 7px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  animation: typing-dot 1.4s infinite;
+}
+.mcp-typing span:nth-child(2) { animation-delay: .2s; }
+.mcp-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* CTA buttons */
+.mcp-actions {
+  padding: 12px 18px 18px;
+  background: #fff;
+  border-top: 1px solid #f1f5f9;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.mcp-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  transition: transform .15s, box-shadow .15s;
+}
+.mcp-btn:hover { transform: translateY(-1px); }
+.mcp-btn.primary {
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37,211,102,.3);
+}
+.mcp-btn.primary:hover { box-shadow: 0 6px 18px rgba(37,211,102,.5); }
+.mcp-btn.secondary {
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  color: #fff;
+}
+.mcp-btn.secondary:hover { background: linear-gradient(135deg, #2d4d75, var(--navy-dark)); }
+
+.mcp-footer {
+  padding: 10px 18px;
+  background: #f1f5f9;
+  text-align: center;
+  font-size: 10px; color: var(--gray-500);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 480px) {
   .mascot-widget { bottom: 16px; right: 16px; }
-  .mascot-avatar-wrap { width: 64px; height: 64px; }
-  .mascot-bubble { max-width: 220px; padding: 12px 14px; font-size: 13px; }
+  .mascot-avatar-float { width: 60px; height: 60px; }
+  .mascot-chat-panel {
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    bottom: 75px;
+    right: 0;
+  }
+  .mcp-body { max-height: 280px; }
 }
 
 </style>
@@ -1140,25 +1275,116 @@ footer .copy { font-size: 12px; }
   </div>
 </footer>
 
-<!-- ============ FLOATING MASCOT CHAT BUBBLE ============ -->
+<!-- ============ FLOATING MASCOT CHAT (Premium) ============ -->
 <div class="mascot-widget" id="mascot-widget">
-  <div class="mascot-bubble" id="mascot-bubble" onclick="window.open('https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20info%20BerBisnis%20Pro%20%2B%20AI%20Bot', '_blank')">
-    <div class="close-x" onclick="event.stopPropagation(); document.getElementById('mascot-widget').classList.add('minimized')">×</div>
-    <span class="greeting">Halo, bos! 👋</span>
-    Sini saya bantu bisnismu jadi lebih <strong>maju, rapi, modern, dan cuan terus!</strong>
-    <span class="cta-line">💬 Chat WhatsApp →</span>
+
+  <!-- Chat Panel -->
+  <div class="mascot-chat-panel" id="mcp-panel">
+    <!-- Header -->
+    <div class="mcp-head">
+      <div class="avatar-mini">
+        <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang" />
+      </div>
+      <div class="info">
+        <div class="name">Beruang Finance 🐻</div>
+        <div class="status">Online · Reply dalam 5 menit</div>
+      </div>
+      <div class="close-x" onclick="closeMcp()">✕</div>
+    </div>
+
+    <!-- Body -->
+    <div class="mcp-body" id="mcp-body">
+      <!-- Messages diinject by JS -->
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="mcp-actions" id="mcp-actions" style="display:none">
+      <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20tertarik%20BerBisnis%20PRO%20%2B%20AI%20Bot.%20Bisa%20info%20detail%3F" target="_blank" class="mcp-btn primary">
+        💬 Chat WhatsApp Sekarang
+      </a>
+      <a href="tokountung/app.html" target="_blank" class="mcp-btn secondary">
+        🎁 Coba Gratis 3 Hari
+      </a>
+    </div>
+
+    <div class="mcp-footer">⚡ POWERED BY BERSATU SUITE</div>
   </div>
-  <div class="mascot-avatar-wrap" onclick="document.getElementById('mascot-widget').classList.toggle('minimized')">
+
+  <!-- Floating avatar -->
+  <div class="mascot-avatar-float" id="mcp-avatar" onclick="toggleMcp()">
     <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang Finance" />
-    <div class="notif-dot">1</div>
+    <div class="online-dot"></div>
+    <div class="notif-dot" id="mcp-notif">1</div>
   </div>
+
 </div>
 
 <script>
-// Auto-pop bubble setelah 2.5 detik
+const mcpPanel = document.getElementById('mcp-panel');
+const mcpBody = document.getElementById('mcp-body');
+const mcpActions = document.getElementById('mcp-actions');
+const mcpNotif = document.getElementById('mcp-notif');
+
+const messages = [
+  { delay: 800, html: 'Halo bos! 👋 Lagi sibuk ngecek toko ya?' },
+  { delay: 1500, html: '<strong>3 dari 5 owner UMKM</strong> kehilangan jutaan rupiah tiap bulan karena belum punya sistem 😅' },
+  { delay: 2000, html: 'Sini saya bantu bisnismu jadi <span class="grad-text">lebih maju, rapi, modern</span> — dan <strong>cuan terus!</strong> 🚀' },
+  { delay: 1500, html: 'Tinggal pilih bos: mau <strong>chat langsung</strong> ke WA atau <strong>coba demo gratis</strong> dulu? 👇' },
+];
+
+function showTyping() {
+  const typing = document.createElement('div');
+  typing.className = 'mcp-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  mcpBody.appendChild(typing);
+  mcpBody.scrollTop = mcpBody.scrollHeight;
+  return typing;
+}
+
+function showMsg(html) {
+  const msg = document.createElement('div');
+  msg.className = 'mcp-msg';
+  const time = new Date();
+  const hh = String(time.getHours()).padStart(2,'0');
+  const mm = String(time.getMinutes()).padStart(2,'0');
+  msg.innerHTML = html + `<span class="time">${hh}:${mm} ✓</span>`;
+  mcpBody.appendChild(msg);
+  mcpBody.scrollTop = mcpBody.scrollHeight;
+}
+
+async function playSequence() {
+  for (const m of messages) {
+    const typing = showTyping();
+    await new Promise(r => setTimeout(r, m.delay));
+    typing.remove();
+    showMsg(m.html);
+    await new Promise(r => setTimeout(r, 400));
+  }
+  // Show CTA buttons setelah semua pesan
+  mcpActions.style.display = 'flex';
+}
+
+let played = false;
+function openMcp() {
+  mcpPanel.classList.add('show');
+  mcpNotif.style.display = 'none';
+  if (!played) { played = true; playSequence(); }
+}
+function closeMcp() {
+  mcpPanel.classList.remove('show');
+}
+function toggleMcp() {
+  if (mcpPanel.classList.contains('show')) closeMcp();
+  else openMcp();
+}
+
+// Auto-open setelah 3 detik (first visit only)
 setTimeout(() => {
-  document.getElementById('mascot-bubble').classList.add('show');
-}, 2500);
+  if (!sessionStorage.getItem('mcp_seen')) {
+    openMcp();
+    sessionStorage.setItem('mcp_seen', '1');
+  }
+}, 3000);
 </script>
 
 </body>
