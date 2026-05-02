@@ -532,6 +532,106 @@ footer .links {
 footer a { color: #cbd5e1; text-decoration: none; font-size: 14px; }
 footer a:hover { color: var(--gold-bright); }
 footer .copy { font-size: 12px; }
+/* ================ FLOATING MASCOT CHAT BUBBLE ================ */
+.mascot-widget {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 9999;
+  display: flex; align-items: flex-end; gap: 12px;
+  pointer-events: none;
+}
+.mascot-bubble {
+  background: #fff;
+  color: var(--gray-900);
+  padding: 16px 18px;
+  border-radius: 20px;
+  border-bottom-right-radius: 4px;
+  max-width: 280px;
+  font-size: 14px; line-height: 1.5;
+  box-shadow: 0 12px 40px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04);
+  position: relative;
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px) scale(.85);
+  transform-origin: bottom right;
+  transition: opacity .4s, transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+.mascot-bubble.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mascot-bubble .greeting {
+  display: block;
+  font-size: 13px; color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.mascot-bubble strong {
+  color: var(--magenta, #e91e63);
+  font-weight: 700;
+}
+.mascot-bubble .cta-line {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.mascot-bubble .close-x {
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 26px; height: 26px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--gray-500);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+.mascot-avatar-wrap {
+  width: 80px; height: 80px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  padding: 4px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(212,175,55,.4);
+  pointer-events: auto;
+  position: relative;
+  animation: mascot-pulse 2s infinite;
+}
+@keyframes mascot-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(212,175,55,.4); }
+  50% { transform: scale(1.05); box-shadow: 0 8px 32px rgba(212,175,55,.6); }
+}
+.mascot-avatar-wrap img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+.mascot-avatar-wrap .notif-dot {
+  position: absolute;
+  top: 0; right: 0;
+  width: 18px; height: 18px;
+  background: #ef4444;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; font-weight: 800;
+}
+.mascot-widget.minimized .mascot-bubble { display: none; }
+
+@media (max-width: 640px) {
+  .mascot-widget { bottom: 16px; right: 16px; }
+  .mascot-avatar-wrap { width: 64px; height: 64px; }
+  .mascot-bubble { max-width: 220px; padding: 12px 14px; font-size: 13px; }
+}
+
 </style>
 </head>
 <body>
@@ -1039,6 +1139,27 @@ footer .copy { font-size: 12px; }
     </div>
   </div>
 </footer>
+
+<!-- ============ FLOATING MASCOT CHAT BUBBLE ============ -->
+<div class="mascot-widget" id="mascot-widget">
+  <div class="mascot-bubble" id="mascot-bubble" onclick="window.open('https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20info%20BerBisnis%20Pro%20%2B%20AI%20Bot', '_blank')">
+    <div class="close-x" onclick="event.stopPropagation(); document.getElementById('mascot-widget').classList.add('minimized')">×</div>
+    <span class="greeting">Halo, bos! 👋</span>
+    Sini saya bantu bisnismu jadi lebih <strong>maju, rapi, modern, dan cuan terus!</strong>
+    <span class="cta-line">💬 Chat WhatsApp →</span>
+  </div>
+  <div class="mascot-avatar-wrap" onclick="document.getElementById('mascot-widget').classList.toggle('minimized')">
+    <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang Finance" />
+    <div class="notif-dot">1</div>
+  </div>
+</div>
+
+<script>
+// Auto-pop bubble setelah 2.5 detik
+setTimeout(() => {
+  document.getElementById('mascot-bubble').classList.add('show');
+}, 2500);
+</script>
 
 </body>
 </html>
