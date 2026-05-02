@@ -275,7 +275,12 @@ html, body {
 
 /* Scene 7 — Brand reveal */
 .s7 {}
-.s7 .brand-bear { font-size: 240px; margin-bottom: 8px; animation: bear-pop .6s ease; }
+.s7 .brand-bear {
+  width: 50%; max-width: 280px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 20px 40px rgba(233,30,99,.4));
+  animation: bear-pop .6s ease;
+}
 @keyframes bear-pop { from { transform: scale(0); } to { transform: scale(1); } }
 .s7 .brand-name {
   font-size: 80px; font-weight: 900;
@@ -360,6 +365,10 @@ html, body {
 
 /* Scene 9 — Final CTA */
 .s9 { padding: 0; align-items: center; justify-content: center; }
+.s9 .cta-bear {
+  width: 200px; margin-bottom: 14px;
+  filter: drop-shadow(0 10px 30px rgba(212,175,55,.5));
+}
 .s9 .arrow {
   font-size: 80px; color: var(--magenta);
   animation: arrow-bounce 1s infinite;
@@ -569,7 +578,7 @@ html, body {
 
   <!-- ============ SCENE 7 — Brand Reveal (28-37s) ============ -->
   <div class="scene s7" data-scene="7">
-    <div class="brand-bear">🐻</div>
+    <img src="assets/mascot-berstock.png" alt="Berstock" class="brand-bear" onerror="this.onerror=null;this.src='tokountung/assets/logo-berbisnis.png';" />
     <div class="brand-name"><span class="grad">Berstock</span></div>
     <div class="brand-tag">AI Assistant Pertama di Indonesia<br>untuk Owner UMKM</div>
     <div class="features">
@@ -605,6 +614,7 @@ html, body {
 
   <!-- ============ SCENE 9 — Final CTA (43-45s) ============ -->
   <div class="scene s9" data-scene="9">
+    <img src="assets/mascot-berstock.png" alt="Berstock" class="cta-bear" onerror="this.onerror=null;this.src='tokountung/assets/logo-berbisnis.png';" />
     <div class="arrow">↓</div>
     <div class="cta-title"><span class="grad">Link di Bio.</span><br>Sekarang.</div>
     <div class="cta-btn">💬 Chat WhatsApp</div>
