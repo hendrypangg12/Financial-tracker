@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Reels Berstock — Auto Play 45s</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628;
+  --navy-dark: #050b18;
+  --magenta: #e91e63;
+  --magenta-light: #ff4081;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #000; color: #fff;
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  margin: 0; padding: 0;
+}
+
+/* Stage = aspect ratio 9:16 untuk Reels */
+.stage {
+  width: min(100vw, calc(100vh * 9 / 16));
+  height: min(100vh, calc(100vw * 16 / 9));
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+}
+
+/* Play overlay — sebelum klik play */
+.play-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  text-align: center; padding: 40px;
+}
+.play-overlay h1 {
+  font-size: 44px; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 14px;
+}
+.play-overlay p { color: #cbd5e1; font-size: 18px; line-height: 1.5; margin-bottom: 30px; max-width: 80%; }
+.play-overlay .play-btn {
+  background: var(--magenta); color: #fff;
+  width: 140px; height: 140px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 60px;
+  box-shadow: 0 0 60px rgba(233,30,99,.5);
+  margin-bottom: 30px;
+}
+.play-overlay .instructions {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 13px; line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 90%;
+  text-align: left;
+}
+.play-overlay .instructions b { color: var(--gold-bright); }
+.body-playing .play-overlay { display: none; }
+
+/* Background nebula */
+.stage::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(233,30,99,.18), transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(212,175,55,.15), transparent 40%);
+  pointer-events: none; z-index: 1;
+}
+
+/* Scene wrapper — semua scene posisi absolute, tampil saat .active */
+.scene {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 8% 6%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+  z-index: 2;
+}
+.scene.active { opacity: 1; pointer-events: auto; }
+
+/* Big text caption (replace voice over) */
+.cap-top, .cap-bottom {
+  position: absolute; left: 0; right: 0;
+  text-align: center;
+  padding: 0 6%;
+  z-index: 10;
+}
+.cap-top { top: 6%; }
+.cap-bottom { bottom: 8%; }
+.cap-top .lbl, .cap-bottom .lbl {
+  display: inline-block;
+  background: var(--magenta);
+  color: #fff;
+  padding: 4px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.cap-headline {
+  font-size: 38px; font-weight: 900;
+  line-height: 1.1; letter-spacing: -1px;
+  text-shadow: 0 4px 20px rgba(0,0,0,.6);
+}
+.cap-headline .grad-gold {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.cap-headline .grad-magenta {
+  background: linear-gradient(135deg, var(--magenta-light), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.cap-headline .strike { text-decoration: line-through; color: #ef4444; }
+
+/* Scene 1 — Problem */
+.s1 .icon-big {
+  font-size: 200px;
+  filter: drop-shadow(0 10px 30px rgba(233,30,99,.4));
+  animation: shake 0.4s infinite;
+}
+@keyframes shake {
+  0%,100% { transform: rotate(0); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+.s1 .stage-cap {
+  font-family: monospace;
+  background: rgba(0,0,0,.5);
+  padding: 8px 16px; border-radius: 8px;
+  margin-top: 20px; font-size: 14px;
+  color: var(--gold-bright);
+}
+
+/* Scene 2 — WhatsApp message */
+.s2 { padding: 14% 6% 12%; }
+.wa-bg { background: #ece5dd; border-radius: 16px; padding: 20px; width: 100%; }
+.wa-head {
+  background: #075e54; color: #fff;
+  margin: -20px -20px 12px;
+  padding: 12px 16px;
+  border-radius: 16px 16px 0 0;
+  display: flex; align-items: center; gap: 10px;
+}
+.wa-head .av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.wa-head .name { font-size: 16px; font-weight: 700; }
+.wa-head .status { font-size: 11px; color: #b3d9d4; }
+.wa-msg {
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-top-left-radius: 4px;
+  font-size: 16px; line-height: 1.4; color: #303030;
+  max-width: 90%;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  margin-bottom: 8px;
+  animation: slide-in .4s ease;
+}
+@keyframes slide-in { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.wa-msg .time { display:block; font-size:10px; color:#999; margin-top:4px; text-align:right; }
+
+/* Scene 3 — Karyawan no answer */
+.s3 .ic-cross {
+  font-size: 180px;
+  color: #ef4444;
+  animation: pulse-red 0.8s infinite;
+}
+@keyframes pulse-red { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+/* Scene 4-5 — Telegram chat */
+.s4, .s5 { padding: 14% 6% 10%; }
+.tg-frame {
+  background: #17212b;
+  border-radius: 24px;
+  border: 6px solid #1a1a1a;
+  padding: 18px;
+  width: 100%; max-width: 92%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5),
+              0 0 80px rgba(233,30,99,.3);
+}
+.tg-head {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 12px;
+}
+.tg-head .av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.tg-head .name { font-size: 15px; font-weight: 700; }
+.tg-head .status { font-size: 11px; color: #4ade80; display:flex; align-items:center; gap:4px; }
+.tg-head .status::before { content:''; width:6px; height:6px; border-radius:50%; background:#4ade80; }
+.tg-msgs { display: flex; flex-direction: column; gap: 8px; min-height: 280px; }
+.tg-bubble {
+  padding: 10px 14px; border-radius: 14px;
+  font-size: 14px; line-height: 1.4;
+  max-width: 85%;
+  animation: slide-in .4s ease;
+}
+.tg-bubble.user { background: #2b5278; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.tg-bubble.bot { background: #182533; border: 1px solid rgba(255,255,255,.06); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; }
+.tg-bubble b { color: var(--gold-bright); }
+.tg-bubble .red { color: #f87171; font-weight: 700; }
+.tg-bubble .green { color: #4ade80; }
+
+/* Scene 6 — Comparison */
+.s6 .compare {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 30px 0;
+  width: 100%;
+}
+.compare-box {
+  border-radius: 18px;
+  padding: 26px 16px;
+  text-align: center;
+}
+.compare-box.bad {
+  border: 2px solid #f87171;
+  background: linear-gradient(135deg, rgba(248,113,113,.15), rgba(255,255,255,.03));
+}
+.compare-box.good {
+  border: 2px solid #4ade80;
+  background: linear-gradient(135deg, rgba(74,222,128,.15), rgba(255,255,255,.03));
+  box-shadow: 0 0 40px rgba(74,222,128,.2);
+}
+.compare-box .lbl {
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 1px; margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.compare-box.bad .lbl { color: #f87171; }
+.compare-box.good .lbl { color: #4ade80; }
+.compare-box .num { font-size: 64px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+.compare-box.bad .num { color: #f87171; }
+.compare-box.good .num { color: #4ade80; }
+.compare-box .unit { font-size: 14px; color: #cbd5e1; margin-top: 4px; }
+.s6-summary {
+  background: linear-gradient(135deg, rgba(212,175,55,.18), rgba(233,30,99,.12));
+  border: 2px solid var(--gold);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  font-size: 22px; font-weight: 900;
+  width: 100%;
+  animation: zoom-in .5s ease;
+}
+@keyframes zoom-in { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.s6-summary .num {
+  font-size: 56px; line-height: 1;
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  display: block; margin-bottom: 6px;
+}
+
+/* Scene 7 — Brand reveal */
+.s7 {}
+.s7 .brand-bear { font-size: 240px; margin-bottom: 8px; animation: bear-pop .6s ease; }
+@keyframes bear-pop { from { transform: scale(0); } to { transform: scale(1); } }
+.s7 .brand-name {
+  font-size: 80px; font-weight: 900;
+  letter-spacing: -3px; line-height: 0.95;
+}
+.s7 .brand-name .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s7 .brand-tag {
+  font-size: 22px; color: #cbd5e1; margin-top: 12px;
+  font-style: italic;
+}
+.s7 .features {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-top: 24px;
+  width: 100%;
+}
+.s7 .feat {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px;
+}
+.s7 .feat .e { font-size: 22px; }
+
+/* Scene 8 — Pricing */
+.s8 {}
+.pricing-card-r {
+  background: linear-gradient(135deg, rgba(212,175,55,.2), rgba(233,30,99,.1));
+  border: 3px solid var(--gold);
+  border-radius: 24px;
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 0 80px rgba(212,175,55,.4);
+  position: relative;
+  width: 100%;
+  animation: zoom-in .6s ease;
+}
+.pricing-card-r .badge {
+  position: absolute; top: -16px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--magenta); color: #fff;
+  padding: 6px 16px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+.pricing-card-r .plan-name {
+  font-size: 16px; letter-spacing: 3px;
+  color: var(--gold-bright); font-weight: 800;
+  margin-bottom: 8px;
+}
+.pricing-card-r .price {
+  font-size: 76px; font-weight: 900;
+  line-height: 1; letter-spacing: -2px;
+  margin-bottom: 4px;
+}
+.pricing-card-r .price .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.pricing-card-r .price small { font-size: 18px; color: #94a3b8; font-weight: 500; }
+.pricing-card-r .desc { font-size: 14px; color: #cbd5e1; margin-bottom: 14px; }
+.pricing-card-r .features-row {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  justify-content: center;
+}
+.pricing-card-r .features-row span {
+  background: rgba(255,255,255,.08);
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 11px; color: #e2e8f0;
+}
+.s8-bottom {
+  margin-top: 18px; text-align: center;
+  font-size: 18px; color: var(--magenta-light);
+  font-weight: 700;
+  animation: pulse-soft 1.5s infinite;
+}
+@keyframes pulse-soft { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* Scene 9 — Final CTA */
+.s9 { padding: 0; align-items: center; justify-content: center; }
+.s9 .arrow {
+  font-size: 80px; color: var(--magenta);
+  animation: arrow-bounce 1s infinite;
+}
+@keyframes arrow-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(20px)} }
+.s9 .cta-title {
+  font-size: 80px; font-weight: 900;
+  letter-spacing: -2px; line-height: 1;
+  text-align: center;
+  margin: 16px 0;
+}
+.s9 .cta-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s9 .cta-btn {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  color: #fff;
+  padding: 22px 50px;
+  border-radius: 100px;
+  font-size: 28px; font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 20px 60px rgba(233,30,99,.5);
+  margin-top: 20px;
+  animation: cta-glow 1.5s infinite alternate;
+}
+@keyframes cta-glow {
+  from { box-shadow: 0 20px 60px rgba(233,30,99,.5); }
+  to { box-shadow: 0 20px 80px rgba(255,215,0,.6); }
+}
+.s9 .handle {
+  margin-top: 16px;
+  font-family: monospace;
+  color: #cbd5e1; font-size: 14px;
+}
+.s9 .handle b { color: var(--gold-bright); }
+
+/* Progress bar */
+.progress {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: rgba(255,255,255,.05);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--magenta), var(--gold));
+  width: 0%;
+  transition: width .1s linear;
+}
+
+/* Replay overlay */
+.replay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.85);
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+  z-index: 9998;
+  cursor: pointer;
+}
+.replay.show { display: flex; }
+.replay-btn {
+  background: var(--magenta); color: #fff;
+  width: 100px; height: 100px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px;
+}
+.replay-text {
+  font-size: 18px; font-weight: 700; color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- ============ PLAY OVERLAY ============ -->
+  <div class="play-overlay" id="play-overlay">
+    <div class="play-btn">▶</div>
+    <h1>Reels Berstock — 45s</h1>
+    <p>Tekan PLAY → mulai screen-record iPad → biarkan animasi jalan 45 detik → stop record. Done!</p>
+    <div class="instructions">
+      <b>📱 Cara Record di iPad:</b><br>
+      1. Buka <b>Control Center</b> (geser dari pojok kanan atas)<br>
+      2. Tekan tombol <b>Screen Record</b> (lingkaran merah)<br>
+      3. Tunggu 3 detik countdown, lalu tap <b>PLAY</b> di sini<br>
+      4. Biarkan 45 detik sampai selesai<br>
+      5. Stop record dari Control Center<br>
+      6. Video tersimpan di Photos → upload ke IG Reels<br>
+      7. Di IG Reels, tambah <b>Music</b> dari library + caption
+    </div>
+  </div>
+
+  <!-- ============ SCENE 1 — Hook (0-3s) ============ -->
+  <div class="scene s1" data-scene="1">
+    <div class="cap-top">
+      <span class="lbl">SCENE 1</span>
+      <div class="cap-headline">Lagi di luar kota<br>klien <span class="grad-magenta">tanya stok urgent</span>?</div>
+    </div>
+    <div class="icon-big">😰</div>
+    <div class="stage-cap">PESAN MASUK · 14:23</div>
+  </div>
+
+  <!-- ============ SCENE 2 — WA Klien (3-6s) ============ -->
+  <div class="scene s2" data-scene="2">
+    <div class="cap-top">
+      <div class="cap-headline" style="font-size:24px">Pak Andi (klien penting):</div>
+    </div>
+    <div class="wa-bg">
+      <div class="wa-head">
+        <div class="av">👤</div>
+        <div>
+          <div class="name">Pak Andi</div>
+          <div class="status">online</div>
+        </div>
+      </div>
+      <div class="wa-msg">
+        Bos, beras 5kg masih ada gak? Saya butuh 50 karung urgent buat hari ini 🙏
+        <span class="time">14:23 ✓✓</span>
+      </div>
+      <div class="wa-msg">
+        Sama indomie sebanyak yg ada bos
+        <span class="time">14:23 ✓✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 3 — Karyawan no answer (6-9s) ============ -->
+  <div class="scene s3" data-scene="3">
+    <div class="cap-top">
+      <div class="cap-headline">Telpon karyawan?<br><span class="strike">Ga diangkat.</span></div>
+    </div>
+    <div class="ic-cross">📵</div>
+    <div class="cap-bottom">
+      <div class="cap-headline" style="font-size:24px; color:#cbd5e1">😩 Stres tiap minggu kayak gini.</div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 4 — Solusi (9-13s) ============ -->
+  <div class="scene s4" data-scene="4">
+    <div class="cap-top">
+      <span class="lbl" style="background:#4ade80; color:#052e16">✓ SOLUSI</span>
+      <div class="cap-headline">Sekarang? <span class="grad-gold">Cukup chat AI</span><br>di Telegram.</div>
+    </div>
+    <div class="tg-frame">
+      <div class="tg-head">
+        <div class="av">🐻</div>
+        <div>
+          <div class="name">@BerstockBot</div>
+          <div class="status">online · Powered by Claude AI</div>
+        </div>
+      </div>
+      <div class="tg-msgs">
+        <div class="tg-bubble user">Stok habis apa aja?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 5 — Bot Reply (13-22s) ============ -->
+  <div class="scene s5" data-scene="5">
+    <div class="cap-top">
+      <div class="cap-headline" style="font-size:28px">⚡ AI jawab dalam <span class="grad-magenta">5 detik</span>:</div>
+    </div>
+    <div class="tg-frame">
+      <div class="tg-head">
+        <div class="av">🐻</div>
+        <div>
+          <div class="name">@BerstockBot</div>
+          <div class="status">online · typing reply...</div>
+        </div>
+      </div>
+      <div class="tg-msgs">
+        <div class="tg-bubble user">Stok habis apa aja?</div>
+        <div class="tg-bubble bot">
+          🔥 <b>3 barang stok kritis:</b><br><br>
+          • Beras Premium — sisa <span class="red">2 karung</span> ⚠️ <b>URGENT</b><br>
+          • Indomie Goreng — sisa <span class="red">3 dus</span><br>
+          • Kopi Kapal Api — <span class="red"><b>HABIS!</b></span><br><br>
+          💡 Prioritas restock minggu ini bos.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 6 — Comparison (22-28s) ============ -->
+  <div class="scene s6" data-scene="6">
+    <div class="cap-top">
+      <div class="cap-headline">Bandingkan <span class="grad-magenta">Kecepatannya</span></div>
+    </div>
+    <div class="compare">
+      <div class="compare-box bad">
+        <div class="lbl">❌ TANPA AI</div>
+        <div class="num">30</div>
+        <div class="unit">menit cek<br>manual</div>
+      </div>
+      <div class="compare-box good">
+        <div class="lbl">✓ BERSTOCK</div>
+        <div class="num">30</div>
+        <div class="unit">detik via<br>chat AI</div>
+      </div>
+    </div>
+    <div class="s6-summary">
+      <span class="num">60×</span>
+      Lebih Cepat ⚡
+    </div>
+  </div>
+
+  <!-- ============ SCENE 7 — Brand Reveal (28-37s) ============ -->
+  <div class="scene s7" data-scene="7">
+    <div class="brand-bear">🐻</div>
+    <div class="brand-name"><span class="grad">Berstock</span></div>
+    <div class="brand-tag">AI Assistant Pertama di Indonesia<br>untuk Owner UMKM</div>
+    <div class="features">
+      <div class="feat"><span class="e">📦</span><span>Cek stok real-time</span></div>
+      <div class="feat"><span class="e">💰</span><span>Track piutang</span></div>
+      <div class="feat"><span class="e">📊</span><span>Sales & profit</span></div>
+      <div class="feat"><span class="e">🏆</span><span>Best seller analysis</span></div>
+      <div class="feat"><span class="e">⚡</span><span>Reply 5 detik</span></div>
+      <div class="feat"><span class="e">🇮🇩</span><span>Bahasa Indonesia</span></div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 8 — Pricing (37-43s) ============ -->
+  <div class="scene s8" data-scene="8">
+    <div class="cap-top">
+      <div class="cap-headline" style="font-size:28px">Pricing <span class="grad-gold">Special Launch</span></div>
+    </div>
+    <div class="pricing-card-r">
+      <div class="badge">🔥 EARLY BIRD · 50 SLOT</div>
+      <div class="plan-name">PRO + AI BOT</div>
+      <div class="price"><span class="grad">Rp 500rb</span><br><small>per bulan</small></div>
+      <div class="desc">POS Lengkap + AI Bot Telegram 24/7</div>
+      <div class="features-row">
+        <span>✓ Kasir</span>
+        <span>✓ Stok</span>
+        <span>✓ Faktur A4</span>
+        <span>✓ Piutang</span>
+        <span>✓ AI Bot</span>
+      </div>
+    </div>
+    <div class="s8-bottom">⏰ Slot terbatas — closing minggu ini</div>
+  </div>
+
+  <!-- ============ SCENE 9 — Final CTA (43-45s) ============ -->
+  <div class="scene s9" data-scene="9">
+    <div class="arrow">↓</div>
+    <div class="cta-title"><span class="grad">Link di Bio.</span><br>Sekarang.</div>
+    <div class="cta-btn">💬 Chat WhatsApp</div>
+    <div class="handle">📱 +62 821-2484-8924 · IG <b>@hendrypangg</b></div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- Replay overlay -->
+  <div class="replay" id="replay">
+    <div class="replay-btn">↻</div>
+    <div class="replay-text">Tap untuk ulang</div>
+  </div>
+
+</div>
+
+<script>
+// Scene timing dalam ms (cumulative)
+const TIMINGS = [
+  { scene: 1, start: 0,    duration: 3000  }, // 0-3s
+  { scene: 2, start: 3000, duration: 3000  }, // 3-6s
+  { scene: 3, start: 6000, duration: 3000  }, // 6-9s
+  { scene: 4, start: 9000, duration: 4000  }, // 9-13s
+  { scene: 5, start: 13000, duration: 9000 }, // 13-22s
+  { scene: 6, start: 22000, duration: 6000 }, // 22-28s
+  { scene: 7, start: 28000, duration: 9000 }, // 28-37s
+  { scene: 8, start: 37000, duration: 6000 }, // 37-43s
+  { scene: 9, start: 43000, duration: 2000 }, // 43-45s
+];
+const TOTAL = 45000;
+
+const scenes = document.querySelectorAll('.scene');
+const progressFill = document.getElementById('progress-fill');
+const playOverlay = document.getElementById('play-overlay');
+const replayOverlay = document.getElementById('replay');
+let startTime;
+let rafId;
+
+function tick(now) {
+  const elapsed = now - startTime;
+  const pct = Math.min(100, (elapsed / TOTAL) * 100);
+  progressFill.style.width = pct + '%';
+
+  // Activate current scene
+  let activeScene = null;
+  for (const t of TIMINGS) {
+    if (elapsed >= t.start && elapsed < t.start + t.duration) {
+      activeScene = t.scene;
+      break;
+    }
+  }
+  scenes.forEach(s => {
+    s.classList.toggle('active', +s.dataset.scene === activeScene);
+  });
+
+  if (elapsed < TOTAL) {
+    rafId = requestAnimationFrame(tick);
+  } else {
+    // End — show replay
+    scenes.forEach(s => s.classList.remove('active'));
+    document.querySelector('[data-scene="9"]').classList.add('active');
+    replayOverlay.classList.add('show');
+  }
+}
+
+function play() {
+  document.body.classList.add('body-playing');
+  replayOverlay.classList.remove('show');
+  progressFill.style.width = '0%';
+  startTime = performance.now();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(tick);
+}
+
+playOverlay.addEventListener('click', play);
+replayOverlay.addEventListener('click', play);
+</script>
+
+</body>
+</html>

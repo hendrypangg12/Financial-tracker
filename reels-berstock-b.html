@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reels B Berstock — Scene Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628;
+  --navy-dark: #050b18;
+  --magenta: #e91e63;
+  --magenta-dark: #c2185b;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a; color: #fff;
+  padding: 30px 0;
+}
+
+.guide {
+  max-width: 800px; margin: 0 auto 30px;
+  background: linear-gradient(135deg, #1a2540, #0f1f3d);
+  border: 1px solid #2a3960; border-radius: 16px;
+  padding: 24px; text-align: center;
+}
+.guide h1 { color: var(--gold-bright); font-size: 22px; margin-bottom: 8px; }
+.guide p { color: #cbd5e1; font-size: 14px; line-height: 1.6; }
+.guide code { background: #2a3960; padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+.guide button {
+  background: var(--magenta); color: #fff;
+  padding: 10px 20px; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  margin: 4px;
+}
+.guide button:hover { background: var(--magenta-dark); }
+
+.scenes {
+  display: flex; flex-direction: column; gap: 30px; align-items: center;
+}
+
+/* Reel size: 1080×1920 (9:16) */
+.scene {
+  width: 1080px; height: 1920px;
+  position: relative; overflow: hidden;
+  background: var(--navy);
+  box-shadow: 0 20px 80px rgba(0,0,0,.6);
+}
+.scene-label {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(0,0,0,.6);
+  color: var(--gold-bright);
+  font-family: monospace;
+  font-size: 14px;
+  padding: 6px 12px; border-radius: 6px;
+  z-index: 100;
+}
+
+/* Backgrounds shared */
+.nebula::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(233,30,99,.18), transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(212,175,55,.15), transparent 40%);
+  pointer-events: none;
+}
+
+/* ==================== SCENE 2: CHAT WA KLIEN ==================== */
+.s2 { padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; }
+.s2-label {
+  font-family: monospace; font-size: 18px;
+  color: var(--magenta); letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+.s2-title {
+  font-size: 56px; font-weight: 900; line-height: 1.05;
+  margin-bottom: 50px;
+  letter-spacing: -1.5px;
+}
+.wa-frame {
+  background: #ece5dd;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.4);
+  max-width: 100%;
+}
+.wa-head {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px;
+  background: #075e54; color: #fff;
+  border-radius: 16px 16px 0 0;
+  margin: -30px -30px 20px;
+}
+.wa-head .av {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+}
+.wa-head .info .name { font-size: 22px; font-weight: 700; }
+.wa-head .info .status { font-size: 14px; color: #b3d9d4; }
+.wa-msg {
+  background: #fff;
+  padding: 18px 22px;
+  border-radius: 16px;
+  border-top-left-radius: 4px;
+  font-size: 26px; line-height: 1.4; color: #303030;
+  max-width: 80%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  margin-bottom: 12px;
+}
+.wa-msg .time { display: block; font-size: 14px; color: #999; margin-top: 8px; text-align: right; }
+
+/* ==================== SCENE 5-6: TELEGRAM CHAT ==================== */
+.s5 { padding: 80px; display: flex; flex-direction: column; justify-content: center; }
+.s5-title {
+  font-size: 48px; font-weight: 800; text-align: center;
+  margin-bottom: 40px;
+}
+.s5-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.tg-phone {
+  background: #17212b;
+  border-radius: 30px;
+  border: 8px solid #1a1a1a;
+  padding: 30px;
+  box-shadow: 0 30px 100px rgba(0,0,0,.5),
+              0 0 80px rgba(233,30,99,.2);
+}
+.tg-head {
+  display: flex; align-items: center; gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 20px;
+}
+.tg-head .av {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.tg-head .name { font-size: 24px; font-weight: 700; }
+.tg-head .status {
+  font-size: 16px; color: #4ade80;
+  display: flex; align-items: center; gap: 6px;
+}
+.tg-head .status::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: #4ade80;
+}
+.tg-msgs {
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 600px;
+}
+.tg-bubble {
+  padding: 16px 20px; border-radius: 18px;
+  font-size: 24px; line-height: 1.5;
+  max-width: 85%;
+}
+.tg-bubble.user {
+  background: #2b5278; color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.tg-bubble.bot {
+  background: #182533;
+  border: 1px solid rgba(255,255,255,.06);
+  color: #e2e8f0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.tg-bubble b { color: var(--gold-bright); }
+.tg-bubble .red { color: #f87171; }
+.tg-bubble .green { color: #4ade80; }
+.tg-typing {
+  display: flex; gap: 5px; padding: 16px 20px;
+  background: #182533; border-radius: 18px;
+  align-self: flex-start; max-width: 100px;
+}
+.tg-typing span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #94a3b8;
+  animation: typing 1.4s infinite;
+}
+.tg-typing span:nth-child(2) { animation-delay: .2s; }
+.tg-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typing {
+  0%,60%,100% { opacity: .3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-5px); }
+}
+
+/* ==================== SCENE 8: COMPARISON ==================== */
+.s8 {
+  padding: 100px 80px;
+  display: flex; flex-direction: column;
+  justify-content: center;
+}
+.s8-title {
+  font-size: 64px; font-weight: 900; text-align: center;
+  margin-bottom: 70px;
+  letter-spacing: -2px;
+}
+.s8-title .grad {
+  background: linear-gradient(135deg, var(--magenta), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.compare {
+  display: grid; grid-template-columns: 1fr 80px 1fr;
+  gap: 20px; align-items: center;
+  margin-bottom: 60px;
+}
+.compare-box {
+  background: rgba(255,255,255,.05);
+  border: 2px solid rgba(255,255,255,.15);
+  border-radius: 24px;
+  padding: 50px 30px;
+  text-align: center;
+}
+.compare-box.bad { border-color: #f87171; background: linear-gradient(135deg, rgba(248,113,113,.1), rgba(255,255,255,.02)); }
+.compare-box.good {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, rgba(74,222,128,.1), rgba(255,255,255,.02));
+  box-shadow: 0 0 60px rgba(74,222,128,.2);
+}
+.compare-box .label {
+  font-size: 22px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.compare-box.bad .label { color: #f87171; }
+.compare-box.good .label { color: #4ade80; }
+.compare-box .value {
+  font-size: 96px; font-weight: 900;
+  line-height: 1; letter-spacing: -3px;
+}
+.compare-box.bad .value { color: #f87171; }
+.compare-box.good .value { color: #4ade80; }
+.compare-box .unit { font-size: 28px; font-weight: 600; color: #cbd5e1; margin-top: 10px; }
+.compare-arrow {
+  font-size: 60px;
+  color: var(--gold-bright);
+  text-align: center;
+}
+.s8-summary {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(233,30,99,.1));
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  padding: 36px;
+  font-size: 56px; font-weight: 900;
+}
+.s8-summary .number {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-size: 96px;
+}
+
+/* ==================== SCENE 10: PRICING ==================== */
+.s10 {
+  padding: 80px;
+  display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(ellipse at center, var(--navy) 0%, var(--navy-dark) 100%);
+}
+.s10-title {
+  text-align: center; font-size: 56px; font-weight: 900;
+  margin-bottom: 40px;
+  letter-spacing: -1.5px;
+}
+.s10-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.pricing-card {
+  background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(233,30,99,.08));
+  border: 3px solid var(--gold);
+  border-radius: 32px;
+  padding: 60px 50px;
+  text-align: center;
+  box-shadow: 0 0 80px rgba(212,175,55,.3);
+  position: relative;
+}
+.pricing-card .badge {
+  position: absolute; top: -24px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--magenta); color: #fff;
+  padding: 10px 24px; border-radius: 999px;
+  font-size: 18px; font-weight: 800; letter-spacing: 2px;
+  white-space: nowrap;
+}
+.pricing-card .plan-name {
+  font-size: 28px; letter-spacing: 3px;
+  color: var(--gold-bright); font-weight: 800;
+  margin-bottom: 16px;
+}
+.pricing-card .plan-price {
+  font-size: 120px; font-weight: 900;
+  line-height: 1; letter-spacing: -3px;
+  margin-bottom: 8px;
+}
+.pricing-card .plan-price .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.pricing-card .plan-price small {
+  font-size: 32px; color: #94a3b8; font-weight: 500;
+}
+.pricing-card .plan-desc {
+  font-size: 26px; color: #cbd5e1;
+  margin: 30px 0;
+}
+.pricing-card .plan-list {
+  list-style: none; text-align: left;
+  display: inline-block;
+}
+.pricing-card .plan-list li {
+  font-size: 22px; padding: 8px 0;
+  display: flex; gap: 10px; color: #e2e8f0;
+}
+.pricing-card .plan-list li::before {
+  content: '✓'; color: #4ade80; font-weight: 800;
+}
+.s10-bottom {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 32px;
+  color: var(--magenta);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ==================== SCENE 11: CTA ==================== */
+.s11 {
+  padding: 120px 80px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+  background: radial-gradient(ellipse at center, var(--navy) 0%, var(--navy-dark) 100%);
+}
+.s11-bear { font-size: 200px; margin-bottom: 30px; }
+.s11-title {
+  font-size: 96px; font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 1;
+  margin-bottom: 30px;
+}
+.s11-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s11-arrow {
+  font-size: 100px; color: var(--magenta);
+  animation: arrow-bounce 1.2s infinite;
+  margin: 30px 0;
+}
+@keyframes arrow-bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+.s11-cta {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  color: #fff;
+  padding: 40px 80px;
+  border-radius: 100px;
+  font-size: 48px; font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 20px 60px rgba(233,30,99,.4);
+  margin-bottom: 40px;
+}
+.s11-handle {
+  font-family: monospace;
+  font-size: 28px; color: #cbd5e1;
+  margin-top: 30px;
+}
+.s11-handle b { color: var(--gold-bright); }
+</style>
+</head>
+<body>
+
+<div class="guide">
+  <h1>🎬 Reels B Berstock — Scene Templates</h1>
+  <p>
+    5 scene siap di-screen-record untuk Reels Berstock (1080×1920, 9:16).<br>
+    <b>Cara pakai:</b> Buka di Safari iPad → zoom 100% → screen-record per scene → import ke CapCut → tambah voice over.
+  </p>
+  <p style="margin-top:10px">
+    <b>Recording tip:</b> screen-record 5-7 detik per scene supaya ada room buat trim.
+  </p>
+</div>
+
+<div class="scenes">
+
+<!-- ============ SCENE 2 — Chat WA Klien Tanya Stok (3-6 detik) ============ -->
+<div class="scene s2 nebula">
+  <div class="scene-label">SCENE 2 · 3-6s</div>
+  <div class="s2-label">PESAN MASUK · 14:23</div>
+  <h2 class="s2-title">Klien penting nelpon...<br>tanya stok kosong yang mana.</h2>
+
+  <div class="wa-frame">
+    <div class="wa-head">
+      <div class="av">👤</div>
+      <div class="info">
+        <div class="name">Pak Andi (Klien)</div>
+        <div class="status">online</div>
+      </div>
+    </div>
+    <div class="wa-msg">
+      Bos, beras 5kg di toko bos masih ada gak? Saya butuh 50 karung urgent buat hari ini 🙏
+      <span class="time">14:23 ✓✓</span>
+    </div>
+    <div class="wa-msg">
+      Sama indomie sebanyak yg ada bos
+      <span class="time">14:23 ✓✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCENE 5-6 — Chat ke Berstock Bot (11-22 detik) ============ -->
+<div class="scene s5 nebula">
+  <div class="scene-label">SCENE 5-6 · 11-22s</div>
+  <h2 class="s5-title">Cukup chat <span class="grad">AI di Telegram</span></h2>
+
+  <div class="tg-phone">
+    <div class="tg-head">
+      <div class="av">🐻</div>
+      <div>
+        <div class="name">@BerstockBot</div>
+        <div class="status">online · Powered by Claude AI</div>
+      </div>
+    </div>
+    <div class="tg-msgs">
+      <div class="tg-bubble user">Stok habis apa aja?</div>
+      <div class="tg-bubble bot">
+        🔥 <b>3 barang stok kritis:</b><br><br>
+        • Beras Premium — sisa <span class="red">2 karung</span> ⚠️ <b>URGENT</b><br>
+        • Indomie Goreng — sisa <span class="red">3 dus</span><br>
+        • Kopi Kapal Api — <span class="red"><b>HABIS!</b></span><br><br>
+        💡 Prioritas restock Beras & Kopi minggu ini bos.
+      </div>
+      <div class="tg-bubble user">Berapa total stok beras semua?</div>
+      <div class="tg-bubble bot">
+        📦 Total beras (semua varian):<br>
+        • Beras Premium 5kg — <b>2 karung</b><br>
+        • Beras Setra 5kg — <span class="green"><b>45 karung</b></span><br>
+        • Beras Pulen 10kg — <b>12 karung</b><br><br>
+        Total: <b>59 karung</b>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCENE 8 — Comparison Speed (26-32 detik) ============ -->
+<div class="scene s8 nebula">
+  <div class="scene-label">SCENE 8 · 26-32s</div>
+  <h2 class="s8-title">Bandingkan <span class="grad">Kecepatannya</span></h2>
+
+  <div class="compare">
+    <div class="compare-box bad">
+      <div class="label">❌ Tanpa AI</div>
+      <div class="value">30</div>
+      <div class="unit">menit cek manual</div>
+    </div>
+    <div class="compare-arrow">→</div>
+    <div class="compare-box good">
+      <div class="label">✓ Pakai Berstock</div>
+      <div class="value">30</div>
+      <div class="unit">detik via chat</div>
+    </div>
+  </div>
+
+  <div class="s8-summary">
+    <span class="number">60×</span><br>
+    Lebih Cepat
+  </div>
+</div>
+
+<!-- ============ SCENE 10 — Pricing (38-43 detik) ============ -->
+<div class="scene s10 nebula">
+  <div class="scene-label">SCENE 10 · 38-43s</div>
+  <h2 class="s10-title">Pricing <span class="grad">Berstock Pro</span></h2>
+
+  <div class="pricing-card">
+    <div class="badge">🔥 EARLY BIRD · 50 KLIEN PERTAMA</div>
+    <div class="plan-name">PRO + AI BOT</div>
+    <div class="plan-price"><span class="grad">Rp 500rb</span><br><small>per bulan</small></div>
+    <div class="plan-desc">POS Lengkap + AI Bot Telegram 24/7</div>
+    <ul class="plan-list">
+      <li>Kasir + Stok unlimited</li>
+      <li>Faktur A4 + Piutang Tracker</li>
+      <li>AI Chat di Telegram 24/7</li>
+      <li>Powered by Claude Sonnet AI</li>
+      <li>Cloud sync multi-device</li>
+    </ul>
+  </div>
+
+  <div class="s10-bottom">⏰ Slot tersisa: 50 dari 50 klien</div>
+</div>
+
+<!-- ============ SCENE 11 — CTA (43-45 detik) ============ -->
+<div class="scene s11">
+  <div class="s11-bear">🐻</div>
+  <h2 class="s11-title"><span class="grad">Link di Bio.</span><br>Sekarang.</h2>
+  <div class="s11-arrow">↓</div>
+  <div class="s11-cta">💬 Chat WhatsApp</div>
+  <div class="s11-handle">📱 +62 821-2484-8924 · IG <b>@hendrypangg</b></div>
+</div>
+
+</div>
+
+</body>
+</html>
