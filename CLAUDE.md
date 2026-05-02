@@ -217,6 +217,30 @@ state = {
 - Sudah kena 4× di proyek ini: `.modal`, `.auth-form`, `.login-screen`, `#app-main`
 - **CHECKLIST baru:** kalau bikin container yang punya display rule, langsung tambah hidden override
 
+### H. Landing Page Pattern yang Bagus (Day 2 learning)
+- Hero dengan **dual CTA** (high-intent + low-friction): "💬 WhatsApp" + "🎁 Coba Gratis"
+- **Deep features section** dengan zigzag layout (text kiri/kanan bergantian) + mockup visual realistis
+- **Floating mascot chat widget** auto-popup setelah 3s — sequential messages dengan typing indicator, 2 CTA
+- **Cross-sell banner sebelum pricing** (bukan setelah footer) — visitor non-fit catch sebelum bounce
+- **Pre-filled WhatsApp message** di link CTA: `wa.me/X?text=...` biar bos langsung tahu produk apa
+- **Mockup data realistis** (Pak Budi Rp 8.5jt overdue, dll) — bukan placeholder lorem ipsum
+
+### I. 3-Layer Auto-Sync Protection (Day 2)
+**Pattern yang dipakai di BerBisnis cloud-sync + BerUang sync:**
+1. **Debounced push** dari saveState — 1.5s (BerUang) atau 30s (BerBisnis) idle
+2. **Periodic interval push** — fallback safety net 5 menit
+3. **Tab close push** — `visibilitychange` (mobile) + `beforeunload` (desktop) + `sendBeacon` untuk reliability
+- Default auto-sync ON saat first config save
+- Stop interval saat logout
+
+### J. Feature Flags Infrastructure (Day 2 — Tutorial Step 2/6 Done)
+**File:** `tokountung/js/auth.js`
+- `FEATURE_DEFINITIONS` registry — label, desc, icon per flag
+- `defaultFeatures()` — generate object semua flag = false
+- `hasFeature(profile, flagName)` — safe check (handle profile lama)
+- 4 flag awal contoh: `multi_gudang`, `kredit_limit`, `menu_modifier`, `custom_bot_prompt`
+- **Belum:** Admin UI toggle (Step 3), conditional render (Step 4), bot per-tenant (Step 5), testing (Step 6)
+
 ---
 
 ## 🚦 RULES OF ENGAGEMENT
@@ -234,6 +258,7 @@ state = {
 
 ## 🗺️ STATUS ROADMAP
 
+### ✅ DAY 1 (Done)
 | Item | Status | Notes |
 |---|---|---|
 | BerUang core (input, dashboard, OCR) | ✅ Done | Live di GitHub Pages |
@@ -241,24 +266,139 @@ state = {
 | BerBisnis core (POS, stok, laporan) | ✅ Done | Live di subfolder |
 | BerBisnis foto produk | ✅ Done | dengan kamera capture |
 | BerBisnis Login Auth | ✅ Done | Firebase email/password (Google ada bug) |
-| BerBisnis Trial 3 hari + Paywall | ✅ Done | Pricing Starter 99rb / Pro EB 500rb |
+| BerBisnis Trial 3 hari + Paywall | ✅ Done | |
 | BerBisnis Admin Panel | ✅ Done | List user + aktivasi/deaktivasi |
 | BerBisnis Per-user Firestore sync | ✅ Done | Cross-device, auto-migrate |
-| Berstock Bot — kode | ✅ Done | 9 tools |
-| Berstock Bot — DEPLOYED | ✅ LIVE | berstock-bot.hendrypangg12.workers.dev |
+| Berstock Bot — kode + DEPLOYED | ✅ LIVE | berstock-bot.hendrypangg12.workers.dev |
 | Berstock Bot — tenant PT SPC | ✅ Done | tnt_a82328a860e4 active |
 | Berstock landing page | ✅ Done | /landing-berstock.html |
 | BerSatu Neural Command demo | ✅ Done | CEO PT SPC + 6 agents, hub-spoke |
 | Two-logo strategy | ✅ Done | BerUang gemoy / BerBisnis berdasi |
-| Restore from Cloud BerBisnis | ✅ Done | Pull data dari KV ke localStorage |
 | Bot satuan fix (karton vs pcs) | ✅ Done | satuan dari products lookup |
+
+### ✅ DAY 2 (Done — 2 Mei 2026)
+
+**BerBisnis App — Fitur Baru:**
+| Item | Status | Notes |
+|---|---|---|
+| Tab Piutang Pelanggan | ✅ Done | Filter overdue + tandai lunas 1-klik |
+| Tab Pelanggan + History | ✅ Done | Aggregasi dari sales, customer 360°, WA chat link |
+| Customer Picker autocomplete | ✅ Done | Datalist + modal picker di checkout & edit |
+| Edit Invoice | ✅ Done | Edit qty, harga, items, hapus invoice (auto-restore stok) |
+| Laporan Custom Range | ✅ Done | Per tanggal/bulan/tahun/range bebas |
+| Dashboard Cash vs Tempo Breakdown | ✅ Done | Pisah uang masuk kas vs piutang baru |
+| Laporan per Item Akumulasi | ✅ Done | Ganti Top 10, full table dengan profit & margin |
+| Tab PO Supplier | ✅ Done | Ganti tab Restock — auto-create produk + foto faktur + jatuh tempo |
+| Foto Upload 1-Tap Clean UX | ✅ Done | Drop zone besar 240×240, naik resolusi 500px |
+| Stok Kasir Real-Time vs Cart | ✅ Done | Display sisa = stok - qty cart, badge cart count |
+| Filter Kategori + Bounce Animation | ✅ Done | Tab kategori horizontal scroll di kasir |
+| Mobile Responsive Compact | ✅ Done | Cards 2-kolom mobile, tabel scroll horizontal |
+| Hapus Target & BEP | ✅ Done | Dari dashboard + pengaturan |
+
+**Berstock Bot — Update:**
+| Item | Status | Notes |
+|---|---|---|
+| 3 Tools Baru | ✅ LIVE | get_piutang_summary, get_customer_list, get_customer_history |
+| Update get_today_sales | ✅ LIVE | Breakdown cash vs tempo |
+| Total tools sekarang 12 | ✅ LIVE | Dari 9 sebelumnya |
+
+**Cloud Sync 3-Layer Protection:**
+| Item | Status | Notes |
+|---|---|---|
+| BerBisnis cloud-sync.js | ✅ Done | Debounce 30s + interval 5min + beforeunload sendBeacon |
+| BerUang sync.js | ✅ Done | Debounce 1.5s + interval 5min + visibilitychange + beforeunload |
+| Default auto-sync ON | ✅ Done | Untuk user baru saat save config pertama kali |
+
+**Marketing Assets:**
+| Item | Status | Notes |
+|---|---|---|
+| Carousel Day 2 — 8 slides | ✅ Done | berstock-carousel-day2.html (1080×1080) |
+| Pitch Deck PDF — 10 slides | ✅ Done | berstock-pitch-deck.html (A4 landscape, ready export PDF) |
+| Captions IG (3 versi) | ✅ Done | Long storytelling + short punchy + pain-point focus |
+| Reels Auto-Play 45 detik | ✅ Done | reels-berstock-autoplay.html — single screen-record, no edit |
+| Landing BerBisnis Pro | ✅ Done | berbisnis-pro.html dengan 6 fitur deep-dive + mockup visual |
+| Landing BerUang rebuild | ✅ Done | landing.html — profesional + mockup chat input + OCR demo |
+| Cross-sell bidirectional | ✅ Done | BerBisnis ↔ BerUang banner cross-promotion |
+| Floating Mascot Chat Widget | ✅ Done | Auto-popup setelah 3s, sequential messages, 2 CTA |
+| Admin Provision Tenant Form | ✅ Done | admin-berstock.html — form web untuk bos provision tenant |
+
+**Pricing Update (Day 2):**
+- Starter: ~~Rp 99rb~~ → **Rp 149.999/bulan**
+- Pro+AI: Rp 500rb/bulan (Early Bird, 50 klien pertama)
+- Enterprise: Rp 1.5jt+/bulan
+- BerUang Monthly: Rp 35rb/bulan
+- BerUang Lifetime: Rp 125rb (sekali bayar)
+
+**Lynk.id Setup:**
+- URL: https://lynk.id/hendrypangg
+- 3 produk listed: E-Book Cerdas 2026 (Rp 49.999) / BerBisnis PRO+AI Bot (Rp 500rb/bln) / BerUang Lifetime (Rp 125rb)
+- Block titles direkomendasikan update dengan emoji + clickbait
+- Affiliate program: pakai Lynk built-in (MARKETING TOOLS → Affiliates)
+- Komisi rekomendasi: E-Book 30%, BerUang 25%, BerBisnis 15% recurring
+
+**BerUang App — Fitur Baru:**
+| Item | Status | Notes |
+|---|---|---|
+| Tab Hutang & Piutang | ✅ Done | Personal — bukan business. State.hutangs[] |
+| 3 summary cards | ✅ Done | Total Piutang (hijau), Hutang (merah), Net Position (gold) |
+| Filter jenis + status | ✅ Done | Aktif (default) / overdue / lunas |
+| CRUD lengkap | ✅ Done | Add/edit/delete/markLunas/markUnpaid |
+| Sync ke Firestore + export | ✅ Done | Field hutangs include di payload |
+
+### ⏳ PENDING (Day 3+)
+| Item | Status | Notes |
+|---|---|---|
 | Google Login BerBisnis | ⚠️ Bug | Email/password works, Google fail (popup-redirect issue) |
-| Token rotation (Anthropic + Telegram) | ⏳ Pending | Sempat lewat chat hari ini, WAJIB rotate dalam 1-2 hari |
+| Token rotation (Anthropic + Telegram) | ⏳ Pending | WAJIB rotate (sudah keluar di chat lama) |
+| Cloudflare API token rotation | ⏳ Pending | Sempat lewat chat, WAJIB rotate juga |
+| GitHub Actions auto-deploy bot | ⏳ Setup ready | File `.github/workflows/deploy-bot.yml` ada, butuh `CLOUDFLARE_API_TOKEN` di GitHub Secrets |
+| ADMIN_KEY Cloudflare Worker | ⏳ Belum di-set | Dibutuhkan untuk admin-berstock.html provision |
+| Customization 3 Klien (Feature Flags Tutorial) | 🟡 In Progress | Step 2/6 selesai (infrastructure di auth.js). Belum: admin UI toggle, render conditional, customize bot, testing |
+| Beruang celebrate mascot upload | ⏳ Pending | User mau upload PNG dari mockup Manus → save ke `assets/mascot-berstock.png` |
+
+### 📋 ROADMAP (Phase 2-3)
+| Item | Status | Notes |
+|---|---|---|
 | Agent Pembukuan | 📋 Roadmap | Setelah Berstock validated 3+ paying customers |
 | Agent HRD | 📋 Roadmap | Phase 2 |
 | Agent Sales/CRM | 📋 Roadmap | Phase 3 |
 | WhatsApp Business integration | 📋 Roadmap | Setelah 10+ paying customers |
 | iOS/Android native app | 📋 Roadmap | PWA dulu, native nanti |
+| Affiliate dashboard custom | 📋 Roadmap | Kalau Lynk built-in gak cukup |
+| Meta Pixel di landing pages | 📋 Roadmap | Untuk track ads conversion |
+
+---
+
+## 📦 FILES IMPORTANT (Day 2)
+
+**Landing Pages:**
+- `/berbisnis-pro.html` — landing utama BerBisnis Pro (CTA WA + dual buttons + 6 fitur deep-dive + cross-sell BerUang)
+- `/landing.html` — landing BerUang (cream theme + 4 deep features mockup + cross-sell BerBisnis)
+- `/landing-berstock.html` — landing bot Telegram (existing, harga Starter sudah update)
+- `/index.html` — linktree BerSatu Suite
+
+**Marketing Assets:**
+- `/berstock-carousel-day2.html` — 8 slides 1080×1080
+- `/berstock-pitch-deck.html` — 10 slides A4 landscape (ready PDF)
+- `/reels-berstock-autoplay.html` — 45s auto-play single record
+- `/reels-berstock-b.html` — 5 scene templates manual record
+- `/admin-berstock.html` — provision tenant form (butuh ADMIN_KEY)
+
+**App BerBisnis (tokountung/):**
+- `tokountung/js/piutang.js` — tab Piutang Pelanggan
+- `tokountung/js/customers.js` — tab Pelanggan + customer picker (CRUD + history)
+- `tokountung/js/edit-sale.js` — edit invoice (qty, harga, items, hapus)
+- `tokountung/js/restock.js` — PO Supplier (auto-create produk + foto faktur)
+- `tokountung/js/cloud-sync.js` — 3-layer auto-sync ke Berstock bot
+- `tokountung/js/auth.js` — feature flags infrastructure (FEATURE_DEFINITIONS, hasFeature)
+
+**App BerUang (root):**
+- `js/hutang.js` — Tab Hutang & Piutang personal (NEW Day 2)
+- `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
+
+**Cache Versions Last Update (Day 2):**
+- BerBisnis: styles v=23, app v=19, sales v=7, products v=5, etc.
+- BerUang: styles v=21, app v=22, sync v=22, hutang v=1, storage v=21
 
 ---
 
