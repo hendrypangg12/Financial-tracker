@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Profile Picture Templates — @berstock.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a; color: #fff;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+.guide {
+  max-width: 700px; margin: 0 auto 40px;
+  background: linear-gradient(135deg, #1a2540, #0f1f3d);
+  border: 1px solid #2a3960; border-radius: 16px;
+  padding: 24px; text-align: center;
+}
+.guide h1 { color: #ffd76a; font-size: 22px; margin-bottom: 8px; }
+.guide p { color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+.guide kbd { background: #2a3960; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+.templates {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (max-width: 700px) {
+  .templates { grid-template-columns: 1fr; }
+}
+
+.tpl-wrap {
+  background: #2a2a2a;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+.tpl-wrap h3 {
+  color: #ffd76a;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.tpl-wrap .desc {
+  color: #94a3b8;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+/* ===== TEMPLATE BASE (1080×1080) ===== */
+.tpl {
+  width: 1080px; height: 1080px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  transform: scale(0.42);
+  transform-origin: top center;
+  margin-bottom: -620px;
+}
+
+/* ===== TEMPLATE 1: MINIMALIST (Beruang + Dark + Gold) ===== */
+.t1 {
+  background: radial-gradient(ellipse at center, #1e3a5f 0%, #0a1628 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.t1::before {
+  content: ''; position: absolute;
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(212,175,55,.25), transparent 60%);
+  filter: blur(40px);
+  border-radius: 50%;
+}
+.t1 .bear-img {
+  width: 720px; height: 720px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, #d4af37, #ffd76a);
+  border-radius: 50%;
+  padding: 12px;
+  box-shadow: 0 0 80px rgba(212,175,55,.5);
+}
+.t1 .bear-img img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
+/* ===== TEMPLATE 2: MODERN TECH (AI Circuit Pattern) ===== */
+.t2 {
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px;
+}
+.t2::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(34,211,238,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.t2::after {
+  content: ''; position: absolute;
+  width: 900px; height: 900px;
+  background: radial-gradient(circle, rgba(6,182,212,.18), rgba(212,175,55,.12), transparent 70%);
+  filter: blur(60px);
+  border-radius: 50%;
+}
+.t2 .bear-wrap {
+  width: 800px; height: 800px;
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+}
+.t2 .bear-img {
+  width: 720px; height: 720px;
+  background: linear-gradient(135deg, #06b6d4, #d4af37);
+  border-radius: 50%;
+  padding: 14px;
+  box-shadow: 0 0 100px rgba(6,182,212,.4);
+}
+.t2 .bear-img img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+.t2 .ai-badge {
+  position: absolute;
+  bottom: 60px; right: 60px;
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: #fff;
+  padding: 18px 32px;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  box-shadow: 0 12px 40px rgba(6,182,212,.5);
+  z-index: 3;
+}
+
+/* ===== TEMPLATE 3: PREMIUM (Gold Gradient + Berstock text) ===== */
+.t3 {
+  background: linear-gradient(135deg, #d4af37 0%, #c9a352 50%, #8b6914 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px;
+}
+.t3::before {
+  content: ''; position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.25), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0,0,0,.15), transparent 40%);
+}
+.t3 .bear-wrap {
+  width: 720px; height: 720px;
+  position: relative; z-index: 2;
+}
+.t3 .bear-img {
+  width: 100%; height: 100%;
+  background: #0a1628;
+  border-radius: 50%;
+  padding: 20px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.4),
+              inset 0 0 60px rgba(212,175,55,.2);
+}
+.t3 .bear-img img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+.t3 .brand-text {
+  position: absolute;
+  bottom: 90px;
+  left: 50%; transform: translateX(-50%);
+  color: #0a1628;
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  z-index: 3;
+  text-shadow: 0 4px 20px rgba(255,255,255,.3);
+}
+.t3 .brand-text small {
+  display: block;
+  font-size: 22px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 4px;
+  margin-top: 4px;
+  font-weight: 700;
+  color: rgba(10,22,40,.7);
+}
+
+/* ===== TEMPLATE 4: BOLD (Magenta + Gold gradient) ===== */
+.t4 {
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #c2185b 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px;
+}
+.t4::before {
+  content: ''; position: absolute;
+  top: -10%; right: -10%; width: 70%; height: 70%;
+  background: radial-gradient(circle, rgba(233,30,99,.4), transparent 60%);
+  filter: blur(60px);
+}
+.t4::after {
+  content: ''; position: absolute;
+  bottom: -10%; left: -10%; width: 70%; height: 70%;
+  background: radial-gradient(circle, rgba(212,175,55,.3), transparent 60%);
+  filter: blur(60px);
+}
+.t4 .bear-wrap {
+  width: 800px; height: 800px;
+  position: relative; z-index: 2;
+}
+.t4 .bear-img {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #e91e63, #d4af37);
+  border-radius: 50%;
+  padding: 16px;
+  box-shadow: 0 20px 80px rgba(233,30,99,.5);
+}
+.t4 .bear-img img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0a1628;
+}
+.t4 .ai-text {
+  position: absolute;
+  top: 80px; left: 80px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffd76a;
+  letter-spacing: 6px;
+  z-index: 3;
+  text-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.t4 .badge-bottom {
+  position: absolute;
+  bottom: 80px; right: 80px;
+  background: rgba(255,255,255,.95);
+  color: #0a1628;
+  padding: 16px 28px;
+  border-radius: 999px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  z-index: 3;
+}
+</style>
+</head>
+<body>
+
+<div class="guide">
+  <h1>📸 Profile Picture Templates — @berstock.ai</h1>
+  <p>
+    4 design variations untuk profile picture IG.<br>
+    <b>Cara pakai:</b> Pilih design favorit → screenshot kotak yang ada beruangnya → crop square → upload ke IG.
+  </p>
+  <p style="margin-top:8px">
+    <b>Tip:</b> Pakai <kbd>Cmd+Shift+4</kbd> (Mac) atau Screenshot iPad → crop square 1:1.
+  </p>
+</div>
+
+<div class="templates">
+
+  <!-- TEMPLATE 1: MINIMALIST -->
+  <div class="tpl-wrap">
+    <h3>1. MINIMALIST · Dark + Gold</h3>
+    <div class="desc">Simple, premium, fokus ke beruang. Cocok untuk professional vibe.</div>
+    <div class="tpl t1">
+      <div class="bear-img">
+        <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang" />
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATE 2: MODERN TECH -->
+  <div class="tpl-wrap">
+    <h3>2. MODERN TECH · AI Circuit</h3>
+    <div class="desc">Cyan + gold dengan grid pattern. AI badge di sudut. Tech vibe kuat.</div>
+    <div class="tpl t2">
+      <div class="bear-wrap">
+        <div class="bear-img">
+          <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang" />
+        </div>
+      </div>
+      <div class="ai-badge">.AI</div>
+    </div>
+  </div>
+
+  <!-- TEMPLATE 3: PREMIUM -->
+  <div class="tpl-wrap">
+    <h3>3. PREMIUM · Gold Gradient</h3>
+    <div class="desc">Mewah, eksklusif. Beruang dalam circle gelap dikelilingi emas.</div>
+    <div class="tpl t3">
+      <div class="bear-wrap">
+        <div class="bear-img">
+          <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang" />
+        </div>
+      </div>
+      <div class="brand-text">Berstock<small>.AI</small></div>
+    </div>
+  </div>
+
+  <!-- TEMPLATE 4: BOLD -->
+  <div class="tpl-wrap">
+    <h3>4. BOLD · Magenta + Gold</h3>
+    <div class="desc">Mockup mascot bos style — punchy, modern, viral-ready.</div>
+    <div class="tpl t4">
+      <div class="ai-text">.AI</div>
+      <div class="bear-wrap">
+        <div class="bear-img">
+          <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Beruang" />
+        </div>
+      </div>
+      <div class="badge-bottom">🤖 AI Stock</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="guide" style="margin-top: 40px">
+  <h1>💡 Saran Saya</h1>
+  <p>
+    <b>Top pick: TEMPLATE 2 (MODERN TECH)</b> — paling fit dengan brand @berstock.ai<br><br>
+    Alasan:<br>
+    ✓ Cyan = warna AI/tech standar<br>
+    ✓ Grid pattern bg = digital feel<br>
+    ✓ ".AI" badge clear<br>
+    ✓ Beruang sebagai mascot tetap dominant<br>
+    ✓ Recognizable kecil maupun besar
+  </p>
+</div>
+
+</body>
+</html>
