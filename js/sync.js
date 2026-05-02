@@ -18,6 +18,7 @@ async function loadFromCloud() {
     if (snap.exists) {
       const data = snap.data();
       if (Array.isArray(data.transactions)) state.transactions = data.transactions;
+      if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
       if (data.categories) state.categories = data.categories;
       if (typeof data.target === 'number') state.target = data.target;
       cloudLoadedOnce = true;
@@ -45,10 +46,12 @@ function startCloudListener(onRemoteChange) {
     if (updatedByThisDevice) return; // Jangan update ulang dari perubahan sendiri
     isApplyingRemote = true;
     if (Array.isArray(data.transactions)) state.transactions = data.transactions;
+    if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
     if (data.categories) state.categories = data.categories;
     if (typeof data.target === 'number') state.target = data.target;
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify({
       transactions: state.transactions,
+      hutangs: state.hutangs,
       categories: state.categories,
       target: state.target,
     })); } catch(_){}
@@ -73,6 +76,7 @@ async function pushToCloudImmediate() {
   if (!ref) return;
   const payload = {
     transactions: state.transactions || [],
+    hutangs: state.hutangs || [],
     categories: state.categories || {},
     target: state.target || 0,
     _updatedAt: new Date().toISOString(),

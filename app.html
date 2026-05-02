@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=20" />
+  <link rel="stylesheet" href="styles.css?v=21" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -126,6 +126,7 @@
       <button class="tab active" data-tab="dashboard">Dashboard</button>
       <button class="tab" data-tab="transaksi">Transaksi</button>
       <button class="tab" data-tab="tambah">Tambah</button>
+      <button class="tab" data-tab="hutang">💸 Hutang</button>
       <button class="tab" data-tab="rekap">Rekap</button>
       <button class="tab" data-tab="kategori">Kategori</button>
       <button class="tab tab-admin" data-tab="admin" hidden>👨‍💼 Admin</button>
@@ -481,6 +482,51 @@ TOTAL            86.500"></textarea>
       </div>
     </section>
 
+    <!-- ================= HUTANG & PIUTANG ================= -->
+    <section id="tab-hutang" class="tab-panel">
+      <div class="page-head">
+        <h1>💸 Hutang & Piutang</h1>
+        <button class="btn btn-primary" id="btn-add-hutang">+ Tambah</button>
+      </div>
+
+      <div class="hutang-summary">
+        <div class="hsum-card hsum-piutang">
+          <div class="hsum-label">📥 Total Piutang</div>
+          <div class="hsum-value" id="hsum-piutang">Rp 0</div>
+          <div class="hsum-meta" id="hsum-piutang-count">0 orang berhutang ke saya</div>
+        </div>
+        <div class="hsum-card hsum-hutang">
+          <div class="hsum-label">📤 Total Hutang</div>
+          <div class="hsum-value" id="hsum-hutang">Rp 0</div>
+          <div class="hsum-meta" id="hsum-hutang-count">0 orang saya berhutang</div>
+        </div>
+        <div class="hsum-card hsum-net">
+          <div class="hsum-label">💰 Net Position</div>
+          <div class="hsum-value" id="hsum-net">Rp 0</div>
+          <div class="hsum-meta">Selisih piutang & hutang</div>
+        </div>
+      </div>
+
+      <div class="hutang-filters">
+        <select id="hutang-filter-jenis">
+          <option value="all">Semua Jenis</option>
+          <option value="piutang">Piutang (saya pinjamkan)</option>
+          <option value="hutang">Hutang (saya pinjam)</option>
+        </select>
+        <select id="hutang-filter-status">
+          <option value="aktif">Aktif (belum lunas)</option>
+          <option value="overdue">Lewat jatuh tempo</option>
+          <option value="lunas">Sudah lunas</option>
+          <option value="all">Semua</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <div id="hutang-list" class="hutang-list"></div>
+        <div id="hutang-empty" class="empty" hidden>Belum ada catatan hutang/piutang.</div>
+      </div>
+    </section>
+
     <!-- ================= REKAP ================= -->
     <section id="tab-rekap" class="tab-panel">
       <div class="page-head">
@@ -595,18 +641,44 @@ TOTAL            86.500"></textarea>
     </div>
   </div>
 
+  <!-- Modal Tambah/Edit Hutang -->
+  <div class="modal" id="modal-hutang" hidden style="display:none">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeHutangModal()">&times;</button>
+      <h3 id="modal-hutang-title">💸 Tambah Hutang/Piutang</h3>
+      <form id="form-hutang" class="form">
+        <input type="hidden" name="id" />
+        <label>Jenis
+          <select name="jenis" required>
+            <option value="piutang">📥 Piutang (orang pinjam ke saya)</option>
+            <option value="hutang">📤 Hutang (saya pinjam ke orang)</option>
+          </select>
+        </label>
+        <label>Nama Orang<input name="nama" required placeholder="Andi / Mama / Pak Budi" /></label>
+        <label>Nominal (Rp)<input name="nominal" type="number" min="0" required placeholder="200000" /></label>
+        <label>Jatuh Tempo (opsional)<input name="jatuhTempo" type="date" /></label>
+        <label>Catatan (opsional)<textarea name="catatan" rows="2" placeholder="Pinjam buat bensin, dll"></textarea></label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeHutangModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">💾 Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="toast" class="toast" hidden></div>
 
   <script src="js/data.js?v=20"></script>
   <script src="js/utils.js?v=20"></script>
   <script src="js/firebase-config.js?v=20"></script>
-  <script src="js/storage.js?v=20"></script>
+  <script src="js/storage.js?v=21"></script>
   <script src="js/parser.js?v=20"></script>
-  <script src="js/sync.js?v=20"></script>
+  <script src="js/sync.js?v=21"></script>
   <script src="js/auth.js?v=20"></script>
   <script src="js/dashboard.js?v=20"></script>
   <script src="js/pages.js?v=20"></script>
   <script src="js/admin.js?v=20"></script>
-  <script src="js/app.js?v=20"></script>
+  <script src="js/hutang.js?v=1"></script>
+  <script src="js/app.js?v=21"></script>
 </body>
 </html>
