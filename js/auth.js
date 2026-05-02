@@ -75,6 +75,9 @@ async function resetPassword(email) {
 
 async function logout() {
   if (!fbAuth) return;
+  // Stop auto-sync sebelum signOut
+  if (typeof stopAutoSync === 'function') stopAutoSync();
+  if (typeof stopCloudListener === 'function') stopCloudListener();
   await fbAuth.signOut();
   currentUser = null;
   currentProfile = null;

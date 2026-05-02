@@ -473,6 +473,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAll();
         fillSubCategoriSelects();
       });
+      // 3-layer auto-sync protection
+      if (typeof startAutoSync === 'function') startAutoSync();
       updateUserMenu(user, profile);
     });
   } else {

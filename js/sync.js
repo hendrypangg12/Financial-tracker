@@ -112,3 +112,48 @@ function setSyncStatus(status) {
     setSyncStatus._t = setTimeout(() => { el.className = 'sync-status'; el.textContent = ''; }, 2500);
   }
 }
+
+// ============================================================
+// 3-LAYER AUTO-SYNC PROTECTION (mirip BerBisnis cloud-sync)
+// Layer 1: pushToCloud() debounced 1.5s — sudah ada (called dari saveState)
+// Layer 2: Periodic interval 5 menit — fallback safety net
+// Layer 3: visibilitychange + beforeunload — push sebelum tab close
+// ============================================================
+
+let autoSyncInterval = null;
+function startAutoSyncInterval() {
+  if (autoSyncInterval) clearInterval(autoSyncInterval);
+  autoSyncInterval = setInterval(() => {
+    if (currentUser && !isApplyingRemote) {
+      pushToCloudImmediate().catch(() => {});
+    }
+  }, 5 * 60 * 1000); // 5 menit
+}
+
+function stopAutoSyncInterval() {
+  if (autoSyncInterval) clearInterval(autoSyncInterval);
+  autoSyncInterval = null;
+}
+
+// Push saat tab disembunyikan (lebih reliable dari beforeunload di mobile)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && currentUser && !isApplyingRemote) {
+    // Best-effort: trigger push langsung tanpa debounce
+    pushToCloudImmediate().catch(() => {});
+  }
+});
+
+// Backup: push saat browser close
+window.addEventListener('beforeunload', () => {
+  if (currentUser && !isApplyingRemote) {
+    pushToCloudImmediate().catch(() => {});
+  }
+});
+
+// Auto-start interval kalau user sudah login (dipanggil dari auth.js setelah login)
+function startAutoSync() {
+  startAutoSyncInterval();
+}
+function stopAutoSync() {
+  stopAutoSyncInterval();
+}
