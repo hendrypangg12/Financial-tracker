@@ -5,6 +5,7 @@ function init() {
   fillSubCategoriSelects();
   fillTrxFilters();
   attachEvents();
+  if (typeof setupHutangForm === 'function') setupHutangForm();
   renderAll();
 
   // Default tanggal struk & form = hari ini
@@ -17,6 +18,7 @@ function init() {
 function renderAll() {
   renderDashboard();
   renderTransaksi();
+  if (typeof renderHutang === 'function') renderHutang();
   renderRekap();
   renderKategori();
 }
@@ -56,6 +58,7 @@ function attachEvents() {
       // re-render the tab in case data changed
       if (btn.dataset.tab === 'dashboard') renderDashboard();
       if (btn.dataset.tab === 'transaksi') renderTransaksi();
+      if (btn.dataset.tab === 'hutang' && typeof renderHutang === 'function') renderHutang();
       if (btn.dataset.tab === 'rekap') renderRekap();
       if (btn.dataset.tab === 'kategori') renderKategori();
       if (btn.dataset.tab === 'admin' && typeof renderAdmin === 'function') renderAdmin();

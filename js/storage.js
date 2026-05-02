@@ -1,6 +1,7 @@
 // Storage & state
 const state = {
   transactions: [],
+  hutangs: [], // hutang & piutang personal
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
   selectedMonth: new Date().getMonth(),
@@ -14,6 +15,7 @@ function loadState() {
     if (!raw) return;
     const data = JSON.parse(raw);
     if (data.transactions) state.transactions = data.transactions;
+    if (data.hutangs) state.hutangs = data.hutangs;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
   } catch (e) {
@@ -25,6 +27,7 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       transactions: state.transactions,
+      hutangs: state.hutangs,
       categories: state.categories,
       target: state.target,
     }));
@@ -84,6 +87,7 @@ function exportData() {
   const data = {
     exportedAt: new Date().toISOString(),
     transactions: state.transactions,
+    hutangs: state.hutangs,
     categories: state.categories,
     target: state.target,
   };
@@ -103,6 +107,7 @@ function importData(file) {
       try {
         const data = JSON.parse(reader.result);
         if (Array.isArray(data.transactions)) state.transactions = data.transactions;
+        if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
         if (data.categories) state.categories = data.categories;
         if (data.target != null) state.target = data.target;
         saveState();
@@ -116,7 +121,61 @@ function importData(file) {
 
 function resetAll() {
   state.transactions = [];
+  state.hutangs = [];
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   state.target = 0;
   saveState();
+}
+
+// ============================================================
+// HUTANG & PIUTANG CRUD
+// jenis: 'piutang' = orang pinjam ke saya (mereka utang ke saya)
+//        'hutang'  = saya pinjam ke orang (saya utang ke mereka)
+// ============================================================
+
+function addHutang(h) {
+  h.id = h.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  h.tanggalCatat = h.tanggalCatat || todayISO();
+  h.lunas = h.lunas || false;
+  state.hutangs.push(h);
+  saveState();
+}
+
+function updateHutang(id, patch) {
+  const i = state.hutangs.findIndex(x => x.id === id);
+  if (i >= 0) {
+    state.hutangs[i] = { ...state.hutangs[i], ...patch };
+    saveState();
+  }
+}
+
+function deleteHutang(id) {
+  state.hutangs = state.hutangs.filter(x => x.id !== id);
+  saveState();
+}
+
+function markHutangLunas(id) {
+  updateHutang(id, { lunas: true, tanggalLunas: todayISO() });
+}
+
+function markHutangBelumLunas(id) {
+  const h = state.hutangs.find(x => x.id === id);
+  if (h) {
+    h.lunas = false;
+    delete h.tanggalLunas;
+    saveState();
+  }
+}
+
+function isHutangOverdue(h) {
+  if (h.lunas) return false;
+  if (!h.jatuhTempo) return false;
+  const due = new Date(h.jatuhTempo + 'T23:59:59');
+  return Date.now() > due.getTime();
+}
+
+function hutangDaysToDue(h) {
+  if (!h.jatuhTempo) return null;
+  const due = new Date(h.jatuhTempo + 'T23:59:59');
+  return Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
