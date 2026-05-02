@@ -38,6 +38,10 @@ function saveState() {
     if (typeof schedulePushToFirestore === 'function') {
       schedulePushToFirestore();
     }
+    // Trigger Cloud Sync ke Berstock bot (debounced 30s, kalau auto-sync aktif)
+    if (typeof triggerAutoSyncDebounced === 'function') {
+      triggerAutoSyncDebounced();
+    }
   } catch (e) { console.warn('Save failed:', e); }
 }
 
@@ -86,6 +90,26 @@ function deleteSale(id) {
     if (p) p.stok += it.qty;
   }
   state.sales = state.sales.filter(s => s.id !== id);
+  saveState();
+}
+
+function markSaleLunas(id) {
+  const sale = state.sales.find(s => s.id === id);
+  if (!sale) return;
+  sale.lunas = true;
+  sale.tanggalLunas = todayISO();
+  sale.bayar = sale.total;
+  sale.kembalian = 0;
+  saveState();
+}
+
+function markSaleBelumLunas(id) {
+  const sale = state.sales.find(s => s.id === id);
+  if (!sale) return;
+  sale.lunas = false;
+  delete sale.tanggalLunas;
+  sale.bayar = 0;
+  sale.kembalian = 0;
   saveState();
 }
 

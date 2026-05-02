@@ -104,7 +104,7 @@ async function renderAdminPanel() {
     btn.onclick = async () => {
       const uid = btn.dataset.actUid;
       const plan = btn.dataset.plan;
-      const planLabel = plan === 'pro' ? 'Pro Early Bird Rp 500rb' : 'Starter Rp 99rb';
+      const planLabel = plan === 'pro' ? 'Pro Early Bird Rp 500rb' : 'Starter Rp 149.999';
       if (!confirm(`Aktivasi ${planLabel} untuk 30 hari?`)) return;
       btn.disabled = true; btn.textContent = '...';
       try {

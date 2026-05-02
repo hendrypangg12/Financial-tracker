@@ -12,6 +12,18 @@ function init() {
   safeRun('setupCheckoutForm', () => setupCheckoutForm());
   safeRun('setupRestockForm', () => setupRestockForm());
   safeRun('setupSettingsForms', () => setupSettingsForms());
+  if (typeof setupPiutangFilter === 'function') {
+    safeRun('setupPiutangFilter', () => setupPiutangFilter());
+  }
+  if (typeof setupPelangganFilter === 'function') {
+    safeRun('setupPelangganFilter', () => setupPelangganFilter());
+  }
+  if (typeof setupCustomerPickerButtons === 'function') {
+    safeRun('setupCustomerPickerButtons', () => setupCustomerPickerButtons());
+  }
+  if (typeof setupEditSaleForm === 'function') {
+    safeRun('setupEditSaleForm', () => setupEditSaleForm());
+  }
   if (typeof setupCloudSyncForm === 'function') {
     safeRun('setupCloudSyncForm', () => setupCloudSyncForm());
   }
@@ -53,7 +65,14 @@ function bindGlobalButtons() {
   };
   if ($('btn-checkout')) $('btn-checkout').onclick = openCheckoutModal;
 
-  if ($('laporan-periode')) $('laporan-periode').addEventListener('change', renderLaporan);
+  if ($('laporan-periode')) $('laporan-periode').addEventListener('change', () => {
+    updateLaporanFilterUI();
+    renderLaporan();
+  });
+  ['laporan-date','laporan-month','laporan-year','laporan-range-from','laporan-range-to'].forEach(id => {
+    if ($(id)) $(id).addEventListener('change', renderLaporan);
+  });
+  if ($('lap-item-search')) $('lap-item-search').addEventListener('input', renderLaporan);
 
   if ($('btn-export')) $('btn-export').onclick = exportData;
   if ($('btn-import')) $('btn-import').onclick = () => $('file-import').click();
@@ -76,8 +95,10 @@ function setupTabs() {
       const t = btn.dataset.tab;
       if (t === 'dashboard') renderDashboard();
       if (t === 'stok') renderStok();
-      if (t === 'jual') { renderPOSProducts(); renderCart(); }
+      if (t === 'jual') { renderCategoryTabs(); renderPOSProducts(); renderCart(); }
       if (t === 'restock') renderRestock();
+      if (t === 'piutang') renderPiutang();
+      if (t === 'pelanggan') renderPelanggan();
       if (t === 'laporan') renderLaporan();
       if (t === 'pengaturan') renderPengaturan();
     };
@@ -99,20 +120,6 @@ function setupSettingsForms() {
     };
     saveState();
     showToast('Info toko disimpan', 'success');
-  };
-  // Form BEP
-  const formBep = document.getElementById('form-bep');
-  formBep.onsubmit = (e) => {
-    e.preventDefault();
-    const fd = new FormData(formBep);
-    state.settings = {
-      ...state.settings,
-      biayaTetap: +fd.get('biayaTetap') || 0,
-      targetUntung: +fd.get('targetUntung') || 0,
-    };
-    saveState();
-    renderDashboard();
-    showToast('Target & BEP disimpan', 'success');
   };
   // Form Kategori
   document.getElementById('form-add-kat').onsubmit = (e) => {
@@ -137,13 +144,6 @@ function renderPengaturan() {
     setVal('telepon', state.settings.telepon || '');
     setVal('footerStruk', state.settings.footerStruk || '');
   }
-  // Pre-fill form BEP
-  const fb = document.getElementById('form-bep');
-  if (fb) {
-    const setVal = (name, val) => { const el = fb.querySelector(`[name="${name}"]`); if (el) el.value = val; };
-    setVal('biayaTetap', state.settings.biayaTetap || 0);
-    setVal('targetUntung', state.settings.targetUntung || 0);
-  }
   // Render kategori list
   const kl = document.getElementById('kategori-list');
   if (kl) {
@@ -162,9 +162,12 @@ function renderPengaturan() {
 function renderAll() {
   renderDashboard();
   renderStok();
+  renderCategoryTabs();
   renderPOSProducts();
   renderCart();
   renderRestock();
+  renderPiutang();
+  renderPelanggan();
   renderLaporan();
   renderPengaturan();
 }

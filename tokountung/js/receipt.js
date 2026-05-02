@@ -1,5 +1,12 @@
 // Module: Receipt (struk thermal) + Invoice A4 (formal 3-ply)
 
+// Lookup satuan dari product master (fallback untuk sale lama)
+function lookupSatuan(productId) {
+  if (!productId) return null;
+  const p = (state.products || []).find(x => x.id === productId);
+  return p ? (p.satuan || null) : null;
+}
+
 // =============================================================================
 // STRUK THERMAL — 32 char width
 // =============================================================================
@@ -19,7 +26,8 @@ function showReceipt(sale) {
     const namaShort = (it.nama || '').slice(0, 28);
     lines.push(namaShort);
     const subtot = it.hargaJual * it.qty;
-    const line = `  ${it.qty} x ${formatNumber(it.hargaJual).padStart(8)}  ${formatNumber(subtot).padStart(10)}`;
+    const satuan = it.satuan || lookupSatuan(it.productId) || 'pcs';
+    const line = `  ${it.qty} ${satuan} x ${formatNumber(it.hargaJual).padStart(7)}  ${formatNumber(subtot).padStart(9)}`;
     lines.push(line);
   }
   lines.push('--------------------------------');
@@ -80,24 +88,33 @@ function showInvoiceA4(sale) {
 
   // Status pembayaran
   const isTempo = sale.metode === 'tempo';
-  const paymentLabel = isTempo
-    ? `<b style="color:#c44848">TEMPO ⏱️</b>`
-    : `<b style="color:#16a34a">LUNAS ✓</b>`;
+  const isLunas = !isTempo || sale.lunas === true;
+  let paymentLabel;
+  if (!isTempo) {
+    paymentLabel = `<b style="color:#16a34a">LUNAS ✓</b>`;
+  } else if (sale.lunas) {
+    paymentLabel = `<b style="color:#16a34a">LUNAS ✓ (Tempo)</b>`;
+  } else {
+    paymentLabel = `<b style="color:#c44848">TEMPO ⏱️</b>`;
+  }
   const jatuhTempoLabel = isTempo && sale.jatuhTempo
-    ? formatTanggal(sale.jatuhTempo)
+    ? formatTanggal(sale.jatuhTempo) + (sale.lunas && sale.tanggalLunas ? ` · dibayar ${formatTanggal(sale.tanggalLunas)}` : '')
     : (isTempo ? '— belum diatur —' : 'Lunas saat transaksi');
 
   function buildPly(plyLabel, plyColor) {
-    const itemRows = items.map((it, i) => `
+    const itemRows = items.map((it, i) => {
+      const satuan = it.satuan || lookupSatuan(it.productId) || 'pcs';
+      return `
       <tr>
         <td class="c">${i + 1}</td>
         <td>${escapeHtml(skuMap[it.productId] || '-')}</td>
         <td>${escapeHtml(it.nama || '')}</td>
-        <td class="c">${it.qty} ${escapeHtml(it.satuan || 'pcs')}</td>
+        <td class="c">${it.qty} ${escapeHtml(satuan)}</td>
         <td class="r">${formatNumber(it.hargaJual)}</td>
         <td class="r"><b>${formatNumber(it.hargaJual * it.qty)}</b></td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
 
     const emptyRows = Array.from({ length: emptyRowsCount }).map((_, i) => `
       <tr><td class="c">${items.length + i + 1}</td><td></td><td></td><td></td><td></td><td></td></tr>

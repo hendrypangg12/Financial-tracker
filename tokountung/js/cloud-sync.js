@@ -136,14 +136,21 @@ function setupCloudSyncForm() {
   form.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(form);
+    const existing = loadCloudConfig();
+    // Default auto-sync ON kalau pertama kali setup
+    const autoSync = existing.autoSync === undefined ? true : existing.autoSync;
     saveCloudConfig({
-      ...loadCloudConfig(),
+      ...existing,
       workerUrl: (fd.get("workerUrl") || "").trim(),
       tenantId: (fd.get("tenantId") || "").trim(),
       apiKey: (fd.get("apiKey") || "").trim(),
+      autoSync,
     });
-    showToast("Cloud config disimpan", "success");
+    if (autoSync) startAutoSync();
+    showToast("Cloud config disimpan · Auto-sync aktif ✅", "success");
     updateCloudStatus();
+    const tg = document.getElementById("auto-sync-toggle");
+    if (tg) tg.checked = autoSync;
   };
 
   // Sync now button
@@ -223,7 +230,7 @@ function formatTimeAgo(date) {
   return date.toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" });
 }
 
-// Auto-sync interval (5 minutes)
+// Auto-sync interval (5 minutes — fallback)
 let autoSyncInterval = null;
 function startAutoSync() {
   if (autoSyncInterval) clearInterval(autoSyncInterval);
@@ -242,6 +249,45 @@ function stopAutoSync() {
   if (autoSyncInterval) clearInterval(autoSyncInterval);
   autoSyncInterval = null;
 }
+
+// Auto-sync setelah saveState() — debounced 30 detik supaya tidak spam
+// Dipanggil dari storage.js / firestore-sync.js setiap kali data berubah
+let autoSyncDebounceTimer = null;
+function triggerAutoSyncDebounced(delayMs = 30000) {
+  const cfg = loadCloudConfig();
+  if (!cfg.autoSync || !cfg.tenantId || !cfg.apiKey) return;
+  if (autoSyncDebounceTimer) clearTimeout(autoSyncDebounceTimer);
+  autoSyncDebounceTimer = setTimeout(async () => {
+    try {
+      await syncToCloud();
+      updateCloudStatus();
+      console.log("[CloudSync] Auto-synced after data change");
+    } catch (err) {
+      console.warn("[CloudSync] Debounced auto-sync failed:", err.message);
+    }
+  }, delayMs);
+}
+
+// Sync sebelum tab/browser ditutup (best-effort)
+window.addEventListener("beforeunload", () => {
+  const cfg = loadCloudConfig();
+  if (!cfg.autoSync || !cfg.tenantId || !cfg.apiKey) return;
+  // Pakai sendBeacon untuk reliability saat unload
+  try {
+    const payload = {
+      tenant_id: cfg.tenantId,
+      api_key: cfg.apiKey,
+      data: {
+        products: state.products || [],
+        sales: state.sales || [],
+        settings: state.settings || {},
+        kategori: state.kategori || [],
+      },
+    };
+    const url = cfg.workerUrl.replace(/\/$/, "") + "/api/sync";
+    navigator.sendBeacon(url, new Blob([JSON.stringify(payload)], { type: "application/json" }));
+  } catch (e) { /* ignore */ }
+});
 
 // Init auto-sync on load if enabled
 document.addEventListener("DOMContentLoaded", () => {

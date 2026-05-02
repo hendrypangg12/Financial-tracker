@@ -32,7 +32,7 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 ### 2. **BerBisnis** — Kasir & Stok UMKM (`/tokountung/`)
 - **Tagline:** "Beruang Bisnis · Atur stok, untung pasti masuk"
 - **Target:** UMKM 50-200 SKU (toko sembako, kelontong, FnB)
-- **Pricing:** Rp 99rb/bulan (Starter) → Rp 500rb/bln (Pro Early Bird, 50 klien pertama) → Rp 1,5jt/bulan (Pro) → Rp 7,5jt+/bulan (Enterprise)
+- **Pricing:** Rp 149.999/bulan (Starter) → Rp 500rb/bln (Pro Early Bird, 50 klien pertama) → Rp 1,5jt/bulan (Pro) → Rp 7,5jt+/bulan (Enterprise)
 - **Fitur:** POS, manajemen stok dengan foto, restock dengan HPP weighted average, laporan, BEP tracker, struk thermal
 - **AUTH:** ✅ Login Firebase (email/password + Google), Trial 3 hari, Paywall, Admin Panel, per-user Firestore sync
 - **File utama:** `tokountung/app.html`, `tokountung/styles.css`, `tokountung/js/*.js`
@@ -209,7 +209,7 @@ state = {
 - BerBisnis path: `users/{uid}/meta/berbisnis-profile` (subscription) + `users/{uid}/meta/berbisnis-data` (state)
 - BerUang path: `users/{uid}/meta/profile` + `users/{uid}/transactions/{docId}`
 - TRIAL_DAYS BerUang=0, BerBisnis=3
-- BerBisnis pricing: Starter 99rb, Pro Early Bird 500rb, Pro 1.5jt
+- BerBisnis pricing: Starter Rp 149.999, Pro Early Bird 500rb, Pro 1.5jt
 - iOS Safari/Chrome: SKIP `fbDb.enablePersistence()` — bikin auth flap
 
 ### G. CSS Hidden Override Pattern (BUG KAMBUHAN!)

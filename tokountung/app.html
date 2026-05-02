@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BerBisnis — Beruang Bisnis untuk UMKM Indonesia</title>
-<meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, BEP, generate struk — semua dalam satu app. Mulai dari Rp 99rb/bulan." />
+<meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, generate struk — semua dalam satu app. Mulai dari Rp 149rb/bulan." />
 <meta name="theme-color" content="#1e3a5f" />
 <link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
 <link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=3" />
@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=10" />
+<link rel="stylesheet" href="styles.css?v=23" />
 </head>
 <body>
 
@@ -44,7 +44,7 @@
       <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
       <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
       <button class="btn btn-primary btn-block" type="submit">Buat Akun (Free Trial 3 Hari)</button>
-      <small style="color:var(--ink-soft)">Setelah trial, pilih Starter Rp 99rb/bulan atau Pro Rp 500rb/bulan.</small>
+      <small style="color:var(--ink-soft)">Setelah trial, pilih Starter Rp 149rb/bulan atau Pro Rp 500rb/bulan.</small>
     </form>
 
     <div class="auth-divider"><span>atau</span></div>
@@ -72,7 +72,7 @@
     <div class="paywall-prices">
       <div class="price-card-pw" data-paket="starter">
         <b>Starter</b>
-        <div class="pw-price">Rp 99.000<small>/bulan</small></div>
+        <div class="pw-price">Rp 149.999<small>/bulan</small></div>
         <ul class="pw-features">
           <li>BerBisnis web app</li>
           <li>POS &amp; manajemen stok</li>
@@ -130,7 +130,9 @@
     <button class="tab active" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="stok">Stok</button>
     <button class="tab" data-tab="jual">Kasir</button>
-    <button class="tab" data-tab="restock">Restock</button>
+    <button class="tab" data-tab="restock">📥 PO Supplier</button>
+    <button class="tab" data-tab="piutang">💰 Piutang</button>
+    <button class="tab" data-tab="pelanggan">👥 Pelanggan</button>
     <button class="tab" data-tab="laporan">Laporan</button>
     <button class="tab" data-tab="pengaturan">Pengaturan</button>
     <button class="tab" data-tab="admin" id="tab-btn-admin" hidden>👑 Admin</button>
@@ -186,6 +188,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Breakdown pemasukan hari ini: Cash vs Tempo -->
+    <div class="cash-breakdown">
+      <div class="cb-card cb-cash">
+        <div class="cb-icon">💵</div>
+        <div class="cb-body">
+          <div class="cb-label">Pemasukan Cash Hari Ini</div>
+          <div class="cb-value" id="kpi-cash-today">Rp 0</div>
+          <div class="cb-meta" id="kpi-cash-today-meta">0 transaksi · sudah masuk kas</div>
+        </div>
+      </div>
+      <div class="cb-card cb-tempo">
+        <div class="cb-icon">⏱️</div>
+        <div class="cb-body">
+          <div class="cb-label">Tempo Hari Ini (Belum Dibayar)</div>
+          <div class="cb-value" id="kpi-tempo-today">Rp 0</div>
+          <div class="cb-meta" id="kpi-tempo-today-meta">0 invoice · piutang baru</div>
+        </div>
+      </div>
+    </div>
+
     <div class="grid-2">
       <div class="panel">
         <div class="panel-head"><h3>📈 Trend Penjualan 7 Hari</h3></div>
@@ -196,21 +219,9 @@
         <ol id="top-seller" class="ranked"><li class="empty">Belum ada penjualan hari ini</li></ol>
       </div>
     </div>
-    <div class="grid-2">
-      <div class="panel">
-        <div class="panel-head"><h3>⚠️ Stok Menipis (Perlu Restock)</h3></div>
-        <ul id="low-stock-list" class="alert-list"><li class="empty">Semua stok aman ✅</li></ul>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3>🎯 BEP Bulan Ini</h3></div>
-        <div id="bep-info" class="bep-info">
-          <div class="bep-row"><span>Target BEP</span><b id="bep-target">Rp 0</b></div>
-          <div class="bep-row"><span>Tercapai</span><b id="bep-achieved">Rp 0</b></div>
-          <div class="bep-row"><span>Sisa untuk BEP</span><b id="bep-remaining">Rp 0</b></div>
-          <div class="bep-bar"><div class="bep-fill" id="bep-fill" style="width:0%"></div></div>
-          <small id="bep-status">Atur biaya tetap di Pengaturan</small>
-        </div>
-      </div>
+    <div class="panel">
+      <div class="panel-head"><h3>⚠️ Stok Menipis (Perlu Restock)</h3></div>
+      <ul id="low-stock-list" class="alert-list"><li class="empty">Semua stok aman ✅</li></ul>
     </div>
   </section>
 
@@ -256,6 +267,7 @@
         <div class="panel-head">
           <input type="search" id="pos-search" placeholder="🔍 Cari barang (nama / SKU / scan barcode)..." autofocus />
         </div>
+        <div id="pos-category-tabs" class="pos-category-tabs"></div>
         <div id="pos-product-grid" class="product-grid">
           <div class="empty">Mulai ketik untuk cari barang</div>
         </div>
@@ -281,36 +293,179 @@
     </div>
   </section>
 
-  <!-- ============ RESTOCK ============ -->
+  <!-- ============ PO SUPPLIER ============ -->
   <section id="tab-restock" class="tab-panel">
     <div class="page-head">
-      <h1>Restock Barang Masuk</h1>
-      <button class="btn btn-primary" id="btn-add-restock">+ Catat Restock</button>
+      <h1>📥 PO Supplier</h1>
+      <button class="btn btn-primary" id="btn-add-restock">+ Buat PO Baru</button>
     </div>
+
+    <div class="po-summary">
+      <div class="psum-card psum-info">
+        <div class="psum-label">Total PO Aktif</div>
+        <div class="psum-value" id="po-total-count">0</div>
+        <div class="psum-meta" id="po-total-value">Rp 0</div>
+      </div>
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Hutang ke Supplier</div>
+        <div class="psum-value" id="po-hutang-value">Rp 0</div>
+        <div class="psum-meta" id="po-hutang-count">0 PO belum lunas</div>
+      </div>
+      <div class="psum-card psum-overdue">
+        <div class="psum-label">Lewat Jatuh Tempo</div>
+        <div class="psum-value" id="po-overdue-value">Rp 0</div>
+        <div class="psum-meta" id="po-overdue-count">0 PO overdue</div>
+      </div>
+    </div>
+
     <div class="panel">
       <table class="data-table">
         <thead>
-          <tr><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Catatan</th><th></th></tr>
+          <tr><th>No PO</th><th>Tanggal</th><th>Supplier</th><th>Items</th><th class="num">Total</th><th>Status</th><th>Jatuh Tempo</th><th>Faktur</th><th></th></tr>
         </thead>
         <tbody id="restock-body"></tbody>
       </table>
-      <div id="restock-empty" class="empty" hidden>Belum ada catatan restock.</div>
+      <div id="restock-empty" class="empty" hidden>Belum ada PO. Klik "+ Buat PO Baru".</div>
     </div>
   </section>
+
+  <!-- ============ PIUTANG / TEMPO ============ -->
+  <section id="tab-piutang" class="tab-panel">
+    <div class="page-head">
+      <h1>💰 Piutang Pelanggan</h1>
+      <div class="page-filters">
+        <select id="piutang-filter">
+          <option value="belum">Belum Lunas</option>
+          <option value="overdue">Lewat Jatuh Tempo</option>
+          <option value="lunas">Sudah Lunas</option>
+          <option value="all">Semua Tempo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="piutang-summary">
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Total Belum Lunas</div>
+        <div class="psum-value" id="psum-belum">Rp 0</div>
+        <div class="psum-meta" id="psum-belum-count">0 invoice</div>
+      </div>
+      <div class="psum-card psum-overdue">
+        <div class="psum-label">Lewat Jatuh Tempo</div>
+        <div class="psum-value" id="psum-overdue">Rp 0</div>
+        <div class="psum-meta" id="psum-overdue-count">0 invoice</div>
+      </div>
+      <div class="psum-card psum-lunas">
+        <div class="psum-label">Sudah Lunas</div>
+        <div class="psum-value" id="psum-lunas">Rp 0</div>
+        <div class="psum-meta" id="psum-lunas-count">0 invoice</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Pelanggan</th>
+            <th>Tgl Jual</th>
+            <th>Jatuh Tempo</th>
+            <th class="num">Total</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="piutang-body"></tbody>
+      </table>
+      <div id="piutang-empty" class="empty" hidden>Belum ada transaksi tempo.</div>
+    </div>
+  </section>
+
+  <!-- ============ PELANGGAN / CUSTOMER LIST ============ -->
+  <section id="tab-pelanggan" class="tab-panel">
+    <div class="page-head">
+      <h1>👥 Daftar Pelanggan</h1>
+      <div class="page-filters">
+        <input type="search" id="pelanggan-search" placeholder="🔍 Cari nama / telepon..." />
+        <select id="pelanggan-sort">
+          <option value="spent">Total Belanja</option>
+          <option value="recent">Terakhir Beli</option>
+          <option value="trx">Jumlah Transaksi</option>
+          <option value="nama">Nama A-Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pelanggan-summary">
+      <div class="psum-card psum-info">
+        <div class="psum-label">Total Pelanggan</div>
+        <div class="psum-value" id="cust-total-count">0</div>
+        <div class="psum-meta">unique customer</div>
+      </div>
+      <div class="psum-card psum-lunas">
+        <div class="psum-label">Total Omzet</div>
+        <div class="psum-value" id="cust-total-omzet">Rp 0</div>
+        <div class="psum-meta" id="cust-total-trx">0 transaksi</div>
+      </div>
+      <div class="psum-card psum-belum">
+        <div class="psum-label">Total Outstanding</div>
+        <div class="psum-value" id="cust-total-piutang">Rp 0</div>
+        <div class="psum-meta">piutang aktif</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pelanggan</th>
+            <th>Kontak</th>
+            <th class="num">Transaksi</th>
+            <th class="num">Total Belanja</th>
+            <th class="num">Outstanding</th>
+            <th>Terakhir Beli</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="pelanggan-body"></tbody>
+      </table>
+      <div id="pelanggan-empty" class="empty" hidden>Belum ada pelanggan.</div>
+    </div>
+  </section>
+
+  <!-- Modal: Detail Pelanggan -->
+  <div class="modal" id="modal-customer-detail" hidden>
+    <div class="modal-card modal-large">
+      <button type="button" class="modal-close" onclick="closeModal('modal-customer-detail')">&times;</button>
+      <div id="customer-detail-content"></div>
+    </div>
+  </div>
 
   <!-- ============ LAPORAN ============ -->
   <section id="tab-laporan" class="tab-panel">
     <div class="page-head">
       <h1>Laporan</h1>
-      <div class="page-filters">
+      <div class="page-filters laporan-filters">
         <select id="laporan-periode">
           <option value="hari">Hari Ini</option>
           <option value="minggu">Minggu Ini</option>
           <option value="bulan" selected>Bulan Ini</option>
           <option value="tahun">Tahun Ini</option>
+          <option value="custom-date">📅 Pilih Tanggal</option>
+          <option value="custom-month">📆 Pilih Bulan</option>
+          <option value="custom-year">🗓️ Pilih Tahun</option>
+          <option value="custom-range">↔️ Range Custom</option>
         </select>
+        <input type="date" id="laporan-date" hidden />
+        <input type="month" id="laporan-month" hidden />
+        <select id="laporan-year" hidden></select>
+        <div id="laporan-range" class="laporan-range-wrap" hidden>
+          <input type="date" id="laporan-range-from" />
+          <span>s/d</span>
+          <input type="date" id="laporan-range-to" />
+        </div>
       </div>
     </div>
+    <div id="laporan-period-label" class="laporan-period-label"></div>
     <div class="cards">
       <div class="card"><div class="card-body">
         <div class="card-label">REVENUE</div>
@@ -329,15 +484,30 @@
         <div class="card-value" id="lap-margin" style="color:#3b82f6">0%</div>
       </div></div>
     </div>
-    <div class="grid-2">
-      <div class="panel">
-        <div class="panel-head"><h3>🏆 Top 10 Best Seller</h3></div>
-        <ol id="lap-best-seller" class="ranked"><li class="empty">Belum ada data</li></ol>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📊 Laporan Penjualan per Item</h3>
+        <input type="search" id="lap-item-search" placeholder="🔍 Cari produk..." style="padding:6px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;max-width:200px" />
       </div>
-      <div class="panel">
-        <div class="panel-head"><h3>🐢 Slow Moving (>30 hari tidak laku)</h3></div>
-        <ul id="lap-slow-moving" class="ranked"><li class="empty">Belum ada data</li></ul>
-      </div>
+      <table class="data-table lap-item-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama Produk</th>
+            <th class="num">Qty</th>
+            <th class="num">Revenue</th>
+            <th class="num">HPP</th>
+            <th class="num">Profit</th>
+            <th class="num">% Share</th>
+          </tr>
+        </thead>
+        <tbody id="lap-item-body"><tr><td colspan="7" class="empty">Belum ada data</td></tr></tbody>
+        <tfoot id="lap-item-foot"></tfoot>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>🐢 Slow Moving (>30 hari tidak laku)</h3></div>
+      <ul id="lap-slow-moving" class="ranked"><li class="empty">Belum ada data</li></ul>
     </div>
     <div class="panel">
       <div class="panel-head"><h3>📅 Riwayat Transaksi Penjualan</h3></div>
@@ -353,30 +523,15 @@
     <div class="page-head">
       <h1>Pengaturan</h1>
     </div>
-    <div class="grid-2">
-      <div class="panel">
-        <div class="panel-head"><h3>🏪 Info Toko</h3></div>
-        <form id="form-toko" class="form">
-          <label>Nama Toko<input name="namaToko" required /></label>
-          <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
-          <label>No. Telepon / WA<input name="telepon" type="tel" /></label>
-          <label>Footer Struk<input name="footerStruk" placeholder="Terima kasih atas kunjungan!" /></label>
-          <button class="btn btn-primary" type="submit">💾 Simpan</button>
-        </form>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3>🎯 Target & BEP</h3></div>
-        <form id="form-bep" class="form">
-          <label>Biaya Tetap Bulanan (Rp)
-            <input name="biayaTetap" type="number" min="0" step="100000" placeholder="Sewa + listrik + gaji + dll" />
-          </label>
-          <label>Target Untung Bulanan (Rp)
-            <input name="targetUntung" type="number" min="0" step="100000" />
-          </label>
-          <small style="color:var(--ink-soft)">BEP otomatis dihitung dari biaya tetap & margin rata-rata.</small>
-          <button class="btn btn-primary" type="submit">💾 Simpan</button>
-        </form>
-      </div>
+    <div class="panel">
+      <div class="panel-head"><h3>🏪 Info Toko</h3></div>
+      <form id="form-toko" class="form">
+        <label>Nama Toko<input name="namaToko" required /></label>
+        <label>Alamat<textarea name="alamat" rows="2"></textarea></label>
+        <label>No. Telepon / WA<input name="telepon" type="tel" /></label>
+        <label>Footer Struk<input name="footerStruk" placeholder="Terima kasih atas kunjungan!" /></label>
+        <button class="btn btn-primary" type="submit">💾 Simpan</button>
+      </form>
     </div>
     <div class="panel">
       <div class="panel-head"><h3>🗃️ Kategori Barang</h3></div>
@@ -456,7 +611,7 @@
         <label>Email User<input name="email" type="email" required placeholder="user@example.com" /></label>
         <div class="grid-2-form">
           <label>Plan<select name="plan">
-            <option value="starter">Starter (Rp 99rb/bln)</option>
+            <option value="starter">Starter (Rp 149rb/bln)</option>
             <option value="pro">Pro Early Bird (Rp 500rb/bln)</option>
           </select></label>
           <label>Durasi (hari)<input name="days" type="number" value="30" min="1" /></label>
@@ -483,25 +638,22 @@
     <form id="form-product" class="form">
       <input type="hidden" name="id" />
       <input type="hidden" name="fotoUrl" />
-      <div class="foto-uploader">
-        <div class="foto-preview-wrap">
+      <div class="foto-uploader-v2">
+        <label for="foto-input" class="foto-drop-zone" id="foto-drop-zone">
           <img id="foto-preview" class="foto-preview" alt="" hidden />
-          <div id="foto-placeholder" class="foto-placeholder">📦</div>
-        </div>
-        <div class="foto-actions">
-          <div class="foto-buttons">
-            <label class="btn btn-ghost btn-small foto-btn">
-              📸 Jepret Kamera
-              <input type="file" id="foto-camera" accept="image/*" capture="environment" hidden />
-            </label>
-            <label class="btn btn-ghost btn-small foto-btn">
-              🖼️ Galeri
-              <input type="file" id="foto-input" accept="image/*" hidden />
-            </label>
-            <button type="button" class="btn btn-small btn-danger" id="btn-foto-remove" hidden>Hapus</button>
+          <div id="foto-placeholder" class="foto-placeholder">
+            <div class="fp-icon">📷</div>
+            <div class="fp-text">Tap untuk Upload Foto</div>
+            <div class="fp-hint">dari galeri iPad</div>
           </div>
-          <small style="color:var(--ink-soft); font-size:11px">Foto otomatis dikecilkan ke 300px (~30KB)</small>
+          <div id="foto-loading" class="foto-loading" hidden>⏳ Memproses...</div>
+        </label>
+        <div class="foto-bottom-bar">
+          <label for="foto-camera" class="btn btn-ghost btn-small foto-cam-btn">📸 Pakai Kamera</label>
+          <button type="button" class="btn btn-small btn-danger" id="btn-foto-remove" hidden>🗑️ Hapus Foto</button>
         </div>
+        <input type="file" id="foto-input" accept="image/*" hidden />
+        <input type="file" id="foto-camera" accept="image/*" capture="environment" hidden />
       </div>
       <div class="grid-2-form">
         <label>SKU / Kode<input name="sku" required placeholder="mis. IDM-001" /></label>
@@ -535,6 +687,7 @@
     <form id="form-checkout" class="form">
       <label>Bayar (Rp)<input name="bayar" type="number" required autofocus /></label>
       <div id="kembalian-preview" class="kembalian-preview"></div>
+      <div id="tagihan-info" class="tagihan-info" hidden>⏱️ Belum dibayar — invoice akan keluar dengan status TEMPO. Tidak perlu input nominal bayar.</div>
       <label>Metode Bayar
         <select name="metode" id="checkout-metode">
           <option value="tunai">💵 Tunai</option>
@@ -545,10 +698,17 @@
         </select>
       </label>
       <label id="label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
-      <label>Nama Pelanggan / Perusahaan (opsional)<input name="pelanggan" placeholder="PT Contoh / Pak Budi" /></label>
+      <label>
+        Nama Pelanggan / Perusahaan (opsional)
+        <div class="customer-input-row">
+          <input name="pelanggan" id="checkout-pelanggan" list="checkout-pelanggan-list" placeholder="PT Contoh / Pak Budi (ketik atau pilih)" autocomplete="off" />
+          <button type="button" class="btn btn-small btn-ghost" id="btn-pick-customer" title="Pilih dari daftar pelanggan">📋</button>
+        </div>
+        <datalist id="checkout-pelanggan-list"></datalist>
+      </label>
       <div class="grid-2-form">
-        <label>Alamat Pelanggan<input name="pelangganAlamat" placeholder="Jakarta / Surabaya" /></label>
-        <label>Telepon / Kontak<input name="pelangganTelepon" placeholder="0812-xxx (opsional)" /></label>
+        <label>Alamat Pelanggan<input name="pelangganAlamat" id="checkout-alamat" placeholder="Jakarta / Surabaya" /></label>
+        <label>Telepon / Kontak<input name="pelangganTelepon" id="checkout-telepon" placeholder="0812-xxx (opsional)" /></label>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal('modal-checkout')">Batal</button>
@@ -558,27 +718,151 @@
   </div>
 </div>
 
-<!-- Modal: Restock -->
+<!-- Modal: Customer Picker -->
+<div class="modal" id="modal-customer-picker" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-customer-picker')">&times;</button>
+    <h3>📋 Pilih Pelanggan</h3>
+    <input type="search" id="customer-picker-search" placeholder="🔍 Cari nama / telepon..." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:12px" />
+    <div id="customer-picker-list" class="customer-picker-list"></div>
+  </div>
+</div>
+
+<!-- Modal: Edit Invoice -->
+<div class="modal" id="modal-edit-sale" hidden>
+  <div class="modal-card modal-large">
+    <button type="button" class="modal-close" onclick="closeModal('modal-edit-sale')">&times;</button>
+    <h3>✏️ Edit Invoice</h3>
+    <form id="form-edit-sale" class="form">
+      <input type="hidden" name="id" />
+      <div class="grid-2-form">
+        <label>No Invoice<input name="nomor" /></label>
+        <label>Tanggal<input name="tanggal" type="date" /></label>
+      </div>
+      <label>
+        Nama Pelanggan
+        <div class="customer-input-row">
+          <input name="pelanggan" id="edit-pelanggan" list="edit-pelanggan-list" autocomplete="off" />
+          <button type="button" class="btn btn-small btn-ghost" id="btn-edit-pick-customer" title="Pilih dari daftar">📋</button>
+        </div>
+        <datalist id="edit-pelanggan-list"></datalist>
+      </label>
+      <div class="grid-2-form">
+        <label>Alamat<input name="pelangganAlamat" id="edit-alamat" /></label>
+        <label>Telepon<input name="pelangganTelepon" id="edit-telepon" /></label>
+      </div>
+      <div class="grid-2-form">
+        <label>Metode Bayar
+          <select name="metode" id="edit-metode">
+            <option value="tunai">💵 Tunai</option>
+            <option value="transfer">🏦 Transfer</option>
+            <option value="qris">📱 QRIS</option>
+            <option value="ewallet">💳 E-wallet</option>
+            <option value="tempo">⏱️ Tempo</option>
+          </select>
+        </label>
+        <label id="edit-label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
+      </div>
+      <h4 style="margin:8px 0 6px">Items</h4>
+      <div id="edit-items-list" class="edit-items-list"></div>
+      <div class="grid-2-form">
+        <label>Diskon (Rp)<input name="diskon" type="number" min="0" /></label>
+        <div class="edit-total-display">
+          <div class="cell-meta">Subtotal: <span id="edit-subtotal">Rp 0</span></div>
+          <div style="font-size:18px"><b>Total: <span id="edit-total">Rp 0</span></b></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="btn-delete-sale">🗑️ Hapus Invoice</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modal-edit-sale')">Batal</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: PO Supplier -->
 <div class="modal" id="modal-restock" hidden>
   <div class="modal-card modal-large">
     <button type="button" class="modal-close" onclick="closeModal('modal-restock')">&times;</button>
-    <h3>📥 Catat Restock</h3>
-    <form id="form-restock" class="form">
+    <h3 id="modal-po-title">📥 PO Supplier Baru</h3>
+    <form id="form-restock" class="form po-form">
+      <input type="hidden" name="id" />
       <div class="grid-2-form">
-        <label>Tanggal<input name="tanggal" type="date" required /></label>
-        <label>Supplier<input name="supplier" placeholder="Nama supplier" /></label>
+        <label>Tanggal PO<input name="tanggal" type="date" required /></label>
+        <label>No PO (opsional)<input name="nomorPO" placeholder="PO-2026-001" /></label>
       </div>
-      <div class="restock-items" id="restock-items">
-        <!-- baris item akan ditambahkan dinamis -->
+      <label>Supplier
+        <input name="supplier" id="po-supplier" list="po-supplier-list" placeholder="Nama supplier (ketik atau pilih)" autocomplete="off" />
+        <datalist id="po-supplier-list"></datalist>
+      </label>
+
+      <h4 style="margin:12px 0 6px">📦 Items</h4>
+      <div class="po-items" id="restock-items"></div>
+      <div class="po-actions">
+        <button type="button" class="btn btn-ghost" id="btn-add-restock-item">+ Item dari Stok</button>
+        <button type="button" class="btn btn-ghost" id="btn-add-new-product-row">+ Item Baru (Buat Produk)</button>
       </div>
-      <button type="button" class="btn btn-ghost" id="btn-add-restock-item">+ Tambah Item</button>
-      <label>Catatan<textarea name="notes" rows="2"></textarea></label>
-      <div class="restock-total">Total: <b id="restock-total">Rp 0</b></div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #e5e7eb" />
+
+      <div class="grid-2-form">
+        <label>Metode Bayar
+          <select name="metode" id="po-metode">
+            <option value="tunai">💵 Tunai (Lunas)</option>
+            <option value="transfer">🏦 Transfer (Lunas)</option>
+            <option value="tempo">⏱️ Tempo (Bayar Nanti)</option>
+          </select>
+        </label>
+        <label id="po-label-jatuh-tempo" hidden>Jatuh Tempo<input name="jatuhTempo" type="date" /></label>
+      </div>
+
+      <label>Catatan<textarea name="notes" rows="2" placeholder="Opsional"></textarea></label>
+
+      <div class="po-foto-section">
+        <h4 style="margin:0 0 8px">📷 Foto Surat Jalan / Faktur Supplier</h4>
+        <input type="hidden" name="fotoSuratJalan" id="po-foto-url" />
+        <div class="po-foto-uploader">
+          <div class="po-foto-preview-wrap">
+            <img id="po-foto-preview" class="po-foto-preview" alt="" hidden />
+            <div id="po-foto-placeholder" class="po-foto-placeholder">📄</div>
+          </div>
+          <div class="po-foto-actions">
+            <label class="btn btn-ghost btn-small">
+              📸 Foto Faktur
+              <input type="file" id="po-foto-camera" accept="image/*" capture="environment" hidden />
+            </label>
+            <label class="btn btn-ghost btn-small">
+              🖼️ Galeri
+              <input type="file" id="po-foto-input" accept="image/*" hidden />
+            </label>
+            <button type="button" class="btn btn-small btn-danger" id="btn-po-foto-remove" hidden>Hapus Foto</button>
+          </div>
+          <small style="color:var(--ink-soft); font-size:11px">Foto otomatis dikompres ke 800px (~80KB) supaya text faktur tetap terbaca.</small>
+        </div>
+      </div>
+
+      <div class="po-total-box">
+        <div>Total Tagihan Supplier:</div>
+        <b id="restock-total">Rp 0</b>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal('modal-restock')">Batal</button>
-        <button type="submit" class="btn btn-primary">💾 Simpan Restock</button>
+        <button type="submit" class="btn btn-primary">💾 Simpan PO</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal: Foto Lightbox (untuk view surat jalan PO) -->
+<div class="modal" id="modal-foto-lightbox" hidden>
+  <div class="modal-card modal-large foto-lightbox-card">
+    <button type="button" class="modal-close" onclick="closeModal('modal-foto-lightbox')">&times;</button>
+    <h3 id="lightbox-title">📷 Foto</h3>
+    <div class="foto-lightbox-wrap">
+      <img id="lightbox-img" alt="" />
+    </div>
   </div>
 </div>
 
@@ -609,19 +893,22 @@
 
 <div id="toast" class="toast" hidden></div>
 
-<script src="js/firebase-config.js?v=2"></script>
-<script src="js/auth.js?v=5"></script>
-<script src="js/admin.js?v=1"></script>
+<script src="js/firebase-config.js?v=3"></script>
+<script src="js/auth.js?v=7"></script>
+<script src="js/admin.js?v=2"></script>
 <script src="js/firestore-sync.js?v=1"></script>
 <script src="js/data.js?v=1"></script>
 <script src="js/utils.js?v=2"></script>
-<script src="js/storage.js?v=2"></script>
-<script src="js/products.js?v=4"></script>
-<script src="js/sales.js?v=3"></script>
-<script src="js/restock.js?v=1"></script>
-<script src="js/reports.js?v=1"></script>
-<script src="js/receipt.js?v=2"></script>
-<script src="js/cloud-sync.js?v=3"></script>
-<script src="js/app.js?v=12"></script>
+<script src="js/storage.js?v=4"></script>
+<script src="js/products.js?v=5"></script>
+<script src="js/sales.js?v=7"></script>
+<script src="js/restock.js?v=3"></script>
+<script src="js/reports.js?v=5"></script>
+<script src="js/receipt.js?v=4"></script>
+<script src="js/piutang.js?v=2"></script>
+<script src="js/customers.js?v=2"></script>
+<script src="js/edit-sale.js?v=1"></script>
+<script src="js/cloud-sync.js?v=4"></script>
+<script src="js/app.js?v=19"></script>
 </body>
 </html>

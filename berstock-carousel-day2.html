@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerBisnis × Berstock — Carousel Day 2 (POS + AI)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628;
+  --navy-2: #0f1f3d;
+  --navy-3: #142847;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+  --cyan: #22d3ee;
+  --cyan-bright: #67e8f9;
+  --magenta: #c084fc;
+  --green: #34d399;
+  --red: #f87171;
+  --white: #ffffff;
+  --gray: #94a3b8;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #050b18; color: #fff;
+  min-height: 100vh; padding: 30px 0;
+}
+
+.guide {
+  max-width: 700px; margin: 0 auto 30px;
+  background: linear-gradient(135deg, #1a2540, #0f1f3d);
+  border: 1px solid #2a3960; border-radius: 16px;
+  padding: 24px; text-align: center;
+}
+.guide h1 { color: var(--gold-bright); font-size: 24px; margin-bottom: 6px; }
+.guide p { color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+.guide kbd { background: #2a3960; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+.slides {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 30px;
+}
+
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 80px;
+  box-shadow: 0 20px 80px rgba(0,0,0,.6);
+  background: var(--navy);
+  color: #fff;
+}
+
+/* ================ NEBULA / GRID BG (shared) ================ */
+.nebula::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(34,211,238,.18), transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(212,175,55,.18), transparent 40%),
+    radial-gradient(ellipse at 60% 30%, rgba(192,132,252,.15), transparent 35%);
+  pointer-events: none;
+}
+.grid-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.slide-tag {
+  position: absolute; top: 36px; left: 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px;
+  color: var(--cyan-bright); opacity: .7;
+}
+.slide-num {
+  position: absolute; top: 36px; right: 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  color: var(--gold); opacity: .7;
+}
+.brand-watermark {
+  position: absolute; bottom: 36px; left: 36px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: #94a3b8;
+}
+.brand-watermark .bear {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.brand-watermark .bw-text { font-weight: 700; color: #fff; }
+.brand-watermark .bw-text span { color: var(--gold-bright); }
+
+/* ============ SLIDE 1 — COVER ============ */
+.slide-1 {
+  background: radial-gradient(ellipse at center, var(--navy-3) 0%, var(--navy) 100%);
+  align-items: center; justify-content: center; text-align: center;
+}
+.s1-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(212,175,55,.25), transparent 60%);
+  filter: blur(40px);
+}
+.s1-orbit {
+  position: absolute; width: 900px; height: 900px;
+  border: 1px solid rgba(34,211,238,.15);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.s1-orbit::before, .s1-orbit::after {
+  content: ''; position: absolute;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 20px var(--cyan);
+}
+.s1-orbit::before { top: -4px; left: 50%; }
+.s1-orbit::after { bottom: -4px; left: 50%; background: var(--gold-bright); box-shadow: 0 0 20px var(--gold); }
+.s1-content { position: relative; z-index: 2; }
+.s1-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(34,211,238,.1);
+  border: 1px solid rgba(34,211,238,.4);
+  color: var(--cyan-bright);
+  padding: 8px 18px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; letter-spacing: 2px;
+  margin-bottom: 36px;
+}
+.s1-eyebrow .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 10px var(--cyan-bright);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.s1-title {
+  font-size: 96px; font-weight: 900;
+  line-height: 1; letter-spacing: -3px;
+  margin-bottom: 20px;
+}
+.s1-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s1-title .grad-cyan {
+  background: linear-gradient(135deg, var(--cyan-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s1-subtitle {
+  font-size: 26px; font-weight: 500;
+  color: #cbd5e1; max-width: 700px; line-height: 1.4;
+  margin: 0 auto 50px;
+}
+.s1-cta-row {
+  display: flex; gap: 30px; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8; font-size: 14px;
+}
+.s1-cta-row b { color: var(--gold-bright); }
+
+/* ============ SLIDE 2 — PROBLEM ============ */
+.slide-2 { background: linear-gradient(180deg, var(--navy) 0%, #0a1424 100%); }
+.s2-title {
+  font-size: 64px; font-weight: 900; line-height: 1.05;
+  margin: 100px 0 60px;
+  letter-spacing: -2px;
+}
+.s2-title .red { color: var(--red); }
+.s2-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-bottom: 40px;
+}
+.s2-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(248,113,113,.2);
+  border-left: 4px solid var(--red);
+  border-radius: 16px;
+  padding: 28px;
+  backdrop-filter: blur(10px);
+}
+.s2-card .icon {
+  font-size: 40px; margin-bottom: 10px; display: block;
+}
+.s2-card h3 {
+  font-size: 22px; font-weight: 700; color: #fff;
+  margin-bottom: 8px;
+}
+.s2-card p {
+  font-size: 16px; line-height: 1.5; color: #cbd5e1;
+}
+.s2-bottom {
+  background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(34,211,238,.08));
+  border: 1px solid var(--gold);
+  border-radius: 16px; padding: 24px 30px;
+  font-size: 22px; line-height: 1.4; text-align: center;
+  font-weight: 600; color: var(--gold-bright);
+}
+
+/* ============ SLIDE 3 — SOLUTION (POS + AI) ============ */
+.slide-3 { background: var(--navy); }
+.s3-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; letter-spacing: 3px;
+  color: var(--cyan-bright);
+  margin-top: 80px;
+}
+.s3-title {
+  font-size: 76px; font-weight: 900; line-height: 1;
+  margin: 16px 0 50px;
+  letter-spacing: -2px;
+}
+.s3-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s3-pair {
+  display: grid; grid-template-columns: 1fr 80px 1fr; gap: 16px;
+  align-items: stretch;
+}
+.s3-box {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px; padding: 32px 28px;
+  position: relative; overflow: hidden;
+}
+.s3-box.pos {
+  border-color: rgba(34,211,238,.4);
+  background: linear-gradient(135deg, rgba(34,211,238,.08), rgba(255,255,255,.03));
+}
+.s3-box.ai {
+  border-color: rgba(212,175,55,.4);
+  background: linear-gradient(135deg, rgba(212,175,55,.1), rgba(255,255,255,.03));
+}
+.s3-box h3 {
+  font-size: 24px; font-weight: 800;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.s3-box.pos h3 { color: var(--cyan-bright); }
+.s3-box.ai h3 { color: var(--gold-bright); }
+.s3-box ul { list-style: none; }
+.s3-box li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 15px; line-height: 1.5; color: #e2e8f0;
+  padding: 6px 0;
+}
+.s3-box li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.s3-connector {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.s3-connector .arrow {
+  font-size: 28px;
+  color: var(--gold-bright);
+  margin: 4px 0;
+}
+.s3-bottom {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 22px; line-height: 1.4;
+  color: #cbd5e1;
+}
+.s3-bottom b { color: var(--gold-bright); }
+
+/* ============ SLIDE 4 — DEMO CHAT ============ */
+.slide-4 { background: linear-gradient(135deg, var(--navy-2) 0%, var(--navy) 100%); }
+.s4-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; letter-spacing: 3px;
+  color: var(--cyan-bright);
+  margin-top: 70px;
+}
+.s4-title {
+  font-size: 56px; font-weight: 900; line-height: 1.05;
+  margin: 14px 0 34px;
+}
+.s4-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s4-phone {
+  background: #17212b;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 16px;
+  max-width: 720px; margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5),
+              0 0 60px rgba(34,211,238,.15);
+}
+.s4-phone-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.s4-phone-head .avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.s4-phone-head .info { flex: 1; }
+.s4-phone-head .name { font-weight: 700; font-size: 15px; }
+.s4-phone-head .status {
+  font-size: 12px; color: var(--green);
+  display: flex; align-items: center; gap: 4px;
+}
+.s4-phone-head .status::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+}
+.s4-msgs { padding: 14px 4px; display: flex; flex-direction: column; gap: 10px; }
+.s4-msg {
+  max-width: 78%;
+  padding: 10px 14px; border-radius: 14px;
+  font-size: 14px; line-height: 1.45;
+}
+.s4-msg.user {
+  background: #2b5278;
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.s4-msg.bot {
+  background: #182533;
+  border: 1px solid rgba(255,255,255,.06);
+  color: #e2e8f0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.s4-msg b { color: var(--gold-bright); }
+.s4-msg .green { color: var(--green); }
+.s4-msg .red { color: var(--red); }
+.s4-msg .cyan { color: var(--cyan-bright); }
+
+/* ============ SLIDE 5 — AI CAPABILITIES ============ */
+.slide-5 { background: linear-gradient(180deg, #0a1424 0%, var(--navy) 100%); }
+.s5-title {
+  font-size: 60px; font-weight: 900; line-height: 1.05;
+  margin: 90px 0 14px;
+  letter-spacing: -1.5px;
+}
+.s5-title .grad {
+  background: linear-gradient(135deg, var(--cyan-bright), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s5-sub {
+  font-size: 18px; color: #cbd5e1; margin-bottom: 36px;
+}
+.s5-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.s5-cap {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.s5-cap .ico {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.s5-cap .body { flex: 1; min-width: 0; }
+.s5-cap .q {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--cyan-bright); font-weight: 600;
+  margin-bottom: 2px;
+}
+.s5-cap .a {
+  font-size: 14px; color: #e2e8f0; line-height: 1.3;
+}
+
+/* ============ SLIDE 6 — POS DAY 2 FEATURES ============ */
+.slide-6 { background: var(--navy); }
+.s6-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; letter-spacing: 3px;
+  color: var(--gold-bright);
+  background: rgba(212,175,55,.1);
+  border: 1px solid rgba(212,175,55,.3);
+  padding: 6px 14px; border-radius: 999px;
+  display: inline-block;
+  margin-top: 80px;
+}
+.s6-title {
+  font-size: 60px; font-weight: 900; line-height: 1.05;
+  margin: 16px 0 40px;
+  letter-spacing: -1.5px;
+}
+.s6-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s6-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.s6-feat {
+  background: linear-gradient(135deg, rgba(212,175,55,.06), rgba(255,255,255,.03));
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 14px;
+  padding: 20px 18px;
+}
+.s6-feat .e { font-size: 32px; margin-bottom: 8px; display: block; }
+.s6-feat h4 {
+  font-size: 16px; font-weight: 800; color: #fff;
+  margin-bottom: 6px;
+}
+.s6-feat p {
+  font-size: 13px; color: #cbd5e1; line-height: 1.4;
+}
+.s6-feat .new {
+  display: inline-block; margin-top: 8px;
+  background: var(--green);
+  color: #052e16; font-weight: 800;
+  font-size: 10px; letter-spacing: 1px;
+  padding: 2px 8px; border-radius: 6px;
+}
+
+/* ============ SLIDE 7 — WHY US ============ */
+.slide-7 { background: linear-gradient(180deg, var(--navy) 0%, #0a1424 100%); }
+.s7-title {
+  font-size: 64px; font-weight: 900; line-height: 1.05;
+  margin: 100px 0 36px;
+  letter-spacing: -2px;
+}
+.s7-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s7-table {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.s7-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 18px 24px;
+  align-items: center;
+}
+.s7-row.head {
+  background: rgba(255,255,255,.05);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; letter-spacing: 2px;
+  color: var(--cyan-bright);
+}
+.s7-row:last-child { border-bottom: none; }
+.s7-row .cell { font-size: 17px; color: #e2e8f0; }
+.s7-row .cell.our { color: var(--gold-bright); font-weight: 700; }
+.s7-row .cell.them { color: #94a3b8; }
+.s7-row.head .cell { color: inherit; font-size: 12px; }
+.s7-check { color: var(--green); font-weight: 700; }
+.s7-x { color: var(--red); }
+
+/* ============ SLIDE 8 — PRICING + CTA ============ */
+.slide-8 {
+  background: radial-gradient(ellipse at top, var(--navy-3) 0%, var(--navy) 60%, #050b18 100%);
+  align-items: center; text-align: center;
+}
+.s8-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; letter-spacing: 3px;
+  color: var(--cyan-bright);
+  margin-top: 70px;
+}
+.s8-title {
+  font-size: 70px; font-weight: 900; line-height: 1;
+  margin: 18px 0 40px;
+  letter-spacing: -2px;
+}
+.s8-title .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s8-plans {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%; max-width: 800px;
+}
+.s8-plan {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  padding: 28px 24px;
+  text-align: left;
+  position: relative;
+}
+.s8-plan.featured {
+  background: linear-gradient(135deg, rgba(212,175,55,.18), rgba(34,211,238,.08));
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 40px rgba(212,175,55,.2);
+}
+.s8-plan.featured::before {
+  content: '🔥 EARLY BIRD'; position: absolute; top: -12px; right: 20px;
+  background: var(--gold);
+  color: #1a1a1a; font-weight: 900; font-size: 11px;
+  letter-spacing: 1px; padding: 4px 10px; border-radius: 6px;
+}
+.s8-plan .plan-name {
+  font-size: 14px; font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px; color: var(--gold-bright);
+}
+.s8-plan .plan-price {
+  font-size: 38px; font-weight: 900;
+  margin: 6px 0; color: #fff;
+}
+.s8-plan .plan-price small { font-size: 14px; color: #94a3b8; font-weight: 500; }
+.s8-plan .plan-desc { font-size: 13px; color: #cbd5e1; margin-bottom: 14px; }
+.s8-plan ul { list-style: none; }
+.s8-plan li {
+  font-size: 13px; color: #e2e8f0;
+  padding: 4px 0; display: flex; gap: 6px;
+}
+.s8-plan li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.s8-cta {
+  margin-top: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  color: #1a1a1a;
+  padding: 18px 40px;
+  border-radius: 14px;
+  font-size: 22px; font-weight: 900;
+  display: inline-flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 30px rgba(212,175,55,.4);
+}
+.s8-handle {
+  margin-top: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #cbd5e1; font-size: 14px;
+}
+.s8-handle b { color: var(--gold-bright); }
+</style>
+</head>
+<body>
+
+<div class="guide">
+  <h1>📸 Berstock × BerBisnis Carousel — Day 2</h1>
+  <p>8 slides · 1080×1080 · screenshot tiap slide pakai <kbd>Cmd+Shift+4</kbd> (Mac) atau zoom 100% di iPad lalu screenshot.<br>Tema: dark navy + gold + cyan. POS + AI Assistant.</p>
+</div>
+
+<div class="slides">
+
+<!-- ===== SLIDE 1 — COVER ===== -->
+<div class="slide slide-1 nebula grid-bg">
+  <div class="slide-tag">DAY 02 / SCROLL →</div>
+  <div class="slide-num">01 / 08</div>
+  <div class="s1-glow"></div>
+  <div class="s1-orbit"></div>
+
+  <div class="s1-content">
+    <div class="s1-eyebrow"><span class="dot"></span> POWERED BY CLAUDE AI</div>
+    <h1 class="s1-title">
+      POS Pertama<br>
+      dengan <span class="grad">AI Assistant</span><br>
+      <span class="grad-cyan">24/7</span>
+    </h1>
+    <p class="s1-subtitle">
+      Kasir, stok, faktur, piutang — semua dalam 1 app.<br>
+      Tanya stok & sales kapan pun via Telegram.
+    </p>
+    <div class="s1-cta-row">
+      <span>📱 <b>BerBisnis</b> POS App</span>
+      <span>+</span>
+      <span>🤖 <b>Berstock</b> AI Bot</span>
+    </div>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 2 — PROBLEM ===== -->
+<div class="slide slide-2 nebula">
+  <div class="slide-tag">PROBLEM</div>
+  <div class="slide-num">02 / 08</div>
+
+  <h2 class="s2-title">Owner UMKM<br>kerepotan di <span class="red">3 hal</span> ini</h2>
+
+  <div class="s2-cards">
+    <div class="s2-card">
+      <span class="icon">🏃</span>
+      <h3>Lupa Hutang Supplier</h3>
+      <p>Catat di buku bon, hilang. Dikejar supplier tau-tau jatuh tempo. Cash flow berantakan.</p>
+    </div>
+    <div class="s2-card">
+      <span class="icon">📵</span>
+      <h3>Tidak Bisa Pantau dari Luar</h3>
+      <p>Lagi di luar kota, butuh cek stok cepat — harus telpon karyawan, ribet & lambat.</p>
+    </div>
+    <div class="s2-card">
+      <span class="icon">😵</span>
+      <h3>Pelanggan Tempo Numpuk</h3>
+      <p>Siapa belum bayar berapa? Pelanggan loyal mana? Cari satu-satu di buku catatan.</p>
+    </div>
+    <div class="s2-card">
+      <span class="icon">📊</span>
+      <h3>Laporan Manual Tiap Bulan</h3>
+      <p>Bikin laporan untung-rugi pakai Excel. Pas mau cek "best seller bulan ini" — ribet.</p>
+    </div>
+  </div>
+
+  <div class="s2-bottom">
+    💡 Solusinya bukan "kerja lebih keras" — tapi <b>tools yang lebih pintar.</b>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 3 — SOLUTION ===== -->
+<div class="slide slide-3 nebula grid-bg">
+  <div class="slide-tag">SOLUTION</div>
+  <div class="slide-num">03 / 08</div>
+
+  <div class="s3-eyebrow">SISTEM POS + AI ASSISTANT</div>
+  <h2 class="s3-title">Sekali Setup,<br><span class="grad">Otomatis Selamanya</span></h2>
+
+  <div class="s3-pair">
+    <div class="s3-box pos">
+      <h3>📱 BerBisnis POS</h3>
+      <ul>
+        <li>Kasir + stok + foto produk</li>
+        <li>HPP weighted average otomatis</li>
+        <li>Faktur A4 3-ply (Asli/Copy/Arsip)</li>
+        <li>Piutang & Hutang supplier</li>
+        <li>Pelanggan database + history</li>
+        <li>Laporan custom range</li>
+      </ul>
+    </div>
+
+    <div class="s3-connector">
+      <div class="arrow">⟷</div>
+      <div style="font-family:monospace; font-size:11px; color:#94a3b8; letter-spacing:2px">SYNC</div>
+    </div>
+
+    <div class="s3-box ai">
+      <h3>🤖 Berstock AI Bot</h3>
+      <ul>
+        <li>Chat di Telegram, 24/7</li>
+        <li>Powered by Claude Sonnet</li>
+        <li>Tanya stok, sales, piutang</li>
+        <li>Bahasa Indonesia natural</li>
+        <li>Cek dari mana aja, HP doang</li>
+        <li>Real-time data dari POS</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="s3-bottom">
+    Data dari POS otomatis ke AI. <b>Owner tinggal chat — AI yang jawab.</b>
+  </p>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4 — DEMO CHAT ===== -->
+<div class="slide slide-4 nebula">
+  <div class="slide-tag">LIVE DEMO</div>
+  <div class="slide-num">04 / 08</div>
+
+  <div class="s4-eyebrow">CHAT TELEGRAM YANG ASLI</div>
+  <h2 class="s4-title">Tanya AI <span class="grad">selayaknya</span><br>tanya karyawan.</h2>
+
+  <div class="s4-phone">
+    <div class="s4-phone-head">
+      <div class="avatar">🐻</div>
+      <div class="info">
+        <div class="name">@BerstockBot</div>
+        <div class="status">online · Powered by Claude AI</div>
+      </div>
+    </div>
+    <div class="s4-msgs">
+      <div class="s4-msg user">Piutang gimana bro?</div>
+      <div class="s4-msg bot">
+        💰 <b>Total Piutang: Rp 18.500.000</b><br>
+        ⚠️ <span class="red">Overdue: Rp 4.200.000 (2 invoice)</span><br><br>
+        Top piutang:<br>
+        • Pak Budi — Rp 8.500.000<br>
+        • PT Maju — Rp 4.200.000 <span class="red">⚠️ lewat 7 hari</span><br>
+        • Edwin Abraham — Rp 3.100.000<br><br>
+        💡 Follow up Pak Budi & PT Maju dulu bos.
+      </div>
+      <div class="s4-msg user">Cash hari ini berapa?</div>
+      <div class="s4-msg bot">
+        💵 <span class="green"><b>Cash hari ini: Rp 285.000.000</b></span><br>
+        ⏱️ Tempo belum dibayar: Rp 130.000.000<br><br>
+        Total revenue 415jt, yang udah masuk kas 285jt ya bos.
+      </div>
+    </div>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5 — AI CAPABILITIES ===== -->
+<div class="slide slide-5 nebula grid-bg">
+  <div class="slide-tag">AI CAPABILITIES</div>
+  <div class="slide-num">05 / 08</div>
+
+  <h2 class="s5-title">12 Pertanyaan<br><span class="grad">AI bisa jawab</span></h2>
+  <p class="s5-sub">Tinggal chat di Telegram — AI baca data toko Anda real-time.</p>
+
+  <div class="s5-grid">
+    <div class="s5-cap"><div class="ico">📦</div><div class="body"><div class="q">"Stok apa yang habis?"</div><div class="a">List barang stok kritis & urgensi</div></div></div>
+    <div class="s5-cap"><div class="ico">💰</div><div class="body"><div class="q">"Piutang gimana?"</div><div class="a">Total + breakdown overdue</div></div></div>
+    <div class="s5-cap"><div class="ico">📊</div><div class="body"><div class="q">"Sales bulan ini?"</div><div class="a">Revenue, profit, margin per periode</div></div></div>
+    <div class="s5-cap"><div class="ico">👥</div><div class="body"><div class="q">"Pelanggan top 5"</div><div class="a">Customer terloyal + total belanja</div></div></div>
+    <div class="s5-cap"><div class="ico">🏆</div><div class="body"><div class="q">"Best seller minggu ini?"</div><div class="a">Top produk by qty / revenue</div></div></div>
+    <div class="s5-cap"><div class="ico">🐢</div><div class="body"><div class="q">"Barang yang ga laku?"</div><div class="a">Slow moving + modal yang nyangkut</div></div></div>
+    <div class="s5-cap"><div class="ico">🔄</div><div class="body"><div class="q">"Apa yang harus restock?"</div><div class="a">Saran cerdas berdasar velocity</div></div></div>
+    <div class="s5-cap"><div class="ico">📋</div><div class="body"><div class="q">"Edwin belanja apa aja?"</div><div class="a">History pelanggan lengkap</div></div></div>
+    <div class="s5-cap"><div class="ico">💵</div><div class="body"><div class="q">"Cash hari ini?"</div><div class="a">Pisah cash vs tempo masuk kas</div></div></div>
+    <div class="s5-cap"><div class="ico">⚠️</div><div class="body"><div class="q">"Overdue siapa aja?"</div><div class="a">Tagihan lewat jatuh tempo</div></div></div>
+    <div class="s5-cap"><div class="ico">🔍</div><div class="body"><div class="q">"Indomie sisa berapa?"</div><div class="a">Detail produk + stok + margin</div></div></div>
+    <div class="s5-cap"><div class="ico">📈</div><div class="body"><div class="q">"Gimana kondisi toko?"</div><div class="a">Snapshot menyeluruh + insight</div></div></div>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6 — POS DAY 2 FEATURES ===== -->
+<div class="slide slide-6 nebula">
+  <div class="slide-tag">POS FEATURES</div>
+  <div class="slide-num">06 / 08</div>
+
+  <span class="s6-eyebrow">⚡ FRESH DROP — DAY 2 UPDATE</span>
+  <h2 class="s6-title">Fitur Baru<br><span class="grad">Komplit Bisnis</span></h2>
+
+  <div class="s6-grid">
+    <div class="s6-feat">
+      <span class="e">💰</span>
+      <h4>Piutang Tracker</h4>
+      <p>List pelanggan tempo, status overdue, tandai lunas 1-klik.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">👥</span>
+      <h4>Pelanggan 360°</h4>
+      <p>Database lengkap + history pembelian + WA chat link.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">📥</span>
+      <h4>PO Supplier</h4>
+      <p>Hutang ke supplier + foto faktur + jatuh tempo.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">📄</span>
+      <h4>Faktur A4 3-ply</h4>
+      <p>Asli/Copy/Arsip — siap print untuk pembukuan.</p>
+    </div>
+    <div class="s6-feat">
+      <span class="e">✏️</span>
+      <h4>Edit Invoice</h4>
+      <p>Salah input qty / harga / pelanggan? Edit kapan aja.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">📅</span>
+      <h4>Laporan Custom</h4>
+      <p>Per tanggal, bulan, tahun, atau range bebas.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">📦</span>
+      <h4>Item Baru via PO</h4>
+      <p>Auto-create produk pas catat PO supplier.</p>
+      <span class="new">NEW</span>
+    </div>
+    <div class="s6-feat">
+      <span class="e">☁️</span>
+      <h4>Cloud Sync</h4>
+      <p>Cross-device + auto-sync ke AI Bot Telegram.</p>
+    </div>
+    <div class="s6-feat">
+      <span class="e">📸</span>
+      <h4>Foto Faktur</h4>
+      <p>Lampiran surat jalan supplier — bukti tertinggal.</p>
+      <span class="new">NEW</span>
+    </div>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 7 — WHY US ===== -->
+<div class="slide slide-7 nebula grid-bg">
+  <div class="slide-tag">COMPARISON</div>
+  <div class="slide-num">07 / 08</div>
+
+  <h2 class="s7-title">Kenapa Pilih<br><span class="grad">BerBisnis</span>?</h2>
+
+  <div class="s7-table">
+    <div class="s7-row head">
+      <div class="cell">FITUR</div>
+      <div class="cell">BerBisnis</div>
+      <div class="cell">POS Lain</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">AI Chat di Telegram</div>
+      <div class="cell our">✓ Built-in</div>
+      <div class="cell them">✗ Tidak ada</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Piutang + Hutang Tracker</div>
+      <div class="cell our">✓ Otomatis</div>
+      <div class="cell them">✗ Manual / addon</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Pelanggan 360 + History</div>
+      <div class="cell our">✓ Lengkap</div>
+      <div class="cell them">⚠️ Sebagian</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Faktur A4 3-ply</div>
+      <div class="cell our">✓ Siap print</div>
+      <div class="cell them">⚠️ Tampilan basic</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Foto Surat Jalan PO</div>
+      <div class="cell our">✓ Built-in</div>
+      <div class="cell them">✗ Tidak ada</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Offline-first (no internet OK)</div>
+      <div class="cell our">✓ Ya</div>
+      <div class="cell them">✗ Wajib online</div>
+    </div>
+    <div class="s7-row">
+      <div class="cell">Bahasa Indonesia native</div>
+      <div class="cell our">✓ 100%</div>
+      <div class="cell them">⚠️ Translated</div>
+    </div>
+  </div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8 — PRICING + CTA ===== -->
+<div class="slide slide-8 nebula grid-bg">
+  <div class="slide-tag">PRICING</div>
+  <div class="slide-num">08 / 08</div>
+
+  <div class="s8-eyebrow">SIAP UPGRADE BISNIS?</div>
+  <h2 class="s8-title">Mulai dari<br><span class="grad">Rp 149rb/bulan</span></h2>
+
+  <div class="s8-plans">
+    <div class="s8-plan">
+      <div class="plan-name">STARTER</div>
+      <div class="plan-price">Rp 149rb<small>/bulan</small></div>
+      <div class="plan-desc">POS + Stok + Laporan</div>
+      <ul>
+        <li>Kasir & stok unlimited</li>
+        <li>Faktur A4 + struk thermal</li>
+        <li>Piutang & PO Supplier</li>
+        <li>Pelanggan 360 + history</li>
+        <li>Cloud sync</li>
+      </ul>
+    </div>
+    <div class="s8-plan featured">
+      <div class="plan-name">PRO + AI</div>
+      <div class="plan-price">Rp 500rb<small>/bulan</small></div>
+      <div class="plan-desc">Semua Starter + AI Bot Telegram 24/7</div>
+      <ul>
+        <li>Semua fitur Starter</li>
+        <li>🤖 Berstock AI Assistant</li>
+        <li>Chat di Telegram kapan aja</li>
+        <li>Powered by Claude Sonnet</li>
+        <li>Slot Early Bird: 50 klien pertama</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="s8-cta">💬 Chat WhatsApp Sekarang →</div>
+  <div class="s8-handle">📱 <b>+62 821-2484-8924</b> · IG <b>@hendrypangg</b></div>
+
+  <div class="brand-watermark">
+    <div class="bear">🐻</div>
+    <div class="bw-text">Ber<span>Satu</span> Suite</div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

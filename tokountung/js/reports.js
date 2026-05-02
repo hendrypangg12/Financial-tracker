@@ -15,6 +15,17 @@ function renderDashboard() {
   document.getElementById('kpi-profit').textContent = formatRupiah(profit);
   document.getElementById('kpi-profit-delta').textContent = `Margin ${margin.toFixed(1)}%`;
 
+  // Breakdown cash vs tempo (untuk hari ini)
+  const cashSales = todaySales.filter(s => s.metode !== 'tempo' || s.lunas === true);
+  const tempoSales = todaySales.filter(s => s.metode === 'tempo' && !s.lunas);
+  const cashTotal = cashSales.reduce((s, x) => s + (x.total || 0), 0);
+  const tempoTotal = tempoSales.reduce((s, x) => s + (x.total || 0), 0);
+  const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setText('kpi-cash-today', formatRupiah(cashTotal));
+  setText('kpi-cash-today-meta', `${cashSales.length} transaksi · sudah masuk kas`);
+  setText('kpi-tempo-today', formatRupiah(tempoTotal));
+  setText('kpi-tempo-today-meta', `${tempoSales.length} invoice · piutang baru`);
+
   const stockValue = state.products.reduce((s, p) => s + p.stok * p.hargaModal, 0);
   document.getElementById('kpi-stock').textContent = formatRupiah(stockValue);
   document.getElementById('kpi-stock-delta').textContent = `${state.products.length} item`;
@@ -30,9 +41,6 @@ function renderDashboard() {
 
   // Low stock list
   renderLowStock(lowStock);
-
-  // BEP
-  renderBEP();
 }
 
 function renderTrend7Days() {
@@ -89,42 +97,201 @@ function renderLowStock(list) {
   `).join('');
 }
 
-function renderBEP() {
-  const biaya = +state.settings.biayaTetap || 0;
-  if (biaya <= 0) {
-    document.getElementById('bep-status').innerHTML = '⚠️ Atur biaya tetap di tab Pengaturan untuk hitung BEP';
-    document.getElementById('bep-target').textContent = '-';
-    document.getElementById('bep-achieved').textContent = '-';
-    document.getElementById('bep-remaining').textContent = '-';
-    document.getElementById('bep-fill').style.width = '0%';
-    return;
+// === LAPORAN — filter UI helpers ===
+function populateYearOptions() {
+  const sel = document.getElementById('laporan-year');
+  if (!sel) return;
+  const currentYear = new Date().getFullYear();
+  const yearsFromSales = new Set();
+  for (const s of (state.sales || [])) {
+    if (s.tanggal) yearsFromSales.add(parseInt(s.tanggal.slice(0, 4), 10));
   }
-  const now = new Date();
-  const start = startOfMonth(now);
-  const monthSales = state.sales.filter(s => parseISO(s.tanggal) >= start);
-  const monthProfit = monthSales.reduce((s, sale) => s + sale.profit, 0);
-  document.getElementById('bep-target').textContent = formatRupiah(biaya);
-  document.getElementById('bep-achieved').textContent = formatRupiah(monthProfit);
-  const remain = biaya - monthProfit;
-  document.getElementById('bep-remaining').textContent = remain > 0 ? formatRupiah(remain) : '✅ BEP TERCAPAI';
-  const pct = Math.min(100, (monthProfit / biaya) * 100);
-  document.getElementById('bep-fill').style.width = pct + '%';
-  document.getElementById('bep-status').textContent =
-    pct >= 100 ? `🎉 Sudah BEP! Profit kotor: ${formatRupiah(monthProfit - biaya)} untuk Anda` :
-    `${pct.toFixed(0)}% menuju BEP bulan ini`;
+  yearsFromSales.add(currentYear);
+  const years = [...yearsFromSales].sort((a, b) => b - a);
+  sel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+}
+
+function updateLaporanFilterUI() {
+  const periode = document.getElementById('laporan-periode').value;
+  const dateInp = document.getElementById('laporan-date');
+  const monthInp = document.getElementById('laporan-month');
+  const yearSel = document.getElementById('laporan-year');
+  const rangeWrap = document.getElementById('laporan-range');
+
+  if (dateInp) dateInp.hidden = periode !== 'custom-date';
+  if (monthInp) monthInp.hidden = periode !== 'custom-month';
+  if (yearSel) yearSel.hidden = periode !== 'custom-year';
+  if (rangeWrap) rangeWrap.hidden = periode !== 'custom-range';
+
+  // Set default values
+  const today = new Date();
+  if (periode === 'custom-date' && dateInp && !dateInp.value) {
+    dateInp.value = toISODate(today);
+  }
+  if (periode === 'custom-month' && monthInp && !monthInp.value) {
+    monthInp.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  }
+  if (periode === 'custom-year' && yearSel) {
+    populateYearOptions();
+    if (!yearSel.value) yearSel.value = today.getFullYear();
+  }
+  if (periode === 'custom-range') {
+    const from = document.getElementById('laporan-range-from');
+    const to = document.getElementById('laporan-range-to');
+    if (from && !from.value) {
+      const d = new Date(); d.setDate(d.getDate() - 7);
+      from.value = toISODate(d);
+    }
+    if (to && !to.value) to.value = toISODate(today);
+  }
 }
 
 // === LAPORAN ===
-function renderLaporan() {
+function getLaporanRange() {
   const periode = document.getElementById('laporan-periode').value;
   const now = new Date();
-  let start;
-  if (periode === 'hari') start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  else if (periode === 'minggu') start = startOfWeek(now);
-  else if (periode === 'tahun') start = startOfYear(now);
-  else start = startOfMonth(now);
+  const endOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  let start, end, label;
 
-  const periodSales = state.sales.filter(s => parseISO(s.tanggal) >= start);
+  if (periode === 'hari') {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    end = endOfDay(now);
+    label = `📅 ${formatTanggalLong(toISODate(start))}`;
+  } else if (periode === 'minggu') {
+    start = startOfWeek(now);
+    end = endOfDay(now);
+    label = `📅 Minggu ini (${formatTanggal(toISODate(start))} - ${formatTanggal(toISODate(now))})`;
+  } else if (periode === 'tahun') {
+    start = startOfYear(now);
+    end = endOfDay(now);
+    label = `🗓️ Tahun ${now.getFullYear()}`;
+  } else if (periode === 'custom-date') {
+    const v = document.getElementById('laporan-date').value;
+    if (!v) return null;
+    const d = parseISO(v);
+    start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    end = endOfDay(start);
+    label = `📅 ${formatTanggalLong(v)}`;
+  } else if (periode === 'custom-month') {
+    const v = document.getElementById('laporan-month').value;
+    if (!v) return null;
+    const [y, m] = v.split('-').map(Number);
+    start = new Date(y, m - 1, 1);
+    end = endOfDay(new Date(y, m, 0));
+    const bulanNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    label = `📆 ${bulanNames[m-1]} ${y}`;
+  } else if (periode === 'custom-year') {
+    const v = +document.getElementById('laporan-year').value;
+    if (!v) return null;
+    start = new Date(v, 0, 1);
+    end = endOfDay(new Date(v, 11, 31));
+    label = `🗓️ Tahun ${v}`;
+  } else if (periode === 'custom-range') {
+    const from = document.getElementById('laporan-range-from').value;
+    const to = document.getElementById('laporan-range-to').value;
+    if (!from || !to) return null;
+    start = parseISO(from);
+    end = endOfDay(parseISO(to));
+    if (end < start) return null;
+    label = `↔️ ${formatTanggal(from)} s/d ${formatTanggal(to)}`;
+  } else {
+    start = startOfMonth(now);
+    end = endOfDay(now);
+    const bulanNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    label = `📆 ${bulanNames[now.getMonth()]} ${now.getFullYear()}`;
+  }
+  return { start, end, label, periode };
+}
+
+// Render laporan penjualan per item (akumulasi sesuai periode aktif)
+function renderLaporanItems(periodSales, totalRevenue) {
+  const search = (document.getElementById('lap-item-search')?.value || '').toLowerCase().trim();
+
+  // Lookup satuan dari product master
+  const satuanMap = {};
+  for (const p of (state.products || [])) satuanMap[p.id] = p.satuan || 'pcs';
+
+  // Aggregate per produk
+  const counts = {};
+  for (const s of periodSales) {
+    for (const it of (s.items || [])) {
+      if (!counts[it.productId]) {
+        counts[it.productId] = {
+          nama: it.nama,
+          satuan: it.satuan || satuanMap[it.productId] || 'pcs',
+          qty: 0, revenue: 0, hpp: 0,
+        };
+      }
+      counts[it.productId].qty += it.qty || 0;
+      counts[it.productId].revenue += (it.qty || 0) * (it.hargaJual || 0);
+      counts[it.productId].hpp += (it.qty || 0) * (it.hargaModal || 0);
+    }
+  }
+  let list = Object.values(counts).map(c => ({
+    ...c,
+    profit: c.revenue - c.hpp,
+    share: totalRevenue > 0 ? (c.revenue / totalRevenue * 100) : 0,
+  }));
+
+  // Filter search
+  if (search) list = list.filter(c => c.nama.toLowerCase().includes(search));
+
+  // Sort by qty desc
+  list.sort((a, b) => b.qty - a.qty);
+
+  const tbody = document.getElementById('lap-item-body');
+  const tfoot = document.getElementById('lap-item-foot');
+  if (!tbody) return;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">${search ? 'Tidak ditemukan' : 'Belum ada penjualan pada periode ini'}</td></tr>`;
+    if (tfoot) tfoot.innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = list.map((c, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><b>${escapeHtml(c.nama)}</b></td>
+      <td class="num">${c.qty} ${escapeHtml(c.satuan)}</td>
+      <td class="num">${formatRupiah(c.revenue)}</td>
+      <td class="num" style="color:#94a3b8">${formatRupiah(c.hpp)}</td>
+      <td class="num"><b style="color:#16a34a">${formatRupiah(c.profit)}</b></td>
+      <td class="num">${c.share.toFixed(1)}%</td>
+    </tr>
+  `).join('');
+
+  // Total row
+  const tQty = list.reduce((a, x) => a + x.qty, 0);
+  const tRev = list.reduce((a, x) => a + x.revenue, 0);
+  const tHpp = list.reduce((a, x) => a + x.hpp, 0);
+  const tProfit = list.reduce((a, x) => a + x.profit, 0);
+  if (tfoot) tfoot.innerHTML = `
+    <tr class="lap-item-total">
+      <td colspan="2"><b>TOTAL (${list.length} produk)</b></td>
+      <td class="num"><b>${tQty}</b></td>
+      <td class="num"><b>${formatRupiah(tRev)}</b></td>
+      <td class="num">${formatRupiah(tHpp)}</td>
+      <td class="num"><b style="color:#16a34a">${formatRupiah(tProfit)}</b></td>
+      <td class="num"><b>100%</b></td>
+    </tr>
+  `;
+}
+
+function renderLaporan() {
+  const range = getLaporanRange();
+  const labelEl = document.getElementById('laporan-period-label');
+  if (!range) {
+    if (labelEl) labelEl.textContent = '⚠️ Pilih periode dulu';
+    return;
+  }
+  if (labelEl) labelEl.textContent = range.label;
+  const { start, end } = range;
+
+  const periodSales = state.sales.filter(s => {
+    const d = parseISO(s.tanggal);
+    return d >= start && d <= end;
+  });
   const revenue = periodSales.reduce((s, x) => s + x.total, 0);
   const hpp = periodSales.reduce((s, x) => s + x.items.reduce((a,it) => a + it.hargaModal * it.qty, 0), 0);
   const profit = periodSales.reduce((s, x) => s + x.profit, 0);
@@ -135,20 +302,8 @@ function renderLaporan() {
   document.getElementById('lap-profit').textContent = formatRupiah(profit);
   document.getElementById('lap-margin').textContent = margin.toFixed(1) + '%';
 
-  // Best seller
-  const counts = {};
-  for (const s of periodSales) {
-    for (const it of s.items) {
-      if (!counts[it.productId]) counts[it.productId] = { nama: it.nama, qty: 0, revenue: 0 };
-      counts[it.productId].qty += it.qty;
-      counts[it.productId].revenue += it.qty * it.hargaJual;
-    }
-  }
-  const top = Object.values(counts).sort((a,b) => b.qty - a.qty).slice(0, 10);
-  const ol = document.getElementById('lap-best-seller');
-  ol.innerHTML = top.length
-    ? top.map(t => `<li><span>${escapeHtml(t.nama)}</span><b>${t.qty}× · ${formatRupiah(t.revenue)}</b></li>`).join('')
-    : '<li class="empty">Belum ada penjualan</li>';
+  // === Laporan penjualan per item (akumulasi sesuai periode) ===
+  renderLaporanItems(periodSales, revenue);
 
   // Slow moving (>30 hari tidak laku)
   const sold30 = new Set();

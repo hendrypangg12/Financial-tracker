@@ -117,6 +117,62 @@ export const TOOLS = [
     description: "Snapshot keseluruhan bisnis: total produk, nilai stok, jumlah kategori, transaksi total, status BEP bulan ini. PAKAI INI saat owner tanya kondisi umum, kesehatan bisnis, atau pertanyaan luas seperti 'gimana toko hari ini'.",
     input_schema: { type: "object", properties: {} }
   },
+
+  {
+    name: "get_piutang_summary",
+    description: "Ringkasan piutang/tempo: total Rp yang belum dibayar pelanggan, breakdown overdue (lewat jatuh tempo) vs masih jadwal, list invoice belum lunas. PAKAI INI saat owner tanya 'piutang berapa', 'siapa yang belum bayar', 'tempo overdue', 'tagihan jatuh tempo', 'utang pelanggan'.",
+    input_schema: {
+      type: "object",
+      properties: {
+        only_overdue: {
+          type: "boolean",
+          description: "Optional: kalau true, hanya tampilkan invoice yang sudah lewat jatuh tempo. Default false (tampilkan semua belum lunas)."
+        },
+        customer: {
+          type: "string",
+          description: "Optional: filter nama pelanggan tertentu (mis. 'Pak Budi')."
+        }
+      }
+    }
+  },
+
+  {
+    name: "get_customer_list",
+    description: "Daftar pelanggan dengan statistik belanja: total transaksi, total Rp belanja, terakhir beli, outstanding tempo. Sorted by total belanja (top customer dulu). PAKAI INI saat owner tanya 'pelanggan top', 'siapa pelanggan terbaik', 'list pelanggan', 'pelanggan paling sering belanja'.",
+    input_schema: {
+      type: "object",
+      properties: {
+        limit: {
+          type: "number",
+          description: "Jumlah top N (default 10, max 30)."
+        },
+        sort_by: {
+          type: "string",
+          enum: ["total_belanja", "frekuensi", "terakhir_beli", "outstanding"],
+          description: "Cara sort. Default total_belanja."
+        }
+      }
+    }
+  },
+
+  {
+    name: "get_customer_history",
+    description: "Riwayat pembelian satu pelanggan spesifik: list semua transaksi (tanggal, total, status bayar, items). PAKAI INI saat owner tanya tentang pelanggan tertentu (mis. 'Pak Budi belanja apa aja', 'history Edwin Abraham', 'PT Contoh sudah beli berapa kali').",
+    input_schema: {
+      type: "object",
+      properties: {
+        customer: {
+          type: "string",
+          description: "Nama pelanggan (partial match OK, case-insensitive)."
+        },
+        limit: {
+          type: "number",
+          description: "Jumlah transaksi terakhir yang ditampilkan (default 10, max 50)."
+        }
+      },
+      required: ["customer"]
+    }
+  },
 ];
 
 // =============================================================================
@@ -147,6 +203,12 @@ export async function executeTool(name, input, data) {
       return handleListAllProducts(products, input);
     case "get_business_overview":
       return handleBusinessOverview(products, sales, settings);
+    case "get_piutang_summary":
+      return handlePiutangSummary(sales, input);
+    case "get_customer_list":
+      return handleCustomerList(sales, input);
+    case "get_customer_history":
+      return handleCustomerHistory(sales, products, input);
     default:
       return { error: `Unknown tool: ${name}` };
   }
@@ -231,12 +293,22 @@ function handleTodaySales(sales, products) {
   const counts = aggregateBySoldQty(todaySales, products);
   const top = Object.values(counts).sort((a, b) => b.qty - a.qty).slice(0, 3);
 
+  // Breakdown cash vs tempo
+  const cashSales = todaySales.filter(s => s.metode !== 'tempo' || s.lunas === true);
+  const tempoSales = todaySales.filter(s => s.metode === 'tempo' && !s.lunas);
+  const cashTotal = cashSales.reduce((a, s) => a + (s.total || 0), 0);
+  const tempoTotal = tempoSales.reduce((a, s) => a + (s.total || 0), 0);
+
   return {
     tanggal: today,
     transaksi: todaySales.length,
     revenue,
     profit,
     margin_pct: +margin.toFixed(1),
+    breakdown_pemasukan: {
+      cash: { jumlah: cashTotal, transaksi: cashSales.length },
+      tempo_belum_dibayar: { jumlah: tempoTotal, invoice: tempoSales.length },
+    },
     top_seller: top.map(t => ({ nama: t.nama, qty: t.qty, satuan: t.satuan, revenue: t.revenue })),
   };
 }
@@ -441,6 +513,183 @@ function handleBusinessOverview(products, sales, settings) {
     profit_bulan_ini: monthProfit,
     transaksi_bulan_ini: monthSales.length,
     bep_status: bepStatus,
+  };
+}
+
+function handlePiutangSummary(sales, input) {
+  const onlyOverdue = !!input?.only_overdue;
+  const customerFilter = (input?.customer || "").trim().toLowerCase();
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  const tempoSales = sales.filter(s => s.metode === "tempo" && !s.lunas);
+  let filtered = tempoSales;
+
+  if (customerFilter) {
+    filtered = filtered.filter(s => (s.pelanggan || "").toLowerCase().includes(customerFilter));
+  }
+
+  const enriched = filtered.map(s => {
+    const due = s.jatuhTempo ? parseISO(s.jatuhTempo) : null;
+    const isOverdue = due ? today > due : false;
+    const daysToDue = due ? Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null;
+    return {
+      nomor: s.nomor,
+      tanggal: s.tanggal,
+      pelanggan: s.pelanggan || "Anonim",
+      telepon: s.pelangganTelepon || "",
+      total: s.total || 0,
+      jatuh_tempo: s.jatuhTempo || null,
+      hari_ke_jatuh_tempo: daysToDue,
+      overdue: isOverdue,
+      hari_lewat: isOverdue && daysToDue !== null ? Math.abs(daysToDue) : 0,
+    };
+  });
+
+  const finalList = onlyOverdue ? enriched.filter(x => x.overdue) : enriched;
+  finalList.sort((a, b) => {
+    if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
+    return (a.jatuh_tempo || "9999-12-31").localeCompare(b.jatuh_tempo || "9999-12-31");
+  });
+
+  const totalOutstanding = enriched.reduce((a, x) => a + x.total, 0);
+  const overdueList = enriched.filter(x => x.overdue);
+  const totalOverdue = overdueList.reduce((a, x) => a + x.total, 0);
+
+  return {
+    filter: { only_overdue: onlyOverdue, customer: customerFilter || null },
+    total_outstanding: totalOutstanding,
+    total_invoice_belum_lunas: enriched.length,
+    total_overdue: totalOverdue,
+    invoice_overdue_count: overdueList.length,
+    invoices: finalList.slice(0, 30),
+  };
+}
+
+function aggregateCustomers(sales) {
+  const map = new Map();
+  for (const s of sales) {
+    const nama = (s.pelanggan || "Anonim").trim();
+    const telp = (s.pelangganTelepon || "").replace(/\D/g, "");
+    const key = telp ? `${nama.toLowerCase()}|${telp}` : nama.toLowerCase();
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        nama,
+        telepon: s.pelangganTelepon || "",
+        alamat: s.pelangganAlamat || "",
+        total_belanja: 0,
+        total_profit: 0,
+        outstanding: 0,
+        outstanding_count: 0,
+        transaksi: 0,
+        terakhir_beli: "",
+        sales: [],
+      });
+    }
+    const c = map.get(key);
+    c.sales.push(s);
+    c.transaksi += 1;
+    c.total_belanja += s.total || 0;
+    c.total_profit += s.profit || 0;
+    if (s.metode === "tempo" && !s.lunas) {
+      c.outstanding += s.total || 0;
+      c.outstanding_count += 1;
+    }
+    if ((s.tanggal || "") > c.terakhir_beli) c.terakhir_beli = s.tanggal || "";
+    if (s.pelangganTelepon && !c.telepon) c.telepon = s.pelangganTelepon;
+    if (s.pelangganAlamat && !c.alamat) c.alamat = s.pelangganAlamat;
+  }
+  return Array.from(map.values());
+}
+
+function handleCustomerList(sales, input) {
+  const limit = Math.min(input?.limit || 10, 30);
+  const sortBy = input?.sort_by || "total_belanja";
+  let customers = aggregateCustomers(sales);
+
+  if (sortBy === "frekuensi") customers.sort((a, b) => b.transaksi - a.transaksi);
+  else if (sortBy === "terakhir_beli") customers.sort((a, b) => (b.terakhir_beli || "").localeCompare(a.terakhir_beli || ""));
+  else if (sortBy === "outstanding") customers.sort((a, b) => b.outstanding - a.outstanding);
+  else customers.sort((a, b) => b.total_belanja - a.total_belanja);
+
+  const totalOmzet = customers.reduce((a, c) => a + c.total_belanja, 0);
+  const totalOutstanding = customers.reduce((a, c) => a + c.outstanding, 0);
+
+  return {
+    sort_by: sortBy,
+    total_pelanggan: customers.length,
+    total_omzet: totalOmzet,
+    total_outstanding: totalOutstanding,
+    customers: customers.slice(0, limit).map(c => ({
+      nama: c.nama,
+      telepon: c.telepon,
+      total_belanja: c.total_belanja,
+      total_profit: c.total_profit,
+      transaksi: c.transaksi,
+      avg_per_transaksi: c.transaksi > 0 ? Math.round(c.total_belanja / c.transaksi) : 0,
+      outstanding: c.outstanding,
+      outstanding_invoice: c.outstanding_count,
+      terakhir_beli: c.terakhir_beli,
+    })),
+  };
+}
+
+function handleCustomerHistory(sales, products, input) {
+  const q = (input?.customer || "").trim().toLowerCase();
+  if (!q) return { error: "customer parameter required" };
+  const limit = Math.min(input?.limit || 10, 50);
+
+  const customers = aggregateCustomers(sales);
+  const matches = customers.filter(c =>
+    c.nama.toLowerCase().includes(q) ||
+    (c.telepon || "").toLowerCase().includes(q)
+  );
+
+  if (!matches.length) return { found: false, query: input.customer };
+
+  // Pakai match pertama (paling top by belanja)
+  matches.sort((a, b) => b.total_belanja - a.total_belanja);
+  const customer = matches[0];
+
+  const sortedSales = [...customer.sales].sort((a, b) =>
+    (b.tanggal || "").localeCompare(a.tanggal || "")
+  );
+
+  const satuanMap = {};
+  for (const p of (products || [])) satuanMap[p.id] = p.satuan || "pcs";
+
+  return {
+    found: true,
+    multiple_match: matches.length > 1,
+    other_matches: matches.length > 1 ? matches.slice(1, 5).map(m => m.nama) : [],
+    customer: {
+      nama: customer.nama,
+      telepon: customer.telepon,
+      alamat: customer.alamat,
+      total_belanja: customer.total_belanja,
+      total_profit: customer.total_profit,
+      transaksi: customer.transaksi,
+      avg_per_transaksi: customer.transaksi > 0 ? Math.round(customer.total_belanja / customer.transaksi) : 0,
+      outstanding: customer.outstanding,
+      outstanding_invoice: customer.outstanding_count,
+      terakhir_beli: customer.terakhir_beli,
+    },
+    sales: sortedSales.slice(0, limit).map(s => ({
+      nomor: s.nomor,
+      tanggal: s.tanggal,
+      total: s.total,
+      profit: s.profit,
+      metode: s.metode,
+      lunas: s.metode === "tempo" ? !!s.lunas : true,
+      jatuh_tempo: s.jatuhTempo || null,
+      items: (s.items || []).map(it => ({
+        nama: it.nama,
+        qty: it.qty,
+        satuan: it.satuan || satuanMap[it.productId] || "pcs",
+        harga: it.hargaJual,
+      })),
+    })),
   };
 }
 
