@@ -207,6 +207,147 @@ nav .nav-cta {
   .feat-grid { grid-template-columns: 1fr; }
 }
 
+/* ================ DEEP FEATURE HIGHLIGHTS ================ */
+.deep-feat-section { background: linear-gradient(180deg, #f8fafc 0%, #fff 100%); }
+.deep-feat {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 50px;
+  align-items: center;
+  padding: 50px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+.deep-feat:last-child { border-bottom: none; }
+.deep-feat.reverse .deep-feat-text { order: 2; }
+.deep-feat-text { padding: 20px 0; }
+.deep-feat-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; font-weight: 700;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 4px 10px; border-radius: 6px;
+  margin-bottom: 12px;
+}
+.deep-feat-text h3 {
+  font-size: 28px; font-weight: 800; color: var(--navy);
+  margin-bottom: 12px; line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+.deep-feat-text > p {
+  font-size: 15px; color: var(--gray-700);
+  margin-bottom: 16px; line-height: 1.6;
+}
+.deep-feat-list {
+  list-style: none;
+}
+.deep-feat-list li {
+  font-size: 14px; color: var(--gray-700);
+  padding: 6px 0; line-height: 1.55;
+}
+.deep-feat-list li b { color: var(--navy); }
+
+/* Mockup styles */
+.deep-feat-mockup {
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(15,31,61,.2);
+}
+.mock-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 16px;
+  color: #e2e8f0;
+}
+.mock-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 1.5px;
+  color: var(--gold-bright);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 10px;
+}
+.mock-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px dashed rgba(255,255,255,.08);
+  font-size: 13px;
+}
+.mock-row:last-child { border-bottom: none; }
+.mock-row b { font-weight: 700; color: #fff; }
+.mock-row small { font-size: 10px; color: #94a3b8; }
+.mock-row.danger { color: #fca5a5; }
+.mock-row.danger b { color: #f87171; }
+.mock-row.warn { color: #fcd34d; }
+.mock-row.warn b { color: #fbbf24; }
+.mock-row.success { color: #86efac; }
+.mock-row.success b { color: #4ade80; }
+.mock-ai-tip {
+  margin-top: 12px;
+  background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(212,175,55,.05));
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px; line-height: 1.4;
+  color: #fde68a;
+}
+.mock-ai-tip b { color: var(--gold-bright); }
+
+.mock-stat-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 12px;
+}
+.mock-stat-block {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-left: 3px solid #94a3b8;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.mock-stat-block.green { border-left-color: #4ade80; }
+.mock-stat-block.warn { border-left-color: #fbbf24; }
+.mock-stat-block.gold { border-left-color: var(--gold); grid-column: 1 / -1; }
+.mock-stat-block .lbl { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; }
+.mock-stat-block .val { font-size: 22px; font-weight: 800; color: #fff; margin: 2px 0; }
+.mock-stat-block.green .val { color: #4ade80; }
+.mock-stat-block.warn .val { color: #fbbf24; }
+.mock-stat-block.gold .val { color: var(--gold-bright); }
+.mock-stat-block .sub { font-size: 10px; color: #94a3b8; }
+
+/* Mockup chat */
+.mock-chat {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.mock-chat-bubble {
+  padding: 10px 14px; border-radius: 14px;
+  font-size: 12px; line-height: 1.5;
+  max-width: 85%;
+}
+.mock-chat-bubble.user {
+  background: #2b5278; color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.mock-chat-bubble.bot {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #e2e8f0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.mock-chat-bubble b { color: var(--gold-bright); }
+
+@media (max-width: 768px) {
+  .deep-feat {
+    grid-template-columns: 1fr; gap: 24px;
+    padding: 36px 0;
+  }
+  .deep-feat.reverse .deep-feat-text { order: 0; }
+  .deep-feat-text h3 { font-size: 22px; }
+  .deep-feat-mockup { padding: 14px; }
+  .mock-stat-row { grid-template-columns: 1fr; }
+}
+
 /* ================ AI DEMO ================ */
 .ai-demo {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
@@ -512,6 +653,201 @@ footer .copy { font-size: 12px; }
         <p>Penjualan hari ini, profit, breakdown cash/tempo, top seller, stok menipis — live.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ DETAILED FEATURE HIGHLIGHTS ============ -->
+<section class="section deep-feat-section">
+  <div class="container">
+    <h2>6 Fitur Yang Bikin <span style="background: linear-gradient(135deg, var(--gold-bright), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent">Bisnis Bos Naik Kelas</span></h2>
+    <p class="subtitle">Setiap fitur dirancang khusus untuk pain point owner UMKM Indonesia.</p>
+
+    <!-- Feature 1: Stok + Smart Alert + AI -->
+    <div class="deep-feat">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag">📦 STOK + AI</div>
+        <h3>Smart Stock Alert + AI Integrasi</h3>
+        <p>Tidak ada lagi stok hilang diam-diam atau kelupaan restock. AI bantu pantau stok real-time + rekomendasi cerdas kapan & berapa harus order.</p>
+        <ul class="deep-feat-list">
+          <li>🔔 <b>Notifikasi real-time</b> stok habis / mendekati minimum</li>
+          <li>🤖 <b>AI prediksi</b> kapan stok akan habis berdasarkan velocity penjualan</li>
+          <li>📊 <b>Auto rekomendasi PO</b> dengan jumlah optimal per produk</li>
+          <li>📸 <b>Foto produk visual</b> untuk fast-pick di kasir</li>
+          <li>🏪 <b>Multi-satuan</b> (pcs, dus, karton, liter, kg)</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-card">
+          <div class="mock-head">⚠️ STOK MENIPIS · Live</div>
+          <div class="mock-row danger"><span>Beras Premium 5kg</span><b>2 karung</b></div>
+          <div class="mock-row danger"><span>Indomie Goreng</span><b>3 dus</b></div>
+          <div class="mock-row warn"><span>Kopi Kapal Api</span><b>5 sachet</b></div>
+          <div class="mock-row"><span>Minyak Bimoli 1L</span><b>12 botol</b></div>
+          <div class="mock-ai-tip">
+            🤖 <b>AI Saran:</b> Restock Beras hari ini! Velocity 8 karung/hari → habis besok pagi.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: AI Assistant -->
+    <div class="deep-feat reverse">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag" style="color: var(--cyan); border-color: var(--cyan)">🤖 AI ASSISTANT</div>
+        <h3>Berstock — AI Bot Telegram 24/7</h3>
+        <p>Tinggal chat di Telegram, AI baca data toko bos secara real-time. Owner gak perlu buka aplikasi, gak perlu hitung manual. Tanya apa aja — AI jawab.</p>
+        <ul class="deep-feat-list">
+          <li>💬 <b>12+ jenis pertanyaan</b> tentang stok, sales, piutang, pelanggan</li>
+          <li>⚡ <b>Reply 5 detik</b> dengan data akurat</li>
+          <li>🇮🇩 <b>Bahasa Indonesia</b> casual, bukan AI kaku</li>
+          <li>🔒 <b>Read-only</b> — AMAN, tidak bisa ubah/hapus data</li>
+          <li>📱 <b>Akses dari HP</b> aja, ga perlu laptop</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-chat">
+          <div class="mock-chat-bubble user">Cash hari ini berapa?</div>
+          <div class="mock-chat-bubble bot">
+            💵 <b>Cash: Rp 285jt</b> (4 trx)<br>
+            ⏱️ Tempo: Rp 130jt (1 invoice)<br><br>
+            Total revenue 415jt — masuk kas baru 285jt ya bos.
+          </div>
+          <div class="mock-chat-bubble user">Best seller minggu ini?</div>
+          <div class="mock-chat-bubble bot">
+            🏆 <b>Top 3 minggu ini:</b><br>
+            1. Anggur Merah Gold — 500 ktn<br>
+            2. Vic 500 Orange — 18 ktn<br>
+            3. Singaraja Bremee — 14 ktn<br><br>
+            🔥 Anggur Merah Gold dominasi 80% revenue!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: Piutang Langganan -->
+    <div class="deep-feat">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag" style="color: #c084fc; border-color: #c084fc">💰 PIUTANG PELANGGAN</div>
+        <h3>Piutang Pelanggan Langganan</h3>
+        <p>Tau persis siapa belum bayar berapa, kapan jatuh tempo, dan siapa yang sudah lewat tempo. Tidak ada lagi piutang yang lupa ditagih.</p>
+        <ul class="deep-feat-list">
+          <li>📋 <b>List otomatis</b> pelanggan tempo + status overdue</li>
+          <li>⏱️ <b>Tanggal jatuh tempo</b> tracking + alert mendekati</li>
+          <li>✓ <b>Tandai lunas 1-klik</b> — auto update cashflow</li>
+          <li>📄 <b>Re-print invoice</b> kapan saja untuk reminder</li>
+          <li>💬 <b>WhatsApp link auto-format</b> dari nomor pelanggan</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-card">
+          <div class="mock-head">💰 PIUTANG AKTIF · Total Rp 18.5jt</div>
+          <div class="mock-row danger"><span>⚠️ Pak Budi <small>(7 hari)</small></span><b>Rp 8.5jt</b></div>
+          <div class="mock-row danger"><span>⚠️ PT Maju <small>(3 hari)</small></span><b>Rp 4.2jt</b></div>
+          <div class="mock-row warn"><span>⏱️ Edwin Abraham</span><b>Rp 3.1jt</b></div>
+          <div class="mock-row warn"><span>⏱️ Toko Sumber</span><b>Rp 1.6jt</b></div>
+          <div class="mock-row success"><span>✓ Pak Joni (lunas)</span><b>Rp 1.1jt</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 4: Piutang Produsen / Hutang Supplier -->
+    <div class="deep-feat reverse">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag" style="color: #f97316; border-color: #f97316">📥 HUTANG SUPPLIER</div>
+        <h3>Hutang ke Produsen / Supplier</h3>
+        <p>Kelola PO dan hutang ke supplier dengan rapi. Tidak ada lagi faktur supplier hilang atau telat bayar yang bikin hubungan rusak.</p>
+        <ul class="deep-feat-list">
+          <li>📥 <b>Catat PO</b> dengan nomor, tanggal, jatuh tempo</li>
+          <li>📸 <b>Foto faktur supplier</b> tersimpan permanen di app</li>
+          <li>✨ <b>Auto-create produk</b> baru saat catat PO supplier</li>
+          <li>⚠️ <b>Alert overdue</b> kalau lewat jatuh tempo</li>
+          <li>💵 <b>Tandai lunas</b> setelah transfer ke supplier</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-card">
+          <div class="mock-head">📥 PO SUPPLIER · Total Hutang Rp 24.5jt</div>
+          <div class="mock-row danger"><span>⚠️ PT Sumber Makmur <small>(due 15 Mei)</small></span><b>Rp 12.5jt</b></div>
+          <div class="mock-row warn"><span>⏱️ CV Berkah Jaya <small>(due 18 Mei)</small></span><b>Rp 7jt</b></div>
+          <div class="mock-row warn"><span>⏱️ CV Mega Sukses <small>(due 20 Mei)</small></span><b>Rp 3jt</b></div>
+          <div class="mock-row success"><span>✓ PT Sentosa Abadi (lunas)</span><b>Rp 5.4jt</b></div>
+          <div class="mock-ai-tip" style="background: linear-gradient(135deg, rgba(249,115,22,.1), rgba(249,115,22,.05)); border-color: #f97316">
+            📌 <b>Reminder:</b> 3 PO mau jatuh tempo minggu ini — siapkan transfer.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 5: Pemasukan / Tracking Revenue -->
+    <div class="deep-feat">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag" style="color: var(--green); border-color: var(--green)">💵 PEMASUKAN</div>
+        <h3>Tracking Pemasukan Real-Time</h3>
+        <p>Tau kondisi cashflow toko detik per detik. Pisah antara cash beneran masuk vs piutang baru. Buat keputusan bisnis berdasarkan data, bukan feeling.</p>
+        <ul class="deep-feat-list">
+          <li>📊 <b>Dashboard real-time</b> revenue hari ini, minggu, bulan</li>
+          <li>💵 <b>Breakdown Cash vs Tempo</b> — uang yang sudah masuk kas</li>
+          <li>📅 <b>Laporan custom</b> per tanggal / bulan / tahun / range bebas</li>
+          <li>🏆 <b>Top transaksi</b> + pelanggan paling sering belanja</li>
+          <li>📈 <b>Trend grafik</b> 7 hari + perbandingan periode sebelumnya</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-card">
+          <div class="mock-head">💵 PEMASUKAN HARI INI · 2 Mei 2026</div>
+          <div class="mock-stat-row">
+            <div class="mock-stat-block green">
+              <div class="lbl">Cash Masuk Kas</div>
+              <div class="val">Rp 285jt</div>
+              <div class="sub">4 transaksi · sudah aman</div>
+            </div>
+            <div class="mock-stat-block warn">
+              <div class="lbl">Tempo Belum Bayar</div>
+              <div class="val">Rp 130jt</div>
+              <div class="sub">1 invoice · piutang baru</div>
+            </div>
+          </div>
+          <div class="mock-row"><span>Total Revenue</span><b>Rp 415jt</b></div>
+          <div class="mock-row"><span>vs Hari Kemarin</span><b style="color: var(--green)">↑ 18%</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 6: Profit Analytics -->
+    <div class="deep-feat reverse">
+      <div class="deep-feat-text">
+        <div class="deep-feat-tag" style="color: var(--gold-bright); border-color: var(--gold-bright)">📈 PROFIT</div>
+        <h3>Profit Analytics — Untung Mana yang Real</h3>
+        <p>Bukan cuma omzet — tapi profit beneran. Setiap produk punya margin. Tau mana yang bikin untung gede, mana yang bikin rugi diam-diam.</p>
+        <ul class="deep-feat-list">
+          <li>💰 <b>HPP weighted average</b> otomatis tiap restock</li>
+          <li>📊 <b>Margin per produk</b> — identifikasi produk paling profit</li>
+          <li>📉 <b>Profit per periode</b> dengan trend visual</li>
+          <li>🏆 <b>Best margin produk</b> — fokus jualan yang menguntungkan</li>
+          <li>🐢 <b>Slow moving alert</b> — modal nyangkut di produk gak laku</li>
+        </ul>
+      </div>
+      <div class="deep-feat-mockup">
+        <div class="mock-card">
+          <div class="mock-head">📈 PROFIT BULAN INI · Mei 2026</div>
+          <div class="mock-stat-row">
+            <div class="mock-stat-block gold">
+              <div class="lbl">Total Profit</div>
+              <div class="val">Rp 28jt</div>
+              <div class="sub">Margin rata-rata 4.8%</div>
+            </div>
+          </div>
+          <div class="mock-row"><span>🥇 Anggur Merah Gold</span><b>Profit 12.5%</b></div>
+          <div class="mock-row"><span>🥈 Vic 500 Orange</span><b>Profit 9.8%</b></div>
+          <div class="mock-row"><span>🥉 Konig Dunkle</span><b>Profit 8.4%</b></div>
+          <div class="mock-row danger"><span>⚠️ Singaraja Bremee</span><b>Profit 1.2%</b></div>
+          <div class="mock-ai-tip">
+            🤖 <b>AI Insight:</b> Fokus push 3 produk top — kontribusi 78% profit total!
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
