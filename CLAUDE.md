@@ -402,6 +402,95 @@ state = {
 
 ---
 
+## 🐻 MEMORY BERUANG SUITE (Day 2-3 Marketing & IG Launch)
+
+### 📸 IG @berstock.ai LAUNCHED ✅
+- **Akun:** instagram.com/berstock.ai
+- **Display name:** "Berstock · AI Stock Assistant · POS SYSTEM"
+- **Profile pic:** Template Premium (gold ring + dark navy)
+- **Bio (Versi 2):**
+  ```
+  🚀 Pertama di Indonesia
+  🤖 POS + AI Bot Telegram untuk UMKM
+  Owner tinggal chat, AI yang kerja 🐻
+  👇 Mulai gratis sekarang
+  ```
+- **Status (saat last check):** 3 posts · 9 followers · 123 following · **361 profile views/30 hari** (organic)
+- **Connected:** Facebook (Hendry Pang), WhatsApp button
+- **Top performer:** Reels "Toko Banyak Hilang" 191 views
+- **Insight:** Hook formula "Berapa...?" + "Hilang ga...?" + angka spesifik = engagement tinggi
+
+### 🎨 ASSET MARKETING SUDAH DI-RENDER (Auto by Claude)
+
+**Capability di environment ini (PENTING buat next session):**
+- ✅ **Puppeteer + ffmpeg installed** di system
+- ✅ Bisa render HTML → PNG (puppeteer screenshot)
+- ✅ Bisa render HTML → MP4 (puppeteer frames + ffmpeg encode)
+- ❌ TIDAK BISA generate AI image/video langsung
+- ❌ TIDAK BISA voice over
+
+**Folder asset tersedia:**
+- `/carousel-png/` — 20 PNG slides
+  - `slide-1.png` s/d `slide-5.png` — Carousel cover (5 slides "Owner Toko Stok Hilang Ga")
+  - `pain-a-1.png` s/d `pain-a-5.png` — Carousel A "Berapa Duit Hilang Tiap Bulan?" 💸
+  - `pain-b-1.png` s/d `pain-b-5.png` — Carousel B "Berapa Jam Buang Tugas Manual?" ⏰
+  - `pain-c-1.png` s/d `pain-c-5.png` — Carousel C "Pelanggan Diam-Diam Pergi" 😶
+- `/berstock-reels-15s.mp4` — Reels 20 detik (originally 15s, di-extend ke 20s comfortable)
+- HTML sources: `reels-15s.html`, `reels-20s.html`, `reels-berstock-autoplay.html` (45s), `reels-berstock-b.html`
+- HTML carousels: `carousel-berstock-5.html`, `carousel-pain-3x5.html`, `berstock-carousel-day2.html`
+- `/profile-pic-berstock.html` — 4 template profile picture
+- `/berstock-pitch-deck.html` — 10 slides A4 landscape
+
+### 📅 STRATEGI POSTING (Recommended)
+
+| Hari | Konten | File |
+|---|---|---|
+| Senin Week 1 | Carousel A (Duit Hilang) | `carousel-png/pain-a-*.png` |
+| Rabu Week 1 | Carousel B (Jam Hilang) | `carousel-png/pain-b-*.png` |
+| Sabtu Week 1 | Carousel C (Pelanggan Pergi) | `carousel-png/pain-c-*.png` |
+| Senin Week 2 | Reels Demo 20s | `berstock-reels-15s.mp4` |
+| Rabu Week 2 | Carousel original 5 (intro) | `carousel-png/slide-*.png` |
+| Sabtu Week 2 | Pitch deck export PDF (highlight 1 slide) | `berstock-pitch-deck.html` |
+
+### 💰 Lynk.id Setup
+- URL: lynk.id/hendrypangg
+- 3 produk: E-Book Rp 49.999 / BerBisnis Pro Rp 500rb/bln / BerUang Rp 125rb lifetime
+- **TODO bos:** Aktifkan **Affiliate Program** built-in di Lynk (Marketing Tools → Affiliates)
+- Komisi rekomendasi: E-Book 30%, BerUang 25%, BerBisnis 15% recurring
+
+### 🤝 PROSES ONBOARDING KLIEN
+1. Klien daftar di app `tokountung/app.html`
+2. Bos buka **admin-berstock.html** → provision tenant (butuh ADMIN_KEY)
+3. Bos copy "📩 Pesan untuk Klien" → kirim WA
+4. Klien isi tenant_id + api_key di Pengaturan → Sync
+5. Klien chat `/start <tenant_id>` di @BerstockBot
+6. **PENDING:** ADMIN_KEY belum di-set di Cloudflare Worker secrets
+
+### 🎯 PENDING ACTION (Next Session)
+1. ⏳ **Rotate Cloudflare API Token** (sebelumnya di chat — tidak aman)
+2. ⏳ **Set ADMIN_KEY** di Cloudflare Worker secrets
+3. ⏳ **Setup GitHub Secret CLOUDFLARE_API_TOKEN** untuk auto-deploy bot
+4. ⏳ **Aktifkan Lynk Affiliate**
+5. ⏳ **Upload mascot beruang celebrate** dari Manus → `assets/mascot-berstock.png`
+6. ⏳ **Lanjut Tutorial Feature Flags** Step 3-6 (admin UI toggle, conditional render, customize bot per tenant, testing)
+
+### 🎬 SARAN UNTUK NEXT SESSION
+- Kalau bos minta video/carousel/visual marketing → langsung pakai puppeteer + ffmpeg yang udah installed
+- Pattern HTML render: lihat `carousel-pain-3x5.html` (best practice — multi-slide single file, naming convention pain-{a,b,c}-{1..5})
+- Pattern MP4 render: lihat `reels-15s.html` + `/tmp/render-reels.js` (timing JSON config + scene fade transitions)
+- Branding warna: Navy `#0a1628` + Magenta `#e91e63` + Gold `#d4af37` + Cyan `#06b6d4`
+- Mascot: pakai `tokountung/assets/logo-berbisnis.png` (beruang berdasi)
+- Format: Reels 1080×1920 vertical, Carousel 1080×1080 square
+
+### 💡 CONTENT FORMULA YANG TERBUKTI VIRAL
+1. **Pertanyaan provokatif** — "Berapa...", "Tau gak...", "Hilang ga..."
+2. **Angka spesifik shocking** — "3 dari 5", "5-15%", "96%", "60 jam"
+3. **Emoji emosi** — 😰💸⏰😶🔥
+4. **Hook 3 detik pertama** harus catch attention
+5. **CTA jelas** — Follow + DM "demo"
+
+---
+
 ## 💡 PRINCIPLES
 
 - **Build for paying customer first**, fitur kedua → user sudah ada calon pembeli
