@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>3 Carousel Pain-Point @berstock.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628;
+  --navy-2: #0f1f3d;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+  --magenta: #e91e63;
+  --magenta-light: #ff4081;
+  --cyan: #06b6d4;
+  --green: #22c55e;
+  --red: #ef4444;
+}
+html, body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a0a; color: #fff; }
+
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  background: var(--navy);
+}
+.slide::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 25% 15%, rgba(233,30,99,.18), transparent 45%),
+              radial-gradient(ellipse at 75% 85%, rgba(212,175,55,.18), transparent 45%);
+  pointer-events: none; z-index: 1;
+}
+.slide::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 1;
+}
+
+.handle {
+  position: absolute; top: 40px; right: 40px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  padding: 8px 16px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700;
+  color: var(--gold-bright); letter-spacing: 1px; z-index: 5;
+}
+.page-num {
+  position: absolute; bottom: 40px; right: 40px;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: rgba(255,255,255,.5); letter-spacing: 2px; z-index: 5;
+}
+.swipe-arrow {
+  position: absolute; bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px; color: var(--gold-bright);
+  font-weight: 800; z-index: 5;
+}
+
+/* Common slide layout */
+.slide-content { position: relative; z-index: 3; padding: 90px 70px; height: 100%; display: flex; flex-direction: column; }
+.slide-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; letter-spacing: 4px; font-weight: 700;
+  color: var(--gold-bright);
+  margin-bottom: 16px;
+}
+.slide-title {
+  font-size: 76px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -2.5px;
+  margin-bottom: 30px;
+}
+.red-line {
+  display: inline-block; position: relative;
+  color: var(--magenta-light);
+}
+.red-line::after {
+  content: ''; position: absolute;
+  bottom: 6px; left: 0; right: 0;
+  height: 8px;
+  background: var(--magenta);
+  z-index: -1;
+  transform: skewY(-2deg);
+}
+.grad-gold {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.grad-cyan {
+  background: linear-gradient(135deg, var(--cyan), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* Cover style */
+.cover { align-items: center; justify-content: center; text-align: center; }
+.cover .slide-title { font-size: 96px; }
+.cover .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(233,30,99,.15);
+  border: 1px solid rgba(233,30,99,.5);
+  color: var(--magenta-light);
+  padding: 10px 22px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; letter-spacing: 3px; font-weight: 700;
+  margin-bottom: 36px;
+}
+.cover .badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--magenta-light); }
+.cover .subtitle { font-size: 28px; color: #cbd5e1; max-width: 800px; }
+.cover .swipe-arrow { font-size: 28px; }
+
+/* Stats slide */
+.stats-block {
+  background: linear-gradient(135deg, rgba(233,30,99,.12), rgba(212,175,55,.08));
+  border: 2px solid var(--magenta);
+  border-radius: 24px;
+  padding: 50px 40px;
+  text-align: center;
+  margin: 30px 0;
+}
+.stats-num {
+  font-size: 180px; font-weight: 900;
+  line-height: 1; letter-spacing: -6px;
+  background: linear-gradient(135deg, var(--magenta-light), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stats-label {
+  font-size: 28px; color: #fff; font-weight: 700;
+  margin-top: 12px;
+}
+.stats-source {
+  font-size: 16px; color: #94a3b8; margin-top: 8px;
+  font-style: italic;
+}
+
+/* List slide */
+.cause-list { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
+.cause-item {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(248,113,113,.3);
+  border-left: 6px solid var(--magenta-light);
+  border-radius: 16px;
+  padding: 22px 28px;
+  display: flex; align-items: center; gap: 20px;
+}
+.cause-item .ic { font-size: 48px; flex-shrink: 0; }
+.cause-item h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.cause-item p { font-size: 16px; color: #cbd5e1; line-height: 1.4; }
+
+/* Solution slide */
+.solution { align-items: center; justify-content: center; text-align: center; }
+.solution .bear {
+  width: 280px; height: 280px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  padding: 8px;
+  border-radius: 50%;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 60px rgba(212,175,55,.4);
+}
+.solution .bear img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
+.solution h2 { font-size: 76px; font-weight: 900; line-height: 1.0; letter-spacing: -2px; margin-bottom: 20px; }
+.solution .desc { font-size: 26px; color: #cbd5e1; max-width: 800px; line-height: 1.4; margin-bottom: 28px; }
+.solution .feat-pills {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+}
+.solution .feat-pills span {
+  background: rgba(212,175,55,.12);
+  border: 1px solid rgba(212,175,55,.4);
+  color: var(--gold-bright);
+  padding: 10px 20px; border-radius: 999px;
+  font-size: 18px; font-weight: 700;
+}
+
+/* CTA slide */
+.cta { align-items: center; justify-content: center; text-align: center; }
+.cta .arrow-top { font-size: 100px; color: var(--gold-bright); margin-bottom: 8px; font-weight: 900; }
+.cta h2 { font-size: 96px; font-weight: 900; line-height: 1.0; letter-spacing: -3px; margin-bottom: 24px; }
+.cta .handle-big {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  color: #fff; padding: 24px 48px; border-radius: 100px;
+  font-size: 38px; font-weight: 900;
+  display: inline-block;
+  box-shadow: 0 20px 60px rgba(233,30,99,.4);
+  margin: 24px 0;
+}
+.cta .desc { font-size: 24px; color: #cbd5e1; margin-top: 30px; max-width: 700px; }
+.cta .actions { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.cta .action-item {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; padding: 16px 28px; font-size: 22px; color: #fff; font-weight: 600;
+  display: flex; align-items: center; gap: 12px;
+}
+.cta .action-item .num {
+  background: var(--gold); color: var(--navy);
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 18px;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- CAROUSEL A — "BERAPA DUIT HILANG TIAP BULAN?" -->
+<!-- ============================================================ -->
+
+<div class="slide" id="a-1">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cover">
+    <div class="badge"><span class="dot"></span>UNTUK OWNER UMKM</div>
+    <h1 class="slide-title">
+      Berapa <span class="red-line">Juta</span><br>
+      Yang Hilang<br>
+      Dari Toko Kamu<br>
+      Bulan Ini? 💸
+    </h1>
+    <p class="subtitle">Tau gak, sebagian besar owner UMKM <b style="color: var(--gold-bright)">gak sadar duit bocor di sini</b></p>
+    <div class="swipe-arrow">SWIPE →</div>
+  </div>
+  <div class="page-num">01 / 05</div>
+</div>
+
+<div class="slide" id="a-2">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">FAKTA · 02</div>
+    <h2 class="slide-title">Realita yang <span class="red-line">Bikin Kaget</span></h2>
+    <div class="stats-block">
+      <div class="stats-num">5-15%</div>
+      <div class="stats-label">revenue UMKM HILANG tiap bulan</div>
+      <div class="stats-source">Studi UMKM Indonesia · 2024</div>
+    </div>
+    <p style="font-size: 26px; color: #cbd5e1; line-height: 1.5; text-align: center; margin-top: 12px;">
+      Toko omzet <b style="color: var(--gold-bright)">Rp 100jt/bulan</b><br>
+      = potensi rugi <b style="color: var(--magenta-light)">Rp 5-15jt/bulan</b> 😱
+    </p>
+  </div>
+  <div class="page-num">02 / 05</div>
+</div>
+
+<div class="slide" id="a-3">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">PENYEBAB · 03</div>
+    <h2 class="slide-title">4 Cara Duit <span class="red-line">"Hilang"</span> Tanpa Sadar</h2>
+    <div class="cause-list">
+      <div class="cause-item"><div class="ic">📦</div><div><h3>Stok kepoyo / kadaluarsa</h3><p>Lupa cek expired, expired = rugi modal 100%</p></div></div>
+      <div class="cause-item"><div class="ic">💸</div><div><h3>Piutang lupa ditagih</h3><p>Pelanggan tempo numpuk, lupa siapa yang belum bayar</p></div></div>
+      <div class="cause-item"><div class="ic">⏰</div><div><h3>Telat bayar supplier</h3><p>Kena denda + bunga karena lupa jatuh tempo</p></div></div>
+      <div class="cause-item"><div class="ic">🧮</div><div><h3>Salah hitung HPP</h3><p>Margin terlalu kecil, untung kelihatan padahal rugi</p></div></div>
+    </div>
+  </div>
+  <div class="page-num">03 / 05</div>
+</div>
+
+<div class="slide" id="a-4">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content solution">
+    <div class="slide-tag">SOLUSI · 04</div>
+    <div class="bear"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+    <h2><span class="grad-gold">Berstock.ai</span></h2>
+    <p class="desc">AI Asisten yang <b style="color: var(--gold-bright)">monitor semua kebocoran</b> bisnis kamu otomatis 🤖</p>
+    <div class="feat-pills">
+      <span>📦 Alert stok kepoyo</span>
+      <span>💸 Tracking piutang</span>
+      <span>⏰ Reminder supplier</span>
+      <span>📊 HPP otomatis</span>
+    </div>
+  </div>
+  <div class="page-num">04 / 05</div>
+</div>
+
+<div class="slide" id="a-5">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cta">
+    <div class="arrow-top">↓</div>
+    <h2>Stop <span class="grad-gold">Bocor Duit</span></h2>
+    <div class="handle-big">FOLLOW @berstock.ai</div>
+    <p class="desc">Lalu DM kami untuk demo gratis 7 hari 🎁</p>
+    <div class="actions">
+      <div class="action-item"><div class="num">1</div>Follow akun ini ⭐</div>
+      <div class="action-item"><div class="num">2</div>DM "demo" ke kami</div>
+      <div class="action-item"><div class="num">3</div>Reply 5 menit ⚡</div>
+    </div>
+  </div>
+  <div class="page-num">05 / 05</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CAROUSEL B — "BERAPA JAM BUANG UNTUK TUGAS MANUAL?" -->
+<!-- ============================================================ -->
+
+<div class="slide" id="b-1">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cover">
+    <div class="badge"><span class="dot"></span>UNTUK OWNER YANG SIBUK</div>
+    <h1 class="slide-title">
+      Berapa <span class="red-line">Jam</span><br>
+      Hilang Tiap Hari<br>
+      Buat Cek Stok &<br>
+      Rekap Manual? ⏰
+    </h1>
+    <p class="subtitle">Owner pintar <b style="color: var(--gold-bright)">otomatisasi tugas repetitif</b> — biar fokus ke strategi</p>
+    <div class="swipe-arrow">SWIPE →</div>
+  </div>
+  <div class="page-num">01 / 05</div>
+</div>
+
+<div class="slide" id="b-2">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">REALITA · 02</div>
+    <h2 class="slide-title">Owner UMKM <span class="red-line">Buang</span> Waktu Segini</h2>
+    <div class="stats-block">
+      <div class="stats-num">2-3</div>
+      <div class="stats-label">JAM/HARI untuk tugas repetitif manual</div>
+      <div class="stats-source">Survey Owner UMKM Indonesia</div>
+    </div>
+    <p style="font-size: 26px; color: #cbd5e1; line-height: 1.5; text-align: center; margin-top: 12px;">
+      = <b style="color: var(--gold-bright)">60-90 jam/bulan</b><br>
+      atau <b style="color: var(--magenta-light)">~12 hari kerja terbuang</b> 😩
+    </p>
+  </div>
+  <div class="page-num">02 / 05</div>
+</div>
+
+<div class="slide" id="b-3">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">TUGAS BUANG WAKTU · 03</div>
+    <h2 class="slide-title">4 Tugas yang <span class="red-line">Curi Waktu</span> Owner</h2>
+    <div class="cause-list">
+      <div class="cause-item"><div class="ic">📋</div><div><h3>Rekap penjualan harian</h3><p>Buka Excel, input satu-satu, format laporan</p></div></div>
+      <div class="cause-item"><div class="ic">🔍</div><div><h3>Cek stok manual ke gudang</h3><p>Hitung fisik tiap produk, sambil ingat-ingat data lama</p></div></div>
+      <div class="cause-item"><div class="ic">🧮</div><div><h3>Hitung HPP & profit margin</h3><p>Kalkulator + Excel, tiap kali harga modal naik</p></div></div>
+      <div class="cause-item"><div class="ic">📞</div><div><h3>Telpon supplier & nagih piutang</h3><p>Nyari nomor, lupa siapa, ulang penjelasan</p></div></div>
+    </div>
+  </div>
+  <div class="page-num">03 / 05</div>
+</div>
+
+<div class="slide" id="b-4">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content solution">
+    <div class="slide-tag">SOLUSI · 04</div>
+    <div class="bear"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+    <h2><span class="grad-cyan">5 Detik vs 30 Menit</span></h2>
+    <p class="desc">Tinggal chat AI di Telegram, semua data toko langsung jawab 🤖<br><br>
+      <b style="color: var(--gold-bright); font-size: 32px">"Stok habis apa?" → 5 detik</b></p>
+    <div class="feat-pills">
+      <span>⚡ Real-time</span>
+      <span>🤖 24/7 Online</span>
+      <span>🇮🇩 Bahasa Indonesia</span>
+      <span>📱 Dari HP doang</span>
+    </div>
+  </div>
+  <div class="page-num">04 / 05</div>
+</div>
+
+<div class="slide" id="b-5">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cta">
+    <div class="arrow-top">↓</div>
+    <h2>Hemat <span class="grad-gold">60 Jam/Bulan</span></h2>
+    <div class="handle-big">FOLLOW @berstock.ai</div>
+    <p class="desc">Lalu DM "demo" — coba gratis 7 hari ⚡</p>
+    <div class="actions">
+      <div class="action-item"><div class="num">1</div>Follow akun ini ⭐</div>
+      <div class="action-item"><div class="num">2</div>DM "demo" ke kami</div>
+      <div class="action-item"><div class="num">3</div>Reply 5 menit ⚡</div>
+    </div>
+  </div>
+  <div class="page-num">05 / 05</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CAROUSEL C — "PELANGGAN DIAM-DIAM PERGI" -->
+<!-- ============================================================ -->
+
+<div class="slide" id="c-1">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cover">
+    <div class="badge"><span class="dot"></span>HARSH TRUTH</div>
+    <h1 class="slide-title">
+      Pelanggan Kamu<br>
+      <span class="red-line">Diam-Diam</span><br>
+      Pergi —<br>
+      Tau Gak? 😶
+    </h1>
+    <p class="subtitle">Mereka <b style="color: var(--gold-bright)">gak komplain</b>. Cuma <b style="color: var(--magenta-light)">stop datang</b>. Kenapa?</p>
+    <div class="swipe-arrow">SWIPE →</div>
+  </div>
+  <div class="page-num">01 / 05</div>
+</div>
+
+<div class="slide" id="c-2">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">DATA · 02</div>
+    <h2 class="slide-title">Pelanggan Pergi <span class="red-line">Tanpa Bilang</span></h2>
+    <div class="stats-block">
+      <div class="stats-num">96%</div>
+      <div class="stats-label">pelanggan yang kecewa GAK komplain</div>
+      <div class="stats-source">Customer Experience Study</div>
+    </div>
+    <p style="font-size: 26px; color: #cbd5e1; line-height: 1.5; text-align: center; margin-top: 12px;">
+      Mereka cuma <b style="color: var(--magenta-light)">tidak balik lagi</b><br>
+      lalu <b style="color: var(--gold-bright)">cerita ke teman & keluarga</b> 🗣️
+    </p>
+  </div>
+  <div class="page-num">02 / 05</div>
+</div>
+
+<div class="slide" id="c-3">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content">
+    <div class="slide-tag">ALASAN · 03</div>
+    <h2 class="slide-title">4 Hal yang Bikin <span class="red-line">Pelanggan Pergi</span></h2>
+    <div class="cause-list">
+      <div class="cause-item"><div class="ic">📦</div><div><h3>Stok kosong saat butuh</h3><p>Datang jauh-jauh, barang habis. Kapok!</p></div></div>
+      <div class="cause-item"><div class="ic">⏱️</div><div><h3>Owner gak responsif</h3><p>Tanya stok via WA, balas 3 hari kemudian</p></div></div>
+      <div class="cause-item"><div class="ic">📋</div><div><h3>Lupa info diskon/promo</h3><p>Pelanggan loyal gak dapat info, beli di tempat lain</p></div></div>
+      <div class="cause-item"><div class="ic">💔</div><div><h3>Gak ada follow up</h3><p>Beli sekali, lupa eksis. Customer 1x doang</p></div></div>
+    </div>
+  </div>
+  <div class="page-num">03 / 05</div>
+</div>
+
+<div class="slide" id="c-4">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content solution">
+    <div class="slide-tag">SOLUSI · 04</div>
+    <div class="bear"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+    <h2><span class="grad-gold">AI Bantu Retain</span></h2>
+    <p class="desc">Berstock kasih insight pelanggan + alert stok kritis<br>= owner <b style="color: var(--gold-bright)">selalu siap</b> melayani 🚀</p>
+    <div class="feat-pills">
+      <span>👥 Customer 360°</span>
+      <span>📦 Alert stok habis</span>
+      <span>💬 Reply 5 detik</span>
+      <span>📊 History pelanggan</span>
+    </div>
+  </div>
+  <div class="page-num">04 / 05</div>
+</div>
+
+<div class="slide" id="c-5">
+  <div class="handle">@berstock.ai</div>
+  <div class="slide-content cta">
+    <div class="arrow-top">↓</div>
+    <h2>Pertahankan <span class="grad-gold">Pelanggan</span></h2>
+    <div class="handle-big">FOLLOW @berstock.ai</div>
+    <p class="desc">Lalu DM "demo" — coba gratis 7 hari 🎁</p>
+    <div class="actions">
+      <div class="action-item"><div class="num">1</div>Follow akun ini ⭐</div>
+      <div class="action-item"><div class="num">2</div>DM "demo" ke kami</div>
+      <div class="action-item"><div class="num">3</div>Reply 5 menit ⚡</div>
+    </div>
+  </div>
+  <div class="page-num">05 / 05</div>
+</div>
+
+</body>
+</html>
