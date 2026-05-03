@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Carousel 5 Slides · @berstock.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628;
+  --navy-2: #0f1f3d;
+  --navy-3: #142847;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+  --magenta: #e91e63;
+  --magenta-light: #ff4081;
+  --cyan: #06b6d4;
+  --green: #22c55e;
+  --red: #ef4444;
+  --white: #ffffff;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0a0a0a; color: #fff;
+  margin: 0; padding: 0;
+}
+
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  background: var(--navy);
+}
+
+/* Common: nebula + grid */
+.slide::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(233,30,99,.18), transparent 45%),
+    radial-gradient(ellipse at 75% 85%, rgba(212,175,55,.18), transparent 45%);
+  pointer-events: none; z-index: 1;
+}
+.slide::after {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 1;
+}
+
+/* Watermark/handle on every slide */
+.handle {
+  position: absolute; top: 40px; right: 40px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 8px 16px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; font-weight: 700;
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+  z-index: 5;
+}
+.page-num {
+  position: absolute; bottom: 40px; right: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; color: rgba(255,255,255,.5);
+  letter-spacing: 2px;
+  z-index: 5;
+}
+.swipe-cue {
+  position: absolute; bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; color: rgba(255,255,255,.55);
+  font-weight: 600;
+  z-index: 5;
+}
+
+/* ============ SLIDE 1 — COVER HOOK ============ */
+.s1 { padding: 90px 70px; align-items: center; justify-content: center; text-align: center; }
+.s1 .glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(212,175,55,.3), transparent 60%);
+  filter: blur(40px);
+  z-index: 1;
+}
+.s1 .content { position: relative; z-index: 3; }
+.s1 .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(233,30,99,.15);
+  border: 1px solid rgba(233,30,99,.5);
+  color: var(--magenta-light);
+  padding: 10px 22px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; letter-spacing: 3px; font-weight: 700;
+  margin-bottom: 36px;
+}
+.s1 .badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--magenta-light); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.s1 h1 {
+  font-size: 96px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -3px;
+  margin-bottom: 30px;
+}
+.s1 h1 .grad-gold {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s1 h1 .red-line {
+  display: inline-block; position: relative;
+  color: var(--magenta-light);
+}
+.s1 h1 .red-line::after {
+  content: ''; position: absolute;
+  bottom: 6px; left: 0; right: 0;
+  height: 8px;
+  background: var(--magenta);
+  z-index: -1;
+  transform: skewY(-2deg);
+}
+.s1 .subtitle {
+  font-size: 28px; color: #cbd5e1;
+  font-weight: 500;
+  max-width: 800px;
+}
+.s1 .swipe-arrow {
+  margin-top: 50px;
+  font-size: 32px;
+  color: var(--gold-bright);
+  font-weight: 800;
+  animation: arrow-slide 1.5s infinite;
+}
+@keyframes arrow-slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(15px); }
+}
+
+/* ============ SLIDE 2 — PROBLEM ============ */
+.s2 { padding: 90px 70px; }
+.s2 .top-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; color: var(--gold-bright);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  z-index: 3; position: relative;
+}
+.s2 h2 {
+  font-size: 70px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -2px;
+  margin-bottom: 50px;
+  position: relative; z-index: 3;
+}
+.s2 h2 .red {
+  background: linear-gradient(135deg, var(--magenta-light), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s2 .pain-list {
+  display: flex; flex-direction: column;
+  gap: 18px;
+  position: relative; z-index: 3;
+}
+.s2 .pain {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(248,113,113,.3);
+  border-left: 6px solid var(--magenta-light);
+  border-radius: 16px;
+  padding: 22px 28px;
+  display: flex; align-items: center; gap: 20px;
+}
+.s2 .pain .ic { font-size: 48px; flex-shrink: 0; }
+.s2 .pain h3 {
+  font-size: 22px; font-weight: 800; color: #fff;
+  margin-bottom: 4px;
+}
+.s2 .pain p {
+  font-size: 16px; color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* ============ SLIDE 3 — SOLUTION ============ */
+.s3 { padding: 90px 70px; align-items: center; justify-content: center; text-align: center; }
+.s3 .top-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; color: var(--cyan);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  position: relative; z-index: 3;
+}
+.s3 .bear {
+  width: 280px; height: 280px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  padding: 8px;
+  border-radius: 50%;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 60px rgba(212,175,55,.4);
+  position: relative; z-index: 3;
+}
+.s3 .bear img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
+.s3 h2 {
+  font-size: 76px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -2px;
+  margin-bottom: 20px;
+  position: relative; z-index: 3;
+}
+.s3 h2 .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s3 .desc {
+  font-size: 26px; color: #cbd5e1;
+  font-weight: 500;
+  max-width: 800px;
+  line-height: 1.4;
+  position: relative; z-index: 3;
+  margin-bottom: 36px;
+}
+.s3 .features-row {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  justify-content: center;
+  position: relative; z-index: 3;
+}
+.s3 .feat-pill {
+  background: rgba(212,175,55,.12);
+  border: 1px solid rgba(212,175,55,.4);
+  color: var(--gold-bright);
+  padding: 10px 20px; border-radius: 999px;
+  font-size: 18px; font-weight: 700;
+}
+
+/* ============ SLIDE 4 — CHAT DEMO ============ */
+.s4 { padding: 90px 70px; }
+.s4 .top-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; color: var(--cyan);
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  position: relative; z-index: 3;
+}
+.s4 h2 {
+  font-size: 56px; font-weight: 900;
+  line-height: 1.05; letter-spacing: -2px;
+  margin-bottom: 36px;
+  position: relative; z-index: 3;
+}
+.s4 h2 .grad {
+  background: linear-gradient(135deg, var(--cyan), var(--gold-bright));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s4 .tg-frame {
+  background: #17212b;
+  border-radius: 28px;
+  border: 8px solid #1a1a1a;
+  padding: 24px;
+  position: relative; z-index: 3;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5),
+              0 0 100px rgba(6,182,212,.2);
+}
+.s4 .tg-head {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 18px;
+}
+.s4 .tg-head .av {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.s4 .tg-head .name { font-size: 22px; font-weight: 700; color: #fff; }
+.s4 .tg-head .status { font-size: 14px; color: #4ade80; display: flex; align-items: center; gap: 5px; }
+.s4 .tg-head .status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #4ade80; }
+.s4 .tg-bubble {
+  padding: 18px 24px; border-radius: 22px;
+  font-size: 22px; line-height: 1.45;
+  margin-bottom: 12px; max-width: 85%;
+}
+.s4 .tg-bubble.user {
+  background: #2b5278; color: #fff;
+  margin-left: auto;
+  border-bottom-right-radius: 6px;
+}
+.s4 .tg-bubble.bot {
+  background: #182533;
+  border: 1px solid rgba(255,255,255,.06);
+  color: #e2e8f0;
+  border-bottom-left-radius: 6px;
+}
+.s4 .tg-bubble b { color: var(--gold-bright); }
+.s4 .tg-bubble .red { color: #f87171; font-weight: 800; }
+.s4 .tg-bubble .green { color: #4ade80; }
+.s4 .reply-time {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 18px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  position: relative; z-index: 3;
+}
+
+/* ============ SLIDE 5 — CTA ============ */
+.s5 {
+  padding: 80px 70px;
+  align-items: center; justify-content: center; text-align: center;
+}
+.s5 .glow-cta {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(233,30,99,.25), transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(212,175,55,.25), transparent 50%);
+  filter: blur(30px);
+  z-index: 1;
+}
+.s5 .content { position: relative; z-index: 3; }
+.s5 .arrow-top {
+  font-size: 100px;
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.s5 h2 {
+  font-size: 90px; font-weight: 900;
+  line-height: 1.0; letter-spacing: -3px;
+  margin-bottom: 24px;
+}
+.s5 h2 .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.s5 .handle-big {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  color: #fff;
+  padding: 24px 48px;
+  border-radius: 100px;
+  font-size: 38px;
+  font-weight: 900;
+  display: inline-block;
+  margin: 24px 0;
+  box-shadow: 0 20px 60px rgba(233,30,99,.4);
+}
+.s5 .desc {
+  font-size: 24px; color: #cbd5e1;
+  margin-top: 30px;
+  max-width: 700px;
+}
+.s5 .actions {
+  margin-top: 50px;
+  display: flex; flex-direction: column; gap: 12px;
+  align-items: center;
+}
+.s5 .action-item {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  padding: 16px 28px;
+  font-size: 22px; color: #fff;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 12px;
+}
+.s5 .action-item .num {
+  background: var(--gold);
+  color: var(--navy);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 18px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 ============ -->
+<div class="slide s1" id="slide-1">
+  <div class="glow"></div>
+  <div class="handle">@berstock.ai</div>
+  <div class="content">
+    <div class="badge"><span class="dot"></span>UNTUK OWNER UMKM</div>
+    <h1>
+      Owner Toko,<br>
+      Stok Kamu<br>
+      <span class="red-line">Hilang Ga?</span>
+    </h1>
+    <p class="subtitle">Tau gak, <b style="color: var(--gold-bright)">3 dari 5 owner</b> kehilangan jutaan rupiah/bulan tanpa sadar 😰</p>
+    <div class="swipe-arrow">SWIPE →</div>
+  </div>
+  <div class="page-num">01 / 05</div>
+</div>
+
+<!-- ============ SLIDE 2 ============ -->
+<div class="slide s2" id="slide-2">
+  <div class="handle">@berstock.ai</div>
+  <div class="top-num">PROBLEM · 02</div>
+  <h2>Owner UMKM Sering<br><span class="red">Kehilangan Cuan</span> Karena Ini:</h2>
+  <div class="pain-list">
+    <div class="pain">
+      <div class="ic">📵</div>
+      <div>
+        <h3>Tidak bisa pantau stok dari luar kota</h3>
+        <p>Telpon karyawan? Lambat. Lupa cek? Stok kosong tanpa sadar.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <div class="ic">😵</div>
+      <div>
+        <h3>Piutang pelanggan numpuk</h3>
+        <p>Siapa belum bayar berapa? Cari di buku catatan satu-satu.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <div class="ic">📦</div>
+      <div>
+        <h3>Lupa hutang ke supplier</h3>
+        <p>Faktur hilang. Pas dikejar baru sadar telat bayar.</p>
+      </div>
+    </div>
+    <div class="pain">
+      <div class="ic">📊</div>
+      <div>
+        <h3>Laporan manual tiap bulan</h3>
+        <p>Bikin laporan untung-rugi pakai Excel. Capek.</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">02 / 05</div>
+</div>
+
+<!-- ============ SLIDE 3 ============ -->
+<div class="slide s3" id="slide-3">
+  <div class="handle">@berstock.ai</div>
+  <div class="top-num">SOLUTION · 03</div>
+  <div class="bear"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" /></div>
+  <h2><span class="grad">Berstock.ai</span></h2>
+  <p class="desc">
+    AI Asisten Stok pertama di Indonesia<br>
+    yang bisa kamu ajak ngobrol di Telegram 🤖
+  </p>
+  <div class="features-row">
+    <div class="feat-pill">⚡ Reply 5 detik</div>
+    <div class="feat-pill">🇮🇩 Bahasa Indonesia</div>
+    <div class="feat-pill">🔒 Aman & Private</div>
+    <div class="feat-pill">🌙 24/7 Online</div>
+  </div>
+  <div class="page-num">03 / 05</div>
+</div>
+
+<!-- ============ SLIDE 4 ============ -->
+<div class="slide s4" id="slide-4">
+  <div class="handle">@berstock.ai</div>
+  <div class="top-num">DEMO · 04</div>
+  <h2>Tinggal <span class="grad">Chat di Telegram</span></h2>
+  <div class="tg-frame">
+    <div class="tg-head">
+      <div class="av">🐻</div>
+      <div>
+        <div class="name">@BerstockBot</div>
+        <div class="status">online · Claude AI</div>
+      </div>
+    </div>
+    <div class="tg-bubble user">Stok habis apa aja?</div>
+    <div class="tg-bubble bot">
+      🔥 <b>3 barang stok kritis:</b><br><br>
+      • Beras Premium — sisa <span class="red">2 karung</span><br>
+      • Indomie Goreng — <span class="red">3 dus</span><br>
+      • Kopi Kapal Api — <span class="red"><b>HABIS!</b></span>
+    </div>
+    <div class="tg-bubble user">Cash hari ini?</div>
+    <div class="tg-bubble bot">
+      💵 <span class="green"><b>Rp 285.000.000</b></span><br>
+      4 transaksi sudah masuk kas
+    </div>
+  </div>
+  <div class="reply-time">⚡ AI jawab dalam 5 detik. Owner tidur nyenyak. 🐻</div>
+  <div class="page-num">04 / 05</div>
+</div>
+
+<!-- ============ SLIDE 5 — CTA ============ -->
+<div class="slide s5" id="slide-5">
+  <div class="glow-cta"></div>
+  <div class="handle">@berstock.ai</div>
+  <div class="content">
+    <div class="arrow-top">↓</div>
+    <h2>Mau <span class="grad">Coba Gratis?</span></h2>
+    <div class="handle-big">FOLLOW @berstock.ai</div>
+    <p class="desc">Lalu DM kami untuk demo gratis 7 hari 🎁</p>
+    <div class="actions">
+      <div class="action-item"><div class="num">1</div>Follow akun ini ⭐</div>
+      <div class="action-item"><div class="num">2</div>DM "Saya mau demo Berstock"</div>
+      <div class="action-item"><div class="num">3</div>Tunggu reply 5 menit ⚡</div>
+    </div>
+  </div>
+  <div class="page-num">05 / 05</div>
+</div>
+
+</body>
+</html>
