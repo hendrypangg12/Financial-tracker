@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BerSatu Suite — Hendry Phang</title>
+<meta name="description" content="Ekosistem AI untuk UMKM Indonesia: BerUang · BerBisnis · Berstock" />
+<meta name="theme-color" content="#8b5a2b" />
+<link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=2" />
+<link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=2" />
+<meta property="og:title" content="BerSatu Suite — Hendry Phang" />
+<meta property="og:description" content="Personal finance · Kasir UMKM · AI Agent Telegram. Pilih layanan Anda." />
+<meta property="og:image" content="assets/logo-berbisnis.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #fbf6ee;
+  --cream-deep: #f0e9d8;
+  --brown: #8b5a2b;
+  --brown-dark: #5d3a1a;
+  --ink: #4a3328;
+  --ink-soft: #6e5a4a;
+  --gold: #c9a352;
+  --gold-dark: #a3823a;
+  --navy: #1e3a5f;
+  --green: #16a34a;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(180deg, #fef3e2 0%, var(--cream) 50%, #f5ebd4 100%);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 480px; margin: 0 auto;
+  padding: 40px 20px 60px;
+  position: relative;
+}
+.wrap::before {
+  content: '💰'; position: absolute; top: 60px; right: -10px;
+  font-size: 60px; opacity: .2; transform: rotate(15deg);
+}
+.wrap::after {
+  content: '🪙'; position: absolute; top: 200px; left: -15px;
+  font-size: 50px; opacity: .15; transform: rotate(-20deg);
+}
+
+.header { text-align: center; margin-bottom: 36px; position: relative; z-index: 1; }
+.avatar {
+  width: 130px; height: 130px; border-radius: 28px;
+  background: #fff; padding: 12px; margin: 0 auto 18px;
+  box-shadow: 0 16px 50px rgba(139,90,43,.3), 0 0 0 6px rgba(255,255,255,.5);
+}
+.avatar img { width: 100%; height: 100%; object-fit: contain; }
+.name {
+  font-size: 28px; font-weight: 900; letter-spacing: -.5px;
+  color: var(--brown-dark); margin-bottom: 6px;
+}
+.handle { font-size: 15px; color: var(--brown); margin-bottom: 12px; }
+.handle a { color: var(--brown); text-decoration: none; }
+.tagline {
+  font-family: 'Caveat', cursive; font-size: 24px;
+  color: var(--gold-dark); font-weight: 700;
+  margin-bottom: 4px;
+}
+.bio {
+  font-size: 14px; color: var(--ink-soft);
+  line-height: 1.5; max-width: 360px; margin: 0 auto;
+}
+.bio b { color: var(--brown-dark); }
+
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 800; letter-spacing: 2px;
+  color: var(--brown); text-transform: uppercase;
+  margin: 28px 4px 14px;
+}
+.section-title::before, .section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--cream-deep);
+}
+
+.link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; border-radius: 18px;
+  background: #fff; border: 2px solid var(--cream-deep);
+  text-decoration: none; color: var(--ink);
+  margin-bottom: 12px;
+  transition: all .15s;
+  box-shadow: 0 4px 14px rgba(74,51,40,.06);
+}
+.link:hover, .link:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(74,51,40,.12);
+  border-color: var(--gold);
+}
+.link .ico {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 26px;
+  flex: 0 0 auto;
+  background: var(--cream-deep);
+}
+.link .body { flex: 1; min-width: 0; }
+.link .title {
+  font-size: 16px; font-weight: 800; color: var(--brown-dark);
+  margin-bottom: 2px;
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+}
+.link .desc { font-size: 13px; color: var(--ink-soft); line-height: 1.35; }
+.link .arrow { font-size: 22px; color: var(--gold); flex: 0 0 auto; font-weight: 800; }
+
+.pill {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.pill-trial { background: #dbeafe; color: #1e40af; }
+.pill-pro { background: var(--gold); color: var(--brown-dark); }
+.pill-free { background: #d1fae5; color: #065f46; }
+.pill-hot { background: #fee2e2; color: #991b1b; }
+.pill-new { background: #dcfce7; color: #14532d; }
+
+.link.featured {
+  background: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
+  border: 2px solid var(--gold);
+  color: var(--cream);
+}
+.link.featured .title { color: #fff; }
+.link.featured .desc { color: rgba(255,255,255,.85); }
+.link.featured .ico { background: var(--gold); }
+.link.featured .arrow { color: var(--gold); }
+
+.link.berbisnis {
+  background: linear-gradient(135deg, #fff 0%, #f0f4fa 100%);
+}
+.link.berbisnis .ico { background: linear-gradient(135deg, var(--navy), #4d6f99); color: #fff; }
+
+.link.berstock {
+  background: linear-gradient(135deg, #fff 0%, #fef3e2 100%);
+  border-color: var(--gold);
+}
+.link.berstock .ico {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #fff;
+}
+
+.link.galaxy {
+  background: linear-gradient(135deg, #1a0a2e 0%, #2c1a4e 100%);
+  color: #fff; border-color: rgba(168,85,247,.4);
+}
+.link.galaxy .title { color: #fff; }
+.link.galaxy .desc { color: rgba(255,255,255,.75); }
+.link.galaxy .ico { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; }
+.link.galaxy .arrow { color: #c084fc; }
+
+.link.contact-wa {
+  background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+  color: #fff; border-color: #1da851;
+}
+.link.contact-wa .title { color: #fff; }
+.link.contact-wa .desc { color: rgba(255,255,255,.85); }
+.link.contact-wa .ico { background: rgba(255,255,255,.2); color: #fff; }
+.link.contact-wa .arrow { color: #fff; }
+
+.link.contact-ig {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #fff; border: none;
+}
+.link.contact-ig .title { color: #fff; }
+.link.contact-ig .desc { color: rgba(255,255,255,.9); }
+.link.contact-ig .ico { background: rgba(255,255,255,.2); color: #fff; }
+.link.contact-ig .arrow { color: #fff; }
+
+.footer {
+  text-align: center; margin-top: 40px;
+  padding-top: 20px; border-top: 1px dashed var(--cream-deep);
+  font-size: 12px; color: var(--ink-soft); line-height: 1.6;
+}
+.footer b { color: var(--brown-dark); }
+.copy-link {
+  margin-top: 16px; padding: 8px 16px;
+  background: var(--cream-deep); border-radius: 999px;
+  font-family: ui-monospace, monospace; font-size: 11px;
+  color: var(--brown); display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="header">
+    <div class="avatar"><img src="assets/logo-berbisnis.png?v=3" alt="BerSatu Suite" /></div>
+    <h1 class="name">BerSatu Suite</h1>
+    <p class="handle"><a href="https://instagram.com/hendrypangg" target="_blank">@hendrypangg</a></p>
+    <p class="tagline">"Catet dulu, biar beneran ber-uang"</p>
+    <p class="bio">
+      Ekosistem AI &amp; tools untuk <b>UMKM Indonesia</b> 🐻<br>
+      Pilih layanan di bawah ⬇️
+    </p>
+  </header>
+
+  <div class="section-title">💰 Personal Finance</div>
+
+  <a href="app.html" class="link">
+    <div class="ico">🐻</div>
+    <div class="body">
+      <div class="title">BerUang App <span class="pill pill-free">Trial Gratis</span></div>
+      <div class="desc">Catet keuangan pribadi pakai chat / foto struk · Auto-kategorisasi</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="landing.html" class="link">
+    <div class="ico">📄</div>
+    <div class="body">
+      <div class="title">Cara Beli BerUang</div>
+      <div class="desc">Bulanan Rp 35rb / Lifetime Rp 125rb (hemat 70%)</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">🏪 UMKM &amp; Bisnis</div>
+
+  <a href="berbisnis-pro.html" class="link berbisnis">
+    <div class="ico">💼</div>
+    <div class="body">
+      <div class="title">BerBisnis Pro — Lihat Info <span class="pill pill-pro">PRO</span></div>
+      <div class="desc">POS + AI Bot Telegram · Mulai Rp 149.999/bulan</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="tokountung/app.html" class="link berbisnis">
+    <div class="ico">🎁</div>
+    <div class="body">
+      <div class="title">Coba BerBisnis Gratis 3 Hari</div>
+      <div class="desc">Demo aplikasi langsung tanpa daftar</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="landing-berstock.html" class="link berstock featured">
+    <div class="ico">🤖</div>
+    <div class="body">
+      <div class="title">Berstock — AI Agent <span class="pill pill-hot">EARLY BIRD</span></div>
+      <div class="desc">Tanya stok &amp; sales via Telegram · Rp 500rb/bln (50 klien pertama)</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="https://t.me/BerstockBot" target="_blank" class="link berstock">
+    <div class="ico">💬</div>
+    <div class="body">
+      <div class="title">Demo Bot di Telegram <span class="pill pill-new">LIVE</span></div>
+      <div class="desc">Test langsung @BerstockBot · Demo data PT SPC tersedia</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">🌌 Enterprise / Pitch</div>
+
+  <a href="bersatu-demo.html" class="link galaxy">
+    <div class="ico">⚡</div>
+    <div class="body">
+      <div class="title">Neural Command Demo</div>
+      <div class="desc">6 AI Agent terhubung — pitch deck visual untuk korporat</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="section-title">📞 Hubungi Saya</div>
+
+  <a href="https://wa.me/6282124848924?text=Halo%20Pak%20Hendry%2C%20saya%20mau%20tanya%20tentang%20BerSatu%20Suite" target="_blank" class="link contact-wa">
+    <div class="ico">💬</div>
+    <div class="body">
+      <div class="title">WhatsApp Saya</div>
+      <div class="desc">0821-2484-8924 · Konsultasi &amp; demo</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="https://instagram.com/hendrypangg" target="_blank" class="link contact-ig">
+    <div class="ico">📷</div>
+    <div class="body">
+      <div class="title">Instagram</div>
+      <div class="desc">@hendrypangg · Behind the scenes BerSatu</div>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="footer">
+    🐻 <b>BerSatu Suite</b> — Made with ❤️ for UMKM Indonesia<br>
+    © 2026 · All rights reserved
+    <div class="copy-link">hendrypangg12.github.io/Financial-tracker</div>
+  </div>
+
+</div>
+
+</body>
+</html>
