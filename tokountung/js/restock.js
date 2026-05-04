@@ -182,6 +182,14 @@ function refreshSupplierDatalist() {
 // Snapshot items lama untuk hitung delta stok saat edit
 let editingPOSnapshot = null;
 
+function setPOMode(mode) {
+  // mode: 'create' atau 'edit' — toggle tombol action
+  const actCreate = document.getElementById('po-actions-create');
+  const actEdit = document.getElementById('po-actions-edit');
+  if (actCreate) actCreate.hidden = mode !== 'create';
+  if (actEdit) actEdit.hidden = mode !== 'edit';
+}
+
 function openRestockModal() {
   editingPOSnapshot = null;
   const form = document.getElementById('form-restock');
@@ -191,6 +199,7 @@ function openRestockModal() {
   form.querySelector('[name="metode"]').value = 'tunai';
   document.getElementById('restock-items').innerHTML = '';
   document.getElementById('modal-po-title').textContent = '📥 PO Supplier Baru';
+  setPOMode('create');
   addRestockItemRow();
   updateRestockTotal();
   togglePOTempo(false);
@@ -204,6 +213,7 @@ function openEditPO(po) {
   const form = document.getElementById('form-restock');
   form.reset();
   document.getElementById('modal-po-title').textContent = `✏️ Edit PO ${po.nomorPO || po.supplier}`;
+  setPOMode('edit');
 
   form.querySelector('[name="id"]').value = po.id;
   form.querySelector('[name="tanggal"]').value = po.tanggal || todayISO();
@@ -358,8 +368,45 @@ function updateRestockTotal() {
   if (totalEl) totalEl.textContent = formatRupiah(total);
 }
 
+// Picker simple untuk tambah item ke PO yang lagi diedit
+function openAddItemPickerForPO() {
+  // Filter produk yang belum ada di list edit
+  const existingProductIds = new Set();
+  document.querySelectorAll('#restock-items .po-item-existing select.r-product').forEach(sel => {
+    if (sel.value) existingProductIds.add(sel.value);
+  });
+  const available = (state.products || []).filter(p => !existingProductIds.has(p.id));
+
+  if (!available.length) {
+    showToast('Semua produk sudah ada di PO', 'info');
+    return;
+  }
+
+  const choice = prompt(
+    'Pilih produk untuk ditambahkan (ketik nomor):\n\n' +
+    available.map((p, i) => `${i + 1}. ${p.nama} — sisa stok ${p.stok} ${p.satuan || 'pcs'}`).join('\n')
+  );
+  if (!choice) return;
+  const idx = parseInt(choice, 10) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= available.length) {
+    showToast('Pilihan tidak valid', 'error');
+    return;
+  }
+  const product = available[idx];
+
+  // Pakai pattern row standar (existing product)
+  const row = addRestockItemRow();
+  row.querySelector('.r-product').value = product.id;
+  row.querySelector('.r-qty').value = 1;
+  row.querySelector('.r-modal').value = product.hargaModal || 0;
+  updateRestockTotal();
+  showToast(`+ ${product.nama} ditambahkan ke PO`, 'success');
+}
+
 function setupRestockForm() {
   document.getElementById('btn-add-restock').onclick = openRestockModal;
+  const btnEditAdd = document.getElementById('btn-add-item-edit-po');
+  if (btnEditAdd) btnEditAdd.onclick = openAddItemPickerForPO;
   document.getElementById('btn-add-restock-item').onclick = () => { addRestockItemRow(); updateRestockTotal(); };
   const btnNew = document.getElementById('btn-add-new-product-row');
   if (btnNew) btnNew.onclick = () => { addNewProductRow(); updateRestockTotal(); };
