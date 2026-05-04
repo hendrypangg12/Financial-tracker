@@ -126,6 +126,7 @@ function renderRestock() {
             ${isTempo && !r.lunas
               ? `<button class="btn btn-small btn-success" data-act="paid" data-id="${r.id}">✓ Lunas</button>`
               : (r.lunas ? `<button class="btn btn-small btn-ghost" data-act="unpaid" data-id="${r.id}">↩️</button>` : '')}
+            <button class="btn btn-small btn-ghost" data-act="edit" data-id="${r.id}" title="Edit PO">✏️</button>
             <button class="btn btn-small btn-danger" data-act="del" data-id="${r.id}">🗑️</button>
           </div>
         </td>
@@ -162,6 +163,8 @@ function renderRestock() {
     } else if (act === 'foto') {
       const title = `📷 Surat Jalan/Faktur — ${po.supplier || 'Supplier'} (${formatTanggal(po.tanggal)})`;
       openFotoLightbox(po.fotoSuratJalan, title);
+    } else if (act === 'edit') {
+      openEditPO(po);
     }
   });
 }
@@ -176,19 +179,80 @@ function refreshSupplierDatalist() {
   dl.innerHTML = [...suppliers].sort().map(s => `<option value="${escapeHtml(s)}"></option>`).join('');
 }
 
+// Snapshot items lama untuk hitung delta stok saat edit
+let editingPOSnapshot = null;
+
 function openRestockModal() {
+  editingPOSnapshot = null;
   const form = document.getElementById('form-restock');
   form.reset();
   form.querySelector('[name="id"]').value = '';
   form.querySelector('[name="tanggal"]').value = todayISO();
   form.querySelector('[name="metode"]').value = 'tunai';
   document.getElementById('restock-items').innerHTML = '';
+  document.getElementById('modal-po-title').textContent = '📥 PO Supplier Baru';
   addRestockItemRow();
   updateRestockTotal();
   togglePOTempo(false);
   setPOFotoPreview('');
   refreshSupplierDatalist();
   openModal('modal-restock');
+}
+
+function openEditPO(po) {
+  editingPOSnapshot = JSON.parse(JSON.stringify(po.items || []));
+  const form = document.getElementById('form-restock');
+  form.reset();
+  document.getElementById('modal-po-title').textContent = `✏️ Edit PO ${po.nomorPO || po.supplier}`;
+
+  form.querySelector('[name="id"]').value = po.id;
+  form.querySelector('[name="tanggal"]').value = po.tanggal || todayISO();
+  form.querySelector('[name="nomorPO"]').value = po.nomorPO || '';
+  form.querySelector('[name="supplier"]').value = po.supplier || '';
+  form.querySelector('[name="notes"]').value = po.notes || '';
+  form.querySelector('[name="metode"]').value = po.metode || 'tunai';
+
+  // Render items existing (semua dari stok, bukan baru)
+  const container = document.getElementById('restock-items');
+  container.innerHTML = '';
+  (po.items || []).forEach(it => {
+    const row = addRestockItemRow();
+    row.querySelector('.r-product').value = it.productId;
+    row.querySelector('.r-qty').value = it.qty;
+    row.querySelector('.r-modal').value = it.hargaModal;
+  });
+  updateRestockTotal();
+
+  // Tempo + jatuh tempo
+  const isTempo = po.metode === 'tempo';
+  togglePOTempo(isTempo);
+  if (isTempo && po.jatuhTempo) {
+    form.querySelector('[name="jatuhTempo"]').value = po.jatuhTempo;
+  }
+
+  // Foto faktur
+  setPOFotoPreview(po.fotoSuratJalan || '');
+
+  refreshSupplierDatalist();
+  openModal('modal-restock');
+}
+
+// Adjust stok untuk edit PO — hitung delta
+function adjustStockForEditPO(oldItems, newItems) {
+  const map = new Map();
+  for (const it of (oldItems || [])) {
+    // PO restock TAMBAH stok, jadi saat edit, item lama dikurangi (revert)
+    map.set(it.productId, (map.get(it.productId) || 0) - it.qty);
+  }
+  for (const it of (newItems || [])) {
+    // Item baru tambah stok
+    map.set(it.productId, (map.get(it.productId) || 0) + it.qty);
+  }
+  for (const [pid, delta] of map.entries()) {
+    if (delta === 0) continue;
+    const p = getProduct(pid);
+    if (p) p.stok = Math.max(0, p.stok + delta);
+  }
 }
 
 function togglePOTempo(isTempo) {
@@ -383,25 +447,57 @@ function setupRestockForm() {
     }
 
     const total = items.reduce((s, it) => s + it.qty * it.hargaModal, 0);
-    const po = {
-      tanggal: fd.get('tanggal'),
-      nomorPO: (fd.get('nomorPO') || '').trim(),
-      supplier: (fd.get('supplier') || '').trim(),
-      notes: fd.get('notes') || '',
-      items,
-      total,
-      metode,
-      jatuhTempo: isTempo ? fd.get('jatuhTempo') : '',
-      lunas: !isTempo, // tunai/transfer = otomatis lunas
-      tanggalLunas: !isTempo ? todayISO() : null,
-      fotoSuratJalan: fd.get('fotoSuratJalan') || '',
-    };
-    addRestock(po); // existing function — adds stock + weighted-avg HPP
+    const editId = fd.get('id');
 
-    const msg = newProductsCreated > 0
-      ? `✅ PO tersimpan (${formatRupiah(total)}) — ${newProductsCreated} produk baru dibuat`
-      : `✅ PO tersimpan (${formatRupiah(total)})`;
-    showToast(msg, 'success');
+    if (editId) {
+      // EDIT MODE — update existing PO + adjust stock delta
+      const existingPO = state.restocks.find(r => r.id === editId);
+      if (!existingPO) { showToast('PO tidak ditemukan', 'error'); return; }
+
+      // Adjust stok pakai delta items lama vs baru
+      adjustStockForEditPO(editingPOSnapshot, items);
+
+      // Update PO fields
+      existingPO.tanggal = fd.get('tanggal');
+      existingPO.nomorPO = (fd.get('nomorPO') || '').trim();
+      existingPO.supplier = (fd.get('supplier') || '').trim();
+      existingPO.notes = fd.get('notes') || '';
+      existingPO.items = items;
+      existingPO.total = total;
+      existingPO.metode = metode;
+      existingPO.jatuhTempo = isTempo ? fd.get('jatuhTempo') : '';
+      // Status lunas tetap kalau metode sama, refresh kalau berubah
+      if (!isTempo) {
+        existingPO.lunas = true;
+        existingPO.tanggalLunas = existingPO.tanggalLunas || todayISO();
+      }
+      existingPO.fotoSuratJalan = fd.get('fotoSuratJalan') || '';
+
+      saveState();
+      editingPOSnapshot = null;
+      showToast(`✓ PO ${existingPO.nomorPO || existingPO.supplier} diperbarui`, 'success');
+    } else {
+      // CREATE MODE — PO baru
+      const po = {
+        tanggal: fd.get('tanggal'),
+        nomorPO: (fd.get('nomorPO') || '').trim(),
+        supplier: (fd.get('supplier') || '').trim(),
+        notes: fd.get('notes') || '',
+        items,
+        total,
+        metode,
+        jatuhTempo: isTempo ? fd.get('jatuhTempo') : '',
+        lunas: !isTempo,
+        tanggalLunas: !isTempo ? todayISO() : null,
+        fotoSuratJalan: fd.get('fotoSuratJalan') || '',
+      };
+      addRestock(po); // existing function — adds stock + weighted-avg HPP
+
+      const msg = newProductsCreated > 0
+        ? `✅ PO tersimpan (${formatRupiah(total)}) — ${newProductsCreated} produk baru dibuat`
+        : `✅ PO tersimpan (${formatRupiah(total)})`;
+      showToast(msg, 'success');
+    }
     closeModal('modal-restock');
     renderRestock();
     renderStok();
