@@ -13,9 +13,15 @@ import {
   getTenantIdByChat, bindChatToTenant, unbindChat,
   recordUsage, getUsageStats,
   generateApiKey, generateTenantId,
+  listAllTenantIds,
 } from "./storage.js";
 
 export default {
+  // Cron handler — Daily Digest jam 7 pagi WIB (00:00 UTC)
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(sendDailyDigestToAllTenants(env));
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
@@ -355,4 +361,145 @@ h1{color:#1e3a5f}.code{background:#f4f4f4;padding:2px 8px;border-radius:4px;font
 </ul>
 <p>Owner toko: hubungi admin untuk kode aktivasi.<br>
 Demo & info: <a href="https://wa.me/6282124848924">WhatsApp</a></p>`;
+}
+
+// =============================================================================
+// DAILY DIGEST — auto-send tiap pagi (cron 00:00 UTC = 07:00 WIB)
+// =============================================================================
+
+async function sendDailyDigestToAllTenants(env) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  if (!token) { console.warn("No TELEGRAM_BOT_TOKEN, skip digest"); return; }
+
+  const tenantIds = await listAllTenantIds(env);
+  console.log(`[DailyDigest] Processing ${tenantIds.length} tenants...`);
+
+  let sent = 0, errors = 0;
+  for (const tenantId of tenantIds) {
+    try {
+      const meta = await getTenantMeta(env, tenantId);
+      if (!meta) continue;
+
+      // Skip kalau opt-out (digest_off di meta) atau gak ada chat
+      if (meta.digestOff === true) continue;
+      const chats = meta.allowedChats || [];
+      if (!chats.length) continue;
+
+      // Skip kalau plan trial atau expired (only paid)
+      // (untuk MVP, kirim ke semua dulu)
+
+      const data = await getTenantData(env, tenantId);
+      const digest = generateDigestMessage(meta, data);
+
+      // Kirim ke semua chat yang terdaftar untuk tenant ini
+      for (const chatId of chats) {
+        try {
+          await sendMessage(token, chatId, digest, { parse_mode: "Markdown" });
+          sent++;
+        } catch (e) {
+          console.warn(`Failed send digest to chat ${chatId}:`, e.message);
+        }
+      }
+    } catch (e) {
+      console.warn(`Digest failed for tenant ${tenantId}:`, e.message);
+      errors++;
+    }
+  }
+  console.log(`[DailyDigest] Done. Sent: ${sent}, Errors: ${errors}`);
+}
+
+function generateDigestMessage(meta, data) {
+  const bizName = meta.bizName || "Toko Anda";
+  const products = data.products || [];
+  const sales = data.sales || [];
+
+  // Yesterday range (UTC adjusted: 00:00 UTC = 07:00 WIB, so yesterday WIB = 24h ago)
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const ydayISO = yesterday.toISOString().slice(0, 10);
+  const dayBeforeISO = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const ydaySales = sales.filter(s => s.tanggal === ydayISO);
+  const dayBeforeSales = sales.filter(s => s.tanggal === dayBeforeISO);
+
+  const ydayRevenue = ydaySales.reduce((a, s) => a + (s.total || 0), 0);
+  const dayBeforeRevenue = dayBeforeSales.reduce((a, s) => a + (s.total || 0), 0);
+  const change = dayBeforeRevenue > 0
+    ? Math.round((ydayRevenue - dayBeforeRevenue) / dayBeforeRevenue * 100)
+    : null;
+  const changeStr = change !== null
+    ? (change >= 0 ? `(↑ ${change}% vs hari sebelumnya)` : `(↓ ${Math.abs(change)}% vs hari sebelumnya)`)
+    : "";
+
+  const ydayProfit = ydaySales.reduce((a, s) => a + (s.profit || 0), 0);
+
+  // Top seller kemarin
+  const counts = {};
+  for (const s of ydaySales) {
+    for (const it of (s.items || [])) {
+      counts[it.productId] = counts[it.productId] || { nama: it.nama, qty: 0, satuan: it.satuan || "pcs" };
+      counts[it.productId].qty += it.qty || 0;
+    }
+  }
+  const topSeller = Object.values(counts).sort((a, b) => b.qty - a.qty)[0];
+
+  // Stok kritis hari ini
+  const lowStock = products
+    .filter(p => (p.stok || 0) <= (p.minStok || 5))
+    .slice(0, 3);
+
+  // Piutang overdue
+  const today = new Date(); today.setHours(23, 59, 59, 999);
+  const overdueSales = sales.filter(s => {
+    if (s.metode !== "tempo" || s.lunas) return false;
+    if (!s.jatuhTempo) return false;
+    return new Date(s.jatuhTempo + "T23:59:59") < today;
+  });
+  const overdueAmount = overdueSales.reduce((a, s) => a + (s.total || 0), 0);
+
+  // Jatuh tempo hari ini
+  const todayISO = now.toISOString().slice(0, 10);
+  const dueToday = sales.filter(s => {
+    if (s.metode !== "tempo" || s.lunas) return false;
+    return s.jatuhTempo === todayISO;
+  });
+
+  let msg = `🌅 *Selamat pagi bos!*\n_${bizName}_\n\n`;
+
+  msg += `📊 *Recap kemarin:*\n`;
+  if (ydaySales.length === 0) {
+    msg += `_Belum ada transaksi kemarin._\n\n`;
+  } else {
+    msg += `💰 Omzet: *${formatRupiah(ydayRevenue)}* ${changeStr}\n`;
+    msg += `📈 Profit: *${formatRupiah(ydayProfit)}*\n`;
+    msg += `🛒 ${ydaySales.length} transaksi\n`;
+    if (topSeller) msg += `🏆 Best seller: *${topSeller.nama}* (${topSeller.qty} ${topSeller.satuan})\n`;
+    msg += `\n`;
+  }
+
+  msg += `🎯 *Hari ini perlu perhatian:*\n`;
+  let hasAlert = false;
+  if (dueToday.length > 0) {
+    const total = dueToday.reduce((a, s) => a + (s.total || 0), 0);
+    msg += `⏱️ ${dueToday.length} piutang jatuh tempo *hari ini* — ${formatRupiah(total)}\n`;
+    hasAlert = true;
+  }
+  if (overdueSales.length > 0) {
+    msg += `⚠️ ${overdueSales.length} piutang *overdue* — ${formatRupiah(overdueAmount)}\n`;
+    hasAlert = true;
+  }
+  if (lowStock.length > 0) {
+    msg += `📦 Stok kritis: ${lowStock.map(p => `${p.nama} (sisa ${p.stok})`).join(", ")}\n`;
+    hasAlert = true;
+  }
+  if (!hasAlert) msg += `✨ Semua aman — fokus jualan aja bos! 🚀\n`;
+
+  msg += `\n_Have a productive day!_ 🐻`;
+  msg += `\n_Tanya apa aja ke saya: stok, sales, piutang, dll._`;
+
+  return msg;
+}
+
+function formatRupiah(n) {
+  return "Rp " + (Math.round(n) || 0).toLocaleString("id-ID");
 }
