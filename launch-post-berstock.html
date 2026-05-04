@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Launch Post — berstock.id</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: #0a0e1a;
+    font-family: 'SF Pro Display', -apple-system, system-ui, sans-serif;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Grid background */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(233, 30, 99, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233, 30, 99, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+  /* Glow orbs */
+  body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(233, 30, 99, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(212, 175, 55, 0.2) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    z-index: 1;
+  }
+  .frame {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    padding: 80px 70px;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 60px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-emoji {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #d4af37, #f4cf67);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.4);
+  }
+  .brand-text {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .brand-text .accent { color: #e91e63; }
+  .badge-launch {
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 24px rgba(233, 30, 99, 0.5);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .hero-emoji {
+    font-size: 100px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .pretitle {
+    text-align: center;
+    color: #d4af37;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .main-headline {
+    text-align: center;
+    font-size: 130px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    margin-bottom: 36px;
+    background: linear-gradient(135deg, #fff 0%, #e91e63 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .url-display {
+    text-align: center;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 90px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 50px;
+    background: linear-gradient(135deg, #d4af37 0%, #f4cf67 50%, #e91e63 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 80px rgba(233, 30, 99, 0.4);
+  }
+  .url-display .dot { color: #fff; -webkit-text-fill-color: #fff; }
+
+  .tagline {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+    color: #cbd5e1;
+    line-height: 1.3;
+    margin-bottom: 60px;
+    padding: 0 40px;
+  }
+  .tagline .highlight {
+    color: #e91e63;
+    font-weight: 800;
+  }
+
+  .features-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: auto;
+  }
+  .feat {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+  }
+  .feat-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  .feat-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .footer-strip {
+    text-align: center;
+    margin-top: 30px;
+    color: #94a3b8;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .footer-strip strong { color: #d4af37; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="top-row">
+      <div class="brand">
+        <div class="brand-emoji">🐻</div>
+        <div class="brand-text">berstock<span class="accent">.id</span></div>
+      </div>
+      <div class="badge-launch">🚀 NOW LIVE</div>
+    </div>
+
+    <div class="hero-emoji">🎉</div>
+    <div class="pretitle">Pengumuman Resmi</div>
+    <div class="main-headline">SEKARANG<br>LIVE!</div>
+
+    <div class="url-display">berstock<span class="dot">.</span>id</div>
+
+    <div class="tagline">
+      <span class="highlight">POS Pintar + AI Assistant</span><br>
+      pertama di Indonesia 🇮🇩
+    </div>
+
+    <div class="features-row">
+      <div class="feat">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Reply 5 Detik</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">Powered by Claude AI</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📱</div>
+        <div class="feat-title">Chat di Telegram</div>
+      </div>
+    </div>
+
+    <div class="footer-strip">
+      💎 Cek sekarang di <strong>berstock.id</strong> · DM <strong>@berstock.ai</strong>
+    </div>
+  </div>
+</body>
+</html>

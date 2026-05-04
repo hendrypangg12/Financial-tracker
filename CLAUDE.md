@@ -430,14 +430,17 @@ state = {
 - ❌ TIDAK BISA voice over
 
 **Folder asset tersedia:**
-- `/carousel-png/` — 20 PNG slides
+- `/carousel-png/` — 22 PNG slides
   - `slide-1.png` s/d `slide-5.png` — Carousel cover (5 slides "Owner Toko Stok Hilang Ga")
   - `pain-a-1.png` s/d `pain-a-5.png` — Carousel A "Berapa Duit Hilang Tiap Bulan?" 💸
   - `pain-b-1.png` s/d `pain-b-5.png` — Carousel B "Berapa Jam Buang Tugas Manual?" ⏰
   - `pain-c-1.png` s/d `pain-c-5.png` — Carousel C "Pelanggan Diam-Diam Pergi" 😶
+  - `launch-post-berstock-id.png` — 1080×1080 launch post berstock.id LIVE 🚀 (NEW Day 3)
+  - `launch-story-berstock-id.png` — 1080×1920 launch story berstock.id (NEW Day 3)
 - `/berstock-reels-15s.mp4` — Reels 20 detik (originally 15s, di-extend ke 20s comfortable)
 - HTML sources: `reels-15s.html`, `reels-20s.html`, `reels-berstock-autoplay.html` (45s), `reels-berstock-b.html`
 - HTML carousels: `carousel-berstock-5.html`, `carousel-pain-3x5.html`, `berstock-carousel-day2.html`
+- HTML launch: `launch-post-berstock.html`, `launch-story-berstock.html` (NEW Day 3)
 - `/profile-pic-berstock.html` — 4 template profile picture
 - `/berstock-pitch-deck.html` — 10 slides A4 landscape
 
