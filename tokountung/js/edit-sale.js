@@ -51,64 +51,119 @@ function toggleEditTempo(isTempo) {
 function renderEditItems(items) {
   const container = document.getElementById('edit-items-list');
   if (!container) return;
-  container.innerHTML = items.map((it, i) => `
-    <div class="edit-item-row" data-i="${i}">
+  container.innerHTML = items.map((it) => buildEditItemRowHtml(it)).join('');
+  bindEditItemRows(container);
+}
+
+function buildEditItemRowHtml(it) {
+  // Encode item data into row dataset (so we don't need snapshot lookup)
+  return `
+    <div class="edit-item-row"
+         data-product-id="${escapeHtml(it.productId || '')}"
+         data-nama="${escapeHtml(it.nama || '')}"
+         data-satuan="${escapeHtml(it.satuan || 'pcs')}"
+         data-harga-modal="${it.hargaModal || 0}">
       <div class="ei-nama">
         <b>${escapeHtml(it.nama)}</b>
         <div class="cell-meta">${escapeHtml(it.satuan || 'pcs')}</div>
       </div>
       <label class="ei-field">
         <span>Qty</span>
-        <input type="number" min="0" step="1" name="qty" value="${it.qty}" data-i="${i}" />
+        <input type="number" min="0" step="1" name="qty" value="${it.qty}" />
       </label>
       <label class="ei-field">
         <span>Harga Jual</span>
-        <input type="number" min="0" step="any" name="hargaJual" value="${it.hargaJual}" data-i="${i}" />
+        <input type="number" min="0" step="any" name="hargaJual" value="${it.hargaJual}" />
       </label>
-      <div class="ei-subtotal" data-sub-i="${i}">${formatRupiah(it.qty * it.hargaJual)}</div>
-      <button type="button" class="btn btn-small btn-danger" data-rm-i="${i}" title="Hapus item">×</button>
+      <div class="ei-subtotal">${formatRupiah(it.qty * it.hargaJual)}</div>
+      <button type="button" class="btn btn-small btn-danger" data-rm title="Hapus item">×</button>
     </div>
-  `).join('');
+  `;
+}
 
-  // Bind change
-  container.querySelectorAll('input').forEach(inp => {
-    inp.oninput = () => {
-      const i = +inp.dataset.i;
-      const row = container.querySelector(`[data-i="${i}"]`);
-      const qty = +row.querySelector('[name="qty"]').value || 0;
-      const harga = +row.querySelector('[name="hargaJual"]').value || 0;
-      const subEl = container.querySelector(`[data-sub-i="${i}"]`);
-      if (subEl) subEl.textContent = formatRupiah(qty * harga);
+function bindEditItemRows(container) {
+  container.querySelectorAll('.edit-item-row').forEach(row => {
+    row.querySelectorAll('input').forEach(inp => {
+      inp.oninput = () => {
+        const qty = +row.querySelector('[name="qty"]').value || 0;
+        const harga = +row.querySelector('[name="hargaJual"]').value || 0;
+        row.querySelector('.ei-subtotal').textContent = formatRupiah(qty * harga);
+        recomputeEditTotal();
+      };
+    });
+    const rmBtn = row.querySelector('[data-rm]');
+    if (rmBtn) rmBtn.onclick = () => {
+      if (!confirm('Hapus item ini dari invoice?')) return;
+      row.remove();
       recomputeEditTotal();
     };
   });
-  container.querySelectorAll('[data-rm-i]').forEach(btn => btn.onclick = () => {
-    if (!confirm('Hapus item ini dari invoice?')) return;
-    btn.closest('.edit-item-row').remove();
-    recomputeEditTotal();
+}
+
+// Tambah item baru ke edit invoice — buka product picker
+function openAddItemPicker() {
+  // Filter produk yang belum ada di list
+  const existing = new Set();
+  document.querySelectorAll('#edit-items-list .edit-item-row').forEach(r => {
+    existing.add(r.dataset.productId);
   });
+  const available = (state.products || []).filter(p => !existing.has(p.id));
+
+  if (!available.length) {
+    showToast('Semua produk sudah ada di invoice', 'info');
+    return;
+  }
+
+  // Pakai prompt + select sederhana — kalau ada modal-edit-add-item lebih bagus
+  const choice = prompt(
+    'Pilih produk untuk ditambahkan (ketik nomor):\n\n' +
+    available.map((p, i) => `${i + 1}. ${p.nama} (stok: ${p.stok}, harga: ${formatRupiah(p.hargaJual)})`).join('\n')
+  );
+  if (!choice) return;
+  const idx = parseInt(choice, 10) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= available.length) {
+    showToast('Pilihan tidak valid', 'error');
+    return;
+  }
+  const product = available[idx];
+  addItemToEditList(product);
+}
+
+function addItemToEditList(product) {
+  const container = document.getElementById('edit-items-list');
+  if (!container) return;
+  const newItem = {
+    productId: product.id,
+    nama: product.nama,
+    satuan: product.satuan || 'pcs',
+    qty: 1,
+    hargaJual: product.hargaJual || 0,
+    hargaModal: product.hargaModal || 0,
+  };
+  // Append HTML
+  container.insertAdjacentHTML('beforeend', buildEditItemRowHtml(newItem));
+  // Re-bind all rows
+  bindEditItemRows(container);
+  recomputeEditTotal();
+  showToast(`+ ${product.nama} ditambahkan`, 'success');
 }
 
 function readEditItems() {
   const container = document.getElementById('edit-items-list');
   if (!container) return [];
-  const original = editingSaleSnapshot || [];
   const rows = container.querySelectorAll('.edit-item-row');
   const items = [];
   rows.forEach(row => {
-    const i = +row.dataset.i;
-    const orig = original[i];
-    if (!orig) return;
     const qty = +row.querySelector('[name="qty"]').value || 0;
     const harga = +row.querySelector('[name="hargaJual"]').value || 0;
     if (qty <= 0) return; // skip 0-qty (treat as removed)
     items.push({
-      productId: orig.productId,
-      nama: orig.nama,
+      productId: row.dataset.productId,
+      nama: row.dataset.nama,
       qty,
       hargaJual: harga,
-      hargaModal: orig.hargaModal,
-      satuan: orig.satuan,
+      hargaModal: +row.dataset.hargaModal || 0,
+      satuan: row.dataset.satuan || 'pcs',
     });
   });
   return items;
@@ -148,6 +203,9 @@ function setupEditSaleForm() {
 
   const diskonInp = form.querySelector('[name="diskon"]');
   if (diskonInp) diskonInp.oninput = recomputeEditTotal;
+
+  const btnAddItem = document.getElementById('btn-edit-add-item');
+  if (btnAddItem) btnAddItem.onclick = openAddItemPicker;
 
   form.onsubmit = (e) => {
     e.preventDefault();
