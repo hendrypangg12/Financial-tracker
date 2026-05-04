@@ -16,7 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="styles.css?v=23" />
+<link rel="stylesheet" href="styles.css?v=24" />
 </head>
 <body>
 
@@ -325,7 +325,12 @@
         </thead>
         <tbody id="restock-body"></tbody>
       </table>
-      <div id="restock-empty" class="empty" hidden>Belum ada PO. Klik "+ Buat PO Baru".</div>
+      <div id="restock-empty" class="empty empty-pro" hidden>
+        <div class="empty-icon">📥</div>
+        <h3>Belum ada PO Supplier</h3>
+        <p>Catat PO pertamamu — track hutang ke supplier + stok masuk dengan rapi.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('btn-add-restock').click()">+ Buat PO Pertama</button>
+      </div>
     </div>
   </section>
 
@@ -376,7 +381,11 @@
         </thead>
         <tbody id="piutang-body"></tbody>
       </table>
-      <div id="piutang-empty" class="empty" hidden>Belum ada transaksi tempo.</div>
+      <div id="piutang-empty" class="empty empty-pro" hidden>
+        <div class="empty-icon">💰</div>
+        <h3>Belum ada piutang</h3>
+        <p>Saat ada transaksi tempo, otomatis muncul di sini. Tandai lunas 1-klik kalau pelanggan udah bayar.</p>
+      </div>
     </div>
   </section>
 
@@ -428,7 +437,11 @@
         </thead>
         <tbody id="pelanggan-body"></tbody>
       </table>
-      <div id="pelanggan-empty" class="empty" hidden>Belum ada pelanggan.</div>
+      <div id="pelanggan-empty" class="empty empty-pro" hidden>
+        <div class="empty-icon">👥</div>
+        <h3>Belum ada pelanggan</h3>
+        <p>Saat checkout, isi nama pelanggan — otomatis muncul di sini dengan history pembelian lengkap.</p>
+      </div>
     </div>
   </section>
 
@@ -912,7 +925,8 @@
 <script src="js/piutang.js?v=2"></script>
 <script src="js/customers.js?v=2"></script>
 <script src="js/edit-sale.js?v=2"></script>
+<script src="js/onboarding.js?v=1"></script>
 <script src="js/cloud-sync.js?v=4"></script>
-<script src="js/app.js?v=19"></script>
+<script src="js/app.js?v=20"></script>
 </body>
 </html>

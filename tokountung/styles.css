@@ -258,6 +258,122 @@ main { max-width: 1440px; margin: 0 auto; padding: 24px 28px 60px; }
   font-style: italic; font-size: 13px;
 }
 
+/* ===================== ONBOARDING TOUR ===================== */
+.onb-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 31, 61, .75);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: onb-fade-in .3s ease;
+}
+@keyframes onb-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.onb-spotlight {
+  position: fixed;
+  border: 3px solid var(--gold-bright, #d4af37);
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(15, 31, 61, .75);
+  pointer-events: none;
+  animation: onb-pulse 1.5s infinite;
+}
+@keyframes onb-pulse {
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(15, 31, 61, .75), 0 0 30px rgba(212, 175, 55, .5); }
+  50% { box-shadow: 0 0 0 9999px rgba(15, 31, 61, .75), 0 0 50px rgba(212, 175, 55, .8); }
+}
+
+.onb-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 420px; width: 100%;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+  position: relative;
+  animation: onb-pop .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes onb-pop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.onb-progress {
+  display: flex; gap: 6px; justify-content: center;
+  margin-bottom: 12px;
+}
+.onb-progress span {
+  width: 32px; height: 4px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  transition: background .3s;
+}
+.onb-progress span.active { background: var(--gold-bright, #d4af37); }
+.onb-progress span.done { background: var(--green, #10b981); }
+
+.onb-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--ink-soft);
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.onb-title {
+  font-size: 22px; font-weight: 800;
+  color: var(--primary, #1e3a5f);
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.onb-body {
+  font-size: 14px; color: var(--ink, #4a3328);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.onb-actions {
+  display: flex; gap: 8px; justify-content: space-between;
+}
+.onb-actions .btn { flex: 1; }
+
+/* Empty State Pro — visual + CTA */
+.empty-pro {
+  font-style: normal !important;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 50px 24px !important;
+  gap: 8px;
+}
+.empty-pro .empty-icon {
+  font-size: 64px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 4px 12px rgba(30,58,95,.15));
+  animation: empty-bounce 2s infinite;
+}
+@keyframes empty-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.empty-pro h3 {
+  font-size: 18px; font-weight: 800;
+  color: var(--primary, #1e3a5f);
+  margin: 0;
+}
+.empty-pro p {
+  font-size: 14px; color: var(--ink-soft);
+  max-width: 360px;
+  line-height: 1.5;
+  margin: 4px 0 12px;
+}
+.empty-pro .btn {
+  margin-top: 4px;
+}
+@media (max-width: 640px) {
+  .empty-pro .empty-icon { font-size: 48px; }
+  .empty-pro h3 { font-size: 16px; }
+  .empty-pro p { font-size: 13px; }
+}
+
 /* ===================== BEP TRACKER ===================== */
 .bep-info { padding: 4px; }
 .bep-row {

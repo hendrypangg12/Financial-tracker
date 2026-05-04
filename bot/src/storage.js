@@ -34,6 +34,22 @@ export async function setTenantData(env, tenantId, data) {
   await env.BOT_DATA.put(`tenant:${tenantId}:data`, json);
 }
 
+// List semua tenant IDs (untuk daily digest broadcast)
+export async function listAllTenantIds(env) {
+  const ids = new Set();
+  let cursor = undefined;
+  do {
+    const res = await env.BOT_DATA.list({ prefix: "tenant:", cursor });
+    for (const k of res.keys) {
+      // key format: tenant:{id}:meta atau tenant:{id}:data
+      const m = k.name.match(/^tenant:([^:]+):meta$/);
+      if (m) ids.add(m[1]);
+    }
+    cursor = res.list_complete ? null : res.cursor;
+  } while (cursor);
+  return Array.from(ids);
+}
+
 // =============================================================================
 // CHAT ↔ TENANT MAPPING
 // =============================================================================

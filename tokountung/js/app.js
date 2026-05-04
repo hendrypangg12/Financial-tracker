@@ -274,6 +274,11 @@ async function showApp(user, profile) {
 
   // Init app (render dengan data yang sudah ter-sync)
   init();
+
+  // Trigger onboarding tour untuk first-time user
+  setTimeout(() => {
+    if (typeof startOnboarding === 'function') startOnboarding();
+  }, 1000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
