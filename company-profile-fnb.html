@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Berstock untuk FnB — Solusi Kasir Cerdas Restoran & Es Krim</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 210mm; }
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    color: #1e293b;
+    background: #fff;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12mm 15mm;
+    background: linear-gradient(135deg, #0a1628, #1e3a5f);
+    color: #fff;
+  }
+  .ph-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700;
+  }
+  .ph-brand img { width: 28px; height: 28px; border-radius: 6px; background: #fff; padding: 2px; }
+  .ph-brand .accent { color: #d4af37; }
+  .ph-section {
+    font-size: 10px;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 8mm 15mm;
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+    font-size: 9px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .page-footer strong { color: #0a1628; }
+  .page-content { padding: 12mm 15mm 18mm; }
+
+  /* COVER */
+  .cover {
+    background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #2d1b3d 100%);
+    color: #fff;
+    height: 297mm;
+    padding: 25mm 15mm;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(233, 30, 99, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.2) 0%, transparent 40%);
+  }
+  .cover-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+  .cover-brand { display: flex; align-items: center; gap: 14px; margin-bottom: auto; }
+  .cover-brand img { width: 50px; height: 50px; border-radius: 12px; background: #fff; padding: 4px; }
+  .cover-brand .name { font-size: 22px; font-weight: 800; }
+  .cover-brand .name .acc { color: #e91e63; }
+  .cover-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    align-self: flex-start;
+  }
+  .cover h1 {
+    font-size: 50px;
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -1.5px;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, #fff 0%, #d4af37 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .cover h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #cbd5e1;
+    line-height: 1.5;
+    max-width: 150mm;
+    margin-bottom: 30px;
+  }
+  .fnb-emoji {
+    font-size: 100px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .cover-target {
+    background: rgba(233, 30, 99, 0.12);
+    border: 1.5px solid rgba(233, 30, 99, 0.4);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+  }
+  .cover-target-title {
+    color: #d4af37;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .cover-target-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .cover-target-list div::before {
+    content: '✓ ';
+    color: #10b981;
+    font-weight: 800;
+  }
+  .cover-footer {
+    margin-top: auto;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 175, 55, 0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cover-website { font-size: 18px; font-weight: 800; color: #d4af37; }
+  .cover-meta { font-size: 11px; color: #94a3b8; text-align: right; }
+
+  /* CONTENT */
+  h2.page-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #0a1628;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  h2.page-title .acc { color: #e91e63; }
+  .page-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  h3.section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0a1628;
+    margin: 18px 0 10px;
+    padding-left: 10px;
+    border-left: 4px solid #e91e63;
+  }
+  p { font-size: 11.5px; color: #334155; margin-bottom: 8px; line-height: 1.55; }
+
+  .feature-list { margin: 10px 0; }
+  .feature-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+  .feature-item:last-child { border-bottom: none; }
+  .feature-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .feature-content { flex: 1; }
+  .feature-name { font-weight: 800; font-size: 12.5px; color: #0a1628; margin-bottom: 3px; }
+  .feature-desc { font-size: 10.5px; color: #475569; line-height: 1.5; }
+
+  /* Use Case Story Cards */
+  .story-card {
+    background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
+    border: 1.5px solid #fce7eb;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .story-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #fce7eb;
+  }
+  .story-emoji {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .story-name { font-weight: 800; color: #0a1628; font-size: 14px; }
+  .story-type { color: #64748b; font-size: 10px; }
+
+  .story-prob {
+    background: #fef2f2;
+    border-left: 3px solid #ef4444;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .story-prob-label { font-size: 9px; color: #991b1b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .story-prob-text { font-size: 10.5px; color: #1e293b; }
+
+  .story-sol {
+    background: #f0fdf4;
+    border-left: 3px solid #10b981;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .story-sol-label { font-size: 9px; color: #14532d; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .story-sol-text { font-size: 10.5px; color: #1e293b; }
+
+  .story-result {
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border-left: 3px solid #d4af37;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  .story-result-label { font-size: 9px; color: #78350f; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .story-result-text { font-size: 10.5px; color: #1e293b; font-weight: 600; }
+
+  /* Pricing */
+  .pricing-grid-fnb {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .price-card {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px 18px;
+    position: relative;
+  }
+  .price-card.featured {
+    border-color: #e91e63;
+    background: linear-gradient(180deg, rgba(233,30,99,0.04), #fff);
+    box-shadow: 0 4px 16px rgba(233,30,99,0.1);
+  }
+  .price-card.featured::before {
+    content: '⭐ RECOMMENDED FNB';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: #e91e63;
+    color: #fff;
+    font-size: 9px;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+  }
+  .price-tier { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+  .price-amount { font-size: 28px; font-weight: 900; color: #0a1628; line-height: 1; margin-bottom: 4px; }
+  .price-amount .currency { font-size: 14px; color: #64748b; }
+  .price-period { font-size: 11px; color: #64748b; margin-bottom: 14px; }
+  .price-features { list-style: none; padding: 0; }
+  .price-features li {
+    font-size: 11px;
+    padding: 5px 0;
+    color: #334155;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .price-features li::before { content: '✓'; color: #10b981; font-weight: 700; flex-shrink: 0; }
+
+  /* AI Bot demo */
+  .bot-demo {
+    background: linear-gradient(135deg, #0a1628, #1e3a5f);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 14px 0;
+    color: #fff;
+  }
+  .bot-header {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 12px;
+  }
+  .bot-avatar {
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 3px;
+  }
+  .bot-name { font-weight: 700; font-size: 12px; }
+  .bot-status { font-size: 9px; color: #10b981; }
+  .chat-bubble {
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 11px;
+    line-height: 1.4;
+    max-width: 80%;
+  }
+  .chat-bubble.user {
+    background: #2563eb;
+    color: #fff;
+    margin-left: auto;
+    border-bottom-right-radius: 3px;
+  }
+  .chat-bubble.bot {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-bottom-left-radius: 3px;
+  }
+  .chat-bubble strong { color: #d4af37; }
+  .chats { display: flex; flex-direction: column; }
+
+  /* Onboarding steps */
+  .onboard-step {
+    display: flex;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f8fafc;
+    margin-bottom: 8px;
+  }
+  .step-day {
+    width: 60px;
+    background: linear-gradient(135deg, #d4af37, #f4cf67);
+    color: #0a1628;
+    border-radius: 8px;
+    text-align: center;
+    padding: 10px 4px;
+    flex-shrink: 0;
+  }
+  .step-day-label { font-size: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+  .step-day-num { font-size: 18px; font-weight: 900; line-height: 1; }
+  .step-content { flex: 1; }
+  .step-title { font-size: 12px; font-weight: 800; color: #0a1628; margin-bottom: 4px; }
+  .step-desc { font-size: 10.5px; color: #475569; line-height: 1.5; }
+
+  /* Compare */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10.5px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare-table th {
+    background: #0a1628;
+    color: #fff;
+    padding: 8px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .compare-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .compare-table tr.highlight {
+    background: linear-gradient(90deg, rgba(233,30,99,0.08), rgba(212,175,55,0.04));
+    font-weight: 700;
+  }
+  .compare-table .yes { color: #10b981; font-weight: 700; }
+  .compare-table .no { color: #ef4444; }
+  .compare-table .partial { color: #f59e0b; font-weight: 600; }
+
+  /* Closing CTA */
+  .cta-page {
+    background: linear-gradient(135deg, #0a1628 0%, #2d1b3d 100%);
+    color: #fff;
+    height: 297mm;
+    padding: 30mm 18mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.25) 0%, transparent 40%);
+  }
+  .cta-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+  .cta-tag {
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-bottom: 20px;
+  }
+  .cta-page h1 {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+  .cta-page h1 .acc {
+    background: linear-gradient(135deg, #d4af37, #e91e63);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cta-page .lead {
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  .promise-box {
+    background: rgba(212, 175, 55, 0.1);
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .promise-title {
+    color: #d4af37;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .promise-list { list-style: none; padding: 0; }
+  .promise-list li {
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 0;
+    display: flex;
+    gap: 10px;
+  }
+  .promise-list li::before { content: '🎁'; flex-shrink: 0; }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .contact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .contact-label {
+    color: #94a3b8;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .contact-value { color: #fff; font-size: 13px; font-weight: 700; }
+  .contact-value .gold { color: #d4af37; }
+  .cta-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    text-align: center;
+  }
+  .cta-footer-website {
+    font-size: 26px;
+    font-weight: 900;
+    color: #d4af37;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .cta-footer-tagline {
+    font-size: 12px;
+    color: #94a3b8;
+    font-style: italic;
+  }
+  .menu-icons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .menu-pill {
+    background: linear-gradient(135deg, #fff5f7, #fff);
+    border: 1px solid #fce7eb;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #be185d;
+  }
+  .note-box {
+    background: #fffbeb;
+    border-left: 4px solid #d4af37;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    color: #78350f;
+    margin: 12px 0;
+  }
+  .note-box strong { color: #422006; }
+</style>
+</head>
+<body>
+
+<!-- ═════════ COVER ═════════ -->
+<section class="page cover">
+  <div class="cover-content">
+    <div class="cover-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      <div class="name">berstock<span class="acc">.id</span></div>
+    </div>
+
+    <div style="margin-top: 30mm;">
+      <div class="cover-tag">🍦 Khusus FnB · 2026</div>
+      <h1>Solusi POS<br>+ AI Asisten<br>untuk Bisnis<br>FnB Anda.</h1>
+      <h2>Buka mata bisnis Anda — kasir cepat, stok bahan terkontrol, omzet harian otomatis tercatat. Cocok untuk pemula yang ingin mulai go-digital tanpa ribet.</h2>
+
+      <div class="fnb-emoji">🍨🍰🍕☕🥤🍔</div>
+
+      <div class="cover-target">
+        <div class="cover-target-title">📍 Cocok untuk Bisnis Seperti:</div>
+        <div class="cover-target-list">
+          <div>Es Krim / Yogurt</div>
+          <div>Coffee Shop / Café</div>
+          <div>Warung Makan</div>
+          <div>Bakery / Roti</div>
+          <div>Juice / Minuman</div>
+          <div>Snack / Cemilan</div>
+          <div>Catering Kecil</div>
+          <div>Dessert / Cake Shop</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-website">berstock.id</div>
+      <div class="cover-meta">
+        Powered by Claude Sonnet 4.6<br>
+        🇮🇩 Made in Indonesia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 2: TENTANG + UNTUK SIAPA ═════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">01 · Solusi untuk FnB</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Mengapa <span class="acc">Berstock</span> untuk FnB?</h2>
+    <div class="page-subtitle">Sederhana, cepat, langsung pakai — tanpa training panjang</div>
+
+    <p style="font-size: 12.5px; color: #1e293b; line-height: 1.7;">
+      Banyak owner bisnis FnB di Indonesia masih mencatat penjualan di buku tulis atau Excel. Saat ramai, kasir bingung. Stok bahan habis tanpa diketahui. Akhir bulan, owner tidak tahu menu mana yang paling laku, atau berapa profit sebenarnya.
+    </p>
+
+    <p style="font-size: 12.5px; color: #1e293b; line-height: 1.7;">
+      <strong>Berstock</strong> hadir sebagai solusi: kasir digital sederhana yang owner bisa pakai dari HP atau tablet, plus AI Asisten yang bisa diajak ngobrol via Telegram untuk cek omzet & stok kapan saja.
+    </p>
+
+    <div class="note-box">
+      💡 <strong>Untuk owner pemula:</strong> Tidak perlu bisa komputer. Cukup bisa WhatsApp, bos sudah bisa pakai Berstock. Kami bantu setup dari nol — input menu, input harga, training kasir.
+    </div>
+
+    <h3 class="section-title">🎯 Tantangan FnB yang Berstock Atasi</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #ef4444;">!</div>
+        <div class="feature-content">
+          <div class="feature-name">Kasir Lambat saat Antrian Panjang</div>
+          <div class="feature-desc">Pelanggan menunggu lama karena kasir hitung manual. Berstock = klik menu → masuk cart → bayar dalam 10 detik per transaksi.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #ef4444;">!</div>
+        <div class="feature-content">
+          <div class="feature-name">Stok Bahan Habis Tanpa Disadari</div>
+          <div class="feature-desc">Susu, gula, topping habis di tengah jam ramai. Berstock kirim notif lewat Telegram saat stok kritis — owner tahu sebelum kehabisan.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #ef4444;">!</div>
+        <div class="feature-content">
+          <div class="feature-name">Tidak Tahu Menu Mana Paling Laku</div>
+          <div class="feature-desc">Owner tebak-tebak menu best seller. Berstock kasih laporan otomatis: top 5 menu terlaris, profit per item, jam paling ramai.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon" style="background: #ef4444;">!</div>
+        <div class="feature-content">
+          <div class="feature-name">Cek Omzet Harus Buka Buku Manual</div>
+          <div class="feature-desc">Mau tahu omzet hari ini? Owner harus pulang ke toko, buka buku, hitung satu-satu. Berstock = tinggal chat Bot Telegram, dijawab 5 detik.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Solusi FnB</span>
+    <span>Page 02</span>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 3: FITUR UTAMA UNTUK FNB ═════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">02 · Fitur untuk FnB</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Fitur <span class="acc">Penting</span> untuk Bisnis FnB</h2>
+    <div class="page-subtitle">Dirancang sederhana — owner & karyawan langsung bisa pakai dalam 1 hari</div>
+
+    <h3 class="section-title">🍽️ Menu & Stok</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">📷</div>
+        <div class="feature-content">
+          <div class="feature-name">Menu dengan Foto Asli</div>
+          <div class="feature-desc">Upload foto setiap menu (es krim chocolate, vanilla, strawberry). Pelanggan & karyawan baru langsung paham menu visual — tidak perlu training lama.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏷️</div>
+        <div class="feature-content">
+          <div class="feature-name">Kategori Menu (Es Krim, Topping, Minuman)</div>
+          <div class="feature-desc">Atur menu per kategori untuk akses cepat saat kasir. Es krim, topping, minuman, paket, dll — tinggal tap kategori.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-content">
+          <div class="feature-name">Stok Bahan Otomatis Berkurang</div>
+          <div class="feature-desc">Setiap penjualan, stok bahan otomatis dipotong. Tidak perlu hitung manual stok susu, gula, topping setiap hari.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚠️</div>
+        <div class="feature-content">
+          <div class="feature-name">Notifikasi Stok Kritis</div>
+          <div class="feature-desc">Saat stok bahan di bawah minimum (misal: vanilla tinggal 1 kg), Berstock kirim alert ke Telegram owner — segera restok.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">💳 Kasir Cepat</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-content">
+          <div class="feature-name">3 Klik = Selesai</div>
+          <div class="feature-desc">Pilih menu → tambah ke cart → bayar. Hitungan otomatis, kembalian terhitung otomatis. Tidak ada antrean panjang lagi.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💰</div>
+        <div class="feature-content">
+          <div class="feature-name">Cash, QRIS, Transfer — Semua Tercatat</div>
+          <div class="feature-desc">Owner tahu uang masuk via cash, QRIS, atau transfer. Tidak ada lagi mismatch pemasukan.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🧾</div>
+        <div class="feature-content">
+          <div class="feature-name">Print Struk via Bluetooth</div>
+          <div class="feature-desc">Cetak struk langsung dari HP/tablet ke printer thermal Bluetooth. Logo & nama toko bisa custom.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✏️</div>
+        <div class="feature-content">
+          <div class="feature-name">Edit Transaksi (Salah Input)</div>
+          <div class="feature-desc">Karyawan salah klik menu? Owner bisa edit/hapus transaksi, stok otomatis dikembalikan. Audit trail tersimpan.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">📊 Laporan Otomatis</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">📈</div>
+        <div class="feature-content">
+          <div class="feature-name">Omzet Harian, Mingguan, Bulanan</div>
+          <div class="feature-desc">Lihat omzet, profit, jumlah transaksi per periode. Bandingkan dengan periode sebelumnya untuk track growth.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-content">
+          <div class="feature-name">Menu Best Seller & Slow Mover</div>
+          <div class="feature-desc">Tahu menu mana yang paling laku, mana yang lambat. Owner bisa optimize menu — promosikan favorit, hapus yang gak laku.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Solusi FnB</span>
+    <span>Page 03</span>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 4: AI BOT TELEGRAM ═════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">03 · AI Bot Telegram</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">AI Asisten via <span class="acc">Telegram</span> 🤖</h2>
+    <div class="page-subtitle">Cek bisnis kapan saja, di mana saja — tanpa buka laptop</div>
+
+    <p>Bayangkan: Anda sedang santai di rumah jam 9 malam, tiba-tiba penasaran berapa omzet hari ini. Biasanya harus telepon karyawan atau pulang ke toko. Sekarang tinggal buka Telegram, chat <strong>@BerstockBot</strong>, dijawab 5 detik.</p>
+
+    <div class="bot-demo">
+      <div class="bot-header">
+        <img class="bot-avatar" src="assets/logo-berbisnis.png" alt="">
+        <div>
+          <div class="bot-name">@BerstockBot</div>
+          <div class="bot-status">● online · Claude AI</div>
+        </div>
+      </div>
+      <div class="chats">
+        <div class="chat-bubble user">Omzet hari ini berapa?</div>
+        <div class="chat-bubble bot">
+          💰 <strong>Omzet hari ini: Rp 3.450.000</strong><br>
+          📊 47 transaksi · Profit Rp 1.380.000 (40%)<br>
+          🏆 Best seller: Es Krim Chocolate (23 cup)
+        </div>
+        <div class="chat-bubble user">Stok susu masih banyak?</div>
+        <div class="chat-bubble bot">
+          🥛 <strong>Stok susu:</strong><br>
+          • Susu Full Cream — <strong>2 liter</strong> ⚠️<br>
+          • Susu UHT — 8 liter<br>
+          ⚠️ Saran: restok susu full cream besok
+        </div>
+        <div class="chat-bubble user">Kemarin sama hari ini gimana?</div>
+        <div class="chat-bubble bot">
+          📈 <strong>Perbandingan:</strong><br>
+          Kemarin: Rp 2.890.000 (38 trx)<br>
+          Hari ini: Rp 3.450.000 (47 trx)<br>
+          🚀 <strong>Growth +19% omzet, +24% trx</strong>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">🎯 Yang Bisa Bot Bantu untuk FnB:</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-content">
+          <div class="feature-name">Cek Omzet & Profit Realtime</div>
+          <div class="feature-desc">"Omzet hari ini berapa?" / "Profit minggu ini?" / "Jam berapa paling ramai?"</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-content">
+          <div class="feature-name">Menu Terlaris & Slow Mover</div>
+          <div class="feature-desc">"Top 5 menu minggu ini?" / "Menu apa yang gak laku bulan ini?"</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-content">
+          <div class="feature-name">Cek Stok Bahan Tanpa ke Toko</div>
+          <div class="feature-desc">"Stok susu vanilla berapa?" / "Bahan apa aja yang udah kritis?"</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📈</div>
+        <div class="feature-content">
+          <div class="feature-name">Bandingkan Periode</div>
+          <div class="feature-desc">"Omzet hari ini vs kemarin?" / "Bulan ini vs bulan lalu?"</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-content">
+          <div class="feature-name">Daily Digest Otomatis Jam 7 Pagi</div>
+          <div class="feature-desc">Setiap pagi, bot kirim ringkasan otomatis: omzet kemarin, % growth, menu terlaris, stok kritis. Owner langsung tahu prioritas hari ini.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Solusi FnB</span>
+    <span>Page 04</span>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 5: USE CASE NYATA ═════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">04 · Use Case Nyata</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Skenario <span class="acc">Nyata</span> untuk Bisnis Anda</h2>
+    <div class="page-subtitle">Bagaimana Berstock mengubah operasional FnB sehari-hari</div>
+
+    <div class="story-card">
+      <div class="story-header">
+        <div class="story-emoji">🍦</div>
+        <div>
+          <div class="story-name">Toko Es Krim Premium</div>
+          <div class="story-type">15 flavor · 30-50 transaksi/hari</div>
+        </div>
+      </div>
+      <div class="story-prob">
+        <div class="story-prob-label">Sebelum Berstock</div>
+        <div class="story-prob-text">Owner catat penjualan di buku, sering lupa input. Stok susu sering habis tiba-tiba — pelanggan kecewa, omzet hilang. Akhir bulan tidak tahu flavor mana paling untung.</div>
+      </div>
+      <div class="story-sol">
+        <div class="story-sol-label">Setelah Berstock</div>
+        <div class="story-sol-text">Karyawan tap menu di tablet, transaksi auto. Bot Telegram kirim alert "Susu vanilla 2 liter saja!" — owner langsung pesan ke supplier. Akhir bulan dapat laporan: <strong>Chocolate (#1), Vanilla (#2), Strawberry (#3)</strong>.</div>
+      </div>
+      <div class="story-result">
+        <div class="story-result-label">📈 Hasil dalam 30 Hari</div>
+        <div class="story-result-text">Omzet naik 18% (gak pernah kehabisan stok lagi). Hemat 1.5 jam/hari (gak perlu rekap manual). Owner santai pantau dari rumah via Telegram.</div>
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-header">
+        <div class="story-emoji">🍜</div>
+        <div>
+          <div class="story-name">Warung Makan / Catering Kecil</div>
+          <div class="story-type">8-12 menu · 50-80 porsi/hari</div>
+        </div>
+      </div>
+      <div class="story-prob">
+        <div class="story-prob-label">Sebelum Berstock</div>
+        <div class="story-prob-text">Owner pakai Excel, anak yang input. Sering miss-recording saat ramai. Tidak tahu modal vs jual per menu — kira-kira aja untungnya. Pelanggan langganan catering sering miss tagihan.</div>
+      </div>
+      <div class="story-sol">
+        <div class="story-sol-label">Setelah Berstock</div>
+        <div class="story-sol-text">Anak input dari HP saat order datang. Bot kasih tahu: "Menu Nasi Padang profit 35% per porsi". Pelanggan catering masuk database — tagihan otomatis tracking.</div>
+      </div>
+      <div class="story-result">
+        <div class="story-result-label">📈 Hasil dalam 30 Hari</div>
+        <div class="story-result-text">Profit naik 22% (focus jual menu margin tinggi). Tagihan catering tidak ada yang missed lagi. Owner punya data konkret untuk planning menu.</div>
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-header">
+        <div class="story-emoji">☕</div>
+        <div>
+          <div class="story-name">Coffee Shop / Café</div>
+          <div class="story-type">20-30 menu · 80-120 cup/hari</div>
+        </div>
+      </div>
+      <div class="story-prob">
+        <div class="story-prob-label">Sebelum Berstock</div>
+        <div class="story-prob-text">Pakai mesin POS lama yang ribet. Karyawan baru butuh 1 minggu training. Saat owner gak ada, gak tahu omzet realtime. Stok kopi & susu sering kehabisan saat weekend.</div>
+      </div>
+      <div class="story-sol">
+        <div class="story-sol-label">Setelah Berstock</div>
+        <div class="story-sol-text">Karyawan baru paham dalam 1 jam — visual menu, klik, bayar. Owner pantau omzet weekend dari rumah via Bot. Stok auto-alert sebelum kritis.</div>
+      </div>
+      <div class="story-result">
+        <div class="story-result-label">📈 Hasil dalam 30 Hari</div>
+        <div class="story-result-text">Onboarding karyawan jauh lebih cepat. Owner reduce waktu di toko 40% (lebih banyak waktu strategi). Customer satisfaction naik (gak ada antrean panjang).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Solusi FnB</span>
+    <span>Page 05</span>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 6: PRICING + ONBOARDING ═════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">05 · Investasi & Promo</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Investasi & <span class="acc">Promo Khusus</span></h2>
+    <div class="page-subtitle">Mulai dari Rp 149rb/bulan · 3 hari trial gratis · Cancel kapan saja</div>
+
+    <div class="pricing-grid-fnb">
+      <div class="price-card">
+        <div class="price-tier">Starter</div>
+        <div class="price-amount"><span class="currency">Rp</span> 149.999</div>
+        <div class="price-period">/ bulan · 1 outlet</div>
+        <ul class="price-features">
+          <li>Kasir digital lengkap</li>
+          <li>Menu unlimited + foto</li>
+          <li>Manajemen stok bahan</li>
+          <li>Customer database</li>
+          <li>Laporan harian/bulanan</li>
+          <li>Print struk thermal</li>
+          <li>Sync HP, tablet, laptop</li>
+          <li>Cocok: Es krim, snack, bakery</li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tier">Pro + AI</div>
+        <div class="price-amount"><span class="currency">Rp</span> 500.000</div>
+        <div class="price-period">/ bulan · Early Bird</div>
+        <ul class="price-features">
+          <li><strong>Semua fitur Starter</strong></li>
+          <li><strong>AI Bot Telegram (12 tools)</strong></li>
+          <li><strong>Daily digest otomatis 7 pagi</strong></li>
+          <li>Cek omzet/stok dari Telegram</li>
+          <li>Bahasa Indonesia natural</li>
+          <li>Reply 5 detik 24/7</li>
+          <li>Priority support WA</li>
+          <li>Cocok: Café, restoran, catering</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="section-title">🎁 Promo Khusus FnB Pemula</h3>
+    <div class="story-card" style="background: linear-gradient(135deg, #fef3c7, #fffbeb); border-color: #d4af37;">
+      <div class="story-header" style="border-color: rgba(212,175,55,0.3);">
+        <div class="story-emoji" style="background: linear-gradient(135deg, #d4af37, #f4cf67);">🎁</div>
+        <div>
+          <div class="story-name">Setup + Training GRATIS</div>
+          <div class="story-type">Senilai Rp 1.500.000 · Untuk 10 klien FnB pertama</div>
+        </div>
+      </div>
+      <ul class="price-features" style="padding: 0;">
+        <li><strong>Setup akun lengkap</strong> — kami bantu input semua menu, foto, harga, kategori</li>
+        <li><strong>Training kasir 2 sesi</strong> — via WA video call (60 menit total)</li>
+        <li><strong>30 hari support harian</strong> — chat WA, response &lt; 4 jam</li>
+        <li><strong>Custom prompt AI</strong> — sesuaikan bahasa bot dengan brand bos</li>
+        <li><strong>Garansi 100%</strong> — gak nyaman dalam 30 hari, refund full</li>
+      </ul>
+    </div>
+
+    <h3 class="section-title">📅 Proses Onboarding (3 Hari)</h3>
+    <div class="onboard-step">
+      <div class="step-day">
+        <div class="step-day-label">Hari</div>
+        <div class="step-day-num">1</div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Setup Akun & Input Menu</div>
+        <div class="step-desc">Saya yang input semua menu, foto, harga, kategori. Bos cukup kasih daftar menu via WA atau foto buku menu.</div>
+      </div>
+    </div>
+    <div class="onboard-step">
+      <div class="step-day">
+        <div class="step-day-label">Hari</div>
+        <div class="step-day-num">2</div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Training Owner & Kasir</div>
+        <div class="step-desc">Video call 30 menit — saya tunjukkan cara pakai dari A-Z. Karyawan kasir langsung praktek input transaksi sample.</div>
+      </div>
+    </div>
+    <div class="onboard-step">
+      <div class="step-day">
+        <div class="step-day-label">Hari</div>
+        <div class="step-day-num">3</div>
+      </div>
+      <div class="step-content">
+        <div class="step-title">Go Live + Pendampingan</div>
+        <div class="step-desc">Mulai pakai Berstock di toko. Saya standby di WA seharian — bos chat kalau ada bingung apapun.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Solusi FnB</span>
+    <span>Page 06</span>
+  </div>
+</section>
+
+<!-- ═════════ PAGE 7: CTA ═════════ -->
+<section class="page cta-page">
+  <div class="cta-content">
+    <div class="cta-tag">🚀 Mulai Sekarang</div>
+
+    <h1>Siap Bawa<br>Bisnis FnB Anda<br>ke <span class="acc">Level Baru?</span></h1>
+    <p class="lead">Bergabung dengan UMKM FnB Indonesia yang sudah pakai Berstock. Trial gratis 3 hari + setup full kami yang handle. Tidak perlu bisa komputer — kami ajarin step by step.</p>
+
+    <div class="promise-box">
+      <div class="promise-title">🎁 Janji Kami untuk Bos</div>
+      <ul class="promise-list">
+        <li>Setup gratis (input menu, foto, kategori) — bos cukup duduk santai</li>
+        <li>Training 2x via WA video call sampai bos & karyawan paham</li>
+        <li>30 hari support harian — chat WA kapan saja</li>
+        <li>Garansi 100%: gak nyaman = refund full, no questions asked</li>
+        <li>Free fitur baru: kalau bos butuh fitur khusus FnB, kita prioritize</li>
+      </ul>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-label">📞 WhatsApp</div>
+        <div class="contact-value">+62 821-2484-8924</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">📧 Email</div>
+        <div class="contact-value gold">info@berstock.id</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">🌐 Website</div>
+        <div class="contact-value gold">berstock.id</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">📱 Instagram</div>
+        <div class="contact-value">@berstock.ai</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">🤖 Bot Telegram</div>
+        <div class="contact-value">@BerstockBot</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">👤 Founder</div>
+        <div class="contact-value">Hendry Phang</div>
+      </div>
+    </div>
+
+    <div class="cta-footer">
+      <div class="cta-footer-website">berstock.id</div>
+      <div class="cta-footer-tagline">"Atur stok, untung pasti masuk." 🐻💼</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
