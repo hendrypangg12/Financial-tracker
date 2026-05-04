@@ -56,13 +56,13 @@
     align-items: center;
     gap: 14px;
   }
-  .brand-emoji {
-    width: 56px; height: 56px;
-    background: linear-gradient(135deg, #d4af37, #f4cf67);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
-    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.4);
+  .brand-logo {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    object-fit: cover;
+    background: #fff;
+    padding: 4px;
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.3);
   }
   .brand-text {
     font-size: 28px;
@@ -184,7 +184,7 @@
   <div class="frame">
     <div class="top-row">
       <div class="brand">
-        <div class="brand-emoji">🐻</div>
+        <img class="brand-logo" src="assets/logo-berbisnis.png" alt="Berstock">
         <div class="brand-text">berstock<span class="accent">.id</span></div>
       </div>
       <div class="badge-launch">🚀 NOW LIVE</div>
