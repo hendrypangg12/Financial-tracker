@@ -3,302 +3,835 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BerSatu Suite — Hendry Phang</title>
-<meta name="description" content="Ekosistem AI untuk UMKM Indonesia: BerUang · BerBisnis · Berstock" />
-<meta name="theme-color" content="#8b5a2b" />
-<link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=2" />
-<link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=2" />
-<meta property="og:title" content="BerSatu Suite — Hendry Phang" />
-<meta property="og:description" content="Personal finance · Kasir UMKM · AI Agent Telegram. Pilih layanan Anda." />
-<meta property="og:image" content="assets/logo-berbisnis.png" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<title>Berstock.id — POS + AI Assistant untuk UMKM Indonesia</title>
+<meta name="description" content="Sistem POS pintar + AI Bot Telegram untuk UMKM Indonesia. Owner tinggal chat, AI yang kerja. Mulai dari Rp 149rb/bulan. Demo gratis 7 hari." />
+<meta name="theme-color" content="#0a1628" />
+<link rel="icon" type="image/png" href="tokountung/assets/logo-berbisnis.png?v=3" />
+<meta property="og:title" content="Berstock — POS + AI Assistant untuk UMKM" />
+<meta property="og:description" content="Pertama di Indonesia: POS + AI Bot Telegram. Kelola toko via chat, AI yang kerja 24/7." />
+<meta property="og:image" content="tokountung/assets/logo-berbisnis.png" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://berstock.id" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --cream: #fbf6ee;
-  --cream-deep: #f0e9d8;
-  --brown: #8b5a2b;
-  --brown-dark: #5d3a1a;
-  --ink: #4a3328;
-  --ink-soft: #6e5a4a;
-  --gold: #c9a352;
-  --gold-dark: #a3823a;
-  --navy: #1e3a5f;
-  --green: #16a34a;
+  --navy: #0a1628;
+  --navy-2: #0f1f3d;
+  --navy-3: #142847;
+  --gold: #d4af37;
+  --gold-bright: #ffd76a;
+  --magenta: #e91e63;
+  --magenta-light: #ff4081;
+  --cyan: #06b6d4;
+  --green: #22c55e;
+  --red: #ef4444;
+  --white: #ffffff;
+  --gray-100: #f1f5f9;
+  --gray-300: #cbd5e1;
+  --gray-500: #64748b;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
 }
-html, body {
+html { scroll-behavior: smooth; }
+body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: linear-gradient(180deg, #fef3e2 0%, var(--cream) 50%, #f5ebd4 100%);
-  color: var(--ink);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  background: var(--navy);
+  color: #fff;
+  line-height: 1.5;
 }
+img { max-width: 100%; display: block; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-.wrap {
-  max-width: 480px; margin: 0 auto;
-  padding: 40px 20px 60px;
+/* ==================== NAV ==================== */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10, 22, 40, .92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  padding: 12px 0;
+}
+nav .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+nav .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: #fff; text-decoration: none; }
+nav .logo img { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-bright)); padding: 2px; }
+nav .logo .ai { background: linear-gradient(135deg, var(--cyan), var(--gold-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+nav .nav-cta { background: var(--magenta); color: #fff; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; }
+
+/* ==================== HERO ==================== */
+.hero {
+  padding: 70px 20px 90px;
+  position: relative; overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, rgba(212,175,55,.18), transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(233,30,99,.15), transparent 50%);
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 50px;
+  align-items: center; position: relative; z-index: 2;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(233,30,99,.12);
+  border: 1px solid rgba(233,30,99,.4);
+  color: var(--magenta-light);
+  padding: 8px 18px; border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--magenta-light); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.hero h1 {
+  font-size: 60px; font-weight: 900; line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 18px;
+}
+.hero h1 .grad-gold {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero h1 .grad-magenta {
+  background: linear-gradient(135deg, var(--magenta-light), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p.lead {
+  font-size: 19px; color: #cbd5e1;
+  margin-bottom: 30px; line-height: 1.55;
+}
+.hero p.lead strong { color: #fff; }
+
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  color: #fff;
+  padding: 16px 30px;
+  border-radius: 12px;
+  font-size: 16px; font-weight: 800;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 12px 32px rgba(233,30,99,.35);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(233,30,99,.5); }
+.btn-secondary {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  padding: 14px 26px;
+  border-radius: 12px;
+  font-size: 15px; font-weight: 700;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-secondary:hover { background: rgba(255,255,255,.12); }
+.hero-trust { font-size: 13px; color: #94a3b8; display: flex; gap: 18px; flex-wrap: wrap; }
+.hero-trust span { display: flex; align-items: center; gap: 4px; }
+
+/* Phone mockup */
+.hero-phone { display: flex; justify-content: center; }
+.phone-frame {
+  width: 320px;
+  background: #1a1a1a;
+  border-radius: 40px;
+  padding: 14px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5),
+              0 0 100px rgba(212,175,55,.15);
   position: relative;
 }
-.wrap::before {
-  content: '💰'; position: absolute; top: 60px; right: -10px;
-  font-size: 60px; opacity: .2; transform: rotate(15deg);
+.phone-frame::before {
+  content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 22px;
+  background: #000; border-radius: 999px; z-index: 2;
 }
-.wrap::after {
-  content: '🪙'; position: absolute; top: 200px; left: -15px;
-  font-size: 50px; opacity: .15; transform: rotate(-20deg);
+.phone-screen {
+  background: #17212b;
+  border-radius: 30px;
+  padding: 50px 16px 20px;
+  min-height: 540px;
+  display: flex; flex-direction: column;
+  gap: 8px;
 }
-
-.header { text-align: center; margin-bottom: 36px; position: relative; z-index: 1; }
-.avatar {
-  width: 130px; height: 130px; border-radius: 28px;
-  background: #fff; padding: 12px; margin: 0 auto 18px;
-  box-shadow: 0 16px 50px rgba(139,90,43,.3), 0 0 0 6px rgba(255,255,255,.5);
-}
-.avatar img { width: 100%; height: 100%; object-fit: contain; }
-.name {
-  font-size: 28px; font-weight: 900; letter-spacing: -.5px;
-  color: var(--brown-dark); margin-bottom: 6px;
-}
-.handle { font-size: 15px; color: var(--brown); margin-bottom: 12px; }
-.handle a { color: var(--brown); text-decoration: none; }
-.tagline {
-  font-family: 'Caveat', cursive; font-size: 24px;
-  color: var(--gold-dark); font-weight: 700;
-  margin-bottom: 4px;
-}
-.bio {
-  font-size: 14px; color: var(--ink-soft);
-  line-height: 1.5; max-width: 360px; margin: 0 auto;
-}
-.bio b { color: var(--brown-dark); }
-
-.section-title {
+.phone-header {
   display: flex; align-items: center; gap: 10px;
-  font-size: 12px; font-weight: 800; letter-spacing: 2px;
-  color: var(--brown); text-transform: uppercase;
-  margin: 28px 4px 14px;
+  padding: 8px 4px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  margin-bottom: 6px;
 }
-.section-title::before, .section-title::after {
-  content: ''; flex: 1; height: 1px; background: var(--cream-deep);
+.phone-header .av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.phone-header b { font-size: 13px; color: #fff; }
+.phone-header .stat { font-size: 10px; color: #4ade80; display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.phone-header .stat::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+
+.chat-bubble {
+  padding: 8px 12px; border-radius: 14px;
+  font-size: 11px; line-height: 1.45;
+  max-width: 82%;
+}
+.chat-bubble.user { background: #2b5278; color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+.chat-bubble.bot { background: #182533; border: 1px solid rgba(255,255,255,.06); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 3px; }
+.chat-bubble b { color: var(--gold-bright); }
+.chat-bubble .red { color: #f87171; }
+.chat-bubble .green { color: #4ade80; }
+
+@media (max-width: 768px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+  .hero h1 { font-size: 38px; }
+  .hero p.lead { font-size: 16px; }
+  .hero-phone { display: none; }
 }
 
-.link {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 20px; border-radius: 18px;
-  background: #fff; border: 2px solid var(--cream-deep);
-  text-decoration: none; color: var(--ink);
-  margin-bottom: 12px;
-  transition: all .15s;
-  box-shadow: 0 4px 14px rgba(74,51,40,.06);
+/* ==================== TRUST STRIP ==================== */
+.trust-strip {
+  background: rgba(255,255,255,.03);
+  border-top: 1px solid rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 20px;
 }
-.link:hover, .link:active {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(74,51,40,.12);
-  border-color: var(--gold);
+.trust-grid {
+  display: flex; gap: 36px; flex-wrap: wrap;
+  justify-content: center; align-items: center;
 }
-.link .ico {
-  width: 52px; height: 52px; border-radius: 14px;
-  display: grid; place-items: center; font-size: 26px;
-  flex: 0 0 auto;
-  background: var(--cream-deep);
+.trust-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: #cbd5e1;
 }
-.link .body { flex: 1; min-width: 0; }
-.link .title {
-  font-size: 16px; font-weight: 800; color: var(--brown-dark);
-  margin-bottom: 2px;
-  display: flex; align-items: center; gap: 6px;
-  flex-wrap: wrap;
-}
-.link .desc { font-size: 13px; color: var(--ink-soft); line-height: 1.35; }
-.link .arrow { font-size: 22px; color: var(--gold); flex: 0 0 auto; font-weight: 800; }
+.trust-item b { color: var(--gold-bright); font-family: 'JetBrains Mono', monospace; }
+.trust-item .ic { font-size: 24px; }
 
-.pill {
-  display: inline-block; padding: 2px 8px; border-radius: 999px;
-  font-size: 10px; font-weight: 800; letter-spacing: .5px;
-  text-transform: uppercase;
+/* ==================== SECTION COMMON ==================== */
+.section { padding: 80px 20px; }
+.section h2 {
+  font-size: 42px; font-weight: 900; line-height: 1.1;
+  margin-bottom: 14px; text-align: center;
+  letter-spacing: -1.5px;
 }
-.pill-trial { background: #dbeafe; color: #1e40af; }
-.pill-pro { background: var(--gold); color: var(--brown-dark); }
-.pill-free { background: #d1fae5; color: #065f46; }
-.pill-hot { background: #fee2e2; color: #991b1b; }
-.pill-new { background: #dcfce7; color: #14532d; }
+.section h2 .grad {
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.section .subtitle {
+  font-size: 17px; color: #cbd5e1;
+  text-align: center; max-width: 640px;
+  margin: 0 auto 50px;
+}
 
-.link.featured {
-  background: linear-gradient(135deg, var(--brown) 0%, var(--brown-dark) 100%);
-  border: 2px solid var(--gold);
-  color: var(--cream);
+/* ==================== 3 PRODUCT CARDS ==================== */
+.products-section {
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
 }
-.link.featured .title { color: #fff; }
-.link.featured .desc { color: rgba(255,255,255,.85); }
-.link.featured .ico { background: var(--gold); }
-.link.featured .arrow { color: var(--gold); }
-
-.link.berbisnis {
-  background: linear-gradient(135deg, #fff 0%, #f0f4fa 100%);
+.products-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
 }
-.link.berbisnis .ico { background: linear-gradient(135deg, var(--navy), #4d6f99); color: #fff; }
-
-.link.berstock {
-  background: linear-gradient(135deg, #fff 0%, #fef3e2 100%);
-  border-color: var(--gold);
+.product-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 32px 26px;
+  position: relative; overflow: hidden;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+  display: flex; flex-direction: column;
 }
-.link.berstock .ico {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212,175,55,.4);
+  box-shadow: 0 20px 50px rgba(0,0,0,.3);
+}
+.product-card .badge {
+  position: absolute; top: 16px; right: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 800; letter-spacing: 1px;
+  padding: 4px 10px; border-radius: 6px;
+}
+.product-card .badge.popular { background: var(--gold); color: var(--navy); }
+.product-card .badge.lifetime { background: var(--green); color: var(--navy); }
+.product-card .badge.cheap { background: var(--cyan); color: var(--navy); }
+.product-card .ic { font-size: 56px; margin-bottom: 16px; }
+.product-card h3 {
+  font-size: 24px; font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.product-card .tag-line { font-size: 14px; color: #94a3b8; font-style: italic; margin-bottom: 14px; }
+.product-card p { font-size: 14px; color: #cbd5e1; line-height: 1.55; flex: 1; margin-bottom: 18px; }
+.product-card .price { font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.product-card .price small { font-size: 14px; color: #94a3b8; font-weight: 500; }
+.product-card .pricing-label { font-size: 11px; color: var(--gold-bright); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; margin-bottom: 16px; }
+.product-card .features { list-style: none; margin-bottom: 18px; }
+.product-card .features li { font-size: 13px; color: #cbd5e1; padding: 4px 0; display: flex; gap: 6px; }
+.product-card .features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.product-card .cta-btn {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
   color: #fff;
+  padding: 12px 18px; border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none; text-align: center;
+  transition: background .15s;
+}
+.product-card .cta-btn:hover { background: rgba(255,255,255,.15); }
+.product-card.featured {
+  background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(233,30,99,.08));
+  border-color: var(--gold);
+}
+.product-card.featured .cta-btn {
+  background: linear-gradient(135deg, var(--magenta), var(--gold));
+  border: none;
 }
 
-.link.galaxy {
-  background: linear-gradient(135deg, #1a0a2e 0%, #2c1a4e 100%);
-  color: #fff; border-color: rgba(168,85,247,.4);
-}
-.link.galaxy .title { color: #fff; }
-.link.galaxy .desc { color: rgba(255,255,255,.75); }
-.link.galaxy .ico { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; }
-.link.galaxy .arrow { color: #c084fc; }
+@media (max-width: 768px) { .products-grid { grid-template-columns: 1fr; } }
 
-.link.contact-wa {
-  background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
-  color: #fff; border-color: #1da851;
+/* ==================== HOW IT WORKS ==================== */
+.how-section { background: var(--navy); }
+.how-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  margin-top: 30px;
 }
-.link.contact-wa .title { color: #fff; }
-.link.contact-wa .desc { color: rgba(255,255,255,.85); }
-.link.contact-wa .ico { background: rgba(255,255,255,.2); color: #fff; }
-.link.contact-wa .arrow { color: #fff; }
+.how-step {
+  text-align: center;
+  padding: 32px 22px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  position: relative;
+}
+.how-step .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 56px; font-weight: 800;
+  background: linear-gradient(135deg, var(--gold-bright), var(--magenta-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.how-step .ic { font-size: 56px; margin: 14px 0; }
+.how-step h3 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.how-step p { font-size: 14px; color: #cbd5e1; }
+@media (max-width: 768px) { .how-grid { grid-template-columns: 1fr; } }
 
-.link.contact-ig {
-  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  color: #fff; border: none;
-}
-.link.contact-ig .title { color: #fff; }
-.link.contact-ig .desc { color: rgba(255,255,255,.9); }
-.link.contact-ig .ico { background: rgba(255,255,255,.2); color: #fff; }
-.link.contact-ig .arrow { color: #fff; }
+/* ==================== AI DEMO ==================== */
+.ai-demo-section { background: linear-gradient(180deg, var(--navy-2) 0%, var(--navy) 100%); }
+.ai-demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+.ai-demo-text h3 { font-size: 32px; font-weight: 800; color: var(--gold-bright); margin-bottom: 14px; line-height: 1.1; }
+.ai-demo-text > p { font-size: 16px; color: #cbd5e1; line-height: 1.6; margin-bottom: 18px; }
+.ai-demo-text ul { list-style: none; }
+.ai-demo-text li { padding: 8px 0; color: #e2e8f0; display: flex; align-items: flex-start; gap: 8px; font-size: 15px; }
+.ai-demo-text li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
 
-.footer {
-  text-align: center; margin-top: 40px;
-  padding-top: 20px; border-top: 1px dashed var(--cream-deep);
-  font-size: 12px; color: var(--ink-soft); line-height: 1.6;
+.chat-mockup-big {
+  background: #17212b;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 60px rgba(212,175,55,.1);
 }
-.footer b { color: var(--brown-dark); }
-.copy-link {
-  margin-top: 16px; padding: 8px 16px;
-  background: var(--cream-deep); border-radius: 999px;
-  font-family: ui-monospace, monospace; font-size: 11px;
-  color: var(--brown); display: inline-block;
+.chat-mockup-big .head {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 12px;
+}
+.chat-mockup-big .head .av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-bright)); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.chat-mockup-big .head .name { font-weight: 700; font-size: 14px; color: #fff; }
+.chat-mockup-big .head .status { font-size: 11px; color: #4ade80; display: flex; align-items: center; gap: 4px; }
+.chat-mockup-big .head .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+.chat-mockup-big .bubbles { display: flex; flex-direction: column; gap: 8px; }
+.chat-mockup-big .bubble { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.45; max-width: 88%; }
+.chat-mockup-big .bubble.user { background: #2b5278; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-mockup-big .bubble.bot { background: #182533; border: 1px solid rgba(255,255,255,.06); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 4px; }
+.chat-mockup-big .bubble b { color: var(--gold-bright); }
+.chat-mockup-big .bubble .red { color: #f87171; font-weight: 700; }
+.chat-mockup-big .bubble .green { color: #4ade80; }
+
+@media (max-width: 768px) { .ai-demo-grid { grid-template-columns: 1fr; gap: 28px; } .ai-demo-text h3 { font-size: 24px; } }
+
+/* ==================== WHY CHOOSE ==================== */
+.why-section { background: var(--navy); }
+.why-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+}
+.why-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+}
+.why-card .ic { font-size: 44px; margin-bottom: 12px; }
+.why-card h4 { font-size: 17px; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px; }
+.why-card p { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+@media (max-width: 768px) { .why-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .why-grid { grid-template-columns: 1fr; } }
+
+/* ==================== CTA FINAL ==================== */
+.cta-final {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--gold) 100%);
+  color: var(--navy);
+  text-align: center;
+  padding: 80px 20px;
+  position: relative; overflow: hidden;
+}
+.cta-final::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+.cta-final .container { position: relative; z-index: 2; }
+.cta-final h2 { font-size: 44px; color: var(--navy); margin-bottom: 16px; font-weight: 900; line-height: 1.0; letter-spacing: -1.5px; }
+.cta-final p { font-size: 17px; color: rgba(10,22,40,.85); max-width: 600px; margin: 0 auto 30px; }
+.cta-final .cta-btn-final {
+  background: var(--navy);
+  color: #fff;
+  padding: 18px 40px;
+  border-radius: 14px;
+  font-size: 18px; font-weight: 900;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.25);
+}
+.cta-final .secondary-line { margin-top: 18px; font-size: 14px; color: rgba(10,22,40,.7); }
+.cta-final .secondary-line a { color: var(--navy); font-weight: 700; text-decoration: underline; }
+
+/* ==================== FOOTER ==================== */
+footer {
+  background: #050b18;
+  color: #94a3b8;
+  padding: 50px 20px 30px;
+}
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+.footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: #fff; font-size: 18px; margin-bottom: 12px; }
+.footer-brand img { width: 32px; height: 32px; border-radius: 50%; }
+.footer-tagline { font-size: 13px; color: #94a3b8; margin-bottom: 14px; line-height: 1.5; }
+footer h5 { color: #fff; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+footer ul { list-style: none; }
+footer ul li { padding: 4px 0; }
+footer a { color: #cbd5e1; text-decoration: none; font-size: 14px; }
+footer a:hover { color: var(--gold-bright); }
+.footer-copy { border-top: 1px solid rgba(255,255,255,.05); padding-top: 20px; text-align: center; font-size: 12px; color: #64748b; }
+@media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
+
+/* ==================== FLOATING MASCOT ==================== */
+.mascot-widget { position: fixed; bottom: 24px; right: 24px; z-index: 9999; pointer-events: none; }
+.mascot-avatar-float {
+  position: absolute; bottom: 0; right: 0;
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+  padding: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(212,175,55,.45);
+  animation: mascot-pulse 2.5s infinite;
+}
+@keyframes mascot-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(212,175,55,.45), 0 0 0 0 rgba(212,175,55,.4); }
+  50% { box-shadow: 0 8px 32px rgba(212,175,55,.55), 0 0 0 14px rgba(212,175,55,0); }
+}
+.mascot-avatar-float img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
+.mascot-avatar-float .online { position: absolute; bottom: 4px; right: 4px; width: 16px; height: 16px; background: var(--green); border: 3px solid #fff; border-radius: 50%; }
+.mascot-avatar-float .notif { position: absolute; top: -2px; right: -2px; width: 22px; height: 22px; background: #ef4444; border: 2px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 800; animation: notif-bounce 1s infinite; }
+@keyframes notif-bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+.mcp-panel {
+  position: absolute; bottom: 84px; right: 0;
+  width: 320px;
+  background: #fff; color: var(--navy);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0; transform: translateY(20px) scale(.9);
+  transform-origin: bottom right;
+  transition: opacity .35s, transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.mcp-panel.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.mcp-head { background: linear-gradient(135deg, var(--navy), var(--navy-2)); color: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.mcp-head .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-bright)); padding: 2px; }
+.mcp-head .av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
+.mcp-head .info { flex: 1; }
+.mcp-head .info .name { font-weight: 800; font-size: 13px; }
+.mcp-head .info .status { font-size: 10px; color: #4ade80; display: flex; align-items: center; gap: 4px; }
+.mcp-head .info .status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+.mcp-head .close-x { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.1); border-radius: 50%; font-size: 14px; cursor: pointer; }
+
+.mcp-body { padding: 16px; background: var(--gray-100); max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.mcp-msg { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; border-bottom-left-radius: 4px; padding: 10px 13px; font-size: 13px; line-height: 1.5; color: var(--gray-900); max-width: 88%; align-self: flex-start; opacity: 0; transform: translateY(8px); animation: msg-in .3s ease forwards; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+@keyframes msg-in { to { opacity: 1; transform: translateY(0); } }
+.mcp-msg strong { color: var(--magenta); }
+.mcp-msg .grad-text { background: linear-gradient(135deg, var(--magenta), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+.mcp-msg .time { display: block; font-size: 9px; color: var(--gray-500); margin-top: 3px; }
+
+.mcp-typing { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; border-bottom-left-radius: 4px; padding: 10px 14px; align-self: flex-start; display: inline-flex; gap: 4px; opacity: 0; animation: msg-in .3s ease forwards; }
+.mcp-typing span { width: 6px; height: 6px; background: #cbd5e1; border-radius: 50%; animation: typing-dot 1.4s infinite; }
+.mcp-typing span:nth-child(2) { animation-delay: .2s; }
+.mcp-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typing-dot { 0%,60%,100%{transform:translateY(0); opacity:.4} 30%{transform:translateY(-4px); opacity:1} }
+
+.mcp-actions { padding: 10px 16px 16px; background: #fff; display: flex; flex-direction: column; gap: 6px; }
+.mcp-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.mcp-btn.primary { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
+.mcp-btn.secondary { background: var(--navy); color: #fff; }
+.mcp-footer { padding: 8px 16px; background: var(--gray-100); text-align: center; font-size: 9px; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+@media (max-width: 480px) {
+  .mascot-widget { bottom: 16px; right: 16px; }
+  .mascot-avatar-float { width: 58px; height: 58px; }
+  .mcp-panel { width: calc(100vw - 32px); max-width: 340px; bottom: 70px; }
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-
-  <header class="header">
-    <div class="avatar"><img src="assets/logo-berbisnis.png?v=3" alt="BerSatu Suite" /></div>
-    <h1 class="name">BerSatu Suite</h1>
-    <p class="handle"><a href="https://instagram.com/hendrypangg" target="_blank">@hendrypangg</a></p>
-    <p class="tagline">"Catet dulu, biar beneran ber-uang"</p>
-    <p class="bio">
-      Ekosistem AI &amp; tools untuk <b>UMKM Indonesia</b> 🐻<br>
-      Pilih layanan di bawah ⬇️
-    </p>
-  </header>
-
-  <div class="section-title">💰 Personal Finance</div>
-
-  <a href="app.html" class="link">
-    <div class="ico">🐻</div>
-    <div class="body">
-      <div class="title">BerUang App <span class="pill pill-free">Trial Gratis</span></div>
-      <div class="desc">Catet keuangan pribadi pakai chat / foto struk · Auto-kategorisasi</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <a href="landing.html" class="link">
-    <div class="ico">📄</div>
-    <div class="body">
-      <div class="title">Cara Beli BerUang</div>
-      <div class="desc">Bulanan Rp 35rb / Lifetime Rp 125rb (hemat 70%)</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <div class="section-title">🏪 UMKM &amp; Bisnis</div>
-
-  <a href="berbisnis-pro.html" class="link berbisnis">
-    <div class="ico">💼</div>
-    <div class="body">
-      <div class="title">BerBisnis Pro — Lihat Info <span class="pill pill-pro">PRO</span></div>
-      <div class="desc">POS + AI Bot Telegram · Mulai Rp 149.999/bulan</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <a href="tokountung/app.html" class="link berbisnis">
-    <div class="ico">🎁</div>
-    <div class="body">
-      <div class="title">Coba BerBisnis Gratis 3 Hari</div>
-      <div class="desc">Demo aplikasi langsung tanpa daftar</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <a href="landing-berstock.html" class="link berstock featured">
-    <div class="ico">🤖</div>
-    <div class="body">
-      <div class="title">Berstock — AI Agent <span class="pill pill-hot">EARLY BIRD</span></div>
-      <div class="desc">Tanya stok &amp; sales via Telegram · Rp 500rb/bln (50 klien pertama)</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <a href="https://t.me/BerstockBot" target="_blank" class="link berstock">
-    <div class="ico">💬</div>
-    <div class="body">
-      <div class="title">Demo Bot di Telegram <span class="pill pill-new">LIVE</span></div>
-      <div class="desc">Test langsung @BerstockBot · Demo data PT SPC tersedia</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <div class="section-title">🌌 Enterprise / Pitch</div>
-
-  <a href="bersatu-demo.html" class="link galaxy">
-    <div class="ico">⚡</div>
-    <div class="body">
-      <div class="title">Neural Command Demo</div>
-      <div class="desc">6 AI Agent terhubung — pitch deck visual untuk korporat</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <div class="section-title">📞 Hubungi Saya</div>
-
-  <a href="https://wa.me/6282124848924?text=Halo%20Pak%20Hendry%2C%20saya%20mau%20tanya%20tentang%20BerSatu%20Suite" target="_blank" class="link contact-wa">
-    <div class="ico">💬</div>
-    <div class="body">
-      <div class="title">WhatsApp Saya</div>
-      <div class="desc">0821-2484-8924 · Konsultasi &amp; demo</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <a href="https://instagram.com/hendrypangg" target="_blank" class="link contact-ig">
-    <div class="ico">📷</div>
-    <div class="body">
-      <div class="title">Instagram</div>
-      <div class="desc">@hendrypangg · Behind the scenes BerSatu</div>
-    </div>
-    <div class="arrow">→</div>
-  </a>
-
-  <div class="footer">
-    🐻 <b>BerSatu Suite</b> — Made with ❤️ for UMKM Indonesia<br>
-    © 2026 · All rights reserved
-    <div class="copy-link">hendrypangg12.github.io/Financial-tracker</div>
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" />
+      <span>berstock<span class="ai">.id</span></span>
+    </a>
+    <a href="#pricing" class="nav-cta">Coba Gratis →</a>
   </div>
+</nav>
 
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-badge"><span class="dot"></span>POWERED BY CLAUDE AI</div>
+      <h1>
+        <span class="grad-gold">POS Pintar</span><br>
+        + AI Assistant<br>
+        untuk <span class="grad-magenta">UMKM Indonesia</span>
+      </h1>
+      <p class="lead">
+        Sistem kasir + manajemen stok yang terintegrasi dengan
+        <strong>AI Bot Telegram</strong>. Owner tinggal chat,
+        AI yang kerja 24/7.
+      </p>
+      <div class="cta-row">
+        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20info%20Berstock%20%2B%20BerBisnis%20Pro" target="_blank" class="btn-primary">💬 Chat WhatsApp</a>
+        <a href="tokountung/app.html" target="_blank" class="btn-secondary">🎁 Coba Gratis 3 Hari</a>
+      </div>
+      <div class="hero-trust">
+        <span>🇮🇩 Bahasa Indonesia native</span>
+        <span>📱 Akses dari HP / iPad</span>
+        <span>☁️ Auto-sync real-time</span>
+      </div>
+    </div>
+    <div class="hero-phone">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="av">🐻</div>
+            <div><b>@BerstockBot</b><div style="font-size:9px; color:#94a3b8">online · Claude AI</div></div>
+            <div class="stat">5G</div>
+          </div>
+          <div class="chat-bubble user">Stok habis apa aja?</div>
+          <div class="chat-bubble bot">
+            🔥 <b>3 barang stok kritis:</b><br>
+            • Beras Premium — <span class="red">2 karung</span><br>
+            • Indomie Goreng — <span class="red">3 dus</span><br>
+            • Kopi Kapal Api — <span class="red"><b>HABIS!</b></span>
+          </div>
+          <div class="chat-bubble user">Cash hari ini?</div>
+          <div class="chat-bubble bot">
+            💵 <span class="green"><b>Rp 285.000.000</b></span><br>
+            4 transaksi sudah masuk kas
+          </div>
+          <div class="chat-bubble user">Best seller minggu ini?</div>
+          <div class="chat-bubble bot">
+            🏆 <b>Top 3:</b><br>
+            1. Anggur Merah Gold (500 ktn)<br>
+            2. Vic 500 Orange (18 ktn)<br>
+            3. Singaraja Bremee (14 ktn)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TRUST STRIP ============ -->
+<div class="trust-strip">
+  <div class="container trust-grid">
+    <div class="trust-item"><span class="ic">⚡</span><div>Reply <b>5 detik</b></div></div>
+    <div class="trust-item"><span class="ic">🤖</span><div>Powered by <b>Claude Sonnet 4.6</b></div></div>
+    <div class="trust-item"><span class="ic">🇮🇩</span><div>Pertama di <b>Indonesia</b></div></div>
+    <div class="trust-item"><span class="ic">🔒</span><div>Data <b>aman & private</b></div></div>
+  </div>
 </div>
+
+<!-- ============ 3 PRODUCTS ============ -->
+<section class="section products-section">
+  <div class="container">
+    <h2>3 Produk untuk <span class="grad">Lifestyle Digital</span></h2>
+    <p class="subtitle">Dari kelola toko UMKM sampai catat duit personal — semua dalam ekosistem BerSatu Suite.</p>
+
+    <div class="products-grid">
+
+      <div class="product-card">
+        <div class="badge cheap">EBOOK</div>
+        <div class="ic">📕</div>
+        <h3>BerBisnis Cerdas</h3>
+        <div class="tag-line">Panduan UMKM Modern 2026</div>
+        <p>E-book strategi & tips bisnis untuk owner UMKM. 100+ halaman insight digitalisasi toko.</p>
+        <div class="pricing-label">DIGITAL · INSTANT DOWNLOAD</div>
+        <div class="price">Rp 49.999<small> · sekali bayar</small></div>
+        <ul class="features">
+          <li>100+ halaman tips bisnis</li>
+          <li>Studi kasus real UMKM</li>
+          <li>Template & checklist</li>
+        </ul>
+        <a href="https://lynk.id/hendrypangg" target="_blank" class="cta-btn">Beli di Lynk →</a>
+      </div>
+
+      <div class="product-card featured">
+        <div class="badge popular">⭐ MOST POPULAR</div>
+        <div class="ic">🐻</div>
+        <h3>BerBisnis PRO + AI Bot</h3>
+        <div class="tag-line">POS + Berstock AI Bot Telegram</div>
+        <p>Aplikasi kasir lengkap untuk UMKM + AI assistant Telegram yang jawab data toko 24/7.</p>
+        <div class="pricing-label">EARLY BIRD · 50 KLIEN PERTAMA</div>
+        <div class="price">Rp 500rb<small>/bulan</small></div>
+        <ul class="features">
+          <li>POS Kasir + Stok unlimited</li>
+          <li>🤖 AI Bot Telegram 24/7</li>
+          <li>Faktur A4 + Piutang tracker</li>
+          <li>PO Supplier + foto faktur</li>
+          <li>Cloud sync multi-device</li>
+        </ul>
+        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20langganan%20BerBisnis%20PRO%20%2B%20AI%20Bot%20Rp%20500rb%2Fbulan" target="_blank" class="cta-btn">💬 Chat WhatsApp</a>
+      </div>
+
+      <div class="product-card">
+        <div class="badge lifetime">∞ LIFETIME</div>
+        <div class="ic">💰</div>
+        <h3>BerUang</h3>
+        <div class="tag-line">Catat Duit Personal Tanpa Ribet</div>
+        <p>Aplikasi catat keuangan personal. Tinggal chat "bakso 45rb" → otomatis tercatat & terkategori.</p>
+        <div class="pricing-label">SEKALI BAYAR · AKSES SELAMANYA</div>
+        <div class="price">Rp 125rb<small> · lifetime</small></div>
+        <ul class="features">
+          <li>Input via chat / OCR struk</li>
+          <li>Dashboard real-time</li>
+          <li>Hutang & Piutang tracker</li>
+          <li>Cloud sync multi-device</li>
+        </ul>
+        <a href="landing.html" class="cta-btn">Lihat BerUang →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section how-section">
+  <div class="container">
+    <h2>Cara Kerjanya <span class="grad">Sederhana Banget</span></h2>
+    <p class="subtitle">3 step setup, langsung pakai. Tidak ribet, tidak technical.</p>
+
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="num">01</div>
+        <div class="ic">📝</div>
+        <h3>Daftar / Trial Gratis</h3>
+        <p>Buka aplikasi, daftar pakai email. Free trial 3 hari, tidak perlu kartu kredit.</p>
+      </div>
+      <div class="how-step">
+        <div class="num">02</div>
+        <div class="ic">⚙️</div>
+        <h3>Setup 15 Menit</h3>
+        <p>Input nama toko, kategori, beberapa produk. Done — siap jualan.</p>
+      </div>
+      <div class="how-step">
+        <div class="num">03</div>
+        <div class="ic">🚀</div>
+        <h3>Pakai + AI Bot Active</h3>
+        <p>Mulai input transaksi. Connect ke Berstock Bot di Telegram, mulai chat AI.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI DEMO ============ -->
+<section class="section ai-demo-section">
+  <div class="container">
+    <h2>Tanya AI <span class="grad">Selayaknya Tanya Karyawan</span></h2>
+    <p class="subtitle">Bukan AI generic — ini AI yang baca data toko Anda real-time.</p>
+
+    <div class="ai-demo-grid">
+      <div class="ai-demo-text">
+        <h3>🤖 Berstock AI Bot</h3>
+        <p>Chat di Telegram, AI baca data toko bos langsung. 12+ jenis pertanyaan bisa dijawab dalam 5 detik.</p>
+        <ul>
+          <li>"Stok habis apa aja?" — list produk kritis + urgensi</li>
+          <li>"Cash hari ini berapa?" — breakdown cash vs tempo</li>
+          <li>"Pak Budi belanja apa?" — history pelanggan lengkap</li>
+          <li>"Best seller minggu ini?" — top produk by qty/revenue</li>
+          <li>"Apa yang harus saya restock?" — saran cerdas berbasis velocity</li>
+          <li>"Piutang siapa overdue?" — list yang sudah lewat tempo</li>
+        </ul>
+      </div>
+      <div class="chat-mockup-big">
+        <div class="head">
+          <div class="av">🐻</div>
+          <div>
+            <div class="name">@BerstockBot</div>
+            <div class="status">online · Powered by Claude AI</div>
+          </div>
+        </div>
+        <div class="bubbles">
+          <div class="bubble user">Piutang gimana bos?</div>
+          <div class="bubble bot">
+            💰 <b>Total Piutang: Rp 18.500.000</b><br>
+            ⚠️ <span class="red">Overdue: Rp 4.200.000 (2 invoice)</span><br><br>
+            Top piutang:<br>
+            • Pak Budi — Rp 8.500.000<br>
+            • PT Maju — <span class="red">lewat 7 hari!</span><br><br>
+            💡 Follow up dulu bos.
+          </div>
+          <div class="bubble user">Apa yang harus saya restock?</div>
+          <div class="bubble bot">
+            🔥 <b>Prioritas restock minggu ini:</b><br>
+            1. Beras Premium — sisa 2, laku 8/hari<br>
+            2. Indomie — sisa 3 dus, laku 12/hari<br>
+            3. Kopi — <span class="red"><b>HABIS</b></span><br><br>
+            💡 Order minimum: 50 dus Indomie, 30 karung Beras.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY CHOOSE ============ -->
+<section class="section why-section">
+  <div class="container">
+    <h2>Kenapa <span class="grad">Berstock?</span></h2>
+    <p class="subtitle">6 alasan UMKM Indonesia memilih kami.</p>
+
+    <div class="why-grid">
+      <div class="why-card"><div class="ic">🚀</div><h4>Pertama di Indonesia</h4><p>POS pertama yang terintegrasi AI Bot Telegram. Bukan generic AI, tapi AI khusus UMKM.</p></div>
+      <div class="why-card"><div class="ic">🇮🇩</div><h4>100% Bahasa Indonesia</h4><p>Bot ngomong casual, sapa "bos". Bukan terjemahan robotik dari English.</p></div>
+      <div class="why-card"><div class="ic">⚡</div><h4>Reply 5 Detik</h4><p>Powered by Claude Sonnet 4.6 — model AI tercepat di kelasnya.</p></div>
+      <div class="why-card"><div class="ic">🔒</div><h4>Data Aman</h4><p>Enterprise-grade security via Cloudflare + Firebase. Data milik Anda 100%.</p></div>
+      <div class="why-card"><div class="ic">📱</div><h4>Akses Dari HP</h4><p>Tidak perlu laptop, server, atau install aneh-aneh. Cukup HP & internet.</p></div>
+      <div class="why-card"><div class="ic">💰</div><h4>Hemat 70% vs Hire Admin</h4><p>Rp 500rb/bulan = setara biaya admin part-time, tapi available 24/7.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="cta-final">
+  <div class="container">
+    <h2>Siap upgrade bisnis Anda? 🚀</h2>
+    <p>Demo gratis 7 hari. Setup 15 menit. Tanpa kartu kredit. Tanpa kontrak panjang.</p>
+    <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20demo%20Berstock%20%2B%20BerBisnis%20Pro" target="_blank" class="cta-btn-final">💬 Chat WhatsApp Sekarang</a>
+    <div class="secondary-line">
+      atau <a href="tokountung/app.html" target="_blank">coba aplikasi langsung</a> · <a href="https://t.me/BerstockBot" target="_blank">cek bot Telegram</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="" />
+          berstock.id
+        </div>
+        <p class="footer-tagline">POS + AI Assistant untuk UMKM Indonesia. Bagian dari ekosistem BerSatu Suite 🐻</p>
+        <p style="font-size: 12px; color: #64748b">📱 +62 821-2484-8924<br>📧 info@berstock.id</p>
+      </div>
+      <div>
+        <h5>Produk</h5>
+        <ul>
+          <li><a href="berbisnis-pro.html">BerBisnis Pro</a></li>
+          <li><a href="landing-berstock.html">Berstock AI Bot</a></li>
+          <li><a href="landing.html">BerUang</a></li>
+          <li><a href="https://lynk.id/hendrypangg" target="_blank">E-Book</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="berstock-pitch-deck.html">Pitch Deck</a></li>
+          <li><a href="tokountung/app.html">Demo App</a></li>
+          <li><a href="https://t.me/BerstockBot" target="_blank">Bot Telegram</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Hubungi</h5>
+        <ul>
+          <li><a href="https://wa.me/6282124848924" target="_blank">WhatsApp</a></li>
+          <li><a href="https://instagram.com/berstock.ai" target="_blank">Instagram</a></li>
+          <li><a href="https://lynk.id/hendrypangg" target="_blank">Lynk.id</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-copy">
+      © 2026 Berstock · BerSatu Suite · Made for UMKM Indonesia 🇮🇩
+    </div>
+  </div>
+</footer>
+
+<!-- ============ FLOATING MASCOT WIDGET ============ -->
+<div class="mascot-widget" id="mascot-widget">
+  <div class="mcp-panel" id="mcp-panel">
+    <div class="mcp-head">
+      <div class="av"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="" /></div>
+      <div class="info">
+        <div class="name">Berstock Helper 🐻</div>
+        <div class="status">Online · Reply 5 menit</div>
+      </div>
+      <div class="close-x" onclick="closeMcp()">✕</div>
+    </div>
+    <div class="mcp-body" id="mcp-body"></div>
+    <div class="mcp-actions" id="mcp-actions" style="display:none">
+      <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20tertarik%20Berstock%20%2B%20BerBisnis%20Pro" target="_blank" class="mcp-btn primary">💬 Chat WhatsApp Sekarang</a>
+      <a href="tokountung/app.html" target="_blank" class="mcp-btn secondary">🎁 Coba Gratis 3 Hari</a>
+    </div>
+    <div class="mcp-footer">⚡ POWERED BY BERSATU SUITE</div>
+  </div>
+  <div class="mascot-avatar-float" onclick="toggleMcp()">
+    <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" />
+    <div class="online"></div>
+    <div class="notif">1</div>
+  </div>
+</div>
+
+<script>
+const mcpPanel = document.getElementById('mcp-panel');
+const mcpBody = document.getElementById('mcp-body');
+const mcpActions = document.getElementById('mcp-actions');
+const messages = [
+  { delay: 800, html: 'Halo bos! 👋 Selamat datang di Berstock.id' },
+  { delay: 1500, html: 'Lagi cari sistem POS untuk toko kamu? Atau pengen liat AI bot-nya kerja gimana?' },
+  { delay: 1800, html: 'Berstock = <strong>POS pintar + AI Assistant 24/7</strong>. Owner tinggal chat di Telegram, AI yang kerja 🤖' },
+  { delay: 1500, html: 'Mau <strong>chat WA</strong> langsung atau <strong>coba aplikasi</strong> dulu? 👇' },
+];
+function showTyping() { const t = document.createElement('div'); t.className = 'mcp-typing'; t.innerHTML = '<span></span><span></span><span></span>'; mcpBody.appendChild(t); mcpBody.scrollTop = mcpBody.scrollHeight; return t; }
+function showMsg(html) { const m = document.createElement('div'); m.className = 'mcp-msg'; const d = new Date(); m.innerHTML = html + `<span class="time">${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ✓</span>`; mcpBody.appendChild(m); mcpBody.scrollTop = mcpBody.scrollHeight; }
+async function playSequence() { for (const m of messages) { const t = showTyping(); await new Promise(r => setTimeout(r, m.delay)); t.remove(); showMsg(m.html); await new Promise(r => setTimeout(r, 400)); } mcpActions.style.display = 'flex'; }
+let played = false;
+function openMcp() { mcpPanel.classList.add('show'); document.querySelector('.notif').style.display = 'none'; if (!played) { played = true; playSequence(); } }
+function closeMcp() { mcpPanel.classList.remove('show'); }
+function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
+setTimeout(() => { if (!sessionStorage.getItem('mcp_berstock_seen')) { openMcp(); sessionStorage.setItem('mcp_berstock_seen', '1'); } }, 3000);
+</script>
 
 </body>
 </html>
