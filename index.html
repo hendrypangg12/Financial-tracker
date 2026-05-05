@@ -171,6 +171,24 @@
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ========== Google Analytics 4 (GA4) ========== -->
+<!-- Ganti G-XXXXXXXXXX dengan Measurement ID kamu dari Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'page_title': 'Berstock — POS + AI Assistant',
+    'page_location': window.location.href,
+    'send_page_view': true,
+  });
+  // Helper untuk track event custom (dipanggil dari chat widget)
+  window.trackEvent = function(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  };
+</script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -1602,6 +1620,22 @@ function submitForm(intent) {
   USER.usaha = usaha;
   saveUser();
 
+  // GA4 conversion event — paling penting!
+  if (window.trackEvent) {
+    trackEvent('lead_captured', {
+      intent: intent,
+      usaha: usaha,
+      flow_depth: (USER.flow_history || []).length,
+      value: 500000, // estimasi LTV satu lead
+      currency: 'IDR',
+    });
+    // Standard GA4 conversion event
+    trackEvent('generate_lead', {
+      currency: 'IDR',
+      value: 500000,
+    });
+  }
+
   // Async send lead notif ke Telegram bos (fire & forget — gak blocking UX)
   fetch('https://berstock-bot.hendrypangg12.workers.dev/api/lead', {
     method: 'POST',
@@ -1671,6 +1705,19 @@ function showActions(acts) {
       el = document.createElement('a');
       el.href = hrefVal;
       el.target = '_blank';
+      // Track click ke WA / external
+      el.addEventListener('click', () => {
+        if (!window.trackEvent) return;
+        if (hrefVal.includes('wa.me')) {
+          trackEvent('whatsapp_click', {
+            has_user_data: !!USER.nama,
+            usaha: USER.usaha || 'unknown',
+            value: 500000, currency: 'IDR',
+          });
+        } else if (hrefVal.includes('app.html')) {
+          trackEvent('try_app_click', { source: 'chat_widget' });
+        }
+      });
     } else {
       el = document.createElement('button');
       if (a.action === 'restart') el.onclick = () => { clearActions(); goToFlow('start'); };
@@ -1690,6 +1737,14 @@ async function goToFlow(key) {
   USER.flow_history.push(key);
   if (USER.flow_history.length > 10) USER.flow_history = USER.flow_history.slice(-10);
   saveUser();
+  // GA4 event: track flow navigation
+  if (window.trackEvent && key !== 'start') {
+    trackEvent('chat_flow_view', {
+      flow_name: key,
+      flow_depth: USER.flow_history.length,
+      has_user_data: !!USER.nama,
+    });
+  }
 
   clearQuick();
   clearActions();
@@ -1736,10 +1791,15 @@ function openMcp() {
   mcpPanel.classList.add('show');
   document.querySelector('.notif').style.display = 'none';
   if (!played) { played = true; goToFlow('start'); }
+  if (window.trackEvent) trackEvent('chat_widget_opened', { source: 'auto_or_click' });
 }
 function closeMcp() {
   mcpPanel.classList.remove('show');
   resetIdle();
+  if (window.trackEvent) trackEvent('chat_widget_closed', {
+    flow_count: (USER.flow_history || []).length,
+    last_flow: (USER.flow_history || []).slice(-1)[0] || 'none',
+  });
 }
 function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
 // Escape key untuk close
