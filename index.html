@@ -890,9 +890,14 @@ const FLOW = {
     ],
     quick: [
       { txt: '💰 Berapa harganya?', next: 'harga' },
+      { txt: '🧮 Hitung ROI buat usaha saya', next: 'roi' },
       { txt: '🍦 Cocok buat usaha saya?', next: 'usaha' },
+      { txt: '📊 Bedanya vs Excel / manual?', next: 'vs-excel' },
       { txt: '🤖 Apa itu AI Bot Telegram?', next: 'ai' },
       { txt: '⚡ Bedanya sama POS lain?', next: 'beda' },
+      { txt: '🚀 Setelah bayar, terus apa?', next: 'onboarding' },
+      { txt: '👤 Siapa di balik Berstock?', next: 'founder' },
+      { txt: '🏆 Sudah ada klien?', next: 'klien' },
       { txt: '🎬 Mau demo Zoom 30 menit', next: 'demo' },
       { txt: '❓ Pertanyaan umum (FAQ)', next: 'faq' },
       { txt: '🔌 Integrasi (printer, QRIS, dll)', next: 'integrasi' },
@@ -1142,6 +1147,147 @@ const FLOW = {
       { txt: '🏠 Kembali', next: 'start' },
     ],
   },
+  // 🧮 ROI Calculator
+  roi: {
+    user: '🧮 Hitung ROI',
+    msgs: [
+      'Mantap bos! Saya bantu hitung kira-kira ROI Berstock untuk usaha bos 🧮',
+      'Berapa <strong>omzet kotor bulanan</strong> usaha bos sekarang?',
+    ],
+    quick: [
+      { txt: '💸 < Rp 30 juta/bulan', next: 'roi-low' },
+      { txt: '💰 Rp 30–100 juta/bulan', next: 'roi-mid' },
+      { txt: '💎 Rp 100–500 juta/bulan', next: 'roi-high' },
+      { txt: '🚀 > Rp 500 juta/bulan', next: 'roi-top' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  'roi-low': {
+    user: '< Rp 30jt / bulan',
+    msgs: [
+      'Untuk omzet di bawah Rp 30jt/bulan, <strong>jujur saya saranin tunggu dulu</strong> 🙏',
+      'Subscription Rp 500rb/bulan = sekitar <strong>1.7%</strong> dari omzet bos. Itu cukup besar untuk usaha yang masih kecil.',
+      '<strong>Saran:</strong> Fokus dulu naikkan omzet ke Rp 30jt+/bulan. Saat itu, Berstock baru jadi <em>real ROI booster</em>.',
+      'Atau kalau bos tetap mau, paket <strong>tahunan Rp 5jt</strong> bisa lebih hemat (= Rp 416rb/bln).',
+    ],
+    quick: [
+      { txt: '💰 Lihat detail harga', next: 'harga' },
+      { txt: '💬 Diskusi sama Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  'roi-mid': {
+    user: 'Rp 30–100jt / bulan',
+    msgs: [
+      '<strong>Sweet spot bos!</strong> 🎯 Berstock paling cocok untuk omzet di range ini.',
+      '<strong>Estimasi penghematan bulanan:</strong><br>📦 Stok hilang turun: <strong>Rp 1.5–5jt</strong> (5-10% omzet)<br>⏰ Hemat 30 jam/bulan owner: <strong>Rp 1.5jt</strong> (asumsi Rp 50rb/jam)<br>💰 Piutang macet turun: <strong>Rp 500rb–2jt</strong>',
+      '<strong>Total saving: Rp 3.5–8.5jt/bulan</strong><br>Investasi Berstock: Rp 500rb/bulan<br>Net Profit: <strong>Rp 3–8jt/bulan</strong> 🚀',
+      'ROI sekitar <strong>600–1700%</strong> per bulan. Break-even di bulan pertama.',
+    ],
+    quick: [
+      { txt: '🎬 Mau demo dulu', next: 'demo' },
+      { txt: '💰 Lihat detail harga', next: 'harga' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  'roi-high': {
+    user: 'Rp 100–500jt / bulan',
+    msgs: [
+      '<strong>Berstock STEAL untuk omzet di range ini!</strong> 💎',
+      'Subscription Rp 500rb = cuma <strong>0.1–0.5%</strong> dari omzet bos. Hampir gratis dibanding nilai yang didapat.',
+      '<strong>Estimasi penghematan bulanan:</strong><br>📦 Stok terkontrol: <strong>Rp 5–25jt</strong> (5% omzet)<br>⏰ Hemat 60 jam/bulan owner: <strong>Rp 6jt+</strong><br>💰 Piutang macet: <strong>Rp 2–10jt</strong><br>📊 Decision better dari AI insight: <strong>priceless</strong>',
+      '<strong>Total saving: Rp 13–41jt/bulan</strong><br>Net Profit: <strong>Rp 12.5–40.5jt/bulan</strong> 🚀<br>ROI <strong>2500–8000%</strong>',
+    ],
+    quick: [
+      { txt: '🎬 Mau demo dulu', next: 'demo' },
+      { txt: '💬 Chat WA Hendry priority', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  'roi-top': {
+    user: '> Rp 500jt / bulan',
+    msgs: [
+      'Bos sudah masuk kategori <strong>Enterprise</strong> 💎',
+      'Untuk omzet > Rp 500jt/bulan, biasanya butuh customization (multi-outlet, custom AI tool, integrasi tertentu).',
+      'Lebih baik diskusi langsung dengan Hendry — biar bisa di-tailor untuk kebutuhan spesifik bos. Mungkin paket <strong>Pro Enterprise custom</strong>.',
+    ],
+    quick: [
+      { txt: '💬 Diskusi Enterprise', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+
+  // 📊 vs Excel / Manual
+  'vs-excel': {
+    user: '📊 vs Excel / Manual',
+    msgs: [
+      'Pertanyaan bagus! Excel dan buku tulis adalah <strong>kompetitor real</strong> Berstock di Indonesia 📊',
+      '<strong>Excel / Manual:</strong><br>✓ Gratis<br>✗ Capek input ulang tiap hari<br>✗ Gampang salah hitung<br>✗ Stok gak update otomatis<br>✗ Gak bisa cek dari jauh<br>✗ Tahun depan rewrite ulang',
+      '<strong>Berstock:</strong><br>✓ Otomatis tercatat saat transaksi<br>✓ Stok auto-kurang/tambah<br>✓ AI alert sebelum stok habis<br>✓ Cek dari HP kapan saja<br>✓ Multi-device sync<br>✓ Laporan auto-generate',
+      '<strong>Hidden cost Excel:</strong> Owner spent 60 jam/bulan input data = Rp 3jt/bulan kalau dihargai. Plus 5-15% omzet hilang karena stok gak terkontrol.',
+      'Excel terlihat gratis, tapi <strong>opportunity cost-nya tinggi</strong>. Berstock = beli waktu + akurasi.',
+    ],
+    quick: [
+      { txt: '🧮 Hitung ROI saya', next: 'roi' },
+      { txt: '🎬 Demo Zoom', next: 'demo' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+
+  // 🚀 Onboarding Process
+  onboarding: {
+    user: '🚀 Setelah bayar, terus apa?',
+    msgs: [
+      'Bagus bos nanya ini — biar gak ada kejutan ✨',
+      '<strong>Day 0 (hari bayar):</strong><br>⚡ Akun aktif dalam 1-2 jam<br>📩 Welcome email + akses kredensial<br>📞 Hendry chat WA bos buat schedule onboarding',
+      '<strong>Day 1 (Setup):</strong><br>📝 Hendry input semua produk/menu bos (kasih daftar via WA)<br>🏷️ Set kategori, harga, foto<br>🔗 Connect Telegram Bot ke akun bos',
+      '<strong>Day 2 (Training):</strong><br>🎬 Video call 30 menit — saya tunjukkan A-Z<br>🎓 Karyawan kasir praktek transaksi sample<br>📱 Setup di HP/tablet operasional',
+      '<strong>Day 3 (Go Live):</strong><br>🚀 Mulai operasional di toko<br>💬 Hendry standby di WA seharian<br>🔧 Tweak setting kalau ada bug',
+      '<strong>Day 7+:</strong><br>📊 Review pertama performance<br>💡 Optimasi berdasarkan data<br>🎁 Akses fitur AI Bot full',
+    ],
+    quick: [
+      { txt: '🎬 Mau demo dulu', next: 'demo' },
+      { txt: '💬 Mulai sekarang', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+
+  // 👤 Founder Story
+  founder: {
+    user: '👤 Tentang Hendry',
+    msgs: [
+      'Berstock dibikin oleh <strong>Hendry Phang</strong> 🐻',
+      'Solo founder yang lebih dari 10 tahun ngamatin owner UMKM Indonesia stuck di pencatatan manual. Lihat ribuan owner kehilangan 5-15% omzet karena stok gak terkontrol.',
+      '<strong>Visi:</strong> Bawa AI Assistant enterprise-grade ke UMKM Indonesia dengan harga affordable, bahasa native, dan support yang personal.',
+      '<strong>Kenapa Solo Founder?</strong> Karena bos ngomong sama 1 orang yang punya keputusan. Bukan customer service yang escalate. Request fitur direspond langsung. Bug fix dalam jam, bukan minggu.',
+      'Bos bisa stalk Hendry di IG <strong>@hendrypangg</strong> 🇮🇩',
+    ],
+    quick: [
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏆 Klien Hendry siapa?', next: 'klien' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+
+  // 🏆 Klien & Testimonial
+  klien: {
+    user: '🏆 Klien?',
+    msgs: [
+      '<strong>Honest answer:</strong> Berstock baru launch! 🚀',
+      'Saat ini sedang onboarding klien-klien pertama (Early Adopter). Bos punya kesempatan langka jadi <strong>klien angkatan pertama</strong> dengan benefit:',
+      '🎁 <strong>Setup gratis</strong> — Hendry yang input data bos<br>🎬 <strong>Training personal</strong> — bukan template generic<br>💬 <strong>Direct WA support</strong> — bukan customer service<br>🚀 <strong>Voice di product roadmap</strong> — request fitur didengar<br>💎 <strong>Founder pricing locked</strong> — harga sekarang gak naik selamanya',
+      '<strong>Trade-off:</strong> Bos accept ada beberapa fitur yang masih dikembangin (modifier FnB, multi-outlet deeper). Tapi dapat <em>partnership</em>, bukan cuma vendor-customer.',
+      'Setelah 3 bulan pakai, bos bisa jadi <strong>case study</strong> kami — visibility brand bos naik karena di-feature di marketing material.',
+    ],
+    quick: [
+      { txt: '🎬 Demo Zoom dulu', next: 'demo' },
+      { txt: '💬 Mau jadi early adopter', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+
   wa: {
     user: '📞 Chat WA Hendry',
     msgs: [
