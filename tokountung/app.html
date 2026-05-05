@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BerBisnis — Beruang Bisnis untuk UMKM Indonesia</title>
-<meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, generate struk — semua dalam satu app. Mulai dari Rp 149rb/bulan." />
+<meta name="description" content="Aplikasi kasir & stok profesional untuk UMKM. Kelola stok, hitung profit, generate struk — semua dalam satu app. Rp 500rb/bulan atau Rp 5jt/tahun." />
 <meta name="theme-color" content="#1e3a5f" />
 <link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
 <link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=3" />
@@ -44,7 +44,7 @@
       <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
       <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
       <button class="btn btn-primary btn-block" type="submit">Buat Akun (Free Trial 3 Hari)</button>
-      <small style="color:var(--ink-soft)">Setelah trial, pilih Starter Rp 149rb/bulan atau Pro Rp 500rb/bulan.</small>
+      <small style="color:var(--ink-soft)">Setelah trial, pilih paket Bulanan Rp 500rb atau Tahunan Rp 5jt (hemat Rp 1jt).</small>
     </form>
 
     <div class="auth-divider"><span>atau</span></div>
@@ -70,27 +70,28 @@
     </p>
 
     <div class="paywall-prices">
-      <div class="price-card-pw" data-paket="starter">
-        <b>Starter</b>
-        <div class="pw-price">Rp 149.999<small>/bulan</small></div>
+      <div class="price-card-pw" data-paket="bulanan">
+        <b>Bulanan</b>
+        <div class="pw-price">Rp 500.000<small>/bulan</small></div>
         <ul class="pw-features">
-          <li>BerBisnis web app</li>
           <li>POS &amp; manajemen stok</li>
-          <li>Laporan dasar</li>
+          <li>🤖 AI Bot Telegram 24/7</li>
+          <li>Cloud sync multi-device</li>
+          <li>Cancel kapan saja</li>
         </ul>
-        <button class="btn btn-primary btn-block btn-buy" data-paket="starter">Pilih Starter</button>
+        <button class="btn btn-primary btn-block btn-buy" data-paket="bulanan">Pilih Bulanan</button>
       </div>
-      <div class="price-card-pw highlight" data-paket="pro">
-        <span class="pw-badge">🔥 EARLY BIRD</span>
-        <b>Pro Early Bird</b>
-        <div class="pw-price"><s style="opacity:.5">Rp 1,5jt</s> Rp 500.000<small>/bulan</small></div>
+      <div class="price-card-pw highlight" data-paket="tahunan">
+        <span class="pw-badge">⭐ HEMAT 1JT</span>
+        <b>Tahunan</b>
+        <div class="pw-price"><s style="opacity:.5">Rp 6jt</s> Rp 5.000.000<small>/tahun</small></div>
         <ul class="pw-features">
-          <li><b>Semua fitur Starter</b></li>
-          <li>Berstock AI Telegram bot</li>
-          <li>Multi-device sync</li>
+          <li><b>Semua fitur Bulanan</b></li>
+          <li>Setara Rp 416rb/bulan</li>
           <li>Priority support WA</li>
+          <li>Onboarding personal</li>
         </ul>
-        <button class="btn btn-gold btn-block btn-buy" data-paket="pro">Pilih Pro Early Bird</button>
+        <button class="btn btn-gold btn-block btn-buy" data-paket="tahunan">Pilih Tahunan</button>
       </div>
     </div>
 
@@ -624,8 +625,8 @@
         <label>Email User<input name="email" type="email" required placeholder="user@example.com" /></label>
         <div class="grid-2-form">
           <label>Plan<select name="plan">
-            <option value="starter">Starter (Rp 149rb/bln)</option>
-            <option value="pro">Pro Early Bird (Rp 500rb/bln)</option>
+            <option value="bulanan">Bulanan (Rp 500rb/bln)</option>
+            <option value="tahunan">Tahunan (Rp 5jt/thn)</option>
           </select></label>
           <label>Durasi (hari)<input name="days" type="number" value="30" min="1" /></label>
         </div>

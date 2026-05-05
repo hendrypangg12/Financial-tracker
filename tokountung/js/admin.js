@@ -77,8 +77,8 @@ async function renderAdminPanel() {
     const days = daysRemainingBerbisnis(u);
     const active = isBerbisnisActive(u);
     const planBadge = u.plan === 'trial' ? `<span style="color:#3b82f6">Trial</span>`
-      : u.plan === 'starter' ? `<span style="color:#10b981">Starter</span>`
-      : u.plan === 'pro' ? `<span style="color:#c9a352">Pro</span>`
+      : u.plan === 'bulanan' || u.plan === 'starter' ? `<span style="color:#10b981">Bulanan</span>`
+      : u.plan === 'tahunan' || u.plan === 'pro' ? `<span style="color:#c9a352">Tahunan</span>`
       : `<span style="color:var(--danger)">Expired</span>`;
     const expiresStr = u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('id-ID') : '-';
     const daysStr = active ? `${days} hari lagi` : 'Habis';
@@ -91,8 +91,8 @@ async function renderAdminPanel() {
         <td>${expiresStr}</td>
         <td>${createdStr}</td>
         <td>
-          <button class="btn btn-small" data-act-uid="${u.uid}" data-plan="starter">+ Starter</button>
-          <button class="btn btn-small btn-gold" data-act-uid="${u.uid}" data-plan="pro">+ Pro</button>
+          <button class="btn btn-small" data-act-uid="${u.uid}" data-plan="bulanan">+ Bulanan</button>
+          <button class="btn btn-small btn-gold" data-act-uid="${u.uid}" data-plan="tahunan">+ Tahunan</button>
           <button class="btn btn-small btn-danger" data-deact-uid="${u.uid}">Deaktivasi</button>
         </td>
       </tr>
@@ -104,17 +104,18 @@ async function renderAdminPanel() {
     btn.onclick = async () => {
       const uid = btn.dataset.actUid;
       const plan = btn.dataset.plan;
-      const planLabel = plan === 'pro' ? 'Pro Early Bird Rp 500rb' : 'Starter Rp 149.999';
-      if (!confirm(`Aktivasi ${planLabel} untuk 30 hari?`)) return;
+      const planLabel = plan === 'tahunan' ? 'Tahunan Rp 5jt (365 hari)' : 'Bulanan Rp 500rb (30 hari)';
+      const days = plan === 'tahunan' ? 365 : 30;
+      if (!confirm(`Aktivasi ${planLabel}?`)) return;
       btn.disabled = true; btn.textContent = '...';
       try {
-        await activateBerbisnisUser(uid, plan, 30);
-        showToast(`✅ User aktif sebagai ${plan} (30 hari)`, 'success');
+        await activateBerbisnisUser(uid, plan, days);
+        showToast(`✅ User aktif sebagai ${plan} (${days} hari)`, 'success');
         renderAdminPanel();
       } catch (err) {
         showToast(`❌ ${err.message}`, 'error');
         btn.disabled = false;
-        btn.textContent = plan === 'pro' ? '+ Pro' : '+ Starter';
+        btn.textContent = plan === 'tahunan' ? '+ Tahunan' : '+ Bulanan';
       }
     };
   });
