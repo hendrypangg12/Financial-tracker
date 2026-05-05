@@ -491,6 +491,21 @@ footer a:hover { color: var(--gold-bright); }
 .mcp-msg.user strong { color: #fff5fa; }
 .mcp-msg.user .time { color: rgba(255,255,255,0.7); }
 .mcp-footer { padding: 8px 16px; background: var(--gray-100); text-align: center; font-size: 9px; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+
+/* Lead Capture Form */
+.mcp-form { padding: 12px 16px 16px; background: var(--gray-100); display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #e5e7eb; }
+.mcp-form .form-title { font-size: 11px; color: var(--magenta); font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.mcp-form input, .mcp-form select { width: 100%; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; color: var(--navy); }
+.mcp-form input:focus, .mcp-form select:focus { outline: none; border-color: var(--magenta); }
+.mcp-form .err { font-size: 11px; color: #ef4444; margin-top: -2px; display: none; }
+.mcp-form .submit-btn { background: linear-gradient(135deg, var(--magenta), #d81b60); color: #fff; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; border: none; font-family: inherit; margin-top: 4px; }
+.mcp-form .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,30,99,0.3); }
+.mcp-form .skip-btn { background: transparent; border: none; color: var(--gray-500); font-size: 11px; padding: 6px; cursor: pointer; text-decoration: underline; font-family: inherit; }
+.mcp-form .privacy-note { font-size: 10px; color: var(--gray-500); text-align: center; margin-top: 4px; }
+
+/* Idle nudge */
+.mcp-msg.nudge { background: linear-gradient(135deg, #fff7e6, #fff); border-color: var(--gold); }
+.mcp-msg.nudge::before { content: '💡 '; }
 @media (max-width: 480px) {
   .mascot-widget { bottom: 16px; right: 16px; }
   .mascot-avatar-float { width: 58px; height: 58px; }
@@ -807,6 +822,7 @@ footer a:hover { color: var(--gold-bright); }
     </div>
     <div class="mcp-body" id="mcp-body"></div>
     <div class="mcp-quick" id="mcp-quick" style="display:none"></div>
+    <div class="mcp-form" id="mcp-form" style="display:none"></div>
     <div class="mcp-actions" id="mcp-actions" style="display:none"></div>
     <div class="mcp-footer">⚡ POWERED BY BERSATU SUITE</div>
   </div>
@@ -821,21 +837,66 @@ footer a:hover { color: var(--gold-bright); }
 const mcpPanel = document.getElementById('mcp-panel');
 const mcpBody = document.getElementById('mcp-body');
 const mcpQuick = document.getElementById('mcp-quick');
+const mcpForm = document.getElementById('mcp-form');
 const mcpActions = document.getElementById('mcp-actions');
+
+// Persistent user data
+const USER = JSON.parse(localStorage.getItem('berstock_user') || '{}');
+function saveUser() { localStorage.setItem('berstock_user', JSON.stringify(USER)); }
+
+// Smart greeting based on time
+function greet() {
+  const h = new Date().getHours();
+  if (h < 11) return 'Selamat pagi';
+  if (h < 15) return 'Selamat siang';
+  if (h < 18) return 'Selamat sore';
+  return 'Selamat malam';
+}
+function welcomeMsg() {
+  const g = greet();
+  if (USER.nama) return `${g} bos <strong>${USER.nama}</strong>! 👋 Senang ketemu lagi 🐻`;
+  return `${g} bos! 👋 Saya <strong>Berstock Helper</strong>`;
+}
+
+// Build WA link with full user context
+function buildWaLink(intent) {
+  const ctx = [];
+  if (USER.nama) ctx.push(`Saya ${USER.nama}`);
+  if (USER.usaha) ctx.push(`punya usaha ${USER.usaha}`);
+  if (USER.flow_history && USER.flow_history.length) {
+    const last = USER.flow_history.slice(-3).join(' → ');
+    ctx.push(`(dari chat berstock.id: ${last})`);
+  }
+  const intro = ctx.length ? ctx.join(', ') + '. ' : '';
+  const intentMsg = {
+    pdf: 'Boleh dikirim company profile PDF Berstock?',
+    'pdf-fnb': 'Saya FnB owner, boleh dikirim company profile PDF khusus FnB?',
+    demo: 'Saya tertarik untuk demo Berstock via Zoom 30 menit. Kapan available?',
+    harga: 'Saya mau diskusi harga & paket Berstock yang cocok untuk usaha saya.',
+    general: 'Saya tertarik dengan Berstock, boleh diskusi detail?',
+  };
+  const msg = intro + (intentMsg[intent] || intentMsg.general);
+  return `https://wa.me/6282124848924?text=${encodeURIComponent(msg)}`;
+}
 
 // Conversation tree — semua flow di sini
 const FLOW = {
   start: {
     msgs: [
-      'Halo bos! 👋 Saya <strong>Berstock Helper</strong>',
-      'Saya bantu jelasin tentang <strong>POS + AI Bot</strong> kami. Ada yang mau ditanyakan?',
+      welcomeMsg(),
+      USER.usaha
+        ? `Sebelumnya bos cerita usahanya <strong>${USER.usaha}</strong>. Mau lanjut bahas itu atau ada topik lain?`
+        : 'Saya bantu jelasin tentang <strong>POS + AI Bot</strong> kami. Ada yang mau ditanyakan?',
     ],
     quick: [
       { txt: '💰 Berapa harganya?', next: 'harga' },
       { txt: '🍦 Cocok buat usaha saya?', next: 'usaha' },
       { txt: '🤖 Apa itu AI Bot Telegram?', next: 'ai' },
-      { txt: '⚡ Apa bedanya sama Moka/Pawoon?', next: 'beda' },
-      { txt: '📞 Mau chat sama Hendry langsung', next: 'wa' },
+      { txt: '⚡ Bedanya sama Moka/Pawoon?', next: 'beda' },
+      { txt: '🎬 Mau demo Zoom 30 menit', next: 'demo' },
+      { txt: '❓ Pertanyaan umum (FAQ)', next: 'faq' },
+      { txt: '🔌 Integrasi (printer, QRIS, dll)', next: 'integrasi' },
+      { txt: '📞 Chat langsung sama Hendry', next: 'wa' },
     ],
   },
   harga: {
@@ -959,36 +1020,142 @@ const FLOW = {
   pdf: {
     user: '📄 Lihat PDF',
     msgs: [
-      'Saya kirim ke WhatsApp aja ya bos, biar bisa baca santai 📄',
-      'Klik tombol di bawah, nanti saya kirim PDF lengkap (11 halaman) plus jadwal demo Zoom 30 menit.',
+      'Saya kirim PDF lengkap (11 halaman) ke WhatsApp aja ya bos 📄',
+      'Sebelum itu, boleh saya minta <strong>nama & WhatsApp</strong> bos? Biar Hendry langsung tau lead serius dan bisa kirim PDF tepat sasaran.',
     ],
-    actions: [
-      { txt: '💬 Chat WA — Minta PDF', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20mau%20minta%20company%20profile%20Berstock%20PDF.%20Saya%20juga%20tertarik%20diskusi%20demo%20produk.' },
-      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
-    ],
+    form: { intent: 'pdf' },
   },
   'pdf-fnb': {
     user: '📄 PDF FnB',
     msgs: [
       'Saya kirim PDF khusus FnB ya bos 🍦',
-      'Klik tombol di bawah, langsung WA ke Hendry — nanti dikirim PDF + booking demo.',
+      'Boleh saya minta <strong>nama & WhatsApp</strong> bos dulu? Biar Hendry tau lead serius FnB dan bisa kirim PDF + booking slot demo.',
     ],
-    actions: [
-      { txt: '💬 Chat WA — Minta PDF FnB', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20FnB%20owner%20yang%20tertarik%20Berstock.%20Boleh%20dikirim%20company%20profile%20FnB%20PDF%3F' },
-      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+    form: { intent: 'pdf-fnb' },
+  },
+  demo: {
+    user: '🎬 Demo Zoom 30 menit',
+    msgs: [
+      'Mantap bos! 🎬 Demo Zoom <strong>30 menit free</strong>, Hendry tunjukin live:',
+      '✓ Cara setup produk dari nol<br>✓ Simulasi 3 transaksi kasir<br>✓ Live demo AI Bot Telegram<br>✓ Q&A spesifik untuk usaha bos',
+      'Boleh saya catat dulu <strong>nama, WhatsApp, jenis usaha</strong> bos? Hendry akan respond dalam 1 jam untuk jadwalkan slot.',
+    ],
+    form: { intent: 'demo' },
+  },
+  faq: {
+    user: '❓ FAQ',
+    msgs: [
+      '<strong>Pertanyaan umum:</strong>',
+    ],
+    quick: [
+      { txt: '🔒 Data saya aman?', next: 'faq-data' },
+      { txt: '📡 Internet putus bisa?', next: 'faq-offline' },
+      { txt: '💳 Cara pembayaran?', next: 'faq-bayar' },
+      { txt: '🛑 Bisa cancel kapan saja?', next: 'faq-cancel' },
+      { txt: '👥 Berapa orang bisa pake?', next: 'faq-user' },
+      { txt: '📱 Pake HP atau wajib laptop?', next: 'faq-device' },
+      { txt: '🏠 Kembali ke menu', next: 'start' },
+    ],
+  },
+  'faq-data': {
+    user: '🔒 Data saya aman?',
+    msgs: [
+      '<strong>Aman 100%</strong> 🔒',
+      'Data bos disimpan di <strong>Firebase (Google)</strong> dengan encryption AES-256. Per-user isolation — admin sekalipun gak bisa intip data bos.',
+      'Plus: backup otomatis harian, recovery 30 hari. Tidak dijual ke pihak ketiga.',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+    ],
+  },
+  'faq-offline': {
+    user: '📡 Internet putus bisa?',
+    msgs: [
+      '<strong>BISA!</strong> ✅ Berstock <em>offline-first</em>.',
+      'App tetap jalan walau internet putus. Data tersimpan di HP/tablet bos. Saat online lagi, otomatis sync ke cloud.',
+      'Vs Moka/Pawoon yang require always-online — Berstock unggul di sini, terutama untuk toko di pelosok.',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+    ],
+  },
+  'faq-bayar': {
+    user: '💳 Cara pembayaran?',
+    msgs: [
+      '<strong>Pembayaran:</strong>',
+      '🏦 Transfer Bank (BCA: 7130902183 a/n Hendry)<br>📱 QRIS<br>💼 Invoice resmi (untuk perusahaan)',
+      'Setelah bayar, kirim bukti via WA → akun bos langsung diaktivasi (1-2 jam).',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Mulai aktivasi', next: 'wa' },
+    ],
+  },
+  'faq-cancel': {
+    user: '🛑 Bisa cancel kapan saja?',
+    msgs: [
+      '<strong>Iya, bisa kapan saja</strong> ✅',
+      'Tidak ada kontrak lock-in. Cancel bulan ini, masih bisa pakai sampai akhir periode billing.',
+      'Untuk paket tahunan: refund pro-rata sisa bulan (kasus jarang, biasanya owner malah extend 😄).',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+    ],
+  },
+  'faq-user': {
+    user: '👥 Berapa orang bisa pake?',
+    msgs: [
+      '<strong>Unlimited owner + kasir</strong> 👥',
+      '1 akun bisa login di banyak device sekaligus (HP, tablet, laptop). Cocok untuk owner + 2-3 karyawan kasir.',
+      'Multi-outlet (cabang berbeda) butuh paket khusus — diskusiin sama Hendry langsung ya.',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+    ],
+  },
+  'faq-device': {
+    user: '📱 Pake HP atau wajib laptop?',
+    msgs: [
+      '<strong>HP cukup!</strong> 📱',
+      'Berstock = Progressive Web App (PWA), bisa install ke homescreen HP. Gak perlu laptop sama sekali.',
+      'Tablet juga oke (rekomendasi untuk kasir karena layar lebih luas). Laptop opsional, biasanya untuk owner cek laporan.',
+    ],
+    quick: [
+      { txt: '❓ Tanya lain', next: 'faq' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+    ],
+  },
+  integrasi: {
+    user: '🔌 Integrasi',
+    msgs: [
+      '<strong>Yang sudah support saat ini:</strong>',
+      '🖨️ Printer thermal Bluetooth (struk)<br>💳 QRIS (manual scan)<br>📱 Telegram Bot (AI Asisten)<br>☁️ Firebase Cloud Sync<br>📷 Kamera HP (foto produk)',
+      '<strong>Belum support (roadmap):</strong><br>🛒 Tokopedia/Shopee sync<br>🍔 GoFood/GrabFood<br>💳 EDC auto-rekonsiliasi',
+      'Kalau bos butuh integrasi specific, diskusi sama Hendry — bisa di-prioritize untuk klien Pro.',
+    ],
+    quick: [
+      { txt: '💬 Diskusi integrasi', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
     ],
   },
   wa: {
     user: '📞 Chat WA Hendry',
     msgs: [
       'Sip bos! Hendry siap respond 🐻',
-      'Klik tombol di bawah, nanti saya buka WhatsApp dengan pesan pre-filled.',
+      USER.nama
+        ? `Saya pre-fill pesan dengan info bos (${USER.nama}${USER.usaha ? ', ' + USER.usaha : ''}). Klik di bawah ya.`
+        : 'Boleh isi nama & WA dulu? Biar Hendry tau lead serius dan respond cepat.',
     ],
-    actions: [
-      { txt: '💬 Buka WhatsApp Sekarang', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20tertarik%20dengan%20Berstock.%20Boleh%20diskusi%20detail%3F' },
+    form: USER.nama ? null : { intent: 'general' },
+    actions: USER.nama ? [
+      { txt: '💬 Buka WhatsApp Sekarang', cls: 'primary', href: () => buildWaLink('general') },
       { txt: '🎁 Coba Aplikasi Dulu', cls: 'secondary', href: 'tokountung/app.html' },
       { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
-    ],
+    ] : null,
   },
 };
 
@@ -1003,6 +1170,78 @@ function showMsg(html, isUser) {
 }
 function clearQuick() { mcpQuick.innerHTML = ''; mcpQuick.style.display = 'none'; }
 function clearActions() { mcpActions.innerHTML = ''; mcpActions.style.display = 'none'; }
+function clearForm() { mcpForm.innerHTML = ''; mcpForm.style.display = 'none'; }
+
+// Lead capture form
+function showForm(intent) {
+  clearForm();
+  const html = `
+    <div class="form-title">📝 Info Bos (1 menit aja)</div>
+    <input type="text" id="frm-nama" placeholder="Nama bos" value="${USER.nama || ''}" autocomplete="name" />
+    <input type="tel" id="frm-wa" placeholder="No. WhatsApp (08xxx)" value="${USER.wa || ''}" autocomplete="tel" />
+    <select id="frm-usaha">
+      <option value="">— Pilih jenis usaha —</option>
+      <option value="FnB / Restoran" ${USER.usaha === 'FnB / Restoran' ? 'selected' : ''}>🍦 FnB / Restoran</option>
+      <option value="Es Krim / Bakery" ${USER.usaha === 'Es Krim / Bakery' ? 'selected' : ''}>🍰 Es Krim / Bakery</option>
+      <option value="Toko Sembako" ${USER.usaha === 'Toko Sembako' ? 'selected' : ''}>🛒 Toko Sembako / Kelontong</option>
+      <option value="Toko Retail" ${USER.usaha === 'Toko Retail' ? 'selected' : ''}>🏪 Toko Retail / Fashion</option>
+      <option value="Beauty / Salon" ${USER.usaha === 'Beauty / Salon' ? 'selected' : ''}>💄 Beauty / Salon</option>
+      <option value="Apotek" ${USER.usaha === 'Apotek' ? 'selected' : ''}>💊 Apotek</option>
+      <option value="Lainnya" ${USER.usaha === 'Lainnya' ? 'selected' : ''}>📦 Lainnya</option>
+    </select>
+    <div class="err" id="frm-err"></div>
+    <button class="submit-btn" id="frm-submit">📩 Kirim & Lanjut Chat WA</button>
+    <button class="skip-btn" id="frm-skip">Skip — chat WA tanpa info</button>
+    <div class="privacy-note">🔒 Data hanya untuk follow-up. Tidak di-share atau spam.</div>
+  `;
+  mcpForm.innerHTML = html;
+  mcpForm.style.display = 'flex';
+  document.getElementById('frm-submit').onclick = () => submitForm(intent);
+  document.getElementById('frm-skip').onclick = () => skipForm(intent);
+  setTimeout(() => document.getElementById('frm-nama').focus(), 200);
+}
+
+function submitForm(intent) {
+  const nama = document.getElementById('frm-nama').value.trim();
+  const wa = document.getElementById('frm-wa').value.trim().replace(/\D/g, '');
+  const usaha = document.getElementById('frm-usaha').value;
+  const err = document.getElementById('frm-err');
+
+  if (!nama) { err.textContent = 'Nama wajib diisi'; err.style.display = 'block'; return; }
+  if (!wa || wa.length < 9) { err.textContent = 'No WhatsApp wajib diisi (minimal 9 digit)'; err.style.display = 'block'; return; }
+  if (!usaha) { err.textContent = 'Pilih jenis usaha'; err.style.display = 'block'; return; }
+
+  USER.nama = nama;
+  USER.wa = wa;
+  USER.usaha = usaha;
+  saveUser();
+
+  clearForm();
+  showMsg(`Nama: ${nama} · WA: ${wa} · ${usaha}`, true);
+  setTimeout(async () => {
+    showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    document.querySelector('.mcp-typing')?.remove();
+    showMsg(`Terima kasih bos <strong>${nama}</strong>! 🙏 Klik tombol di bawah, saya bawa bos ke WhatsApp Hendry dengan info lengkap pre-filled.`);
+    setTimeout(() => {
+      showActions([
+        { txt: '💬 Buka WhatsApp Sekarang', cls: 'primary', href: buildWaLink(intent) },
+        { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+      ]);
+    }, 400);
+  }, 300);
+}
+
+function skipForm(intent) {
+  clearForm();
+  showMsg('Skip info, lanjut ke WhatsApp', true);
+  setTimeout(() => {
+    showActions([
+      { txt: '💬 Buka WhatsApp', cls: 'primary', href: buildWaLink(intent) },
+      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+    ]);
+  }, 300);
+}
 function showQuick(opts) {
   clearQuick();
   opts.forEach(o => {
@@ -1018,9 +1257,10 @@ function showActions(acts) {
   clearActions();
   acts.forEach(a => {
     let el;
-    if (a.href) {
+    const hrefVal = typeof a.href === 'function' ? a.href() : a.href;
+    if (hrefVal) {
       el = document.createElement('a');
-      el.href = a.href;
+      el.href = hrefVal;
       el.target = '_blank';
     } else {
       el = document.createElement('button');
@@ -1035,21 +1275,56 @@ function showActions(acts) {
 async function goToFlow(key) {
   const node = FLOW[key];
   if (!node) return;
+  resetIdle();
+  // Track flow history
+  if (!USER.flow_history) USER.flow_history = [];
+  USER.flow_history.push(key);
+  if (USER.flow_history.length > 10) USER.flow_history = USER.flow_history.slice(-10);
+  saveUser();
+
   clearQuick();
   clearActions();
+  clearForm();
   for (const html of node.msgs) {
     const t = showTyping();
-    await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
+    await new Promise(r => setTimeout(r, 700 + Math.random() * 500));
     t.remove();
     showMsg(html);
     await new Promise(r => setTimeout(r, 250));
   }
   if (node.quick) showQuick(node.quick);
+  if (node.form) showForm(node.form.intent);
   if (node.actions) showActions(node.actions);
+  startIdle();
 }
+
+// Idle nudge — jika user gak interact 25 detik, kasih reminder
+let idleTimer = null;
+let idleNudged = false;
+function startIdle() {
+  if (idleNudged) return;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (mcpPanel.classList.contains('show')) {
+      const nudge = document.createElement('div');
+      nudge.className = 'mcp-msg nudge';
+      nudge.innerHTML = `Masih bingung? Langsung chat WA Hendry aja — beliau respond dalam 1 jam jam kerja 🐻 <span class="time">${new Date().getHours().toString().padStart(2,'0')}:${new Date().getMinutes().toString().padStart(2,'0')}</span>`;
+      mcpBody.appendChild(nudge);
+      mcpBody.scrollTop = mcpBody.scrollHeight;
+      idleNudged = true;
+      setTimeout(() => {
+        if (mcpActions.style.display === 'none' && mcpForm.style.display === 'none') {
+          showActions([{ txt: '💬 Chat WA Hendry', cls: 'primary', href: buildWaLink('general') }]);
+        }
+      }, 600);
+    }
+  }, 25000);
+}
+function resetIdle() { clearTimeout(idleTimer); }
+
 let played = false;
 function openMcp() { mcpPanel.classList.add('show'); document.querySelector('.notif').style.display = 'none'; if (!played) { played = true; goToFlow('start'); } }
-function closeMcp() { mcpPanel.classList.remove('show'); }
+function closeMcp() { mcpPanel.classList.remove('show'); resetIdle(); }
 function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
 setTimeout(() => { if (!sessionStorage.getItem('mcp_berstock_seen')) { openMcp(); sessionStorage.setItem('mcp_berstock_seen', '1'); } }, 3000);
 </script>
