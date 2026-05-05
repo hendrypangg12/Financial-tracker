@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Perbandingan Harga POS — Berstock vs Kompetitor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; }
+  body {
+    font-family: 'SF Pro Display', -apple-system, system-ui, sans-serif;
+    color: #fff;
+    background: #0a0e1a;
+  }
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(233, 30, 99, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233, 30, 99, 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+  .slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(233, 30, 99, 0.2) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(212, 175, 55, 0.18) 0%, transparent 40%);
+    z-index: 1;
+  }
+  .frame {
+    position: relative;
+    z-index: 2;
+    width: 100%; height: 100%;
+    padding: 70px;
+    display: flex;
+    flex-direction: column;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-logo {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    background: #fff;
+    padding: 4px;
+    object-fit: cover;
+  }
+  .brand-text { font-size: 22px; font-weight: 800; }
+  .brand-text .accent { color: #e91e63; }
+  .slide-num {
+    font-size: 18px;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  /* ─── SLIDE 1: COVER ─── */
+  .s1 .frame { padding: 90px 70px; justify-content: center; align-items: center; text-align: center; }
+  .s1 .pretitle {
+    font-size: 26px;
+    color: #d4af37;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 30px;
+  }
+  .s1 .headline {
+    font-size: 130px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, #fff 0%, #e91e63 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .s1 .subhead {
+    font-size: 38px;
+    font-weight: 600;
+    color: #cbd5e1;
+    line-height: 1.3;
+    margin-bottom: 60px;
+    max-width: 800px;
+  }
+  .s1 .swipe-hint {
+    margin-top: auto;
+    font-size: 24px;
+    color: #d4af37;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .s1 .currency-grid {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin-bottom: 60px;
+  }
+  .price-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 20px 30px;
+    border-radius: 16px;
+    font-size: 28px;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+  .price-pill.highlight { border-color: #e91e63; background: rgba(233, 30, 99, 0.1); color: #fff; }
+  .price-pill.muted { color: #94a3b8; }
+
+  /* ─── SLIDE 2: TABLE ─── */
+  .s2 .title-block { margin-bottom: 30px; }
+  .s2 .title {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 12px;
+  }
+  .s2 .title .accent { color: #e91e63; }
+  .s2 .subtitle {
+    font-size: 22px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+  .table-wrap {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 2fr 1.4fr 0.8fr 0.8fr;
+    gap: 12px;
+    padding: 22px 28px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .row:last-child { border-bottom: none; }
+  .row.head {
+    background: rgba(255,255,255,0.04);
+    font-size: 18px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .row.berstock {
+    background: linear-gradient(90deg, rgba(233, 30, 99, 0.18), rgba(212, 175, 55, 0.1));
+    border-left: 5px solid #e91e63;
+    padding-left: 23px;
+  }
+  .col-name { font-size: 24px; font-weight: 700; }
+  .col-name .tag {
+    display: inline-block;
+    background: #e91e63;
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-left: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    vertical-align: middle;
+  }
+  .col-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #d4af37;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .row.berstock .col-price { color: #fff; }
+  .col-feature {
+    font-size: 28px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .yes { color: #10b981; }
+  .no { color: #ef4444; }
+
+  .s2 .footer-note {
+    margin-top: 24px;
+    font-size: 18px;
+    color: #94a3b8;
+    text-align: center;
+  }
+  .s2 .swipe { margin-top: auto; text-align: center; color: #d4af37; font-size: 22px; font-weight: 700; }
+
+  /* ─── SLIDE 3: USP ─── */
+  .s3 .frame { justify-content: center; }
+  .s3 .top-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    align-self: flex-start;
+  }
+  .s3 .title {
+    font-size: 88px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 30px;
+  }
+  .s3 .title .accent { color: #d4af37; }
+  .s3 .subtitle {
+    font-size: 28px;
+    color: #cbd5e1;
+    line-height: 1.4;
+    margin-bottom: 40px;
+    font-weight: 500;
+  }
+  .demo-card {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.15), rgba(255,255,255,0.03));
+    border: 1.5px solid rgba(233, 30, 99, 0.3);
+    border-radius: 24px;
+    padding: 35px 35px 30px;
+    backdrop-filter: blur(20px);
+    margin-bottom: 30px;
+  }
+  .demo-header {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .demo-avatar {
+    width: 50px; height: 50px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 4px;
+  }
+  .demo-name { font-size: 22px; font-weight: 700; }
+  .demo-status { font-size: 14px; color: #10b981; }
+  .chat-bubble {
+    margin-bottom: 14px;
+    padding: 16px 20px;
+    border-radius: 18px;
+    font-size: 22px;
+    line-height: 1.4;
+    max-width: 80%;
+  }
+  .chat-bubble.user {
+    background: #2563eb;
+    color: #fff;
+    align-self: flex-end;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-bubble.bot {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-bubble strong { color: #e91e63; }
+  .chat-bubble.bot strong { color: #d4af37; }
+  .chats { display: flex; flex-direction: column; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 18px;
+    padding: 22px 16px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 40px;
+    font-weight: 900;
+    color: #d4af37;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label {
+    font-size: 16px;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  /* ─── SLIDE 4: CTA ─── */
+  .s4 .frame { justify-content: center; align-items: center; text-align: center; }
+  .s4 .question {
+    font-size: 32px;
+    color: #94a3b8;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .s4 .verdict {
+    font-size: 130px;
+    font-weight: 900;
+    line-height: 0.95;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #d4af37 0%, #e91e63 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -3px;
+  }
+  .s4 .reason {
+    font-size: 32px;
+    color: #cbd5e1;
+    line-height: 1.4;
+    max-width: 800px;
+    margin-bottom: 60px;
+    font-weight: 500;
+  }
+  .s4 .reason strong { color: #fff; font-weight: 800; }
+  .s4 .cta-box {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.2), rgba(212, 175, 55, 0.1));
+    border: 2px solid rgba(233, 30, 99, 0.4);
+    padding: 40px 50px;
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    margin-bottom: 40px;
+  }
+  .s4 .cta-line1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .s4 .cta-line2 {
+    font-size: 38px;
+    font-weight: 900;
+    color: #d4af37;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .s4 .footer-action {
+    font-size: 24px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+  .s4 .footer-action strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SLIDE 1: COVER ═══ -->
+<section class="slide s1">
+  <div class="frame">
+    <div class="top-row">
+      <div class="brand">
+        <img class="brand-logo" src="assets/logo-berbisnis.png" alt="">
+        <div class="brand-text">berstock<span class="accent">.id</span></div>
+      </div>
+      <div class="slide-num">1 / 4</div>
+    </div>
+
+    <div style="margin: auto 0;">
+      <div class="pretitle">📊 Riset Pasar 2026</div>
+      <div class="headline">Harga POS<br>Indonesia</div>
+      <div class="subhead">
+        Bandingkan langsung 6 aplikasi POS<br>
+        terpopuler di Indonesia
+      </div>
+
+      <div class="currency-grid">
+        <div class="price-pill muted">Rp 75rb</div>
+        <div class="price-pill highlight">Rp 500rb</div>
+        <div class="price-pill muted">Rp 1.5jt</div>
+      </div>
+    </div>
+
+    <div class="swipe-hint">SWIPE → LIHAT TABEL LENGKAP</div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2: TABLE ═══ -->
+<section class="slide s2">
+  <div class="frame">
+    <div class="top-row">
+      <div class="brand">
+        <img class="brand-logo" src="assets/logo-berbisnis.png" alt="">
+        <div class="brand-text">berstock<span class="accent">.id</span></div>
+      </div>
+      <div class="slide-num">2 / 4</div>
+    </div>
+
+    <div class="title-block">
+      <div class="title">Tabel <span class="accent">Perbandingan</span></div>
+      <div class="subtitle">Harga + fitur kunci · Update Mei 2026</div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="row head">
+        <div>Aplikasi</div>
+        <div>Harga/bulan</div>
+        <div style="text-align:center">AI Bot</div>
+        <div style="text-align:center">Bahasa</div>
+      </div>
+
+      <div class="row berstock">
+        <div class="col-name">Berstock Pro<span class="tag">+AI</span></div>
+        <div class="col-price">Rp 500.000</div>
+        <div class="col-feature yes">✓</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+
+      <div class="row">
+        <div class="col-name">Moka POS Pro</div>
+        <div class="col-price">Rp 499.000</div>
+        <div class="col-feature no">✕</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+
+      <div class="row">
+        <div class="col-name">Pawoon Pro</div>
+        <div class="col-price">Rp 200–500k</div>
+        <div class="col-feature no">✕</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+
+      <div class="row">
+        <div class="col-name">Majoo Advance</div>
+        <div class="col-price">Rp 270.000</div>
+        <div class="col-feature no">✕</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+
+      <div class="row">
+        <div class="col-name">Olsera Premium</div>
+        <div class="col-price">Rp 199–299k</div>
+        <div class="col-feature no">✕</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+
+      <div class="row">
+        <div class="col-name">Kasir Pintar Plus</div>
+        <div class="col-price">Rp 75–200k</div>
+        <div class="col-feature no">✕</div>
+        <div class="col-feature">🇮🇩</div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      *Harga publik per Mei 2026. Plan Enterprise tidak termasuk.
+    </div>
+
+    <div class="swipe">SWIPE → LIHAT YANG BIKIN BEDA</div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3: USP DEMO ═══ -->
+<section class="slide s3">
+  <div class="frame">
+    <div class="top-row">
+      <div class="brand">
+        <img class="brand-logo" src="assets/logo-berbisnis.png" alt="">
+        <div class="brand-text">berstock<span class="accent">.id</span></div>
+      </div>
+      <div class="slide-num">3 / 4</div>
+    </div>
+
+    <div class="top-tag">⚡ EXCLUSIVE FEATURE</div>
+
+    <div class="title">
+      Cuma Berstock Punya<br>
+      <span class="accent">AI Bot Telegram</span> 🤖
+    </div>
+    <div class="subtitle">
+      Owner tinggal chat, AI yang kerja.<br>
+      Reply <strong style="color:#d4af37">5 detik</strong>, akurat, 24/7.
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-header">
+        <img class="demo-avatar" src="assets/logo-berbisnis.png" alt="">
+        <div>
+          <div class="demo-name">@BerstockBot</div>
+          <div class="demo-status">● online · Claude AI</div>
+        </div>
+      </div>
+      <div class="chats">
+        <div class="chat-bubble user">Stok beras tinggal berapa karung?</div>
+        <div class="chat-bubble bot">
+          🔥 <strong>Stok kritis:</strong><br>
+          • Beras Premium — <strong>2 karung</strong><br>
+          • Beras Setra — <strong>5 karung</strong><br>
+          ⚠️ Saran restok besok pagi
+        </div>
+        <div class="chat-bubble user">Sales hari ini?</div>
+        <div class="chat-bubble bot">
+          💸 <strong>Rp 8.450.000</strong><br>
+          12 transaksi · Margin 24% · Cash 6 / Tempo 6
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">5 dtk</div>
+        <div class="stat-label">Reply Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Online</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12</div>
+        <div class="stat-label">AI Tools</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4: CTA ═══ -->
+<section class="slide s4">
+  <div class="frame">
+    <div class="top-row" style="width:100%">
+      <div class="brand">
+        <img class="brand-logo" src="assets/logo-berbisnis.png" alt="">
+        <div class="brand-text">berstock<span class="accent">.id</span></div>
+      </div>
+      <div class="slide-num">4 / 4</div>
+    </div>
+
+    <div style="margin: auto 0;">
+      <div class="question">JADI...</div>
+      <div class="verdict">Pilih yang<br>Cerdas.</div>
+      <div class="reason">
+        Harga sama dengan kompetitor,<br>
+        tapi <strong>cuma Berstock yang punya<br>AI Assistant 24/7.</strong>
+      </div>
+
+      <div class="cta-box">
+        <div class="cta-line1">🎁 Coba gratis 3 hari di:</div>
+        <div class="cta-line2">berstock.id</div>
+      </div>
+
+      <div class="footer-action">
+        💬 DM <strong>@berstock.ai</strong> untuk demo · Save post ini! 🔖
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

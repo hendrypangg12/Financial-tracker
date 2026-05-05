@@ -44,6 +44,7 @@ export default {
         case "/api/sync":  return await handleSync(request, env);
         case "/api/pull":  return await handlePull(request, env);
         case "/api/provision": return await handleProvision(request, env);
+        case "/api/lead":  return await handleLead(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });
@@ -325,6 +326,83 @@ async function handleProvision(request, env) {
       step3: `Setting di BerBisnis web (Pengaturan → Cloud Sync): tenant_id + api_key`,
     },
   });
+}
+
+// =============================================================================
+// LEAD CAPTURE — Notif Telegram saat ada lead masuk dari berstock.id
+// =============================================================================
+
+async function handleLead(request, env) {
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON" }, 400);
+  }
+
+  const { nama, wa, usaha, intent, flow_history, source } = body;
+
+  // Basic validation
+  if (!nama || !wa) {
+    return jsonResponse({ error: "nama & wa required" }, 400);
+  }
+
+  // Build notif message
+  const flowPath = Array.isArray(flow_history) ? flow_history.slice(-5).join(" → ") : "";
+  const ts = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
+  const msg = `🎯 *LEAD BARU dari berstock.id*
+
+👤 Nama: *${escapeMd(nama)}*
+📱 WA: \`${escapeMd(wa)}\`
+🏪 Usaha: *${escapeMd(usaha || "tidak diisi")}*
+🎬 Intent: ${escapeMd(intent || "general")}
+🛤️ Path: _${escapeMd(flowPath || "direct")}_
+🌐 Source: ${escapeMd(source || "berstock.id")}
+⏰ ${escapeMd(ts)} WIB
+
+💬 [Chat WA Sekarang](https://wa.me/${wa.replace(/\D/g, "")})`;
+
+  // Send to owner Telegram (admin chat ID)
+  const ADMIN_CHAT_ID = env.ADMIN_TELEGRAM_CHAT_ID;
+  if (!ADMIN_CHAT_ID) {
+    console.warn("ADMIN_TELEGRAM_CHAT_ID not set, lead saved but not notified");
+  } else {
+    try {
+      await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ADMIN_CHAT_ID,
+          text: msg,
+          parse_mode: "Markdown",
+          disable_web_page_preview: false,
+        }),
+      });
+    } catch (e) {
+      console.error("Failed to send Telegram notif:", e);
+    }
+  }
+
+  // Save to KV for record-keeping (optional)
+  try {
+    const leadKey = `lead:${Date.now()}:${wa.replace(/\D/g, "")}`;
+    await env.BOT_DATA.put(leadKey, JSON.stringify({
+      nama, wa, usaha, intent, flow_history, source, ts,
+    }), { expirationTtl: 60 * 60 * 24 * 90 }); // 90 hari
+  } catch (e) {
+    console.error("Failed to save lead to KV:", e);
+  }
+
+  return jsonResponse({ ok: true, message: "Lead notified" });
+}
+
+function escapeMd(s) {
+  if (!s) return "";
+  return String(s).replace(/[_*[\]()~`>#+=|{}.!-]/g, "\\$&");
 }
 
 // =============================================================================

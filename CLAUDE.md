@@ -25,7 +25,7 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 - **Target:** Personal & UMKM kecil
 - **Pricing:** Rp 35rb/bulan atau Rp 125rb lifetime
 - **Fitur:** Input via form/chat/struk OCR, dashboard, kategorisasi otomatis (incl. utang/piutang)
-- **File utama:** `app.html`, `landing.html`, `index.html` (link-in-bio)
+- **File utama:** `app.html`, `landing.html`, `linktree.html` (link-in-bio, sebelumnya index.html)
 - **Storage:** localStorage + Firebase Firestore sync (cloud)
 - **PWA:** ya, dengan service worker
 
@@ -430,14 +430,17 @@ state = {
 - ❌ TIDAK BISA voice over
 
 **Folder asset tersedia:**
-- `/carousel-png/` — 20 PNG slides
+- `/carousel-png/` — 22 PNG slides
   - `slide-1.png` s/d `slide-5.png` — Carousel cover (5 slides "Owner Toko Stok Hilang Ga")
   - `pain-a-1.png` s/d `pain-a-5.png` — Carousel A "Berapa Duit Hilang Tiap Bulan?" 💸
   - `pain-b-1.png` s/d `pain-b-5.png` — Carousel B "Berapa Jam Buang Tugas Manual?" ⏰
   - `pain-c-1.png` s/d `pain-c-5.png` — Carousel C "Pelanggan Diam-Diam Pergi" 😶
+  - `launch-post-berstock-id.png` — 1080×1080 launch post berstock.id LIVE 🚀 (NEW Day 3)
+  - `launch-story-berstock-id.png` — 1080×1920 launch story berstock.id (NEW Day 3)
 - `/berstock-reels-15s.mp4` — Reels 20 detik (originally 15s, di-extend ke 20s comfortable)
 - HTML sources: `reels-15s.html`, `reels-20s.html`, `reels-berstock-autoplay.html` (45s), `reels-berstock-b.html`
 - HTML carousels: `carousel-berstock-5.html`, `carousel-pain-3x5.html`, `berstock-carousel-day2.html`
+- HTML launch: `launch-post-berstock.html`, `launch-story-berstock.html` (NEW Day 3)
 - `/profile-pic-berstock.html` — 4 template profile picture
 - `/berstock-pitch-deck.html` — 10 slides A4 landscape
 
@@ -466,13 +469,48 @@ state = {
 5. Klien chat `/start <tenant_id>` di @BerstockBot
 6. **PENDING:** ADMIN_KEY belum di-set di Cloudflare Worker secrets
 
+### 🌐 DOMAIN BERSTOCK.ID — LIVE! (4 Mei 2026)
+
+**STATUS:** ✅ **berstock.id LIVE di GitHub Pages dengan custom homepage profesional**
+
+**Setup Detail:**
+- **Domain:** berstock.id (registrar IDwebhost, Rp 225.226/tahun first year)
+- **Email:** info@berstock.id (webmail di webmail.berstock.id, hosted di IDwebhost cPanel)
+- **DNS:** Cloudflare (account `hendrypangg12@icloud.com`)
+- **Nameservers:** `coco.ns.cloudflare.com` + `dave.ns.cloudflare.com`
+- **DNS Records di Cloudflare:**
+  - 4× A `@` → 185.199.108-111.153 (GitHub Pages, Proxy OFF/DNS only)
+  - CNAME `www` → `hendrypangg12.github.io` (Proxy OFF)
+  - 9× A records existing IDwebhost (autoconfig, autodiscover, cpanel, webmail, dll) — KEEP untuk email
+  - MX, SRV, TXT (SPF/DKIM/DMARC) — KEEP semua untuk email
+- **Hosting:** GitHub Pages (FREE) — branch `claude/financial-tracking-app-QUmrz`
+- **CNAME file:** `/CNAME` content `berstock.id`
+- **Homepage:** `/index.html` (was `home.html`, dark navy + magenta + gold theme, 837 lines)
+- **Linktree lama:** `/linktree.html` (was old `index.html`, BerSatu Suite linktree)
+- **HTTPS/SSL:** ⏳ Provisioning (Let's Encrypt via GitHub Pages, ~15-30 menit)
+
+**Plan Renewal Tahun Depan:**
+- Cuman perpanjang domain (~Rp 240rb/tahun), GA perpanjang hosting IDwebhost
+- DNS aman di Cloudflare (gratis selamanya)
+- Email `info@berstock.id` akan migrasi ke Gmail Workspace (Rp 65rb/user/bln) atau Zoho Mail (gratis 5GB) sebelum hosting expired
+
+**Lessons Learned:**
+- Cloudflare DNS harus **Proxy OFF (DNS only)** untuk GitHub Pages — kalau Proxied (orange cloud) bentrok dengan SSL Let's Encrypt
+- IDwebhost Member Area beda dengan cPanel — manage nameserver di Member Area
+- Radio button "Gunakan default nameserver" vs "Gunakan nameserver lain" WAJIB pilih kedua, bukan cukup isi field
+- Warning Chrome "Connection is not secure" untuk HTTP-only adalah NORMAL, bukan Google blacklist
+
 ### 🎯 PENDING ACTION (Next Session)
-1. ⏳ **Rotate Cloudflare API Token** (sebelumnya di chat — tidak aman)
-2. ⏳ **Set ADMIN_KEY** di Cloudflare Worker secrets
-3. ⏳ **Setup GitHub Secret CLOUDFLARE_API_TOKEN** untuk auto-deploy bot
-4. ⏳ **Aktifkan Lynk Affiliate**
-5. ⏳ **Upload mascot beruang celebrate** dari Manus → `assets/mascot-berstock.png`
-6. ⏳ **Lanjut Tutorial Feature Flags** Step 3-6 (admin UI toggle, conditional render, customize bot per tenant, testing)
+1. ⏳ **Centang "Enforce HTTPS"** di GitHub Pages settings (setelah SSL ready, ~15 menit dari 17:53 4 Mei)
+2. ⏳ **Update IG bio @berstock.ai** dengan link `berstock.id`
+3. ⏳ **Update IG bio @hendrypangg** kalau perlu cross-promo
+4. ⏳ **Switch GitHub Pages source branch** dari `claude/...` ke `main` (best practice, gak urgent)
+5. ⏳ **Rotate Cloudflare API Token** (sebelumnya di chat — tidak aman)
+6. ⏳ **Set ADMIN_KEY** di Cloudflare Worker secrets
+7. ⏳ **Setup GitHub Secret CLOUDFLARE_API_TOKEN** untuk auto-deploy bot
+8. ⏳ **Aktifkan Lynk Affiliate**
+9. ⏳ **Upload mascot beruang celebrate** dari Manus → `assets/mascot-berstock.png`
+10. ⏳ **Lanjut Tutorial Feature Flags** Step 3-6 (admin UI toggle, conditional render, customize bot per tenant, testing)
 
 ### 🎬 SARAN UNTUK NEXT SESSION
 - Kalau bos minta video/carousel/visual marketing → langsung pakai puppeteer + ffmpeg yang udah installed
@@ -510,14 +548,17 @@ state = {
 - **Anthropic console:** console.anthropic.com (model: claude-sonnet-4-6 default untuk chat)
 
 ### Live Production Links
-- **BerUang app:** hendrypangg12.github.io/Financial-tracker/app.html
-- **BerUang landing:** hendrypangg12.github.io/Financial-tracker/landing.html
-- **BerUang link-in-bio:** hendrypangg12.github.io/Financial-tracker/index.html
-- **BerBisnis app:** hendrypangg12.github.io/Financial-tracker/tokountung/app.html
-- **Berstock landing:** hendrypangg12.github.io/Financial-tracker/landing-berstock.html
-- **BerSatu Neural Command:** hendrypangg12.github.io/Financial-tracker/bersatu-demo.html
+- **🌟 Homepage utama (custom domain):** https://berstock.id ⭐ NEW
+- **Linktree BerSatu Suite:** https://berstock.id/linktree.html
+- **BerUang app:** https://berstock.id/app.html (atau hendrypangg12.github.io/Financial-tracker/app.html)
+- **BerUang landing:** https://berstock.id/landing.html
+- **BerBisnis app:** https://berstock.id/tokountung/app.html
+- **BerBisnis Pro landing:** https://berstock.id/berbisnis-pro.html
+- **Berstock landing:** https://berstock.id/landing-berstock.html
+- **BerSatu Neural Command:** https://berstock.id/bersatu-demo.html
 - **Berstock Bot Telegram:** https://t.me/BerstockBot
 - **Berstock Worker:** https://berstock-bot.hendrypangg12.workers.dev
+- **Email bisnis:** info@berstock.id (webmail: https://webmail.berstock.id)
 
 ### IG Bio Berstock (recommended Versi 2)
 ```

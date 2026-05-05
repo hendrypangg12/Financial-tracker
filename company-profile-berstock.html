@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Berstock — Company Profile & Product Overview</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 210mm; }
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    color: #1e293b;
+    background: #fff;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 0;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* Common header/footer */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12mm 15mm;
+    background: #0a1628;
+    color: #fff;
+  }
+  .ph-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700;
+  }
+  .ph-brand img { width: 28px; height: 28px; border-radius: 6px; background: #fff; padding: 2px; }
+  .ph-brand .accent { color: #d4af37; }
+  .ph-section {
+    font-size: 10px;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+  .page-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 8mm 15mm;
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+    font-size: 9px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .page-footer strong { color: #0a1628; }
+  .page-content {
+    padding: 12mm 15mm 18mm;
+  }
+
+  /* ─── COVER PAGE ─── */
+  .cover {
+    background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #2d1b3d 100%);
+    color: #fff;
+    height: 297mm;
+    padding: 25mm 15mm;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(233, 30, 99, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.2) 0%, transparent 40%);
+  }
+  .cover-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+  .cover-brand { display: flex; align-items: center; gap: 14px; margin-bottom: auto; }
+  .cover-brand img { width: 50px; height: 50px; border-radius: 12px; background: #fff; padding: 4px; }
+  .cover-brand .name { font-size: 22px; font-weight: 800; }
+  .cover-brand .name .acc { color: #e91e63; }
+
+  .cover-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    align-self: flex-start;
+  }
+  .cover h1 {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -1.5px;
+    margin-bottom: 18px;
+    color: #d4af37;
+  }
+  .cover h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #cbd5e1;
+    line-height: 1.4;
+    max-width: 150mm;
+    margin-bottom: 50px;
+  }
+  .cover .doc-info {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 14px;
+    padding: 18px 22px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 30px;
+  }
+  .cover .doc-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .cover .doc-info-row:last-child { border-bottom: none; }
+  .cover .doc-info-label { color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .cover .doc-info-val { color: #fff; font-size: 13px; font-weight: 700; }
+  .cover .doc-info-val .gold { color: #d4af37; }
+
+  .cover-footer {
+    margin-top: auto;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 175, 55, 0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cover-website { font-size: 18px; font-weight: 800; color: #d4af37; }
+  .cover-meta { font-size: 11px; color: #94a3b8; text-align: right; }
+
+  /* ─── CONTENT STYLES ─── */
+  h2.page-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #0a1628;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  h2.page-title .acc { color: #e91e63; }
+  .page-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  h3.section-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0a1628;
+    margin: 18px 0 10px;
+    padding-left: 10px;
+    border-left: 4px solid #e91e63;
+  }
+  p { font-size: 11px; color: #334155; margin-bottom: 8px; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 18px 0;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #f8fafc, #fff);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-num { font-size: 24px; font-weight: 900; color: #e91e63; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 10px; color: #64748b; font-weight: 600; }
+
+  /* Feature lists */
+  .feature-list { margin: 10px 0; }
+  .feature-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+  .feature-item:last-child { border-bottom: none; }
+  .feature-icon {
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    color: #fff;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .feature-content { flex: 1; }
+  .feature-name { font-weight: 700; font-size: 11px; color: #0a1628; margin-bottom: 2px; }
+  .feature-desc { font-size: 10px; color: #64748b; }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  /* Pricing cards */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .price-card {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 14px;
+    position: relative;
+  }
+  .price-card.featured {
+    border-color: #e91e63;
+    border-width: 2px;
+    background: linear-gradient(180deg, rgba(233,30,99,0.04), #fff);
+    box-shadow: 0 4px 16px rgba(233,30,99,0.1);
+  }
+  .price-card.featured::before {
+    content: '⭐ POPULAR';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: #e91e63;
+    color: #fff;
+    font-size: 9px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+  }
+  .price-tier { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .price-amount { font-size: 22px; font-weight: 900; color: #0a1628; line-height: 1; margin-bottom: 2px; }
+  .price-amount .currency { font-size: 12px; color: #64748b; }
+  .price-period { font-size: 10px; color: #64748b; margin-bottom: 12px; }
+  .price-features { list-style: none; padding: 0; }
+  .price-features li {
+    font-size: 10px;
+    padding: 4px 0;
+    color: #334155;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+  .price-features li::before { content: '✓'; color: #10b981; font-weight: 700; }
+  .price-features li.no::before { content: '✕'; color: #cbd5e1; }
+  .price-features li.no { color: #94a3b8; }
+
+  /* Tools list */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .tool-card {
+    background: #f8fafc;
+    border-left: 3px solid #d4af37;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .tool-name { font-size: 11px; font-weight: 800; color: #0a1628; margin-bottom: 2px; }
+  .tool-desc { font-size: 9.5px; color: #64748b; line-height: 1.4; }
+  .tool-num {
+    display: inline-block;
+    background: #d4af37;
+    color: #0a1628;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+    font-weight: 800;
+  }
+
+  /* Why choose */
+  .reason-card {
+    background: linear-gradient(135deg, #f8fafc, #fff);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .reason-icon-big {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #d4af37, #f4cf67);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .reason-title { font-size: 13px; font-weight: 800; color: #0a1628; margin-bottom: 3px; }
+  .reason-desc { font-size: 10px; color: #475569; line-height: 1.5; }
+
+  /* Tech stack */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .tech-pill {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 10px;
+  }
+  .tech-pill strong { color: #0a1628; font-weight: 800; }
+  .tech-pill span { color: #64748b; }
+
+  /* Compare table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare-table th {
+    background: #0a1628;
+    color: #fff;
+    padding: 8px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .compare-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .compare-table tr.highlight {
+    background: linear-gradient(90deg, rgba(233,30,99,0.08), rgba(212,175,55,0.04));
+  }
+  .compare-table tr.highlight td:first-child {
+    border-left: 3px solid #e91e63;
+    font-weight: 800;
+    color: #0a1628;
+  }
+  .compare-table .yes { color: #10b981; font-weight: 700; }
+  .compare-table .no { color: #ef4444; }
+
+  /* CTA Page */
+  .cta-page {
+    background: linear-gradient(135deg, #0a1628 0%, #2d1b3d 100%);
+    color: #fff;
+    height: 297mm;
+    padding: 30mm 18mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.25) 0%, transparent 40%);
+  }
+  .cta-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+  .cta-tag {
+    background: linear-gradient(135deg, #e91e63, #d81b60);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-bottom: 20px;
+  }
+  .cta-page h1 {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+  .cta-page h1 .acc {
+    color: #d4af37;
+  }
+  .cta-page .lead {
+    font-size: 15px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin-bottom: 30px;
+  }
+
+  .next-steps {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .next-steps h3 {
+    color: #d4af37;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 24px; height: 24px;
+    background: #e91e63;
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 12px; color: #e2e8f0; line-height: 1.5; }
+  .step-text strong { color: #fff; }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .contact-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .contact-label {
+    color: #94a3b8;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .contact-value { color: #fff; font-size: 13px; font-weight: 700; }
+  .contact-value .gold { color: #d4af37; }
+
+  .cta-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    text-align: center;
+  }
+  .cta-footer-website {
+    font-size: 28px;
+    font-weight: 900;
+    color: #d4af37;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .cta-footer-tagline {
+    font-size: 12px;
+    color: #94a3b8;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ PAGE 1: COVER ═══════════ -->
+<section class="page cover">
+  <div class="cover-content">
+    <div class="cover-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      <div class="name">berstock<span class="acc">.id</span></div>
+    </div>
+
+    <div style="margin-top: 50mm;">
+      <div class="cover-tag">🏢 Company Profile · 2026</div>
+      <h1>POS Pintar +<br>AI Assistant<br>untuk UMKM<br>Indonesia.</h1>
+      <h2>Sistem kasir & manajemen stok terintegrasi dengan AI Bot Telegram. Owner tinggal chat, AI yang kerja 24/7.</h2>
+
+      <div class="doc-info">
+        <div class="doc-info-row">
+          <span class="doc-info-label">Dokumen</span>
+          <span class="doc-info-val">Company Profile & Product Overview</span>
+        </div>
+        <div class="doc-info-row">
+          <span class="doc-info-label">Versi</span>
+          <span class="doc-info-val gold">1.0 · Mei 2026</span>
+        </div>
+        <div class="doc-info-row">
+          <span class="doc-info-label">Disiapkan oleh</span>
+          <span class="doc-info-val">Hendry Phang · Founder</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-website">berstock.id</div>
+      <div class="cover-meta">
+        Powered by Claude Sonnet 4.6<br>
+        🇮🇩 Made in Indonesia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 2: TENTANG KAMI ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">01 · Tentang Kami</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Tentang <span class="acc">Berstock</span></h2>
+    <div class="page-subtitle">Empowering UMKM Indonesia dengan teknologi AI terkini</div>
+
+    <h3 class="section-title">Cerita Singkat</h3>
+    <p><strong>Berstock</strong> lahir dari observasi sederhana: ribuan owner UMKM di Indonesia masih menghabiskan 60+ jam per bulan untuk pencatatan stok manual menggunakan Excel atau buku tulis. Keterbatasan waktu, tenaga, dan akurasi membuat 5-15% omzet hilang karena stok tidak terkontrol.</p>
+    <p>Kami percaya teknologi <strong>AI tidak harus mahal atau rumit</strong>. Justru sebaliknya — owner toko kelontong di pelosok Indonesia berhak punya asisten cerdas yang bisa diajak ngobrol dalam Bahasa Indonesia, kapan saja, lewat alat yang sudah mereka pakai sehari-hari: Telegram.</p>
+
+    <h3 class="section-title">Apa yang Kami Tawarkan</h3>
+    <p>Berstock adalah <strong>POS (Point of Sale) digital</strong> yang terintegrasi dengan <strong>AI Bot di Telegram</strong>. Bukan sekadar mesin kasir — tetapi asisten bisnis 24/7 yang membantu owner mengelola stok, transaksi, piutang, dan laporan dengan satu kali chat.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">5 dtk</div>
+        <div class="stat-label">Reply Time AI Bot</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Online Selalu</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12</div>
+        <div class="stat-label">AI Tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Produk Suite</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Bahasa Indonesia</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">🇮🇩</div>
+        <div class="stat-label">Pertama di Indonesia</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Visi & Misi</h3>
+    <div class="two-col">
+      <div>
+        <p style="font-weight: 800; color: #e91e63; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;">VISI</p>
+        <p>Menjadi <strong>ekosistem AI assistant #1</strong> untuk UMKM Indonesia — dari pencatatan, kasir, sampai analisis bisnis cerdas, semua dalam Bahasa Indonesia.</p>
+      </div>
+      <div>
+        <p style="font-weight: 800; color: #d4af37; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;">MISI</p>
+        <p>Menyediakan teknologi enterprise-grade dengan harga yang <strong>terjangkau</strong>, <strong>mudah dipakai</strong>, dan <strong>relevan</strong> untuk konteks UMKM Indonesia.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 02</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 3: PRODUK SUITE OVERVIEW ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">02 · Produk Suite</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">3 Produk dalam <span class="acc">1 Ekosistem</span></h2>
+    <div class="page-subtitle">Saling terintegrasi · Sync data otomatis · Kelola dari satu tempat</div>
+
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #c9a352, #f4cf67);">💰</div>
+      <div>
+        <div class="reason-title">BerUang — Personal Finance</div>
+        <div class="reason-desc">Catat pemasukan, pengeluaran, hutang & piutang pribadi. Input via form, chat, atau scan struk (OCR). Cocok untuk owner yang mau pisah rekening pribadi vs bisnis. <strong>Mulai Rp 35.000/bulan atau Rp 125.000 lifetime.</strong></div>
+      </div>
+    </div>
+
+    <div class="reason-card" style="border: 2px solid #e91e63;">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #e91e63, #d81b60);">🏢</div>
+      <div>
+        <div class="reason-title">BerBisnis Pro — POS & Manajemen Stok ⭐</div>
+        <div class="reason-desc">Sistem kasir lengkap untuk UMKM 50-500 SKU: kelola produk dengan foto, transaksi cash & tempo, piutang pelanggan, PO supplier, laporan profit per item, dan customer 360°. <strong>Rp 500.000/bulan atau Rp 5.000.000/tahun.</strong></div>
+      </div>
+    </div>
+
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🤖</div>
+      <div>
+        <div class="reason-title">Berstock AI Bot — Asisten Telegram</div>
+        <div class="reason-desc">AI Assistant yang bisa diajak chat lewat Telegram. Tanya stok, sales, piutang, top seller — dijawab dalam 5 detik dengan data realtime dari BerBisnis Pro. Powered by Claude Sonnet 4.6. <strong>Bundled di paket Pro+AI Rp 500.000/bulan.</strong></div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Bagaimana Mereka Terintegrasi?</h3>
+    <p>Owner login ke <strong>BerBisnis Pro</strong> di HP/tablet, kelola transaksi sehari-hari. Data otomatis sync ke <strong>Berstock AI Bot</strong> di Telegram. Sementara <strong>BerUang</strong> jadi tempat untuk catat keuangan pribadi terpisah dari bisnis. Satu owner, tiga tools, satu ekosistem.</p>
+
+    <h3 class="section-title">Untuk Siapa Berstock Cocok?</h3>
+    <div class="two-col">
+      <div>
+        <ul class="price-features" style="margin: 0;">
+          <li>Toko kelontong / sembako</li>
+          <li>Toko bahan bangunan</li>
+          <li>Toko ATK / fotokopi</li>
+          <li>Toko kosmetik / skincare</li>
+          <li>Distributor / agen</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="price-features" style="margin: 0;">
+          <li>Toko fashion / butik</li>
+          <li>Toko elektronik / gadget</li>
+          <li>Apotek / toko herbal</li>
+          <li>Toko buku / hobi</li>
+          <li>Warung / katering kecil</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 03</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 4: BERBISNIS PRO — FITUR INTI ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">03 · BerBisnis Pro · Fitur Inti</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">BerBisnis Pro — <span class="acc">Fitur Lengkap</span></h2>
+    <div class="page-subtitle">POS digital paling lengkap untuk UMKM · 7 modul utama</div>
+
+    <h3 class="section-title">📦 Manajemen Stok</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Tambah Produk dengan Foto Real</div>
+          <div class="feature-desc">Upload foto via kamera 1-tap atau drop zone besar. Kategori, satuan, harga modal & jual, stok minimum, SKU.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">HPP Weighted Average Otomatis</div>
+          <div class="feature-desc">Saat restok dengan harga modal beda, sistem auto-calculate average cost — akurasi profit selalu benar.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Filter Kategori & Search Cepat</div>
+          <div class="feature-desc">Kategori horizontal scroll, search produk realtime, badge stok kritis otomatis muncul.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">💳 Kasir / Point of Sale</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Visual Cart & Quick Checkout</div>
+          <div class="feature-desc">Klik kartu produk → masuk cart → bayar. Stok kasir realtime sudah dikurangi cart, gak overselling.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Multi-Metode Pembayaran</div>
+          <div class="feature-desc">Cash, QRIS, transfer, atau Tempo (untung pelanggan). Diskon per item / total. Bayar parsial otomatis tracking.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Customer Picker Autocomplete</div>
+          <div class="feature-desc">Saat checkout, tinggal ketik nama pelanggan — auto-complete dari history transaksi sebelumnya.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Struk Thermal Printable</div>
+          <div class="feature-desc">Format A8 untuk printer thermal, custom logo & footer toko, kompatibel dengan printer Bluetooth.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Edit Invoice (Koreksi Salah Input)</div>
+          <div class="feature-desc">Edit qty, harga, items, atau hapus invoice — stok otomatis di-restore. Audit trail tersimpan.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">💰 Piutang Pelanggan (Tempo)</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Track Otomatis dari Transaksi Tempo</div>
+          <div class="feature-desc">Setiap transaksi dengan metode "Tempo" otomatis masuk ke daftar piutang. Filter overdue, mark lunas 1-klik.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">WA Reminder Link</div>
+          <div class="feature-desc">Klik nomor WA pelanggan langsung buka WA dengan template reminder pembayaran.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 04</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 5: BERBISNIS PRO — FITUR LANJUTAN ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">04 · BerBisnis Pro · Fitur Lanjutan</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Fitur <span class="acc">Lanjutan</span></h2>
+    <div class="page-subtitle">Manajemen pelanggan, supplier, laporan & integrasi cloud</div>
+
+    <h3 class="section-title">👥 Manajemen Pelanggan (Customer 360°)</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">CRM Database Pelanggan</div>
+          <div class="feature-desc">Aggregasi otomatis dari sales: nama, kontak, total transaksi, frekuensi beli, produk favorit, last order date.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Customer History Lengkap</div>
+          <div class="feature-desc">Klik pelanggan → muncul timeline transaksi: kapan beli apa, berapa, masih hutang berapa. Untuk follow-up sales.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Top Customer Identifier</div>
+          <div class="feature-desc">Sortir pelanggan VIP berdasarkan total spending — alokasikan benefit khusus.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">📥 PO Supplier</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Pencatatan Pembelian dari Supplier</div>
+          <div class="feature-desc">Buat PO, upload foto faktur, set jatuh tempo. Stok otomatis ditambah saat barang masuk.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Auto-Create Produk Baru</div>
+          <div class="feature-desc">Item baru di PO yang belum ada di database otomatis ter-create — tinggal isi foto & harga jual.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Track Hutang ke Supplier</div>
+          <div class="feature-desc">Filter PO yang belum lunas, reminder jatuh tempo, edit/hapus PO dengan auto-restore stok.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">📊 Laporan & Analitik</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Custom Date Range</div>
+          <div class="feature-desc">Filter laporan per hari, minggu, bulan, tahun, atau rentang custom. Export bisa di-add nanti.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Cash vs Tempo Breakdown</div>
+          <div class="feature-desc">Pisah uang masuk kas vs piutang baru — owner tahu cashflow real, bukan revenue di atas kertas.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Laporan Per Item Akumulasi</div>
+          <div class="feature-desc">Tabel lengkap semua produk dengan: terjual, profit, margin %, sisa stok — sortable.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">☁️ Cloud & Integrasi</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Auto-Sync 3-Layer Protection</div>
+          <div class="feature-desc">Debounce sync 30 detik + interval 5 menit + tab close beacon — data aman walau internet putus.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Multi-Device Login</div>
+          <div class="feature-desc">Login di HP, tablet, laptop — semua sync realtime via Firebase Firestore.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <div class="feature-content">
+          <div class="feature-name">Offline-First Architecture</div>
+          <div class="feature-desc">App tetap jalan walau internet putus. Saat online lagi, otomatis sync ke cloud.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 05</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 6: BERSTOCK AI BOT — 12 TOOLS ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">05 · Berstock AI Bot</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">AI Bot Telegram — <span class="acc">12 Tools</span></h2>
+    <div class="page-subtitle">Tanya apapun via Telegram, dijawab 5 detik dengan data realtime</div>
+
+    <p style="background: #fef3c7; border-left: 4px solid #d4af37; padding: 10px 14px; border-radius: 6px; font-size: 11px; margin-bottom: 14px;">
+      💡 <strong>How it works:</strong> Owner chat ke @BerstockBot di Telegram. AI (Claude Sonnet 4.6) baca pertanyaan, pilih tool yang cocok, eksekusi query ke data realtime, dan jawab dalam Bahasa Indonesia natural.
+    </p>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">01</span>get_low_stock</div>
+        <div class="tool-desc">Cek produk dengan stok di bawah minimum. Untuk reminder restok harian.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">02</span>get_product_info</div>
+        <div class="tool-desc">Info detail produk: stok, harga modal, harga jual, last sales, kategori.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">03</span>get_today_sales</div>
+        <div class="tool-desc">Sales hari ini dengan breakdown cash vs tempo, profit, margin, jumlah transaksi.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">04</span>get_period_summary</div>
+        <div class="tool-desc">Ringkasan periode custom (kemarin, minggu lalu, bulan ini): omzet, profit, growth %.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">05</span>get_top_sellers</div>
+        <div class="tool-desc">Produk best seller — sortir per qty atau profit, periode flexible.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">06</span>get_slow_moving</div>
+        <div class="tool-desc">Produk yang lambat laku, kandidat untuk diskon clearance atau retur supplier.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">07</span>get_restock_suggestion</div>
+        <div class="tool-desc">AI rekomendasi produk apa yang perlu di-restock berdasarkan velocity sales.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">08</span>get_business_overview</div>
+        <div class="tool-desc">Snapshot bisnis: total produk, total stok value, omzet bulan ini, customer aktif.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">09</span>list_all_products</div>
+        <div class="tool-desc">List semua produk dalam katalog — bisa filter per kategori atau range harga.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">10</span>get_piutang_summary</div>
+        <div class="tool-desc">Total piutang aktif, pelanggan overdue, list yang harus segera ditagih.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">11</span>get_customer_list</div>
+        <div class="tool-desc">List pelanggan dengan total spending, frekuensi, last order — untuk targeting.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name"><span class="tool-num">12</span>get_customer_history</div>
+        <div class="tool-desc">Riwayat transaksi customer specific — untuk personalisasi service.</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">🎁 Bonus: Daily Digest Otomatis</h3>
+    <p>Setiap pagi jam 07:00 WIB, AI Bot kirim ringkasan otomatis ke owner: omzet kemarin (% growth), top seller, piutang overdue, produk stok kritis, jatuh tempo PO. Owner langsung tahu prioritas hari itu.</p>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 06</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 7: PRICING ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">06 · Investasi & Paket</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Paket & <span class="acc">Investasi</span></h2>
+    <div class="page-subtitle">Transparent pricing · No transaction fee · Cancel anytime</div>
+
+    <div class="pricing-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="price-card">
+        <div class="price-tier">Bulanan</div>
+        <div class="price-amount"><span class="currency">Rp</span> 500.000</div>
+        <div class="price-period">/ bulan · 1 outlet</div>
+        <ul class="price-features">
+          <li>POS lengkap & manajemen stok</li>
+          <li>Foto produk + kategori</li>
+          <li>Customer database (CRM)</li>
+          <li>Piutang & PO Supplier</li>
+          <li>Laporan custom range</li>
+          <li>Cloud sync multi-device</li>
+          <li>AI Bot Telegram (12 tools)</li>
+          <li>Daily digest otomatis</li>
+          <li>Bahasa Indonesia native</li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tier">Tahunan</div>
+        <div class="price-amount"><span class="currency">Rp</span> 5.000.000</div>
+        <div class="price-period">/ tahun · 1 outlet</div>
+        <ul class="price-features">
+          <li><strong>Semua fitur paket bulanan</strong></li>
+          <li>Hemat Rp 1.000.000 per tahun</li>
+          <li>Setara Rp 416.667 / bulan</li>
+          <li>Priority support WhatsApp</li>
+          <li>Onboarding personal</li>
+          <li>Custom prompt AI per tenant</li>
+          <li>Akses fitur baru duluan</li>
+          <li>SLA response 1 jam</li>
+          <li>Backup data harian</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="section-title">💡 Nilai Investasi — Lebih Murah dari yang Bos Bayangkan</h3>
+    <div style="background: linear-gradient(135deg, #0a1628, #1e3a5f); color: #fff; border-radius: 14px; padding: 20px 22px; margin: 14px 0;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px;">
+        <div style="text-align: center; padding: 12px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+          <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Per Bulan</div>
+          <div style="font-size: 22px; font-weight: 900; color: #d4af37; line-height: 1;">Rp 500rb</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: rgba(212, 175, 55, 0.12); border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.3);">
+          <div style="font-size: 11px; color: #d4af37; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; font-weight: 700;">Per Hari</div>
+          <div style="font-size: 22px; font-weight: 900; color: #fff; line-height: 1;">Rp 16.667</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+          <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Per Jam</div>
+          <div style="font-size: 22px; font-weight: 900; color: #d4af37; line-height: 1;">Rp 694</div>
+        </div>
+      </div>
+      <p style="color: #cbd5e1; font-size: 11.5px; line-height: 1.6; margin: 0;">
+        Rp 500.000/bulan setara dengan <strong style="color: #d4af37;">Rp 16.667 per hari</strong> — lebih murah dari secangkir kopi premium di mall, atau sebungkus rokok. Tapi yang Anda dapatkan adalah <strong style="color: #fff;">asisten bisnis cerdas yang bekerja 24/7</strong>, pencatatan otomatis, dan kontrol stok real-time.
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top: 14px;">
+      <div style="background: #fef2f2; border-left: 3px solid #ef4444; padding: 12px 14px; border-radius: 8px;">
+        <p style="font-size: 11px; color: #991b1b; font-weight: 800; margin-bottom: 6px;">❌ TANPA Berstock</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin-bottom: 4px;">• 60 jam/bulan untuk catat manual</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin-bottom: 4px;">• 5-15% omzet hilang (stok tak terkontrol)</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin: 0;">• Tidak tahu menu/produk paling untung</p>
+      </div>
+      <div style="background: #f0fdf4; border-left: 3px solid #10b981; padding: 12px 14px; border-radius: 8px;">
+        <p style="font-size: 11px; color: #14532d; font-weight: 800; margin-bottom: 6px;">✓ DENGAN Berstock</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin-bottom: 4px;">• Otomatis tercatat saat transaksi</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin-bottom: 4px;">• AI alert sebelum stok kritis</p>
+        <p style="font-size: 10.5px; color: #1e293b; margin: 0;">• Laporan profit per item realtime</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">💎 Yang Termasuk dalam Langganan</h3>
+    <div class="two-col">
+      <div>
+        <p style="font-size: 11px; color: #0a1628; font-weight: 700;">✓ POS + Manajemen Stok Lengkap</p>
+        <p>7 modul utama, semua fitur tanpa batasan transaksi.</p>
+        <p style="font-size: 11px; color: #0a1628; font-weight: 700;">✓ AI Bot Telegram (12 Tools)</p>
+        <p>Akses penuh AI Assistant via Telegram, 24/7.</p>
+      </div>
+      <div>
+        <p style="font-size: 11px; color: #0a1628; font-weight: 700;">✓ Tanpa Transaction Fee</p>
+        <p>Berbeda dengan kompetitor, tidak ada fee per transaksi.</p>
+        <p style="font-size: 11px; color: #0a1628; font-weight: 700;">✓ Multi-Device Sync</p>
+        <p>Login di HP, tablet, laptop — data sync realtime.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 07</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 8: WHY CHOOSE US ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">07 · Mengapa Berstock</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Mengapa Pilih <span class="acc">Berstock?</span></h2>
+    <div class="page-subtitle">Perbandingan dengan POS System lain di pasar Indonesia 2026</div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Aspek</th>
+          <th>Berstock</th>
+          <th>POS Premium</th>
+          <th>POS Mid-Range</th>
+          <th>POS Budget</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>Harga / bulan</td>
+          <td><strong>Rp 500.000</strong></td>
+          <td>Rp 499–699rb</td>
+          <td>Rp 200–500rb</td>
+          <td>Rp 75–200rb</td>
+        </tr>
+        <tr class="highlight">
+          <td>AI Bot Telegram</td>
+          <td class="yes">✓ 12 tools</td>
+          <td class="no">✕</td>
+          <td class="no">✕</td>
+          <td class="no">✕</td>
+        </tr>
+        <tr>
+          <td>Transaction Fee</td>
+          <td class="yes">0%</td>
+          <td>1–3%</td>
+          <td>1–2%</td>
+          <td>0–1%</td>
+        </tr>
+        <tr>
+          <td>Offline-First</td>
+          <td class="yes">✓</td>
+          <td class="no">Limited</td>
+          <td class="no">Limited</td>
+          <td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td>Foto Produk Real</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="no">Basic</td>
+        </tr>
+        <tr>
+          <td>Customer 360°</td>
+          <td class="yes">✓ + AI History</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="no">Basic</td>
+        </tr>
+        <tr>
+          <td>Piutang Tracking</td>
+          <td class="yes">✓ Auto</td>
+          <td class="yes">✓</td>
+          <td class="no">Manual</td>
+          <td class="no">Manual</td>
+        </tr>
+        <tr>
+          <td>Bahasa Indonesia</td>
+          <td class="yes">100% Native</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="yes">✓</td>
+        </tr>
+        <tr>
+          <td>Iterate Speed</td>
+          <td class="yes">Cepat &amp; Agile</td>
+          <td class="no">Lambat</td>
+          <td class="no">Lambat</td>
+          <td class="no">Lambat</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 9px; color: #94a3b8; font-style: italic; margin-top: -4px;">*Kategori berdasarkan harga &amp; fitur POS umum di pasar Indonesia 2026.</p>
+
+    <h3 class="section-title">🏆 6 Alasan Utama</h3>
+    <div class="reason-card">
+      <div class="reason-icon-big">🤖</div>
+      <div>
+        <div class="reason-title">1. AI Bot Telegram — Eksklusif di Indonesia</div>
+        <div class="reason-desc">Tidak ada POS Indonesia lain yang punya integrasi AI Bot via Telegram. First-mover advantage di niche ini.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big">💰</div>
+      <div>
+        <div class="reason-title">2. Tidak Ada Transaction Fee</div>
+        <div class="reason-desc">Kompetitor charge 1-3% per transaksi. Untuk omzet Rp 100jt/bulan = save Rp 1-3jt/bulan = ROI Berstock break-even di transaksi pertama.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big">📡</div>
+      <div>
+        <div class="reason-title">3. Offline-First, Aman dari Internet Putus</div>
+        <div class="reason-desc">Toko di pelosok yang internet sering putus tetap bisa transaksi. Auto-sync saat online lagi.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big">🇮🇩</div>
+      <div>
+        <div class="reason-title">4. Built for Indonesia, by Indonesian</div>
+        <div class="reason-desc">Format Rupiah, format tanggal, sapaan "bos/kak", konteks UMKM Indonesia. Bukan terjemahan dari produk asing.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big">⚡</div>
+      <div>
+        <div class="reason-title">5. Iterate Cepat — Owner-Friendly</div>
+        <div class="reason-desc">Founder solo dev = request fitur Anda direspond dalam 24 jam. Bukan birokrasi corporate.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big">🔒</div>
+      <div>
+        <div class="reason-title">6. Data Aman & Private</div>
+        <div class="reason-desc">Cloud Firebase (Google) + Cloudflare. Per-user isolation. Data tidak dijual ke pihak ketiga.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 08</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 9: TECH STACK & SECURITY ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">08 · Tech Stack & Security</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Teknologi & <span class="acc">Keamanan</span></h2>
+    <div class="page-subtitle">Enterprise-grade infrastructure dengan biaya yang tetap terjangkau</div>
+
+    <h3 class="section-title">🛠️ Tech Stack</h3>
+    <div class="tech-grid">
+      <div class="tech-pill"><strong>Frontend:</strong> <span>Vanilla HTML/CSS/JS — fast load di HP entry-level</span></div>
+      <div class="tech-pill"><strong>PWA:</strong> <span>Service Worker — install ke homescreen, offline-first</span></div>
+      <div class="tech-pill"><strong>Database:</strong> <span>Firebase Firestore — Google-grade reliability</span></div>
+      <div class="tech-pill"><strong>Auth:</strong> <span>Firebase Auth — email/password + Google login</span></div>
+      <div class="tech-pill"><strong>AI Backend:</strong> <span>Cloudflare Workers — edge runtime, low latency</span></div>
+      <div class="tech-pill"><strong>AI Model:</strong> <span>Anthropic Claude Sonnet 4.6 — chat-grade</span></div>
+      <div class="tech-pill"><strong>Bot Platform:</strong> <span>Telegram Bot API — universal, gratis</span></div>
+      <div class="tech-pill"><strong>Storage:</strong> <span>Cloudflare KV — multi-tenant isolation</span></div>
+    </div>
+
+    <h3 class="section-title">🔒 Keamanan Data</h3>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-content">
+          <div class="feature-name">Encryption in Transit & at Rest</div>
+          <div class="feature-desc">Semua data ter-encrypt via HTTPS/TLS 1.3 saat transit, dan AES-256 saat di-store di Firestore.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">👤</div>
+        <div class="feature-content">
+          <div class="feature-name">Per-User Isolation</div>
+          <div class="feature-desc">Firestore rules: setiap user hanya bisa akses data mereka sendiri. Admin tidak bisa baca data tanpa permission.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-content">
+          <div class="feature-name">DDoS Protection (Cloudflare)</div>
+          <div class="feature-desc">Layer 7 protection otomatis untuk semua API request — bisa handle traffic spike tanpa down.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔑</div>
+        <div class="feature-content">
+          <div class="feature-name">API Key per Tenant</div>
+          <div class="feature-desc">Setiap klien punya API key unik untuk akses Berstock Bot. Bisa di-rotate kapan saja.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-content">
+          <div class="feature-name">No Data Selling</div>
+          <div class="feature-desc">Data Anda tidak dijual ke pihak ketiga, tidak dipakai untuk training AI generic. Privacy first.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💾</div>
+        <div class="feature-content">
+          <div class="feature-name">Daily Backup Otomatis</div>
+          <div class="feature-desc">Firestore native backup harian — recovery sampai 30 hari ke belakang available untuk Pro Enterprise.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">📈 Skalabilitas</h3>
+    <p>Arsitektur Berstock dirancang serverless dari awal — Cloudflare Workers dan Firebase auto-scale dari 1 user sampai 100.000 user tanpa rebuild. Owner tidak perlu khawatir performance saat bisnis growing.</p>
+
+    <h3 class="section-title">🌐 Akses Multi-Device</h3>
+    <p>Berstock adalah Progressive Web App (PWA) yang bisa diakses dari:</p>
+    <ul style="font-size: 11px; padding-left: 20px; color: #334155;">
+      <li>📱 HP Android (Chrome, Samsung Internet)</li>
+      <li>📱 iPhone & iPad (Safari)</li>
+      <li>💻 Laptop & Desktop (Chrome, Edge, Firefox, Safari)</li>
+      <li>📱 Tablet Android & iPad</li>
+    </ul>
+    <p>Login dengan akun yang sama di semua device — data sync realtime.</p>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 09</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 10: USE CASES ═══════════ -->
+<section class="page">
+  <div class="page-header">
+    <div class="ph-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      berstock<span class="accent">.id</span>
+    </div>
+    <div class="ph-section">09 · Use Cases & ROI</div>
+  </div>
+
+  <div class="page-content">
+    <h2 class="page-title">Use Cases & <span class="acc">ROI</span></h2>
+    <div class="page-subtitle">Skenario nyata bagaimana Berstock membantu UMKM Indonesia</div>
+
+    <h3 class="section-title">🏪 Skenario 1: Toko Sembako (200 SKU)</h3>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #10b981, #059669);">📊</div>
+      <div>
+        <div class="reason-title">Sebelum Berstock:</div>
+        <div class="reason-desc">Owner pakai buku tulis untuk catat stok. 5x sebulan kehabisan beras karena lupa restok. Stok hilang ~Rp 2-3 juta/bulan tidak terdeteksi.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #e91e63, #d81b60);">✨</div>
+      <div>
+        <div class="reason-title">Setelah Berstock (Pro+AI):</div>
+        <div class="reason-desc">Setiap pagi jam 7, daily digest dari Bot Telegram beritahu produk stok kritis. Owner langsung WA ke supplier. Stok hilang turun 80%, omzet naik 12% karena tidak pernah kehabisan barang.</div>
+      </div>
+    </div>
+    <p style="background: #fef3c7; border-left: 4px solid #d4af37; padding: 8px 12px; border-radius: 6px; font-size: 11px;">
+      💰 <strong>ROI:</strong> Save Rp 2-3jt/bulan (stok terselamatkan) – Rp 500rb (subscription) = <strong>Profit Rp 1.5-2.5jt/bulan</strong>
+    </p>
+
+    <h3 class="section-title">🍜 Skenario 2: Warung Makan / Katering Kecil</h3>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #10b981, #059669);">📋</div>
+      <div>
+        <div class="reason-title">Sebelum Berstock:</div>
+        <div class="reason-desc">Owner kewalahan track piutang pelanggan tempo. Kadang lupa siapa yang belum bayar, lost ~Rp 1jt/bulan dari piutang macet.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #e91e63, #d81b60);">🎯</div>
+      <div>
+        <div class="reason-title">Setelah Berstock:</div>
+        <div class="reason-desc">Tab Piutang otomatis track dari setiap transaksi tempo. Klik tombol WA = langsung kirim reminder ke pelanggan. Tagihan macet turun 90%.</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">🏬 Skenario 3: Toko Bahan Bangunan</h3>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #10b981, #059669);">📞</div>
+      <div>
+        <div class="reason-title">Sebelum Berstock:</div>
+        <div class="reason-desc">Sopir telepon owner: "Pak, semen tipe X masih ada nggak?" Owner harus berhenti kerja, cek manual ke gudang. Sehari 10x telepon = waktu hilang.</div>
+      </div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon-big" style="background: linear-gradient(135deg, #e91e63, #d81b60);">🤖</div>
+      <div>
+        <div class="reason-title">Setelah Berstock:</div>
+        <div class="reason-desc">Owner kasih akses Telegram Bot ke karyawan kasir. Karyawan tinggal chat: "Stok semen tipe 3 masih berapa?" Bot jawab 5 detik. Owner tidak perlu disibukkan lagi.</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">📈 Calculate Your ROI</h3>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Estimasi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Waktu yang dihemat owner per bulan</td><td><strong>30-60 jam</strong></td></tr>
+        <tr><td>Stok hilang yang tercegah (5-15% omzet)</td><td><strong>Rp 1-5jt/bulan</strong></td></tr>
+        <tr><td>Piutang macet yang terselamatkan</td><td><strong>Rp 500rb-2jt/bulan</strong></td></tr>
+        <tr><td>Investasi Berstock Pro+AI</td><td>Rp 500.000/bulan</td></tr>
+        <tr class="highlight">
+          <td><strong>Net Saving / ROI</strong></td>
+          <td><strong>Rp 1.5–7jt/bulan (300-1400% ROI)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span><strong>berstock.id</strong> · Company Profile</span>
+    <span>Page 10</span>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 11: CTA & CONTACT ═══════════ -->
+<section class="page cta-page">
+  <div class="cta-content">
+    <div class="cta-tag">🚀 Mari Mulai</div>
+
+    <h1>Siap Naik Level<br>Bersama <span class="acc">Berstock?</span></h1>
+    <p class="lead">Bergabunglah dengan UMKM Indonesia yang bertransformasi dari pencatatan manual ke AI-powered business management. Tim kami siap diskusi kebutuhan bisnis Anda dan demo langsung.</p>
+
+    <div class="next-steps">
+      <h3>📋 Langkah Selanjutnya</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Kunjungi berstock.id</strong> — eksplor homepage, lihat demo lengkap fitur.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>WhatsApp kami</strong> di +62 821-2484-8924 untuk diskusi kebutuhan bisnis Anda.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Demo gratis 30 menit</strong> via Zoom atau langsung — kami tunjukkan POS + AI Bot live.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Setup akun & onboarding</strong> — kami bantu import produk, training tim, custom prompt AI.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text"><strong>Aktivasi & Mulai Pakai</strong> — sistem siap digunakan, tim support standby untuk pertanyaan apapun.</div>
+      </div>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-label">📞 WhatsApp / Telepon</div>
+        <div class="contact-value">+62 821-2484-8924</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">📧 Email Bisnis</div>
+        <div class="contact-value gold">info@berstock.id</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">🌐 Website</div>
+        <div class="contact-value gold">berstock.id</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">📱 Instagram</div>
+        <div class="contact-value">@berstock.ai</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">🤖 Telegram Bot</div>
+        <div class="contact-value">@BerstockBot</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">👤 Founder</div>
+        <div class="contact-value">Hendry Phang</div>
+      </div>
+    </div>
+
+    <div class="cta-footer">
+      <div class="cta-footer-website">berstock.id</div>
+      <div class="cta-footer-tagline">"Atur stok, untung pasti masuk." 🐻💼</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
