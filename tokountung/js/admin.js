@@ -61,7 +61,7 @@ async function renderAdminPanel() {
   if (countEl) countEl.textContent = `${users.length} user`;
 
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">Belum ada user</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Belum ada user</td></tr>';
     return;
   }
 
@@ -83,9 +83,13 @@ async function renderAdminPanel() {
     const expiresStr = u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('id-ID') : '-';
     const daysStr = active ? `${days} hari lagi` : 'Habis';
     const createdStr = u.createdAt ? new Date(u.createdAt).toLocaleDateString('id-ID') : '-';
+    const wa = (u.whatsapp || '').replace(/\D/g, '');
+    const fullName = u.fullName || u.bizName || u.email?.split('@')[0] || 'bos';
+    const waCell = wa ? `<a href="https://wa.me/${wa.startsWith('0') ? '62' + wa.slice(1) : wa}?text=${encodeURIComponent(`Halo bos ${fullName}! 👋\n\nSaya Hendry dari Berstock 🐻\n\nMau cek progress trial bos di aplikasi. Ada yang bisa dibantu?`)}" target="_blank" rel="noopener" style="color:#25d366; font-weight:700">📱 ${wa}</a>` : '<span style="color:#94a3b8">-</span>';
     return `
       <tr>
-        <td><b>${escapeHtml(u.email || '-')}</b></td>
+        <td><b>${escapeHtml(u.email || '-')}</b><br><small style="color:#64748b">${escapeHtml(u.fullName || '')}</small></td>
+        <td>${waCell}</td>
         <td>${escapeHtml(u.bizName || '-')}</td>
         <td>${planBadge} <small>(${daysStr})</small></td>
         <td>${expiresStr}</td>

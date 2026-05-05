@@ -126,9 +126,26 @@ async function loginEmailPassword(email, password) {
   await fbAuth.signInWithEmailAndPassword(email, password);
 }
 
-async function registerEmailPassword(email, password) {
+async function registerEmailPassword(email, password, extraProfile = {}) {
   if (!fbAuth) throw new Error('Firebase belum siap');
-  await fbAuth.createUserWithEmailAndPassword(email, password);
+  const credential = await fbAuth.createUserWithEmailAndPassword(email, password);
+  // Save extra profile data (fullName, whatsapp, bizName) to Firestore
+  if (credential.user && (extraProfile.fullName || extraProfile.whatsapp || extraProfile.bizName)) {
+    try {
+      const ref = fbDb.collection('users').doc(credential.user.uid).collection('meta').doc('berbisnis-profile');
+      const profileUpdate = {
+        email: credential.user.email,
+        createdAt: Date.now(),
+        plan: 'trial',
+      };
+      if (extraProfile.fullName) profileUpdate.fullName = extraProfile.fullName.trim();
+      if (extraProfile.whatsapp) profileUpdate.whatsapp = extraProfile.whatsapp.trim().replace(/\D/g, '');
+      if (extraProfile.bizName) profileUpdate.bizName = extraProfile.bizName.trim();
+      await ref.set(profileUpdate, { merge: true });
+    } catch (e) {
+      console.warn('Failed to save extra profile:', e);
+    }
+  }
 }
 
 async function loginGoogle() {
@@ -269,8 +286,21 @@ function setupAuthUI() {
       showError('Password & konfirmasi tidak sama.');
       return;
     }
+    const wa = (fd.get('whatsapp') || '').trim().replace(/\D/g, '');
+    if (wa.length < 8) {
+      showError('No. WhatsApp wajib diisi (minimal 8 digit angka).');
+      return;
+    }
     try {
-      await registerEmailPassword(fd.get('email').trim(), fd.get('password'));
+      await registerEmailPassword(
+        fd.get('email').trim(),
+        fd.get('password'),
+        {
+          fullName: fd.get('fullName'),
+          whatsapp: wa,
+          bizName: fd.get('bizName'),
+        }
+      );
       showInfo('✅ Akun terdaftar. Login otomatis...');
     } catch (err) {
       showError(authErrorMessage(err));
