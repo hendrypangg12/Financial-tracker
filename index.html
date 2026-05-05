@@ -481,9 +481,15 @@ footer a:hover { color: var(--gold-bright); }
 @keyframes typing-dot { 0%,60%,100%{transform:translateY(0); opacity:.4} 30%{transform:translateY(-4px); opacity:1} }
 
 .mcp-actions { padding: 10px 16px 16px; background: #fff; display: flex; flex-direction: column; gap: 6px; }
-.mcp-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.mcp-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; font-family: inherit; }
 .mcp-btn.primary { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
 .mcp-btn.secondary { background: var(--navy); color: #fff; }
+.mcp-quick { padding: 0 16px 12px; background: var(--gray-100); display: flex; flex-direction: column; gap: 6px; }
+.mcp-quick button { background: #fff; border: 1.5px solid var(--magenta); color: var(--navy); padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.2s; font-family: inherit; }
+.mcp-quick button:hover { background: var(--magenta); color: #fff; }
+.mcp-msg.user { align-self: flex-end; background: linear-gradient(135deg, var(--magenta), var(--magenta-2, #d81b60)); color: #fff; border-bottom-right-radius: 4px; border-bottom-left-radius: 12px; border-color: transparent; }
+.mcp-msg.user strong { color: #fff5fa; }
+.mcp-msg.user .time { color: rgba(255,255,255,0.7); }
 .mcp-footer { padding: 8px 16px; background: var(--gray-100); text-align: center; font-size: 9px; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
 @media (max-width: 480px) {
   .mascot-widget { bottom: 16px; right: 16px; }
@@ -795,15 +801,13 @@ footer a:hover { color: var(--gold-bright); }
       <div class="av"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="" /></div>
       <div class="info">
         <div class="name">Berstock Helper 🐻</div>
-        <div class="status">Online · Reply 5 menit</div>
+        <div class="status">Online · Powered by AI</div>
       </div>
       <div class="close-x" onclick="closeMcp()">✕</div>
     </div>
     <div class="mcp-body" id="mcp-body"></div>
-    <div class="mcp-actions" id="mcp-actions" style="display:none">
-      <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20tertarik%20Berstock%20%2B%20BerBisnis%20Pro" target="_blank" class="mcp-btn primary">💬 Chat WhatsApp Sekarang</a>
-      <a href="tokountung/app.html" target="_blank" class="mcp-btn secondary">🎁 Coba Gratis 3 Hari</a>
-    </div>
+    <div class="mcp-quick" id="mcp-quick" style="display:none"></div>
+    <div class="mcp-actions" id="mcp-actions" style="display:none"></div>
     <div class="mcp-footer">⚡ POWERED BY BERSATU SUITE</div>
   </div>
   <div class="mascot-avatar-float" onclick="toggleMcp()">
@@ -816,18 +820,235 @@ footer a:hover { color: var(--gold-bright); }
 <script>
 const mcpPanel = document.getElementById('mcp-panel');
 const mcpBody = document.getElementById('mcp-body');
+const mcpQuick = document.getElementById('mcp-quick');
 const mcpActions = document.getElementById('mcp-actions');
-const messages = [
-  { delay: 800, html: 'Halo bos! 👋 Selamat datang di Berstock.id' },
-  { delay: 1500, html: 'Lagi cari sistem POS untuk toko kamu? Atau pengen liat AI bot-nya kerja gimana?' },
-  { delay: 1800, html: 'Berstock = <strong>POS pintar + AI Assistant 24/7</strong>. Owner tinggal chat di Telegram, AI yang kerja 🤖' },
-  { delay: 1500, html: 'Mau <strong>chat WA</strong> langsung atau <strong>coba aplikasi</strong> dulu? 👇' },
-];
+
+// Conversation tree — semua flow di sini
+const FLOW = {
+  start: {
+    msgs: [
+      'Halo bos! 👋 Saya <strong>Berstock Helper</strong>',
+      'Saya bantu jelasin tentang <strong>POS + AI Bot</strong> kami. Ada yang mau ditanyakan?',
+    ],
+    quick: [
+      { txt: '💰 Berapa harganya?', next: 'harga' },
+      { txt: '🍦 Cocok buat usaha saya?', next: 'usaha' },
+      { txt: '🤖 Apa itu AI Bot Telegram?', next: 'ai' },
+      { txt: '⚡ Apa bedanya sama Moka/Pawoon?', next: 'beda' },
+      { txt: '📞 Mau chat sama Hendry langsung', next: 'wa' },
+    ],
+  },
+  harga: {
+    user: '💰 Berapa harganya?',
+    msgs: [
+      'Berstock Pro+AI <strong>cuma 2 paket</strong>:',
+      '📅 <strong>Bulanan: Rp 500.000/bulan</strong><br>📆 <strong>Tahunan: Rp 5.000.000/tahun</strong> (hemat Rp 1jt!)',
+      'Coba breakdown ya bos:<br>Rp 500rb/bulan = <strong>Rp 16.667/hari</strong> = <strong>Rp 694/jam</strong>',
+      'Itu <strong>lebih murah dari secangkir kopi premium di mall</strong> ☕<br>Tapi bos dapat AI Asisten 24/7 + POS lengkap.',
+    ],
+    quick: [
+      { txt: '✓ Cocok buat usaha saya?', next: 'usaha' },
+      { txt: '✓ Apa aja fiturnya?', next: 'fitur' },
+      { txt: '💬 Mau chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali ke menu', next: 'start' },
+    ],
+  },
+  usaha: {
+    user: '🍦 Cocok buat usaha saya?',
+    msgs: [
+      'Boleh tau dulu, jenis usaha bos apa?',
+    ],
+    quick: [
+      { txt: '🍦 FnB (resto/es krim/cafe)', next: 'fnb' },
+      { txt: '🛒 Toko (sembako/retail/kelontong)', next: 'toko' },
+      { txt: '💄 Beauty (salon/skincare)', next: 'beauty' },
+      { txt: '📦 Lainnya', next: 'lain' },
+    ],
+  },
+  fnb: {
+    user: '🍦 FnB',
+    msgs: [
+      'Mantap bos! 🍦 Berstock <strong>cocok untuk FnB</strong> dengan menu fixed (es krim, cafe, warung, bakery).',
+      'Yang bos dapat:<br>✓ Foto menu visual<br>✓ Track stok bahan otomatis<br>✓ Notif stok habis lewat Telegram<br>✓ Laporan menu best seller',
+      '<em>⚠️ Note: untuk restoran kompleks dengan modifier (extra topping, level pedas), saat ini masih dalam pengembangan.</em>',
+    ],
+    quick: [
+      { txt: '📄 Lihat company profile FnB', next: 'pdf-fnb' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  toko: {
+    user: '🛒 Toko / Retail',
+    msgs: [
+      '<strong>SEMPURNA!</strong> 🎯 Toko/retail adalah usecase utama Berstock.',
+      'Bos dapat:<br>✓ Manajemen stok 50-500 SKU<br>✓ Foto produk + kategori<br>✓ Customer 360° (track langganan)<br>✓ Piutang tempo otomatis<br>✓ PO Supplier + HPP weighted average<br>✓ AI Bot tanya stok kapan aja',
+    ],
+    quick: [
+      { txt: '📄 Lihat company profile', next: 'pdf' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  beauty: {
+    user: '💄 Beauty',
+    msgs: [
+      'Untuk salon/beauty, Berstock <strong>bisa diadaptasi</strong> 🎯',
+      'Cocok untuk: track produk skincare/kosmetik yang dijual, customer database, voucher member, laporan harian.',
+      '<em>Note: belum ada fitur appointment/booking. Saat ini fokus ke transaksi & stok.</em>',
+    ],
+    quick: [
+      { txt: '💬 Diskusi sama Hendry', next: 'wa' },
+      { txt: '📄 Lihat company profile', next: 'pdf' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  lain: {
+    user: '📦 Lainnya',
+    msgs: [
+      'Cerita aja bos jenis usahanya, nanti Hendry jawab langsung apakah Berstock cocok ✨',
+    ],
+    quick: [
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  ai: {
+    user: '🤖 Apa itu AI Bot Telegram?',
+    msgs: [
+      'Bayangin punya asisten yang inget semua data toko bos 🐻',
+      'Bos chat di <strong>Telegram</strong>:<br>👤 "Stok beras tinggal berapa?"<br>🤖 <em>"Beras Premium 2 karung, Beras Setra 5 karung. Saran restok besok."</em>',
+      'Bos chat lagi:<br>👤 "Sales hari ini berapa?"<br>🤖 <em>"Rp 8.450.000, 12 transaksi, profit 24%"</em>',
+      '<strong>Reply 5 detik</strong>, akurat, 24/7. Powered by Claude Sonnet 4.6 — AI paling canggih untuk chat.',
+    ],
+    quick: [
+      { txt: '💰 Berapa harganya?', next: 'harga' },
+      { txt: '🍦 Cocok buat usaha saya?', next: 'usaha' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  beda: {
+    user: '⚡ Apa bedanya sama Moka/Pawoon?',
+    msgs: [
+      '<strong>Yang bikin Berstock unik:</strong>',
+      '🤖 <strong>AI Bot Telegram</strong> — Moka/Pawoon GAK PUNYA<br>💸 <strong>0% transaction fee</strong> — kompetitor charge 1-3%/transaksi<br>📡 <strong>Offline-first</strong> — internet putus tetap jalan<br>🇮🇩 <strong>Bahasa Indonesia native</strong>',
+      'Harga sama dengan Moka Pro (Rp 499rb), tapi <strong>cuma kami yang punya AI</strong> ⚡',
+    ],
+    quick: [
+      { txt: '🤖 Apa itu AI Bot?', next: 'ai' },
+      { txt: '💰 Lihat harga lengkap', next: 'harga' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  fitur: {
+    user: '✓ Apa aja fiturnya?',
+    msgs: [
+      '<strong>7 modul utama Berstock:</strong>',
+      '📦 Stok (foto produk + kategori)<br>💳 Kasir cepat (3 klik)<br>👥 Pelanggan (CRM 360°)<br>💰 Piutang tempo otomatis<br>📥 PO Supplier (foto faktur)<br>📊 Laporan custom range<br>🤖 AI Bot Telegram (12 tools)',
+      'Plus: Cloud sync multi-device, Offline-first, Print struk thermal, Export data.',
+    ],
+    quick: [
+      { txt: '💰 Berapa harganya?', next: 'harga' },
+      { txt: '📄 Lihat detail (PDF)', next: 'pdf' },
+      { txt: '💬 Chat WA Hendry', next: 'wa' },
+      { txt: '🏠 Kembali', next: 'start' },
+    ],
+  },
+  pdf: {
+    user: '📄 Lihat PDF',
+    msgs: [
+      'Saya kirim ke WhatsApp aja ya bos, biar bisa baca santai 📄',
+      'Klik tombol di bawah, nanti saya kirim PDF lengkap (11 halaman) plus jadwal demo Zoom 30 menit.',
+    ],
+    actions: [
+      { txt: '💬 Chat WA — Minta PDF', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20mau%20minta%20company%20profile%20Berstock%20PDF.%20Saya%20juga%20tertarik%20diskusi%20demo%20produk.' },
+      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+    ],
+  },
+  'pdf-fnb': {
+    user: '📄 PDF FnB',
+    msgs: [
+      'Saya kirim PDF khusus FnB ya bos 🍦',
+      'Klik tombol di bawah, langsung WA ke Hendry — nanti dikirim PDF + booking demo.',
+    ],
+    actions: [
+      { txt: '💬 Chat WA — Minta PDF FnB', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20FnB%20owner%20yang%20tertarik%20Berstock.%20Boleh%20dikirim%20company%20profile%20FnB%20PDF%3F' },
+      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+    ],
+  },
+  wa: {
+    user: '📞 Chat WA Hendry',
+    msgs: [
+      'Sip bos! Hendry siap respond 🐻',
+      'Klik tombol di bawah, nanti saya buka WhatsApp dengan pesan pre-filled.',
+    ],
+    actions: [
+      { txt: '💬 Buka WhatsApp Sekarang', cls: 'primary', href: 'https://wa.me/6282124848924?text=Halo%20Hendry%2C%20saya%20tertarik%20dengan%20Berstock.%20Boleh%20diskusi%20detail%3F' },
+      { txt: '🎁 Coba Aplikasi Dulu', cls: 'secondary', href: 'tokountung/app.html' },
+      { txt: '🏠 Tanya yang lain', cls: 'secondary', action: 'restart' },
+    ],
+  },
+};
+
 function showTyping() { const t = document.createElement('div'); t.className = 'mcp-typing'; t.innerHTML = '<span></span><span></span><span></span>'; mcpBody.appendChild(t); mcpBody.scrollTop = mcpBody.scrollHeight; return t; }
-function showMsg(html) { const m = document.createElement('div'); m.className = 'mcp-msg'; const d = new Date(); m.innerHTML = html + `<span class="time">${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ✓</span>`; mcpBody.appendChild(m); mcpBody.scrollTop = mcpBody.scrollHeight; }
-async function playSequence() { for (const m of messages) { const t = showTyping(); await new Promise(r => setTimeout(r, m.delay)); t.remove(); showMsg(m.html); await new Promise(r => setTimeout(r, 400)); } mcpActions.style.display = 'flex'; }
+function showMsg(html, isUser) {
+  const m = document.createElement('div');
+  m.className = 'mcp-msg' + (isUser ? ' user' : '');
+  const d = new Date();
+  m.innerHTML = html + `<span class="time">${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ✓</span>`;
+  mcpBody.appendChild(m);
+  mcpBody.scrollTop = mcpBody.scrollHeight;
+}
+function clearQuick() { mcpQuick.innerHTML = ''; mcpQuick.style.display = 'none'; }
+function clearActions() { mcpActions.innerHTML = ''; mcpActions.style.display = 'none'; }
+function showQuick(opts) {
+  clearQuick();
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.textContent = o.txt;
+    b.onclick = () => { showMsg(o.txt, true); clearQuick(); setTimeout(() => goToFlow(o.next), 300); };
+    mcpQuick.appendChild(b);
+  });
+  mcpQuick.style.display = 'flex';
+  mcpBody.scrollTop = mcpBody.scrollHeight;
+}
+function showActions(acts) {
+  clearActions();
+  acts.forEach(a => {
+    let el;
+    if (a.href) {
+      el = document.createElement('a');
+      el.href = a.href;
+      el.target = '_blank';
+    } else {
+      el = document.createElement('button');
+      if (a.action === 'restart') el.onclick = () => { clearActions(); goToFlow('start'); };
+    }
+    el.className = 'mcp-btn ' + (a.cls || 'primary');
+    el.textContent = a.txt;
+    mcpActions.appendChild(el);
+  });
+  mcpActions.style.display = 'flex';
+}
+async function goToFlow(key) {
+  const node = FLOW[key];
+  if (!node) return;
+  clearQuick();
+  clearActions();
+  for (const html of node.msgs) {
+    const t = showTyping();
+    await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
+    t.remove();
+    showMsg(html);
+    await new Promise(r => setTimeout(r, 250));
+  }
+  if (node.quick) showQuick(node.quick);
+  if (node.actions) showActions(node.actions);
+}
 let played = false;
-function openMcp() { mcpPanel.classList.add('show'); document.querySelector('.notif').style.display = 'none'; if (!played) { played = true; playSequence(); } }
+function openMcp() { mcpPanel.classList.add('show'); document.querySelector('.notif').style.display = 'none'; if (!played) { played = true; goToFlow('start'); } }
 function closeMcp() { mcpPanel.classList.remove('show'); }
 function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
 setTimeout(() => { if (!sessionStorage.getItem('mcp_berstock_seen')) { openMcp(); sessionStorage.setItem('mcp_berstock_seen', '1'); } }, 3000);
