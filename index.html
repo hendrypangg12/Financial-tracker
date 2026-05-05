@@ -219,15 +219,14 @@ body {
 img { max-width: 100%; display: block; }
 .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-/* ==================== ANNOUNCEMENT BAR ==================== */
+/* ==================== ANNOUNCEMENT BAR — MARQUEE TICKER ==================== */
 .announce-bar {
   position: relative;
   background: linear-gradient(90deg, #0a1628 0%, #4a0e4e 25%, #e91e63 50%, #d4af37 75%, #0a1628 100%);
   background-size: 300% 100%;
   animation: announce-shimmer 8s ease-in-out infinite;
   color: #fff;
-  padding: 11px 16px;
-  text-align: center;
+  padding: 11px 0;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -235,6 +234,7 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 215, 106, 0.3);
   box-shadow: 0 2px 20px rgba(233, 30, 99, 0.3);
+  white-space: nowrap;
 }
 .announce-bar::before {
   content: '';
@@ -243,6 +243,8 @@ img { max-width: 100%; display: block; }
   width: 100%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   animation: announce-sweep 4s linear infinite;
+  z-index: 2;
+  pointer-events: none;
 }
 @keyframes announce-shimmer {
   0%, 100% { background-position: 0% 50%; }
@@ -251,6 +253,30 @@ img { max-width: 100%; display: block; }
 @keyframes announce-sweep {
   0% { left: -100%; }
   60%, 100% { left: 100%; }
+}
+
+/* Marquee track */
+.announce-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  animation: announce-marquee 35s linear infinite;
+  will-change: transform;
+}
+.announce-track:hover { animation-play-state: paused; }
+@keyframes announce-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.announce-bar .item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.announce-bar .sep {
+  color: rgba(255, 215, 106, 0.6);
+  font-size: 16px;
+  font-weight: 900;
 }
 .announce-bar .first-tag {
   display: inline-block;
@@ -261,10 +287,10 @@ img { max-width: 100%; display: block; }
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 1.5px;
-  margin-right: 8px;
   text-transform: uppercase;
   box-shadow: 0 2px 8px rgba(255, 215, 106, 0.5);
   animation: tag-pulse 2s ease-in-out infinite;
+  white-space: nowrap;
 }
 @keyframes tag-pulse {
   0%, 100% { transform: scale(1); }
@@ -273,7 +299,6 @@ img { max-width: 100%; display: block; }
 .announce-bar .flag {
   display: inline-block;
   font-size: 16px;
-  margin-right: 4px;
   animation: flag-wave 2s ease-in-out infinite;
 }
 @keyframes flag-wave {
@@ -287,7 +312,6 @@ img { max-width: 100%; display: block; }
   width: 8px; height: 8px;
   background: #4ade80;
   border-radius: 50%;
-  margin-right: 6px;
   vertical-align: middle;
   animation: dot-pulse 1.5s ease-in-out infinite;
   box-shadow: 0 0 8px #4ade80;
@@ -297,8 +321,9 @@ img { max-width: 100%; display: block; }
   50% { opacity: 0.5; transform: scale(1.3); }
 }
 @media (max-width: 580px) {
-  .announce-bar { font-size: 11px; padding: 9px 12px; }
-  .announce-bar .first-tag { font-size: 9px; padding: 2px 8px; margin-right: 6px; }
+  .announce-bar { font-size: 11px; padding: 9px 0; }
+  .announce-bar .first-tag { font-size: 9px; padding: 2px 8px; }
+  .announce-track { gap: 22px; animation-duration: 25s; }
 }
 
 /* ==================== NAV ==================== */
@@ -1045,12 +1070,28 @@ footer a:hover { color: var(--gold-bright); }
 </head>
 <body>
 
-<!-- ============ ANNOUNCEMENT BAR — FIRST IN INDONESIA ============ -->
+<!-- ============ ANNOUNCEMENT BAR — MARQUEE TICKER ============ -->
 <div class="announce-bar">
-  <span class="pulse-dot"></span>
-  <span class="flag">🇮🇩</span>
-  <span class="first-tag">🏆 PERTAMA DI INDONESIA</span>
-  <strong>POS Kasir + AI Bot Telegram</strong> Terintegrasi
+  <div class="announce-track">
+    <span class="item"><span class="pulse-dot"></span><span class="flag">🇮🇩</span><span class="first-tag">🏆 PERTAMA DI INDONESIA</span><strong>POS Kasir + AI Bot Telegram</strong> Terintegrasi</span>
+    <span class="sep">●</span>
+    <span class="item">⚡ Reply <strong>5 detik</strong> · 24/7 · Powered by <strong>Claude Sonnet 4.6</strong></span>
+    <span class="sep">●</span>
+    <span class="item">🤖 Owner tinggal <strong>chat</strong>, AI yang kerja</span>
+    <span class="sep">●</span>
+    <span class="item">🎁 <strong>Demo gratis</strong> · DM <strong>@berstock.ai</strong></span>
+    <span class="sep">●</span>
+
+    <!-- Duplicate untuk smooth loop -->
+    <span class="item"><span class="pulse-dot"></span><span class="flag">🇮🇩</span><span class="first-tag">🏆 PERTAMA DI INDONESIA</span><strong>POS Kasir + AI Bot Telegram</strong> Terintegrasi</span>
+    <span class="sep">●</span>
+    <span class="item">⚡ Reply <strong>5 detik</strong> · 24/7 · Powered by <strong>Claude Sonnet 4.6</strong></span>
+    <span class="sep">●</span>
+    <span class="item">🤖 Owner tinggal <strong>chat</strong>, AI yang kerja</span>
+    <span class="sep">●</span>
+    <span class="item">🎁 <strong>Demo gratis</strong> · DM <strong>@berstock.ai</strong></span>
+    <span class="sep">●</span>
+  </div>
 </div>
 
 <nav>
