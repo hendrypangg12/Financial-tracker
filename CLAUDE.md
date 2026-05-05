@@ -345,12 +345,111 @@ state = {
 | CRUD lengkap | ✅ Done | Add/edit/delete/markLunas/markUnpaid |
 | Sync ke Firestore + export | ✅ Done | Field hutangs include di payload |
 
-### ⏳ PENDING (Day 3+)
+### ✅ DAY 3 (Done — 5 Mei 2026)
+
+**Massive Progress — 14 PR merged ke main hari ini:**
+
+#### **🌟 Homepage Redesign**
 | Item | Status | Notes |
 |---|---|---|
+| Marquee announcement bar (PERTAMA DI INDONESIA) | ✅ Done | NYSE-style ticker dengan 4 talking points scroll, gradient + shimmer + flag wave |
+| Hero badge upgrade dengan trophy bounce | ✅ Done | "🏆 PERTAMA DI INDONESIA · POWERED BY ANTHROPIC" |
+| Hero claim box dengan border gold | ✅ Done | "1st-of-its-kind di Indonesia" — strong positioning |
+| Section "Apa itu POS System?" | ✅ Done | 8 cards edukasi (POS, CRM, Cloud, AI, Inventory, Piutang, PO, Reporting) |
+| Section "Fitur Lengkap Berstock" | ✅ Done | 12 cards detail (POS, Stok, AI Bot, Piutang, Customer 360, PO Supplier, Laporan, Struk, Cloud, Offline, Edit Invoice, Security) |
+
+#### **🔍 SEO + Analytics**
+| Item | Status | Notes |
+|---|---|---|
+| SEO comprehensive | ✅ Done | Meta lengkap, canonical, OG, Twitter Card, geo tags Indonesia |
+| Structured data JSON-LD | ✅ Done | Organization + SoftwareApplication + FAQPage (5 Q&A untuk Google rich snippet) |
+| sitemap.xml + robots.txt | ✅ Done | 8 URL terindex, block AI scrapers (kecuali ClaudeBot) |
+| **Google Analytics 4 LIVE** | ✅ Done | **Measurement ID: G-MLBG9XFBMB** |
+| GA4 custom events tracking | ✅ Done | 8 events: chat_widget_opened/closed, chat_flow_view, lead_captured, generate_lead, whatsapp_click, try_app_click, page_view |
+
+#### **🤖 Smart Chat Widget Pro**
+| Item | Status | Notes |
+|---|---|---|
+| 22 conversation flow nodes | ✅ Done | start, harga, usaha, ai, beda, fitur, demo, faq (6 sub), integrasi, roi (5 tier), vs-excel, onboarding, founder, klien, pdf, pdf-fnb, wa, more (submenu), fnb, toko, beauty, lain |
+| Lead capture form | ✅ Done | Nama + WA + Jenis Usaha sebelum kasih PDF/demo/WA |
+| Smart greeting time-based | ✅ Done | Pagi/Siang/Sore/Malam sesuai jam |
+| Persistent user data localStorage | ✅ Done | Inget nama bos saat repeat visit |
+| Pre-filled WA dengan flow context | ✅ Done | "Saya {nama}, usaha {jenis}, dari chat {flow}" |
+| Idle nudge 25 detik | ✅ Done | Re-engagement message |
+| ROI Calculator interactive | ✅ Done | 4 tier omzet (<30jt, 30-100jt, 100-500jt, 500jt+) dengan honest "tunggu dulu" untuk yang gak fit |
+| Founder story flow | ✅ Done | Humanize brand, link IG @hendrypangg |
+| Honest "Klien?" framing | ✅ Done | Frame sebagai Early Adopter benefit (bukan fake-it) |
+| Apple-grade animations | ✅ Done | Stagger cascade, hover scale, success checkmark |
+| Main menu ringkas 7 tombol + submenu "Info lainnya" | ✅ Done | Reduced from 13 (overwhelming) |
+
+#### **🔔 Lead Notification System**
+| Item | Status | Notes |
+|---|---|---|
+| Cloudflare Worker /api/lead endpoint | ✅ Code ready | bot/src/index.js — handle POST, send Telegram notif, save KV 90 hari TTL |
+| Frontend fetch /api/lead saat form submit | ✅ Done | Fire & forget, no blocking UX |
+| **PENDING: Worker deploy** | ⏳ User action | `wrangler deploy` dari /bot |
+| **PENDING: ADMIN_TELEGRAM_CHAT_ID secret** | ⏳ User action | Get dari @userinfobot, set via wrangler secret put |
+
+#### **🎨 Brand Consolidation**
+| Item | Status | Notes |
+|---|---|---|
+| Hapus SEMUA mention "Claude/Sonnet" → "Anthropic" | ✅ Done | 13 HTML files updated, PDF + PNG re-rendered |
+| Hapus nama kompetitor (Moka, Pawoon, Kasir Pintar) | ✅ Done | Ganti pakai kategori generic (POS Premium/Mid/Budget) |
+| Pricing simplified: 2 paket only | ✅ Done | Bulanan Rp 500rb / Tahunan Rp 5jt (hemat Rp 1jt) |
+| Hapus "Starter Rp 149rb" + "Early Bird" embel-embel | ✅ Done | Premium positioning, no discount-y language |
+
+#### **📝 Register Form Upgrade**
+| Item | Status | Notes |
+|---|---|---|
+| Tambah field Nama Lengkap | ✅ Done | Required text input |
+| **Tambah field No. WhatsApp** | ✅ Done | Required, tel type, min 8 digit, pattern angka |
+| Tambah field Nama Bisnis | ✅ Done | Optional |
+| Auto-save extra profile ke Firestore | ✅ Done | fullName, whatsapp, bizName |
+| Format WA otomatis di-clean | ✅ Done | Hapus non-digit |
+
+#### **👑 Admin Panel Upgrade**
+| Item | Status | Notes |
+|---|---|---|
+| Kolom WhatsApp di tabel admin | ✅ Done | Display nomor + clickable wa.me link |
+| Tombol Chat WA pre-filled template | ✅ Done | "Halo bos {nama}, saya Hendry dari Berstock 🐻..." |
+| Format 08xxx → 628xxx auto-convert | ✅ Done | International format untuk wa.me |
+| Tombol +Bulanan / +Tahunan | ✅ Done | Replace +Starter/+Pro lama |
+| Plan badge backward-compatible | ✅ Done | Support old (starter/pro) + new (bulanan/tahunan) |
+
+#### **📄 Company Profile PDF**
+| Item | Status | Notes |
+|---|---|---|
+| 11 halaman PDF profesional | ✅ Done | company-profile-berstock.pdf (1.3MB) |
+| Section "Nilai Investasi" Rp 16rb/hari | ✅ Done | Anti-objection harga dengan breakdown visual |
+| Comparison TANPA vs DENGAN Berstock | ✅ Done | Pain point reframing |
+| 7 halaman versi FnB khusus | ✅ Done | company-profile-fnb.pdf — fokus restoran/es krim |
+| Bug gradient text di cover (kotak kuning) | ✅ Fixed | Solid color untuk reliable PDF rendering |
+
+#### **🐛 Bug Fixes**
+| Bug | Resolution | PR |
+|---|---|---|
+| Tombol "Coba Gratis" nav broken (#pricing) | Ganti href ke tokountung/app.html | #9 |
+| Paket Starter Rp 149rb masih ada di landing | Cleanup di berbisnis-pro.html, landing-berstock.html | #10 |
+| Linktree mobile overflow 18px | Tambah overflow-x: hidden | #11 |
+| Tombol "Coba Gratis" gak clickable di IG in-app | Hapus target=_blank, tambah z-index, tap area, touch-action | #12 |
+| Starter 149rb di app login + admin | Cleanup di app.html, auth.js, admin.js | #13 |
+
+#### **🎯 LEAD POTENSIAL DITEMUKAN!**
+- **Edwin Abraham** (`edwinabraham456@gmail.com`) — real user yang daftar trial, sekarang HABIS
+- Action: kirim email follow-up dengan template yang udah disiapkan
+- Status: ⏳ User action (kirim email besok)
+
+### ⏳ PENDING (Day 4+)
+| Item | Status | Notes |
+|---|---|---|
+| **Email Edwin Abraham (LEAD!)** | ⏳ URGENT | Template ready, send via Gmail manual |
+| **WA outreach 2 calon klien FnB** | ⏳ URGENT | WA opener templates ada (4 versi A/B/C/D) |
+| Bot worker deploy `/api/lead` | ⏳ User action | `cd bot && wrangler deploy` |
+| Set ADMIN_TELEGRAM_CHAT_ID secret | ⏳ User action | Dari @userinfobot, untuk lead notif Telegram |
+| Mark conversion di GA4 | ⏳ User action | lead_captured + whatsapp_click → mark as conversion |
+| Update IG bio @berstock.ai | ⏳ User action | Tambah link berstock.id |
 | Google Login BerBisnis | ⚠️ Bug | Email/password works, Google fail (popup-redirect issue) |
-| Token rotation (Anthropic + Telegram) | ⏳ Pending | WAJIB rotate (sudah keluar di chat lama) |
-| Cloudflare API token rotation | ⏳ Pending | Sempat lewat chat, WAJIB rotate juga |
+| Token rotation (Anthropic + Telegram + CF API) | ⏳ Pending | WAJIB rotate (sempat lewat chat lama) |
 | GitHub Actions auto-deploy bot | ⏳ Setup ready | File `.github/workflows/deploy-bot.yml` ada, butuh `CLOUDFLARE_API_TOKEN` di GitHub Secrets |
 | ADMIN_KEY Cloudflare Worker | ⏳ Belum di-set | Dibutuhkan untuk admin-berstock.html provision |
 | Customization 3 Klien (Feature Flags Tutorial) | 🟡 In Progress | Step 2/6 selesai (infrastructure di auth.js). Belum: admin UI toggle, render conditional, customize bot, testing |
@@ -369,13 +468,14 @@ state = {
 
 ---
 
-## 📦 FILES IMPORTANT (Day 2)
+## 📦 FILES IMPORTANT (Day 2-3)
 
 **Landing Pages:**
-- `/berbisnis-pro.html` — landing utama BerBisnis Pro (CTA WA + dual buttons + 6 fitur deep-dive + cross-sell BerUang)
+- `/index.html` — Homepage utama berstock.id (DAY 3: marquee bar + 8 cards POS edukasi + 12 cards fitur lengkap + chat widget pro 22 flows)
+- `/berbisnis-pro.html` — landing utama BerBisnis Pro (DAY 3: pricing 2 tier Bulanan/Tahunan, hapus Starter)
 - `/landing.html` — landing BerUang (cream theme + 4 deep features mockup + cross-sell BerBisnis)
-- `/landing-berstock.html` — landing bot Telegram (existing, harga Starter sudah update)
-- `/index.html` — linktree BerSatu Suite
+- `/landing-berstock.html` — landing bot Telegram (DAY 3: pricing baru Bulanan/Tahunan)
+- `/linktree.html` — linktree BerSatu Suite (DAY 3: bug fix overflow mobile)
 
 **Marketing Assets:**
 - `/berstock-carousel-day2.html` — 8 slides 1080×1080
@@ -383,6 +483,16 @@ state = {
 - `/reels-berstock-autoplay.html` — 45s auto-play single record
 - `/reels-berstock-b.html` — 5 scene templates manual record
 - `/admin-berstock.html` — provision tenant form (butuh ADMIN_KEY)
+- `/launch-post-berstock.html` + `/launch-story-berstock.html` (DAY 3) — IG launch
+- `/perbandingan-harga-pos.html` (DAY 3) — 4 slides perbandingan POS
+- `/company-profile-berstock.html` (DAY 3) + PDF — 11 halaman, killer pricing breakdown Rp 16rb/hari
+- `/company-profile-fnb.html` (DAY 3) + PDF — 7 halaman khusus FnB
+
+**SEO + Analytics (DAY 3):**
+- `/sitemap.xml` — 8 URL terindex
+- `/robots.txt` — allow majors, block AI scrapers (kecuali ClaudeBot)
+- GA4 ID `G-MLBG9XFBMB` di-embed di index.html (line ~16)
+- 8 custom events tracked di chat widget
 
 **App BerBisnis (tokountung/):**
 - `tokountung/js/piutang.js` — tab Piutang Pelanggan
