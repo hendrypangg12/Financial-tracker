@@ -204,11 +204,11 @@ function authErrorMessage(err) {
 
 function adminWhatsAppLink(paket = '') {
   const email = currentUser?.email || '(email)';
-  const text = paket === 'starter'
-    ? `Halo Admin BerBisnis 💼\n\nSaya mau aktivasi paket *STARTER Rp 149.999/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
-    : paket === 'pro'
-    ? `Halo Admin BerBisnis 💼\n\nSaya mau aktivasi paket *PRO EARLY BIRD Rp 500.000/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
-    : `Halo Admin BerBisnis 💼\n\nSaya ${email} ingin tanya/aktivasi langganan BerBisnis.`;
+  const text = paket === 'bulanan'
+    ? `Halo Admin Berstock 💼\n\nSaya mau aktivasi paket *BULANAN Rp 500.000/bulan*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
+    : paket === 'tahunan'
+    ? `Halo Admin Berstock 💼\n\nSaya mau aktivasi paket *TAHUNAN Rp 5.000.000/tahun*\nEmail akun: ${email}\nNama bisnis: ${(currentProfile?.bizName || '-')}\n\nBerikut bukti transfer:\n[lampirkan foto]`
+    : `Halo Admin Berstock 💼\n\nSaya ${email} ingin tanya/aktivasi langganan Berstock.`;
   return `https://wa.me/${ADMIN_CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
 }
 
