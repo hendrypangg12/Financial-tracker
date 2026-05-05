@@ -424,23 +424,6 @@ footer a:hover { color: var(--gold-bright); }
 @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
 
 /* ==================== FLOATING MASCOT ==================== */
-/* Backdrop blur overlay when chat open */
-.mcp-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 14, 26, 0);
-  backdrop-filter: blur(0);
-  -webkit-backdrop-filter: blur(0);
-  z-index: 9998;
-  pointer-events: none;
-  transition: background 0.4s ease, backdrop-filter 0.4s ease;
-}
-.mcp-backdrop.show {
-  background: rgba(10, 14, 26, 0.45);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  pointer-events: auto;
-}
 .mascot-widget { position: fixed; bottom: 24px; right: 24px; z-index: 9999; pointer-events: none; }
 .mascot-avatar-float {
   position: absolute; bottom: 0; right: 0;
@@ -494,7 +477,7 @@ footer a:hover { color: var(--gold-bright); }
 .mcp-head .info .status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
 .mcp-head .close-x { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.1); border-radius: 50%; font-size: 14px; cursor: pointer; }
 
-.mcp-body { padding: 16px; background: var(--gray-100); max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.mcp-body { padding: 16px; background: var(--gray-100); max-height: 320px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; touch-action: pan-y; }
 .mcp-msg { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; border-bottom-left-radius: 4px; padding: 11px 14px; font-size: 13px; line-height: 1.5; color: var(--gray-900); max-width: 88%; align-self: flex-start; opacity: 0; transform: translateY(10px) scale(.96); animation: msg-in .4s cubic-bezier(.34,1.56,.64,1) forwards; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
 @keyframes msg-in { to { opacity: 1; transform: translateY(0) scale(1); } }
 .mcp-msg strong { color: var(--magenta); }
@@ -570,16 +553,8 @@ footer a:hover { color: var(--gold-bright); }
 @media (max-width: 480px) {
   .mascot-widget { bottom: 16px; right: 16px; }
   .mascot-avatar-float { width: 58px; height: 58px; }
-  .mcp-panel {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    width: 100vw;
-    max-width: 100vw;
-    max-height: 85vh;
-    border-radius: 24px 24px 0 0;
-    transform-origin: bottom center;
-  }
-  .mcp-body { max-height: calc(85vh - 220px); }
+  .mcp-panel { width: calc(100vw - 32px); max-width: 360px; bottom: 70px; }
+  .mcp-body { max-height: 280px; }
 }
 
 /* Form submit success animation */
@@ -914,7 +889,6 @@ footer a:hover { color: var(--gold-bright); }
 </footer>
 
 <!-- ============ FLOATING MASCOT WIDGET ============ -->
-<div class="mcp-backdrop" id="mcp-backdrop" onclick="closeMcp()"></div>
 <div class="mascot-widget" id="mascot-widget">
   <div class="mcp-panel" id="mcp-panel">
     <div class="mcp-head">
@@ -1589,17 +1563,13 @@ function startIdle() {
 function resetIdle() { clearTimeout(idleTimer); }
 
 let played = false;
-const mcpBackdrop = document.getElementById('mcp-backdrop');
 function openMcp() {
   mcpPanel.classList.add('show');
-  // Backdrop hanya di mobile
-  if (window.innerWidth <= 480) mcpBackdrop.classList.add('show');
   document.querySelector('.notif').style.display = 'none';
   if (!played) { played = true; goToFlow('start'); }
 }
 function closeMcp() {
   mcpPanel.classList.remove('show');
-  mcpBackdrop.classList.remove('show');
   resetIdle();
 }
 function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
