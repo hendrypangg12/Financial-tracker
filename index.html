@@ -670,7 +670,7 @@ footer a:hover { color: var(--gold-bright); }
 .mcp-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; font-family: inherit; }
 .mcp-btn.primary { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
 .mcp-btn.secondary { background: var(--navy); color: #fff; }
-.mcp-quick { padding: 0 16px 12px; background: var(--gray-100); display: flex; flex-direction: column; gap: 7px; }
+.mcp-quick { padding: 0 16px 12px; background: var(--gray-100); display: flex; flex-direction: column; gap: 7px; max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 .mcp-quick button {
   position: relative;
   background: #fff;
@@ -1147,16 +1147,26 @@ const FLOW = {
       { txt: '💰 Berapa harganya?', next: 'harga' },
       { txt: '🧮 Hitung ROI buat usaha saya', next: 'roi' },
       { txt: '🍦 Cocok buat usaha saya?', next: 'usaha' },
-      { txt: '📊 Bedanya vs Excel / manual?', next: 'vs-excel' },
       { txt: '🤖 Apa itu AI Bot Telegram?', next: 'ai' },
+      { txt: '🎬 Mau demo Zoom 30 menit', next: 'demo' },
+      { txt: '📚 Info lainnya', next: 'more' },
+      { txt: '📞 Chat langsung sama Hendry', next: 'wa' },
+    ],
+  },
+  more: {
+    user: '📚 Info lainnya',
+    msgs: [
+      'Pilih topik yang mau bos eksplor:',
+    ],
+    quick: [
+      { txt: '📊 Bedanya vs Excel / manual?', next: 'vs-excel' },
       { txt: '⚡ Bedanya sama POS lain?', next: 'beda' },
       { txt: '🚀 Setelah bayar, terus apa?', next: 'onboarding' },
       { txt: '👤 Siapa di balik Berstock?', next: 'founder' },
       { txt: '🏆 Sudah ada klien?', next: 'klien' },
-      { txt: '🎬 Mau demo Zoom 30 menit', next: 'demo' },
       { txt: '❓ Pertanyaan umum (FAQ)', next: 'faq' },
       { txt: '🔌 Integrasi (printer, QRIS, dll)', next: 'integrasi' },
-      { txt: '📞 Chat langsung sama Hendry', next: 'wa' },
+      { txt: '🏠 Kembali ke menu utama', next: 'start' },
     ],
   },
   harga: {
