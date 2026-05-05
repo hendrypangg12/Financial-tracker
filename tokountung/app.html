@@ -40,11 +40,15 @@
     </form>
 
     <form id="form-register" class="auth-form" hidden>
+      <label>Nama Lengkap<input type="text" name="fullName" required autocomplete="name" placeholder="Pak Budi / Bu Sari" /></label>
       <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
+      <label>No. WhatsApp<input type="tel" name="whatsapp" required autocomplete="tel" placeholder="081234567890" pattern="[0-9]{8,15}" /></label>
+      <label>Nama Bisnis (opsional)<input type="text" name="bizName" autocomplete="organization" placeholder="Toko Es Krim XYZ" /></label>
       <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
       <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
       <button class="btn btn-primary btn-block" type="submit">Buat Akun (Free Trial 3 Hari)</button>
       <small style="color:var(--ink-soft)">Setelah trial, pilih paket Bulanan Rp 500rb atau Tahunan Rp 5jt (hemat Rp 1jt).</small>
+      <small style="color:var(--ink-soft); display:block; margin-top:4px">🔒 No. WA hanya untuk support &amp; follow-up. Tidak di-share ke pihak ketiga.</small>
     </form>
 
     <div class="auth-divider"><span>atau</span></div>
@@ -602,7 +606,8 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Email</th>
+            <th>Email / Nama</th>
+            <th>WhatsApp</th>
             <th>Nama Bisnis</th>
             <th>Plan</th>
             <th>Expires</th>
@@ -611,7 +616,7 @@
           </tr>
         </thead>
         <tbody id="admin-users-body">
-          <tr><td colspan="6" class="empty">Loading...</td></tr>
+          <tr><td colspan="7" class="empty">Loading...</td></tr>
         </tbody>
       </table>
     </div>
