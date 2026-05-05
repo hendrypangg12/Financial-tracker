@@ -338,7 +338,23 @@ nav .nav-inner { display: flex; justify-content: space-between; align-items: cen
 nav .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: #fff; text-decoration: none; }
 nav .logo img { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-bright)); padding: 2px; }
 nav .logo .ai { background: linear-gradient(135deg, var(--cyan), var(--gold-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
-nav .nav-cta { background: var(--magenta); color: #fff; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; }
+nav .nav-cta {
+  background: var(--magenta);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+  z-index: 5;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(233, 30, 99, 0.3);
+  touch-action: manipulation;
+}
+nav .nav-cta:hover { background: #d81b60; transform: translateY(-1px); transition: all .15s; }
+nav .nav-cta:active { transform: scale(.96); }
 
 /* ==================== HERO ==================== */
 .hero {
@@ -1100,7 +1116,7 @@ footer a:hover { color: var(--gold-bright); }
       <img src="tokountung/assets/logo-berbisnis.png?v=3" alt="Berstock" />
       <span>berstock<span class="ai">.id</span></span>
     </a>
-    <a href="tokountung/app.html" target="_blank" class="nav-cta">Coba Gratis →</a>
+    <a href="tokountung/app.html" class="nav-cta" rel="noopener">Coba Gratis →</a>
   </div>
 </nav>
 
