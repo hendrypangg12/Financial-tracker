@@ -1,6 +1,7 @@
 // Init & navigation
 function init() {
   loadState();
+  applyKasirModeOnBoot();
   setupTabs();
 
   // BIND TOMBOL GLOBAL DULU — supaya kalau ada error di setup form,
@@ -132,6 +133,86 @@ function setupSettingsForms() {
     renderPengaturan();
     showToast('Kategori ditambahkan', 'success');
   };
+  // Form Mode Kasir — set PIN + toggle
+  setupKasirMode();
+}
+
+function setupKasirMode() {
+  const form = document.getElementById('form-kasir-mode');
+  const btnToggle = document.getElementById('btn-toggle-kasir');
+  const status = document.getElementById('kasir-mode-status');
+  if (!form || !btnToggle) return;
+
+  function refreshUI() {
+    const hasPin = !!(state.settings.kasirPin && state.settings.kasirPin.length >= 4);
+    const isOn = !!state.settings.kasirMode;
+    document.body.classList.toggle('kasir-mode', isOn);
+    if (isOn) {
+      btnToggle.textContent = '🔓 Non-aktifkan Mode Kasir (butuh PIN)';
+      btnToggle.className = 'btn btn-danger';
+      status.style.display = 'block';
+      status.className = 'info-box success';
+      status.innerHTML = '✅ <b>Mode Kasir AKTIF</b> — profit, harga modal, laporan, & pengaturan tersembunyi. Owner perlu input PIN untuk non-aktifkan.';
+    } else {
+      btnToggle.textContent = hasPin ? '🔒 Aktifkan Mode Kasir' : '⚠️ Set PIN dulu sebelum aktifkan';
+      btnToggle.className = hasPin ? 'btn btn-gold' : 'btn btn-secondary';
+      btnToggle.disabled = !hasPin;
+      if (hasPin) {
+        status.style.display = 'block';
+        status.className = 'info-box warning';
+        status.innerHTML = '🔓 Mode Kasir non-aktif. Klik "Aktifkan" sebelum kasih HP/tablet ke karyawan.';
+      } else {
+        status.style.display = 'none';
+      }
+    }
+    // Pre-fill PIN field tanpa show actual value (security)
+    if (form.kasirPin) form.kasirPin.value = hasPin ? state.settings.kasirPin : '';
+  }
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const pin = (fd.get('kasirPin') || '').trim();
+    if (!/^\d{4,6}$/.test(pin)) {
+      showToast('PIN harus 4-6 digit angka', 'error');
+      return;
+    }
+    state.settings.kasirPin = pin;
+    saveState();
+    showToast('PIN owner disimpan ✓', 'success');
+    refreshUI();
+  };
+
+  btnToggle.onclick = () => {
+    if (!state.settings.kasirMode) {
+      // Aktifkan
+      state.settings.kasirMode = true;
+      saveState();
+      showToast('🔒 Mode Kasir aktif. Profit & harga modal tersembunyi.', 'success');
+      refreshUI();
+    } else {
+      // Non-aktifkan — butuh PIN
+      const inputPin = prompt('Masukkan PIN owner untuk non-aktifkan Mode Kasir:');
+      if (inputPin === null) return;
+      if (inputPin !== state.settings.kasirPin) {
+        showToast('❌ PIN salah!', 'error');
+        return;
+      }
+      state.settings.kasirMode = false;
+      saveState();
+      showToast('🔓 Mode Kasir non-aktif. Owner kembali full access.', 'success');
+      refreshUI();
+    }
+  };
+
+  refreshUI();
+}
+
+// Auto-apply kasir mode class saat app load
+function applyKasirModeOnBoot() {
+  if (state.settings && state.settings.kasirMode) {
+    document.body.classList.add('kasir-mode');
+  }
 }
 
 function renderPengaturan() {

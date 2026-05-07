@@ -1583,3 +1583,56 @@ tr.row-overdue td { border-bottom: 1px solid #fecaca; }
   .tab { white-space: nowrap; }
   .topbar-actions { justify-content: flex-end; }
 }
+
+/* ========== MODE KASIR — Hide profit & harga modal ========== */
+body.kasir-mode .kasir-hide,
+body.kasir-mode [data-kasir-hide] {
+  display: none !important;
+}
+
+body.kasir-mode .tab[data-tab="laporan"],
+body.kasir-mode .tab[data-tab="pengaturan"],
+body.kasir-mode .tab[data-tab="admin"] {
+  display: none !important;
+}
+
+body.kasir-mode .tab[data-tab="dashboard"] .stat-profit,
+body.kasir-mode .stat-card.profit-card {
+  display: none !important;
+}
+
+body.kasir-mode .product-card .harga-modal,
+body.kasir-mode label[data-modal-only],
+body.kasir-mode input[name="hargaModal"],
+body.kasir-mode label:has(input[name="hargaModal"]) {
+  display: none !important;
+}
+
+body.kasir-mode .field-modal,
+body.kasir-mode .col-modal,
+body.kasir-mode .col-profit,
+body.kasir-mode .col-margin {
+  display: none !important;
+}
+
+/* Banner indicator */
+.kasir-mode-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #d4af37, #f4cf67);
+  color: #0a1628;
+  padding: 8px 14px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  z-index: 999;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+  display: none;
+}
+body.kasir-mode .kasir-mode-banner { display: block; }
+body.kasir-mode { padding-top: 36px; }
+body.kasir-mode .topbar { top: 36px; }
+
+.info-box.success { background: #f0fdf4; border-left: 4px solid #10b981; color: #14532d; }
+.info-box.warning { background: #fffbeb; border-left: 4px solid #d4af37; color: #78350f; }

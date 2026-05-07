@@ -20,6 +20,9 @@
 </head>
 <body>
 
+<!-- ============ MODE KASIR BANNER (only visible saat aktif) ============ -->
+<div class="kasir-mode-banner">🔒 MODE KASIR AKTIF · Profit & Harga Modal Tersembunyi</div>
+
 <!-- ============ LOGIN SCREEN ============ -->
 <div id="login-screen" class="login-screen" hidden>
   <div class="login-card">
@@ -168,7 +171,7 @@
           <div class="card-delta" id="kpi-revenue-delta">0 transaksi</div>
         </div>
       </div>
-      <div class="card card-profit">
+      <div class="card card-profit" data-kasir-hide>
         <div class="card-icon">📈</div>
         <div class="card-body">
           <div class="card-label">PROFIT HARI INI</div>
@@ -514,9 +517,9 @@
             <th>Nama Produk</th>
             <th class="num">Qty</th>
             <th class="num">Revenue</th>
-            <th class="num">HPP</th>
-            <th class="num">Profit</th>
-            <th class="num">% Share</th>
+            <th class="num" data-kasir-hide>HPP</th>
+            <th class="num" data-kasir-hide>Profit</th>
+            <th class="num" data-kasir-hide>% Share</th>
           </tr>
         </thead>
         <tbody id="lap-item-body"><tr><td colspan="7" class="empty">Belum ada data</td></tr></tbody>
@@ -558,6 +561,24 @@
         <input name="nama" placeholder="Nama kategori baru (mis. Mie Instan)" required />
         <button class="btn btn-small btn-primary">+ Tambah</button>
       </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>🔒 Mode Kasir (Owner Privacy)</h3></div>
+      <p style="color:var(--ink-soft); font-size:13px; margin-bottom:14px">
+        Aktifkan saat HP/tablet dipakai karyawan kasir. Akan <b>menyembunyikan profit, harga modal, laporan, & pengaturan</b>. Hanya bisa di-non-aktifkan dengan PIN owner.
+      </p>
+      <form id="form-kasir-mode" class="form">
+        <label>PIN Owner (4-6 digit angka)
+          <input name="kasirPin" type="password" pattern="[0-9]{4,6}" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="off" />
+          <small style="color:var(--ink-soft); font-size:11px">Set PIN dulu sebelum aktifkan Mode Kasir.</small>
+        </label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px">
+          <button class="btn btn-primary" type="submit">💾 Simpan PIN</button>
+          <button class="btn btn-gold" id="btn-toggle-kasir" type="button">🔒 Aktifkan Mode Kasir</button>
+        </div>
+      </form>
+      <div id="kasir-mode-status" class="info-box" style="margin-top:14px; padding:10px 14px; border-radius:8px; font-size:13px; display:none"></div>
     </div>
 
     <div class="panel">
@@ -681,7 +702,7 @@
       <label>Nama Barang<input name="nama" required placeholder="mis. Indomie Goreng" /></label>
       <label>Kategori<select name="kategori"></select></label>
       <div class="grid-2-form">
-        <label>Harga Modal (Rp)<input name="hargaModal" type="number" min="0" required /></label>
+        <label data-kasir-hide>Harga Modal (Rp)<input name="hargaModal" type="number" min="0" required /></label>
         <label>Harga Jual (Rp)<input name="hargaJual" type="number" min="0" required /></label>
       </div>
       <div class="grid-2-form">

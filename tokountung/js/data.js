@@ -13,6 +13,9 @@ const DEFAULT_SETTINGS = {
   footerStruk: 'Terima kasih atas kunjungan!',
   biayaTetap: 0,
   targetUntung: 0,
+  // Mode Kasir — hide profit & harga modal kalau aktif
+  kasirMode: false,
+  kasirPin: '', // 4-6 digit PIN owner. Empty = belum di-set
 };
 
 const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];

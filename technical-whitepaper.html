@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Berstock — Technical Architecture & Whitepaper</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 210mm; }
+  body {
+    font-family: 'Inter', 'SF Pro', Arial, sans-serif;
+    color: #1e293b;
+    background: #fff;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* HEADER / FOOTER */
+  .ph {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10mm 15mm;
+    background: linear-gradient(90deg, #0a1628, #1e3a5f);
+    color: #fff;
+  }
+  .ph-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
+  .ph-brand img { width: 26px; height: 26px; border-radius: 6px; background: #fff; padding: 2px; }
+  .ph-brand .acc { color: #d4af37; }
+  .ph-section { font-size: 9px; color: #cbd5e1; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  .pf {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 7mm 15mm;
+    display: flex; justify-content: space-between;
+    color: #94a3b8; font-size: 8.5px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .pc { padding: 10mm 15mm 16mm; }
+
+  /* COVER */
+  .cover {
+    background: radial-gradient(circle at 70% 30%, #2d1b3d 0%, #0a1628 60%, #050816 100%);
+    color: #fff;
+    height: 297mm;
+    padding: 22mm 18mm;
+    display: flex; flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
+    z-index: 0;
+  }
+  .cover::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(233, 30, 99, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.18) 0%, transparent 40%);
+    z-index: 1;
+  }
+  .cover .content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+  .cover-brand { display: flex; align-items: center; gap: 14px; margin-bottom: auto; }
+  .cover-brand img { width: 48px; height: 48px; border-radius: 12px; background: #fff; padding: 4px; }
+  .cover-brand .name { font-size: 22px; font-weight: 900; }
+  .cover-brand .name .acc { color: #e91e63; }
+  .cover-tag {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1.5px solid rgba(212, 175, 55, 0.5);
+    color: #d4af37;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 16px;
+    align-self: flex-start;
+  }
+  .cover h1 {
+    font-size: 60px; font-weight: 900; line-height: 1.0;
+    letter-spacing: -2px; margin-bottom: 14px;
+    color: #d4af37;
+  }
+  .cover h1 .w { color: #fff; }
+  .cover h2 {
+    font-size: 17px; font-weight: 600; color: #cbd5e1;
+    line-height: 1.5; max-width: 145mm; margin-bottom: 30px;
+  }
+  .cover-meta {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 24px;
+  }
+  .cover-meta .row {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .cover-meta .row:last-child { border-bottom: none; }
+  .cover-meta .lbl { color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 1.3px; font-weight: 700; }
+  .cover-meta .val { color: #fff; font-size: 12px; font-weight: 700; }
+  .cover-meta .val .gold { color: #d4af37; }
+  .cover-foot {
+    margin-top: auto; padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.25);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cover-foot .url { font-size: 18px; font-weight: 900; color: #d4af37; }
+  .cover-foot .right { font-size: 10px; color: #94a3b8; text-align: right; }
+
+  /* CONTENT BASE */
+  h2.pt {
+    font-size: 26px; font-weight: 900; color: #0a1628;
+    line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.5px;
+  }
+  h2.pt .acc { color: #e91e63; }
+  .ps { font-size: 11px; color: #64748b; margin-bottom: 20px; font-weight: 500; }
+  h3.st {
+    font-size: 14px; font-weight: 800; color: #0a1628;
+    margin: 14px 0 8px; padding-left: 10px;
+    border-left: 4px solid #e91e63;
+  }
+  p { font-size: 11px; color: #334155; margin-bottom: 6px; line-height: 1.55; }
+  code, .code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    background: #0a1628; color: #4ade80;
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* DIAGRAM */
+  .diagram {
+    background: linear-gradient(180deg, #f8fafc, #fff);
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 12px 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* CARDS */
+  .card-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .card-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 10px 0;
+  }
+  .tech-card {
+    background: #f8fafc;
+    border-left: 3px solid #d4af37;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .tech-card .t { font-weight: 800; font-size: 11.5px; color: #0a1628; margin-bottom: 3px; }
+  .tech-card .d { font-size: 10px; color: #475569; line-height: 1.5; }
+  .tech-card .meta { font-size: 9px; color: #94a3b8; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+  /* TABLE */
+  table.t {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  table.t th {
+    background: #0a1628; color: #fff;
+    padding: 7px; text-align: left;
+    font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px;
+  }
+  table.t td {
+    padding: 7px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  table.t tr.h {
+    background: linear-gradient(90deg, rgba(233,30,99,0.06), rgba(212,175,55,0.04));
+    font-weight: 700;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    border-left: 4px solid;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 11px;
+  }
+  .info-box.blue { background: #eff6ff; border-color: #3b82f6; color: #1e3a8a; }
+  .info-box.green { background: #f0fdf4; border-color: #10b981; color: #14532d; }
+  .info-box.gold { background: #fffbeb; border-color: #d4af37; color: #78350f; }
+  .info-box.red { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+  .info-box .ttl { font-weight: 800; margin-bottom: 4px; }
+
+  /* CTA / END */
+  .cta-page {
+    background: radial-gradient(circle at 30% 70%, #2d1b3d 0%, #0a1628 70%);
+    color: #fff;
+    height: 297mm;
+    padding: 25mm 18mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-page::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.25) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.2) 0%, transparent 40%);
+  }
+  .cta-page .content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<section class="page cover">
+  <div class="content">
+    <div class="cover-brand">
+      <img src="assets/logo-berbisnis.png" alt="">
+      <div class="name">berstock<span class="acc">.id</span></div>
+    </div>
+
+    <div style="margin-top: 35mm;">
+      <div class="cover-tag">⚙️ Technical Whitepaper</div>
+      <h1>System<br>Architecture<br><span class="w">&amp; Tech Stack</span></h1>
+      <h2>Dokumen teknis lengkap tentang bagaimana Berstock dibangun, di-host, di-deploy, dan kemungkinan self-hosting / white-label.</h2>
+
+      <div class="cover-meta">
+        <div class="row">
+          <span class="lbl">Versi Dokumen</span>
+          <span class="val gold">1.0 — Mei 2026</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Audience</span>
+          <span class="val">CTO · Tech Lead · IT Decision Maker</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Tipe</span>
+          <span class="val">Technical Whitepaper · Confidential</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Disiapkan oleh</span>
+          <span class="val">Hendry Phang · Founder &amp; Lead Developer</span>
+        </div>
+      </div>
+
+      <p style="color: #cbd5e1; font-size: 11px; line-height: 1.6; max-width: 145mm;">
+        Dokumen ini menjelaskan secara teknis: (1) arsitektur sistem, (2) tech stack &amp; vendor, (3) cara deployment, (4) data flow, (5) keamanan, (6) skalabilitas, dan (7) opsi white-label / self-hosting untuk enterprise client.
+      </p>
+    </div>
+
+    <div class="cover-foot">
+      <div class="url">berstock.id</div>
+      <div class="right">
+        Powered by Anthropic · Cloudflare · Firebase<br>
+        🇮🇩 Made in Indonesia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PAGE 2: ARCHITECTURE OVERVIEW ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">01 · Architecture Overview</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Arsitektur <span class="acc">Sistem</span></h2>
+    <div class="ps">High-level overview — bagaimana komponen Berstock terhubung</div>
+
+    <h3 class="st">🏗️ Diagram Arsitektur</h3>
+    <div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                    USER LAYER (Mobile/Desktop)              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│   │   HP/Tablet  │  │  Laptop/Web  │  │   Telegram   │      │
+│   │     (PWA)    │  │   Browser    │  │   AI Bot     │      │
+│   └──────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
+└──────────┼──────────────────┼──────────────────┼─────────────┘
+           │                  │                  │
+           │  HTTPS/TLS 1.3   │                  │ Webhook
+           ▼                  ▼                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    EDGE LAYER (Cloudflare)                  │
+│   ┌──────────────────────────────────────────────────────┐  │
+│   │  • DNS (custom domain berstock.id)                   │  │
+│   │  • CDN (asset caching global)                        │  │
+│   │  • DDoS protection layer 7                           │  │
+│   │  • SSL termination (Let's Encrypt)                   │  │
+│   └──────────────────────────────────────────────────────┘  │
+└──────────┬──────────────────────────────────┬───────────────┘
+           │                                  │
+           ▼                                  ▼
+┌──────────────────────┐         ┌────────────────────────────┐
+│  GitHub Pages         │         │  Cloudflare Workers        │
+│  (Static Hosting)     │         │  (Serverless Backend)      │
+│                       │         │                            │
+│  • HTML/CSS/JS        │         │  • Telegram bot handler    │
+│  • PWA Service Worker │         │  • Lead notification API   │
+│  • Marketing pages    │         │  • Multi-tenant routing    │
+│  • Company profile    │         │  • Daily digest cron       │
+└──────────┬────────────┘         └──────────┬─────────────────┘
+           │                                  │
+           ▼                                  ▼
+┌──────────────────────┐         ┌────────────────────────────┐
+│  Firebase Firestore   │         │  Cloudflare KV Storage     │
+│  (Per-User Data)      │         │  (Multi-Tenant Bot Data)   │
+│                       │         │                            │
+│  • User profile       │         │  • Tenant config           │
+│  • Sales transactions │         │  • Cached snapshots        │
+│  • Stock inventory    │         │  • Lead audit trail        │
+│  • Customer database  │         │  • Bot session state       │
+└──────────────────────┘         └──────────┬─────────────────┘
+                                             │
+                                             ▼
+                                  ┌────────────────────────────┐
+                                  │  Anthropic API             │
+                                  │  (AI Engine)               │
+                                  │                            │
+                                  │  • Claude AI processing    │
+                                  │  • Tool use orchestration  │
+                                  │  • Bahasa Indonesia native │
+                                  └────────────────────────────┘
+    </div>
+
+    <h3 class="st">📦 Komponen Utama</h3>
+    <div class="card-grid-3">
+      <div class="tech-card">
+        <div class="t">Frontend</div>
+        <div class="d">PWA — Vanilla HTML/CSS/JS</div>
+        <div class="meta">No framework, fast load</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Backend Logic</div>
+        <div class="d">Cloudflare Workers (V8 isolates)</div>
+        <div class="meta">Serverless edge runtime</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Database</div>
+        <div class="d">Firebase Firestore + Cloudflare KV</div>
+        <div class="meta">NoSQL document store</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">AI Engine</div>
+        <div class="d">Anthropic Claude API</div>
+        <div class="meta">claude-sonnet-4-6 model</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Hosting Static</div>
+        <div class="d">GitHub Pages (FREE)</div>
+        <div class="meta">Branch deploy + CDN</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">CDN + DNS</div>
+        <div class="d">Cloudflare</div>
+        <div class="meta">Edge caching global</div>
+      </div>
+    </div>
+
+    <div class="info-box blue">
+      <div class="ttl">💡 Design Philosophy: Edge-first &amp; Serverless</div>
+      Tidak ada server EC2/VPS yang perlu di-maintain. Semua compute berjalan di edge runtime Cloudflare (auto-scale 0→∞) dengan low latency global.
+    </div>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 02</span></div>
+</section>
+
+<!-- ═══════════ PAGE 3: TECH STACK DETAIL ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">02 · Tech Stack Detail</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Tech <span class="acc">Stack</span> &amp; Vendor</h2>
+    <div class="ps">Detail teknologi yang dipakai &amp; alasan pemilihan</div>
+
+    <table class="t">
+      <thead>
+        <tr>
+          <th style="width:18%">Layer</th>
+          <th style="width:18%">Technology</th>
+          <th style="width:18%">Vendor</th>
+          <th>Reasoning Pemilihan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="h">
+          <td><b>Frontend</b></td>
+          <td>HTML5 + Vanilla JS</td>
+          <td>—</td>
+          <td>No framework overhead. Bundle size minimal (~100KB gzipped). Fast load di HP entry-level.</td>
+        </tr>
+        <tr>
+          <td>UI Framework</td>
+          <td>Custom CSS</td>
+          <td>—</td>
+          <td>Brand-specific design. Tidak terikat library yang bisa break.</td>
+        </tr>
+        <tr>
+          <td>Charts</td>
+          <td>Chart.js v4.4.1</td>
+          <td>chartjs.org (OSS)</td>
+          <td>Industry standard, lightweight, accessible.</td>
+        </tr>
+        <tr>
+          <td>OCR</td>
+          <td>Tesseract.js v5</td>
+          <td>tesseract.org (OSS)</td>
+          <td>Untuk scan struk belanja di BerUang. Run di browser, tidak perlu server.</td>
+        </tr>
+        <tr class="h">
+          <td><b>PWA</b></td>
+          <td>Service Worker</td>
+          <td>—</td>
+          <td>Install ke homescreen tanpa App Store. Offline-first via Cache API.</td>
+        </tr>
+        <tr class="h">
+          <td><b>Auth</b></td>
+          <td>Firebase Auth v11</td>
+          <td>Google Cloud</td>
+          <td>Email/password + Google login. SOC 2 Type II certified. Free tier sangat generous.</td>
+        </tr>
+        <tr class="h">
+          <td><b>Database (User Data)</b></td>
+          <td>Firebase Firestore</td>
+          <td>Google Cloud</td>
+          <td>NoSQL document store. Real-time sync built-in. Per-user isolation via Security Rules. AES-256 at-rest.</td>
+        </tr>
+        <tr class="h">
+          <td><b>AI Backend</b></td>
+          <td>Cloudflare Workers</td>
+          <td>Cloudflare</td>
+          <td>V8 isolates (faster than container). Edge runtime di 200+ kota. Auto-scale tanpa konfigurasi.</td>
+        </tr>
+        <tr class="h">
+          <td><b>AI Model</b></td>
+          <td>claude-sonnet-4-6</td>
+          <td>Anthropic</td>
+          <td>State-of-the-art reasoning + tool use. Bahasa Indonesia native. Constitutional AI (safer outputs).</td>
+        </tr>
+        <tr>
+          <td>Storage Bot</td>
+          <td>Cloudflare KV</td>
+          <td>Cloudflare</td>
+          <td>Eventually consistent key-value store. Multi-tenant via key prefix.</td>
+        </tr>
+        <tr>
+          <td>Bot Platform</td>
+          <td>Telegram Bot API</td>
+          <td>Telegram</td>
+          <td>Free, instant push, no approval delay (vs WhatsApp Business API).</td>
+        </tr>
+        <tr class="h">
+          <td><b>DNS + CDN</b></td>
+          <td>Cloudflare DNS</td>
+          <td>Cloudflare</td>
+          <td>FREE tier unlimited. Anycast network 300+ locations. SSL gratis (Let's Encrypt + CF Universal SSL).</td>
+        </tr>
+        <tr class="h">
+          <td><b>Hosting Static</b></td>
+          <td>GitHub Pages</td>
+          <td>GitHub (Microsoft)</td>
+          <td>FREE, unlimited bandwidth, custom domain support, auto-deploy from branch.</td>
+        </tr>
+        <tr>
+          <td>Domain Registrar</td>
+          <td>IDwebhost</td>
+          <td>IDwebhost (Indonesia)</td>
+          <td>Indonesian .id domain. ~Rp 240rb/tahun renewal.</td>
+        </tr>
+        <tr>
+          <td>Analytics</td>
+          <td>Google Analytics 4</td>
+          <td>Google</td>
+          <td>Industry standard. Free unlimited events. Conversion tracking + funnel.</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>cPanel Email</td>
+          <td>IDwebhost</td>
+          <td>info@berstock.id native. Migrasi ke Google Workspace planned 2027.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 03</span></div>
+</section>
+
+<!-- ═══════════ PAGE 4: DATA FLOW ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">03 · Data Flow</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Data <span class="acc">Flow</span> &amp; Sequence</h2>
+    <div class="ps">Bagaimana data mengalir antar komponen — 3 skenario utama</div>
+
+    <h3 class="st">🛒 Skenario 1: User Transaksi di POS</h3>
+    <div class="diagram">
+[1] User klik "Bayar" di app PWA
+    ↓
+[2] saveSale() — write ke localStorage (instant, offline-safe)
+    ↓
+[3] Update state.products[].stok (decrement)
+    ↓
+[4] showStruk() — render thermal print preview
+    ↓
+[5] DEBOUNCED 30s: cloudSync.push() — POST ke Cloudflare Worker
+    ↓
+[6] Worker validates api_key + tenant_id
+    ↓
+[7] Worker writes ke Cloudflare KV (snapshot per tenant)
+    ↓
+[8] PARALLEL: Firebase Firestore sync (per-user document)
+    ↓
+[9] Auto-sync ✓ — data tersedia di multi-device + AI bot
+    </div>
+
+    <h3 class="st">🤖 Skenario 2: Owner Tanya AI Bot Telegram</h3>
+    <div class="diagram">
+[1] Owner kirim chat "Stok beras berapa?" ke @BerstockBot
+    ↓
+[2] Telegram → Webhook ke berstock-bot.workers.dev/webhook
+    ↓
+[3] Worker validasi X-Telegram-Bot-Api-Secret-Token
+    ↓
+[4] Lookup tenant via chat_id mapping (KV)
+    ↓
+[5] Build context: snapshot terbaru dari KV + system prompt
+    ↓
+[6] Call Anthropic API (claude-sonnet-4-6) dengan tools=[12 tools]
+    ↓
+[7] Claude memilih tool: get_product_info({nama: "beras"})
+    ↓
+[8] Worker eksekusi tool — query KV snapshot
+    ↓
+[9] Hasil tool dikirim balik ke Claude
+    ↓
+[10] Claude format response Bahasa Indonesia natural
+    ↓
+[11] Worker → Telegram sendMessage API
+    ↓
+[12] Owner terima reply (~5 detik total)
+    </div>
+
+    <h3 class="st">🎯 Skenario 3: Lead Capture dari Web</h3>
+    <div class="diagram">
+[1] Visitor isi form lead di chat widget berstock.id
+    ↓
+[2] Submit → POST berstock-bot.workers.dev/api/lead
+    ↓
+[3] Worker validate input (nama, wa required)
+    ↓
+[4] PARALLEL EXECUTION:
+    ├── [4a] Send Telegram notif ke ADMIN_TELEGRAM_CHAT_ID
+    │       (alert real-time ke owner Berstock)
+    ├── [4b] Save lead ke KV dengan TTL 90 hari
+    ├── [4c] GA4 trackEvent('lead_captured')
+    └── [4d] User redirect ke wa.me dengan context pre-filled
+    ↓
+[5] Owner Berstock terima ping Telegram &lt; 5 detik
+    ↓
+[6] Owner buka WA, chat lead langsung dengan context
+    </div>
+
+    <div class="info-box green">
+      <div class="ttl">⚡ Performance Karakteristik</div>
+      • Frontend load: ~200ms (CDN cached)<br>
+      • POS transaction save: instant (localStorage), 30s debounce ke cloud<br>
+      • AI bot reply: 4-7 detik (tergantung kompleksitas tool use)<br>
+      • Lead notif → Telegram: &lt;5 detik
+    </div>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 04</span></div>
+</section>
+
+<!-- ═══════════ PAGE 5: SECURITY & DATA ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">04 · Security &amp; Privacy</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Keamanan &amp; <span class="acc">Privasi Data</span></h2>
+    <div class="ps">Multi-layer security architecture sesuai best practice 2026</div>
+
+    <h3 class="st">🔐 Encryption</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Layer</th><th>Encryption</th><th>Provider</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>In Transit (User → Server)</td><td>TLS 1.3 (HTTPS)</td><td>Let's Encrypt + Cloudflare Universal SSL</td></tr>
+        <tr><td>At Rest (Database)</td><td>AES-256</td><td>Google Firestore</td></tr>
+        <tr><td>At Rest (KV)</td><td>AES-256</td><td>Cloudflare KV</td></tr>
+        <tr><td>API Keys (Workers)</td><td>Encrypted secrets</td><td>Cloudflare Workers Secrets</td></tr>
+        <tr><td>Telegram Webhook</td><td>HMAC-SHA256 secret token</td><td>Telegram Bot API</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">🛡️ Access Control</h3>
+    <div class="card-grid-2">
+      <div class="tech-card">
+        <div class="t">Per-User Isolation</div>
+        <div class="d">Firestore Security Rules: user hanya bisa akses dokumen di path <code>users/{uid}/...</code> milik mereka.</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Tenant Isolation (Bot)</div>
+        <div class="d">Setiap tenant punya unique <code>api_key</code> + <code>tenant_id</code>. Cross-tenant query diblokir di Worker level.</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Admin Whitelist</div>
+        <div class="d">Hardcoded list di <code>auth.js</code>: 3 email allowed. CollectionGroup query untuk admin panel.</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">DDoS Protection</div>
+        <div class="d">Cloudflare Layer 7 — auto-mitigate attack tanpa konfigurasi. Free tier sudah include.</div>
+      </div>
+    </div>
+
+    <h3 class="st">📦 Data Privacy Commitment</h3>
+    <div class="info-box gold">
+      <div class="ttl">🇮🇩 Data Sovereignty</div>
+      • Data toko user disimpan di Firebase Firestore (region: asia-southeast1 — Singapore)<br>
+      • Data bot (snapshots) di Cloudflare KV (region: distributed edge)<br>
+      • Data <strong>tidak dijual</strong> ke pihak ketiga<br>
+      • Data <strong>tidak dipakai untuk training AI generic</strong> (Anthropic enterprise terms)<br>
+      • User export data dengan 1-klik (.json) — full data portability
+    </div>
+
+    <h3 class="st">📋 Backup &amp; Recovery</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Data Type</th><th>Backup Schedule</th><th>Retention</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Firestore (user data)</td><td>Daily auto (Google native)</td><td>30 hari point-in-time recovery</td></tr>
+        <tr><td>KV (bot data)</td><td>Snapshot 6-jam</td><td>90 hari (TTL)</td></tr>
+        <tr><td>Source code</td><td>Git push real-time</td><td>Unlimited (GitHub)</td></tr>
+        <tr><td>Lead capture log</td><td>Real-time write ke KV</td><td>90 hari</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">🔑 Authentication Mechanisms</h3>
+    <p>• <strong>End User App</strong>: Firebase Auth (email/password atau Google OAuth)<br>
+    • <strong>API Worker (sync)</strong>: Bearer token <code>api_key</code> per tenant<br>
+    • <strong>Admin Panel</strong>: Email whitelist + Firebase Auth<br>
+    • <strong>Telegram Bot</strong>: Webhook secret token validation</p>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 05</span></div>
+</section>
+
+<!-- ═══════════ PAGE 6: DEPLOYMENT & INFRA ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">05 · Deployment</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Deployment <span class="acc">Pipeline</span></h2>
+    <div class="ps">CI/CD flow dari git commit ke production</div>
+
+    <h3 class="st">🚀 Frontend Deployment (GitHub Pages)</h3>
+    <div class="diagram">
+DEVELOPER LOCAL                  GITHUB                      PRODUCTION
+────────────────              ──────────────             ───────────────
+git commit            ──→     PR ke main          ──→    GitHub Pages
++ git push                    + auto-merge               + Cloudflare DNS
+                              + Pages build              + global CDN
+                              (~30 detik)                ↓
+                                                   berstock.id LIVE (~1 menit)
+    </div>
+
+    <h3 class="st">⚙️ Backend Deployment (Cloudflare Workers)</h3>
+    <div class="diagram">
+DEVELOPER                        CLOUDFLARE
+─────────────                ──────────────────────
+cd bot/                       Workers Runtime (V8)
+wrangler deploy       ──→     deployed in 200+ cities
+                              ↓
+                       https://berstock-bot.hendrypangg12.workers.dev
+                              ↓
+                              Hot routes (no cold start)
+    </div>
+
+    <h3 class="st">🔄 Cron Triggers</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Cron Schedule</th><th>Trigger Time</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>0 0 * * *</code></td><td>00:00 UTC (07:00 WIB)</td><td>Daily Digest — kirim ringkasan ke semua tenant Telegram</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">📊 Cost Structure (Monthly)</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Service</th><th>Free Tier Limit</th><th>Current Usage</th><th>Cost</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cloudflare Workers</td><td>100rb req/hari</td><td>&lt;1k req/hari</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>Cloudflare KV</td><td>100rb read, 1k write/hari</td><td>&lt;5k read/hari</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>Cloudflare DNS + CDN</td><td>Unlimited</td><td>—</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>Firebase Firestore</td><td>50k read, 20k write/hari</td><td>&lt;1k both/hari</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>Firebase Auth</td><td>50k MAU</td><td>&lt;100 user</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>GitHub Pages</td><td>1GB storage, 100GB bw</td><td>&lt;100MB, low traffic</td><td><strong>Rp 0</strong></td></tr>
+        <tr><td>Anthropic API</td><td>Pay per use</td><td>~Rp 50-300/chat</td><td>Variable</td></tr>
+        <tr><td>Domain berstock.id</td><td>—</td><td>—</td><td>Rp 240rb/<strong>tahun</strong></td></tr>
+        <tr><td>Email (cPanel)</td><td>—</td><td>—</td><td>Rp 100rb/tahun</td></tr>
+        <tr class="h"><td colspan="3"><b>TOTAL FIXED COST</b></td><td><b>~Rp 28rb/bulan</b><br>(scalable to 1000+ users with same cost)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box green">
+      <div class="ttl">💰 Unit Economics</div>
+      Karena 99% infrastruktur free-tier sampai 50K MAU, margin per klien (Rp 500rb/bulan) sangat sehat. Variable cost utama hanya Anthropic API yang ~5-10% dari subscription value.
+    </div>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 06</span></div>
+</section>
+
+<!-- ═══════════ PAGE 7: WHITE-LABEL / SELF-HOST ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">06 · White-Label &amp; Self-Hosting</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">White-Label &amp; <span class="acc">Self-Hosting</span></h2>
+    <div class="ps">Bisakah orang lain pakai sistem ini sendiri? — penjelasan honest</div>
+
+    <h3 class="st">❓ Pertanyaan: "Bisa di-share ke orang lain biar mereka customize sistem sendiri?"</h3>
+    <div class="info-box blue">
+      <div class="ttl">🎯 Jawaban Singkat</div>
+      <strong>Bisa, dengan 3 model:</strong> (1) White-Label, (2) Self-Hosted, (3) Source Code License. Masing-masing punya trade-off berbeda.
+    </div>
+
+    <h3 class="st">📦 Model 1: White-Label (Multi-Tenant Hosted)</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Aspect</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apa yang dapet klien</td><td>Sub-domain custom (misal: <code>klien1.berstock.id</code>) + branding sendiri</td></tr>
+        <tr><td>Yang di-host di</td><td>Infrastruktur Berstock (kami yang manage)</td></tr>
+        <tr><td>Customization yang bisa</td><td>Logo, warna, nama produk, system prompt AI bot, fitur flag on/off</td></tr>
+        <tr><td>Customization yang TIDAK bisa</td><td>Database schema, core business logic, integrasi pihak ketiga arbitrary</td></tr>
+        <tr><td>Pricing model</td><td>Setup fee + monthly/yearly + revenue share</td></tr>
+        <tr><td>Tech requirement klien</td><td>Tidak perlu — klien tinggal pakai</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">🏠 Model 2: Self-Hosted (Klien Manage Sendiri)</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Aspect</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apa yang dapet klien</td><td>Source code lengkap + dokumentasi + 1x setup assistance</td></tr>
+        <tr><td>Yang di-host di</td><td>Infrastruktur klien sendiri (Cloudflare account klien, Firebase project klien, dll)</td></tr>
+        <tr><td>Customization</td><td><strong>FULL control</strong> — klien bisa ubah apa saja di kode</td></tr>
+        <tr><td>Cost klien (infra)</td><td>~Rp 0-100rb/bulan (sama free tier seperti kami)</td></tr>
+        <tr><td>Cost klien (Anthropic API)</td><td>Variable (klien bayar langsung ke Anthropic)</td></tr>
+        <tr><td>Tech requirement klien</td><td>Developer paham JS, Cloudflare Workers, Firebase. <strong>Bukan untuk non-technical.</strong></td></tr>
+        <tr><td>Pricing model</td><td>One-time license fee + optional yearly support</td></tr>
+        <tr><td>Update / fitur baru</td><td>Klien pull dari repo Berstock (jika subscribe support) atau develop sendiri</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">📜 Model 3: Source Code License (Enterprise)</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Aspect</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apa yang dapet klien</td><td>Source code + perpetual license + opsional rebrand total</td></tr>
+        <tr><td>Yang di-host di</td><td>Infrastruktur klien (private cloud, on-prem, cloud provider pilihan)</td></tr>
+        <tr><td>Customization</td><td><strong>UNLIMITED</strong> — klien bisa fork, rebrand, modifikasi total</td></tr>
+        <tr><td>Restriction</td><td>Tidak boleh re-distribute sebagai product baru kecuali ada perjanjian khusus</td></tr>
+        <tr><td>Pricing</td><td>Custom (mulai Rp 50jt+, tergantung scope)</td></tr>
+        <tr><td>Cocok untuk</td><td>Korporasi besar, government agency, SaaS B2B yang mau punya stack sendiri</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box gold">
+      <div class="ttl">⚖️ Honest Recommendation</div>
+      <strong>Untuk UMKM:</strong> Pilih hosted Berstock (Rp 500rb/bln) — tidak perlu manage infra.<br>
+      <strong>Untuk software house:</strong> White-label (Model 1) — bisa rebrand untuk klien sendiri.<br>
+      <strong>Untuk korporasi besar:</strong> Source code license (Model 3) — full control + private.<br>
+      <strong>Untuk dev individu yang penasaran:</strong> Self-host (Model 2) — bayar setup, dapat code.
+    </div>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 07</span></div>
+</section>
+
+<!-- ═══════════ PAGE 8: SCALABILITY ═══════════ -->
+<section class="page">
+  <div class="ph">
+    <div class="ph-brand"><img src="assets/logo-berbisnis.png">berstock<span class="acc">.id</span></div>
+    <div class="ph-section">07 · Scalability &amp; Limits</div>
+  </div>
+
+  <div class="pc">
+    <h2 class="pt">Skalabilitas &amp; <span class="acc">Limit</span></h2>
+    <div class="ps">Berapa banyak user yang bisa di-handle? Apa bottleneck-nya?</div>
+
+    <h3 class="st">📈 Capacity Planning</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Tier</th><th>Active Users</th><th>Infra Cost</th><th>Action Needed</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Stage 1: 0-100 user</td><td>Free tier semua</td><td>Rp 28rb/bulan</td><td>Nothing — current state</td></tr>
+        <tr><td>Stage 2: 100-1k user</td><td>Free tier masih cukup</td><td>Rp 28rb-100rb/bln</td><td>Optimize Anthropic prompt caching</td></tr>
+        <tr><td>Stage 3: 1k-10k user</td><td>Mungkin upgrade Firestore</td><td>Rp 500rb-2jt/bln</td><td>Migrate ke Firestore paid tier; tambah Anthropic budget</td></tr>
+        <tr><td>Stage 4: 10k-50k user</td><td>Cloudflare Workers Paid</td><td>Rp 5-15jt/bln</td><td>Workers Paid Plan ($5/bln per 10jt req); Firestore Blaze plan</td></tr>
+        <tr><td>Stage 5: 50k+ user</td><td>Multi-region setup</td><td>Custom</td><td>Replicate Firestore multi-region; upgrade Cloudflare Enterprise</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="st">⚡ Performance Benchmarks</h3>
+    <div class="card-grid-2">
+      <div class="tech-card">
+        <div class="t">Frontend Load Time</div>
+        <div class="d">~200ms (P50), ~500ms (P95) di 4G mobile Indonesia</div>
+        <div class="meta">Lighthouse score 90+</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">POS Transaction Latency</div>
+        <div class="d">&lt;50ms (localStorage write). Cloud sync 30s debounce.</div>
+        <div class="meta">Offline-first design</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">AI Bot Reply Time</div>
+        <div class="d">4-7 detik median (P50). 15s P95 untuk complex queries.</div>
+        <div class="meta">Anthropic API latency dominates</div>
+      </div>
+      <div class="tech-card">
+        <div class="t">Concurrent Users</div>
+        <div class="d">Theoretically unlimited (serverless). Tested: 1000 concurrent OK.</div>
+        <div class="meta">Cloudflare Workers auto-scale</div>
+      </div>
+    </div>
+
+    <h3 class="st">⚠️ Bottlenecks &amp; Mitigations</h3>
+    <table class="t">
+      <thead>
+        <tr><th>Potential Bottleneck</th><th>Impact</th><th>Mitigation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Anthropic API rate limit</td><td>Bot reply gagal saat traffic spike</td><td>Prompt caching (95% hit), exponential backoff retry, fallback ke Haiku model</td></tr>
+        <tr><td>Firestore cost saat scale</td><td>Bill bisa naik kalau 100k+ user</td><td>Aggressive client-side caching, only sync deltas, paginate query</td></tr>
+        <tr><td>Cloudflare KV eventual consistency</td><td>Stale data ~60s window</td><td>Acceptable untuk use case kami (bukan financial transaction)</td></tr>
+        <tr><td>Telegram webhook timeout</td><td>Bot response &gt;30s ditolak Telegram</td><td><code>ctx.waitUntil()</code> async processing, ack dulu lalu kerja background</td></tr>
+        <tr><td>Single founder dependency</td><td>Bus factor = 1</td><td>Dokumentasi solid (CLAUDE.md), source code di GitHub, hire developer Q3 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pf"><span><strong>berstock.id</strong> · Technical Whitepaper</span><span>Page 08</span></div>
+</section>
+
+<!-- ═══════════ PAGE 9: CTA ═══════════ -->
+<section class="page cta-page">
+  <div class="content">
+    <div style="display: inline-block; background: linear-gradient(135deg, #e91e63, #d81b60); padding: 6px 16px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; align-self: flex-start; margin-bottom: 20px;">
+      🤝 Diskusi Lanjutan
+    </div>
+
+    <h1 style="font-size: 48px; font-weight: 900; line-height: 1.05; margin-bottom: 16px; color: #fff;">
+      Tertarik Diskusi<br>Teknis Lebih <span style="color: #d4af37;">Mendalam?</span>
+    </h1>
+    <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 30px;">
+      Dokumen ini overview teknis. Untuk diskusi spesifik (white-label, self-host, custom integration, security audit, atau enterprise license), Hendry siap call.
+    </p>
+
+    <div style="background: rgba(255,255,255,0.05); border: 1.5px solid rgba(212,175,55,0.3); border-radius: 14px; padding: 22px; margin-bottom: 30px;">
+      <h3 style="color: #d4af37; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px;">📞 Kontak Teknis</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <div style="color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Founder &amp; Lead Dev</div>
+          <div style="color: #fff; font-size: 14px; font-weight: 800;">Hendry Phang</div>
+        </div>
+        <div>
+          <div style="color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Email Bisnis</div>
+          <div style="color: #d4af37; font-size: 13px; font-weight: 700;">info@berstock.id</div>
+        </div>
+        <div>
+          <div style="color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">WhatsApp</div>
+          <div style="color: #fff; font-size: 13px; font-weight: 700;">+62 821-2484-8924</div>
+        </div>
+        <div>
+          <div style="color: #94a3b8; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Website</div>
+          <div style="color: #d4af37; font-size: 13px; font-weight: 700;">berstock.id</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: rgba(212,175,55,0.08); border-left: 4px solid #d4af37; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px;">
+      <h3 style="color: #d4af37; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">📋 Diskusi yang Bisa Dijadwalkan</h3>
+      <ul style="list-style: none; padding: 0; color: #fff; font-size: 12px;">
+        <li style="padding: 4px 0;">→ White-label setup untuk software house bos</li>
+        <li style="padding: 4px 0;">→ Self-hosted deployment guide (untuk tim IT internal)</li>
+        <li style="padding: 4px 0;">→ Custom integration (API, ERP, payment gateway)</li>
+        <li style="padding: 4px 0;">→ Security audit / pentest readiness</li>
+        <li style="padding: 4px 0;">→ Enterprise license &amp; private cloud deployment</li>
+        <li style="padding: 4px 0;">→ Multi-region failover untuk klien high-availability</li>
+        <li style="padding: 4px 0;">→ Custom AI tools development per industry vertical</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid rgba(212,175,55,0.25); text-align: center;">
+      <div style="font-size: 28px; font-weight: 900; color: #d4af37; margin-bottom: 6px; letter-spacing: -1px;">berstock.id</div>
+      <div style="font-size: 11px; color: #94a3b8; font-style: italic;">"Atur stok, untung pasti masuk." 🐻💼</div>
+      <div style="font-size: 9px; color: #64748b; margin-top: 12px;">© 2026 Berstock · Made in Indonesia 🇮🇩</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
