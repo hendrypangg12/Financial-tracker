@@ -439,7 +439,55 @@ state = {
 - Action: kirim email follow-up dengan template yang udah disiapkan
 - Status: ⏳ User action (kirim email besok)
 
-### ⏳ PENDING (Day 4+)
+### ✅ DAY 4 (Done — 6 Mei 2026 / malam)
+
+**Focus: App features + Lead engagement validation**
+
+#### **🎉 LEAD VALIDATION**
+| Item | Status | Notes |
+|---|---|---|
+| GA4 LIVE tracking | ✅ Confirmed | 18-20 active users in 30 min, 22 first-visits |
+| Chat widget engagement | ✅ Strong | 13/22 buka widget = **59% rate** (industry 5-15%) |
+| Session_start: 23, page_view: 29 | ✅ Healthy | First-day organic traffic |
+| User_engagement events | ✅ 11 | 47% engagement rate (above benchmark) |
+
+#### **📱 APP UPGRADES**
+| Item | Status | Notes |
+|---|---|---|
+| **Register WA field + Nama** | ✅ Done | Required: nama, email, WA (8-15 digit), bizName optional |
+| **Admin panel WA chat link** | ✅ Done | Klik nomor WA → buka WhatsApp pre-filled template |
+| **Mode Kasir dengan PIN** | ✅ Done & Tested | Hide profit, harga modal, laporan, settings, admin. Banner gold indicator. |
+| **Admin UI Feature Flags Toggle** | ✅ Done | Customize 4 fitur per klien (Multi Gudang, Kredit Limit, Menu Modifier, Custom Bot) |
+
+#### **🐛 BUG FIXES**
+- Tombol "Coba Gratis" nav broken → arahkan ke app.html (PR #9)
+- Pricing Starter Rp 149rb di landing pages → cleanup ke 2 paket (PR #10)
+- Linktree mobile overflow 18px → overflow-x: hidden (PR #11)
+- Tombol "Coba Gratis" gak clickable di IG in-app → fix target=_blank + tap area (PR #12)
+- Starter 149rb di app login + admin → cleanup (PR #13)
+- WA field saat register (PR #14)
+- Mode Kasir feature (PR #15)
+- Feature Flags admin UI (PR #16)
+
+#### **🎯 LEAD POTENSIAL DI ADMIN PANEL (4 user)**
+- berdemo12@gmail.com — Pro (test akun)
+- hendrypangg12@icloud.com — Pro (akun bos)
+- hendryphang12@gmail.com — Pro (akun bos typo)
+- **edwinabraham456@gmail.com — Trial HABIS** (REAL LEAD, action besok!)
+
+### ⏳ PENDING (Day 5+)
+| Item | Status | Notes |
+|---|---|---|
+| **🔥 Email Edwin Abraham** | URGENT | Template ready di chat. Send via Gmail manual |
+| **🔥 WA outreach 2 calon klien FnB** | URGENT | WA opener 4 versi (A/B/C/D) ready |
+| Conditional render Feature Flags | 🟡 In progress | Toggle UI ada, actual feature implementation pending (Step 4-6) |
+| Bot worker deploy `/api/lead` | ⏳ User action | `cd bot && wrangler deploy` |
+| Set ADMIN_TELEGRAM_CHAT_ID | ⏳ User action | Dari @userinfobot |
+| Mark conversion di GA4 | ⏳ User action | lead_captured + whatsapp_click → mark conversion |
+| Update IG bio @berstock.ai | ⏳ User action | Tambah link berstock.id |
+| Token rotation (Anthropic + Telegram + CF) | ⏳ Pending | WAJIB rotate (sempat lewat chat lama) |
+
+
 | Item | Status | Notes |
 |---|---|---|
 | **Email Edwin Abraham (LEAD!)** | ⏳ URGENT | Template ready, send via Gmail manual |
