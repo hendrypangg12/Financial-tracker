@@ -133,6 +133,12 @@ function attachEvents() {
   async function handlePhotoOCR(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+    // GATE: OCR foto struk hanya untuk Pro user
+    if (typeof isPro === 'function' && !isPro(currentProfile)) {
+      e.target.value = '';
+      showProGate('OCR Foto Struk', 'Foto struk → otomatis terbaca jadi transaksi.\n\nFitur OCR hanya untuk paket Pro.');
+      return;
+    }
     photoPreview.src = URL.createObjectURL(file);
     photoPreview.style.display = 'block';
     setOcrStatus('loading', 'Memuat mesin OCR (sekali saja, ~3 MB)…', 5);
@@ -357,8 +363,14 @@ function attachEvents() {
     showToast('Sub kategori ditambahkan', 'success');
   };
 
-  // Export/Import/Reset
-  document.getElementById('btn-export').onclick = exportData;
+  // Export/Import/Reset — Export di-gate untuk Pro user
+  document.getElementById('btn-export').onclick = () => {
+    if (typeof isPro === 'function' && !isPro(currentProfile)) {
+      showProGate('Export Data', 'Backup semua data Anda ke file JSON.\n\nFitur export hanya untuk paket Pro.');
+      return;
+    }
+    exportData();
+  };
   document.getElementById('btn-import').onclick = () => document.getElementById('file-import').click();
   document.getElementById('file-import').onchange = async (e) => {
     const f = e.target.files[0];
@@ -460,23 +472,27 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('login');
         return;
       }
-      if (!isSubscriptionActive(profile)) {
-        showScreen('paywall');
-        return;
-      }
+      // FREEMIUM: user bisa pakai app meski belum bayar
+      // Pro features (cloud sync, OCR, export) di-gate dengan isPro()
       showScreen('app');
-      // Load data dari cloud sebelum render
-      await loadFromCloud();
+      const userIsPro = typeof isPro === 'function' && isPro(profile);
+      // Load data dari cloud HANYA untuk Pro user
+      if (userIsPro) {
+        await loadFromCloud();
+      }
       init();
       setupWelcomeBanner();
-      startCloudListener(() => {
-        // Ada perubahan dari device lain → re-render
-        renderAll();
-        fillSubCategoriSelects();
-      });
-      // 3-layer auto-sync protection
-      if (typeof startAutoSync === 'function') startAutoSync();
+      // Cloud listener & auto-sync HANYA untuk Pro user
+      if (userIsPro) {
+        startCloudListener(() => {
+          renderAll();
+          fillSubCategoriSelects();
+        });
+        if (typeof startAutoSync === 'function') startAutoSync();
+      }
       updateUserMenu(user, profile);
+      // Setup gating UI untuk free user
+      setupProGating(profile);
     });
   } else {
     // Fallback: Firebase gagal load, jalankan standalone (localStorage only)
@@ -663,6 +679,89 @@ function setAuthBusy(busy) {
   document.querySelectorAll('#login-screen button, #login-screen input').forEach(el => {
     el.disabled = busy;
   });
+}
+
+// ========== FREEMIUM PRO GATING ==========
+// Setup UI gating untuk free user — tampilkan badge 🔒 + tombol Upgrade
+function setupProGating(profile) {
+  const userIsPro = typeof isPro === 'function' && isPro(profile);
+  document.body.classList.toggle('is-free-user', !userIsPro);
+  document.body.classList.toggle('is-pro-user', userIsPro);
+
+  // Tombol Upgrade Pro di topbar — hanya tampil untuk free user
+  const btnUpgrade = document.getElementById('btn-upgrade-pro');
+  if (btnUpgrade) {
+    btnUpgrade.hidden = userIsPro;
+    btnUpgrade.onclick = () => showScreen('paywall');
+  }
+
+  // Track GA4 event
+  if (typeof gtag === 'function') {
+    gtag('event', 'user_tier', {
+      tier: userIsPro ? 'pro' : 'free',
+      plan: profile?.plan || 'none',
+    });
+  }
+}
+
+// Tampilkan modal upgrade kalau free user klik Pro feature
+function showProGate(featureName, description) {
+  const existing = document.getElementById('pro-gate-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'pro-gate-modal';
+  modal.className = 'pro-gate-overlay';
+  modal.innerHTML = `
+    <div class="pro-gate-card">
+      <div class="pro-gate-icon">🔒</div>
+      <h2>Fitur Pro: ${featureName}</h2>
+      <p class="pro-gate-desc">${description.replace(/\n/g, '<br>')}</p>
+      <div class="pro-gate-benefits">
+        <div class="pro-benefit">☁️ Cloud sync multi-device</div>
+        <div class="pro-benefit">📸 OCR foto struk otomatis</div>
+        <div class="pro-benefit">💾 Export data ke JSON</div>
+        <div class="pro-benefit">📅 Unlimited history</div>
+      </div>
+      <div class="pro-gate-prices">
+        <button class="btn btn-ghost btn-block" data-paket="monthly">
+          <b>Bulanan</b> — Rp 35.000<small>/bulan</small>
+        </button>
+        <button class="btn btn-primary btn-block" data-paket="lifetime">
+          <span class="badge">HEMAT 70%</span>
+          <b>Lifetime</b> — Rp 125.000<small>sekali bayar</small>
+        </button>
+      </div>
+      <button class="btn btn-text" id="pro-gate-close">Nanti aja</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Track GA4 event
+  if (typeof gtag === 'function') {
+    gtag('event', 'pro_gate_shown', { feature: featureName });
+  }
+
+  // Bind tombol paket → langsung ke paywall
+  modal.querySelectorAll('[data-paket]').forEach(btn => {
+    btn.onclick = () => {
+      const paket = btn.dataset.paket;
+      if (typeof gtag === 'function') {
+        gtag('event', 'pro_gate_clicked', { feature: featureName, paket });
+      }
+      modal.remove();
+      showScreen('paywall');
+      // Auto-pilih paket di paywall
+      setTimeout(() => {
+        const target = document.querySelector(`.btn-buy[data-paket="${paket}"]`);
+        if (target) target.click();
+      }, 100);
+    };
+  });
+
+  // Close button + click outside
+  modal.querySelector('#pro-gate-close').onclick = () => modal.remove();
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 }
 
 // ========== AFFILIATE TRACKING ==========

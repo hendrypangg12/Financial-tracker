@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=21" />
+  <link rel="stylesheet" href="styles.css?v=22" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -133,7 +133,8 @@
     </nav>
     <div class="topbar-actions">
       <span id="sync-status" class="sync-status"></span>
-      <button class="btn btn-ghost" id="btn-export">Export</button>
+      <button class="btn btn-upgrade-pro" id="btn-upgrade-pro" hidden title="Upgrade ke Pro untuk unlock fitur premium">✨ Upgrade Pro</button>
+      <button class="btn btn-ghost" id="btn-export">Export <span class="pro-lock">🔒</span></button>
       <button class="btn btn-ghost" id="btn-import">Import</button>
       <input type="file" id="file-import" accept="application/json" hidden />
       <button class="btn btn-danger" id="btn-reset" title="Hapus semua data">Reset</button>
@@ -498,8 +499,8 @@
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
           </div>
           <div class="struk-photo-row">
-            <label for="struk-photo-camera" class="btn struk-photo-btn">📷 Ambil Foto</label>
-            <label for="struk-photo-gallery" class="btn struk-gallery-btn">🖼️ Pilih dari Galeri</label>
+            <label for="struk-photo-camera" class="btn struk-photo-btn">📷 Ambil Foto <span class="pro-lock">🔒</span></label>
+            <label for="struk-photo-gallery" class="btn struk-gallery-btn">🖼️ Pilih dari Galeri <span class="pro-lock">🔒</span></label>
             <input type="file" id="struk-photo-camera" accept="image/*" capture="environment" class="visually-hidden" />
             <input type="file" id="struk-photo-gallery" accept="image/*" class="visually-hidden" />
             <small style="color:var(--ink-soft)">atau tempel teks di bawah ↓</small>
@@ -713,11 +714,11 @@ TOTAL            86.500"></textarea>
   <script src="js/storage.js?v=21"></script>
   <script src="js/parser.js?v=20"></script>
   <script src="js/sync.js?v=22"></script>
-  <script src="js/auth.js?v=21"></script>
+  <script src="js/auth.js?v=22"></script>
   <script src="js/dashboard.js?v=20"></script>
   <script src="js/pages.js?v=20"></script>
   <script src="js/admin.js?v=20"></script>
   <script src="js/hutang.js?v=1"></script>
-  <script src="js/app.js?v=22"></script>
+  <script src="js/app.js?v=23"></script>
 </body>
 </html>
