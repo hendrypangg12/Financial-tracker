@@ -45,6 +45,22 @@ function isSubscriptionActive(profile) {
   return new Date(profile.expiresAt).getTime() > Date.now();
 }
 
+// ============ FREEMIUM: Cek user punya akses Pro ============
+// Free user: bisa pakai app dengan fitur basic (catat, dashboard, kategori, hutang)
+// Pro user: dapet cloud sync, OCR foto struk, export, unlimited history
+function isPro(profile) {
+  if (!profile) return false;
+  // Lifetime = akses selamanya
+  if (profile.plan === 'lifetime') return true;
+  // Legacy 'pro' plan (existing test/admin accounts)
+  if (profile.plan === 'pro') return true;
+  // Monthly/trial/starter — harus belum expired
+  if (['monthly', 'trial', 'starter'].includes(profile.plan)) {
+    return profile.expiresAt && new Date(profile.expiresAt).getTime() > Date.now();
+  }
+  return false;
+}
+
 function daysRemaining(profile) {
   if (!profile || !profile.expiresAt) return 0;
   const diff = new Date(profile.expiresAt).getTime() - Date.now();

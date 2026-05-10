@@ -893,3 +893,131 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   .aff-grid { grid-template-columns: 1fr; }
   .affiliate-section { padding: 14px 16px; margin: 16px 0; }
 }
+
+/* ========== FREEMIUM PRO GATING ========== */
+/* Lock badge — hide untuk Pro user, tampil untuk free user */
+.pro-lock {
+  display: none;
+  font-size: 0.85em;
+  margin-left: 4px;
+  filter: saturate(0.5);
+}
+body.is-free-user .pro-lock { display: inline; }
+
+/* Upgrade Pro button di topbar */
+.btn-upgrade-pro {
+  background: linear-gradient(135deg, #d4af37 0%, #c9a352 100%);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  animation: pulse-pro 2s ease-in-out infinite;
+}
+.btn-upgrade-pro:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+}
+@keyframes pulse-pro {
+  0%, 100% { box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3); }
+  50% { box-shadow: 0 4px 16px rgba(212, 175, 55, 0.6); }
+}
+
+/* Pro Gate Modal */
+.pro-gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fade-in 0.2s ease-out;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.pro-gate-card {
+  background: #fbf6ee;
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: slide-up 0.3s ease-out;
+}
+@keyframes slide-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.pro-gate-icon { font-size: 48px; margin-bottom: 8px; }
+.pro-gate-card h2 {
+  margin: 0 0 8px;
+  color: #4a3328;
+  font-size: 22px;
+  font-weight: 800;
+}
+.pro-gate-desc {
+  color: #6b5340;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+.pro-gate-benefits {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 0 0 20px;
+  text-align: left;
+  border: 1px solid #ead7b8;
+}
+.pro-benefit {
+  font-size: 13px;
+  color: #4a3328;
+  padding: 6px 0;
+  font-weight: 500;
+}
+.pro-gate-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.pro-gate-prices .btn {
+  position: relative;
+  font-size: 14px;
+  padding: 12px;
+}
+.pro-gate-prices .btn small {
+  font-size: 11px;
+  font-weight: 400;
+  margin-left: 4px;
+  opacity: 0.85;
+}
+.pro-gate-prices .badge {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  background: #c9a352;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+.btn-text {
+  background: transparent;
+  border: none;
+  color: #8b5a2b;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 12px;
+  text-decoration: underline;
+}
