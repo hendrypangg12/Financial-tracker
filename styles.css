@@ -834,3 +834,62 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   .hutang-nominal { font-size: 16px; }
   .hutang-card-body, .hutang-card-actions { padding-left: 0; }
 }
+
+/* ========== AFFILIATE PARTNERS SECTION ========== */
+.affiliate-section {
+  background: linear-gradient(135deg, #fffbeb, #fff8dc);
+  border: 1.5px solid #f4cf67;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin: 24px 0;
+}
+.aff-head { margin-bottom: 14px; }
+.aff-head h3 { font-size: 16px; color: #4a3328; margin: 0 0 4px; font-weight: 800; }
+.aff-sub { font-size: 12px; color: #8b5a2b; margin: 0; font-style: italic; }
+.aff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.aff-card {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #f0e4c1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.aff-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(139, 90, 43, 0.15);
+  border-color: #d4af37;
+}
+.aff-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.aff-body { flex: 1; min-width: 0; }
+.aff-title { font-size: 13px; font-weight: 800; color: #4a3328; margin-bottom: 4px; }
+.aff-desc { font-size: 11px; color: #6b5340; line-height: 1.4; margin-bottom: 6px; }
+.aff-cta { font-size: 11px; color: #c9a352; font-weight: 700; }
+.aff-disclaimer {
+  font-size: 10px;
+  color: #8b5a2b;
+  text-align: center;
+  margin: 8px 0 0;
+  opacity: 0.7;
+}
+@media (max-width: 600px) {
+  .aff-grid { grid-template-columns: 1fr; }
+  .affiliate-section { padding: 14px 16px; margin: 16px 0; }
+}
