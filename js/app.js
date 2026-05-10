@@ -4,6 +4,7 @@ function init() {
   fillMonthYearSelectors();
   fillSubCategoriSelects();
   fillTrxFilters();
+  setupAffiliateTracking();
   attachEvents();
   if (typeof setupHutangForm === 'function') setupHutangForm();
   renderAll();
@@ -661,5 +662,23 @@ function hideAuthMsg() {
 function setAuthBusy(busy) {
   document.querySelectorAll('#login-screen button, #login-screen input').forEach(el => {
     el.disabled = busy;
+  });
+}
+
+// ========== AFFILIATE TRACKING ==========
+function setupAffiliateTracking() {
+  document.querySelectorAll('[data-aff]').forEach(card => {
+    card.addEventListener('click', () => {
+      const partner = card.dataset.aff;
+      // Track ke GA4 kalau available
+      if (typeof gtag === 'function') {
+        gtag('event', 'affiliate_click', {
+          partner: partner,
+          location: 'beruang_dashboard',
+          value: 50000, // estimasi komisi rata-rata IDR
+        });
+      }
+      console.log('[Affiliate] Click:', partner);
+    });
   });
 }
