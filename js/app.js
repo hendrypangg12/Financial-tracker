@@ -597,7 +597,7 @@ function setupAuthUI() {
       if (!email) { showAuthError('Masukkan email di form dulu, lalu klik "Lupa password".'); return; }
       try {
         await resetPassword(email);
-        showAuthInfo('Link reset password dikirim ke ' + email + '. Cek email Anda.');
+        showAuthInfo(`✅ Link reset password sudah dikirim ke ${email}.\n\n⚠️ PENTING: Cek folder SPAM/Junk juga! Email dari Firebase sering masuk spam.\n\nKalau 5 menit belum ada, hubungi admin via WA: wa.me/6282124848924`);
       } catch (err) { showAuthError(authErrorMessage(err)); }
     };
   }
