@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "id.berstock.beruang",
+    "sha256_cert_fingerprints": ["D2:CC:D9:E6:F6:87:49:28:56:08:C5:BD:2C:84:D7:11:8F:C0:21:1A:2E:3C:84:BB:AA:BD:AC:70:D1:1A:34:88"]
+  }
+}]
