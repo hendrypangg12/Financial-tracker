@@ -1,33 +1,91 @@
 {
-  "name": "BerUang — Catat Uangmu, Jadi Ber-uang",
+  "id": "id.berstock.beruang",
+  "name": "BerUang — Catat Keuangan Pribadi",
   "short_name": "BerUang",
-  "description": "Aplikasi catat keuangan pribadi. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20.",
-  "start_url": "./app.html",
-  "scope": "./",
+  "description": "Aplikasi catat keuangan pribadi yang gampang. Catat via chat atau foto struk, dashboard otomatis, hutang & piutang, rekap 50/30/20. Trial Pro 7 hari gratis.",
+  "start_url": "/app.html",
+  "scope": "/",
   "display": "standalone",
-  "orientation": "any",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
   "background_color": "#fbf6ee",
   "theme_color": "#8b5a2b",
   "lang": "id",
+  "dir": "ltr",
   "categories": ["finance", "productivity", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "assets/mascot-beruang.png",
+      "src": "assets/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/mascot-beruang.png",
+      "src": "assets/icons/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/logo-beruang.png",
-      "sizes": "1248x1248",
+      "src": "assets/mascot-beruang.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screen-1-dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard keuangan otomatis"
+    },
+    {
+      "src": "assets/screenshots/screen-2-input.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Catat transaksi via chat atau form"
+    },
+    {
+      "src": "assets/screenshots/screen-3-ocr.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "OCR foto struk otomatis"
+    },
+    {
+      "src": "assets/screenshots/screen-4-hutang.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tracker hutang & piutang"
     }
   ],
   "shortcuts": [
@@ -35,14 +93,14 @@
       "name": "Tambah Transaksi",
       "short_name": "Tambah",
       "description": "Langsung ke halaman tambah",
-      "url": "./app.html#tambah",
+      "url": "/app.html#tambah",
       "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
     },
     {
       "name": "Lihat Rekap",
       "short_name": "Rekap",
       "description": "Rekap harian/mingguan/bulanan",
-      "url": "./app.html#rekap",
+      "url": "/app.html#rekap",
       "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
     }
   ]

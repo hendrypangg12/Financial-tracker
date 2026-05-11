@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kebijakan Privasi — BerUang</title>
+  <meta name="description" content="Kebijakan Privasi BerUang — Aplikasi catat keuangan personal. Data Anda aman dan tidak dijual." />
+  <meta name="theme-color" content="#8b5a2b" />
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, system-ui, 'Inter', sans-serif;
+      background: #fbf6ee;
+      color: #4a3328;
+      line-height: 1.65;
+      padding: 40px 20px 80px;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    .header {
+      display: flex; align-items: center; gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #ead7b8;
+      margin-bottom: 32px;
+    }
+    .header img { width: 64px; height: 64px; }
+    .header h1 { font-size: 28px; color: #8b5a2b; }
+    .header p { font-size: 14px; color: #6b5340; }
+    h2 {
+      margin-top: 32px;
+      margin-bottom: 12px;
+      color: #8b5a2b;
+      font-size: 20px;
+    }
+    h3 { margin-top: 20px; margin-bottom: 8px; font-size: 16px; color: #6b3f1f; }
+    p, li { font-size: 15px; color: #4a3328; margin-bottom: 10px; }
+    ul, ol { margin-left: 24px; margin-bottom: 16px; }
+    .meta {
+      background: #fef3c7;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border-left: 4px solid #d4af37;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .contact {
+      background: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #ead7b8;
+      margin-top: 32px;
+    }
+    a { color: #8b5a2b; font-weight: 600; }
+    a:hover { color: #6b3f1f; }
+    code { background: #fff; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    .footer-link { text-align: center; margin-top: 40px; font-size: 13px; color: #6b5340; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="assets/icons/icon-192.png" alt="BerUang" />
+      <div>
+        <h1>Kebijakan Privasi BerUang</h1>
+        <p>Aplikasi catat keuangan personal · Berlaku per: 11 Mei 2026</p>
+      </div>
+    </div>
+
+    <div class="meta">
+      <b>Ringkasan Singkat:</b> BerUang adalah aplikasi catat keuangan personal untuk Anda. Kami menyimpan data Anda secara aman, tidak menjualnya ke pihak ketiga, dan Anda bisa hapus data kapan saja.
+    </div>
+
+    <h2>1. Informasi yang Kami Kumpulkan</h2>
+
+    <h3>1.1 Data Akun</h3>
+    <p>Saat Anda mendaftar di BerUang, kami menyimpan:</p>
+    <ul>
+      <li>Alamat email (untuk autentikasi)</li>
+      <li>Nama (opsional, untuk personalisasi)</li>
+      <li>Foto profil (opsional, jika login dengan Google)</li>
+      <li>Tanggal pendaftaran</li>
+    </ul>
+
+    <h3>1.2 Data Keuangan</h3>
+    <p>Data transaksi yang Anda input:</p>
+    <ul>
+      <li>Catatan pemasukan/pengeluaran (tanggal, jumlah, kategori, deskripsi)</li>
+      <li>Foto struk (untuk fitur OCR, diproses lokal di device)</li>
+      <li>Catatan hutang & piutang</li>
+      <li>Kategori custom yang Anda buat</li>
+    </ul>
+
+    <h3>1.3 Data Otomatis</h3>
+    <p>Untuk analitik dan perbaikan layanan:</p>
+    <ul>
+      <li>Jenis perangkat & browser (anonim)</li>
+      <li>Halaman yang dikunjungi & waktu kunjungan</li>
+      <li>Crash report (otomatis, tanpa data pribadi)</li>
+    </ul>
+
+    <h2>2. Bagaimana Kami Menggunakan Data Anda</h2>
+    <ul>
+      <li><b>Personal:</b> Menampilkan dashboard, rekap, dan grafik keuangan Anda</li>
+      <li><b>Sinkronisasi:</b> Sync data antar perangkat (cloud sync — fitur Pro)</li>
+      <li><b>Notifikasi:</b> Pengingat catat transaksi (jika Anda izinkan)</li>
+      <li><b>Perbaikan:</b> Memahami fitur mana yang paling sering dipakai</li>
+    </ul>
+
+    <h2>3. Apa yang TIDAK Kami Lakukan</h2>
+    <ul>
+      <li>❌ Tidak menjual data Anda ke pihak ketiga manapun</li>
+      <li>❌ Tidak membaca/menganalisis isi transaksi pribadi Anda</li>
+      <li>❌ Tidak menampilkan iklan dari pihak ketiga (free dari pop-up ad)</li>
+      <li>❌ Tidak mengakses data Anda untuk training AI tanpa izin eksplisit</li>
+    </ul>
+
+    <h2>4. Penyimpanan & Keamanan Data</h2>
+    <p>Data Anda disimpan di:</p>
+    <ul>
+      <li><b>Local storage</b> perangkat Anda (data dasar)</li>
+      <li><b>Google Firebase Firestore</b> (untuk cloud sync, terenkripsi at-rest dan in-transit dengan TLS 1.2+)</li>
+      <li>Server berlokasi di Asia Pasifik (sesuai compliance Indonesia)</li>
+    </ul>
+    <p>Kami menggunakan Firebase Auth (Google) untuk autentikasi email/password & Google Login — standar industri keamanan.</p>
+
+    <h2>5. Hak Anda atas Data</h2>
+    <p>Anda berhak:</p>
+    <ul>
+      <li><b>Mengakses</b> seluruh data Anda kapan saja via aplikasi</li>
+      <li><b>Export</b> data dalam format JSON (fitur Pro)</li>
+      <li><b>Menghapus</b> data tertentu atau seluruh akun</li>
+      <li><b>Reset</b> password kapan saja</li>
+    </ul>
+    <p>Untuk hapus akun permanen, kontak: <a href="mailto:info@berstock.id">info@berstock.id</a></p>
+
+    <h2>6. Layanan Pihak Ketiga</h2>
+    <p>BerUang menggunakan layanan pihak ketiga berikut:</p>
+    <ul>
+      <li><b>Google Firebase</b> (autentikasi & database) — <a href="https://firebase.google.com/support/privacy" target="_blank">privacy policy</a></li>
+      <li><b>Google Analytics 4</b> (analitik anonim) — <a href="https://policies.google.com/privacy" target="_blank">privacy policy</a></li>
+      <li><b>Tesseract.js</b> (OCR struk — diproses lokal di device, tidak upload ke server)</li>
+    </ul>
+
+    <h2>7. Cookie & Local Storage</h2>
+    <p>Aplikasi menggunakan localStorage browser/perangkat untuk menyimpan data offline dan preferensi. Tidak ada tracking cookie pihak ketiga selain Google Analytics.</p>
+
+    <h2>8. Anak di Bawah Umur</h2>
+    <p>BerUang dirancang untuk pengguna usia 13 tahun ke atas. Kami tidak secara sengaja mengumpulkan data dari anak di bawah 13 tahun. Jika Anda mengetahui hal ini terjadi, kontak kami segera.</p>
+
+    <h2>9. Perubahan Kebijakan</h2>
+    <p>Kami dapat memperbarui kebijakan ini sewaktu-waktu. Perubahan signifikan akan diberitahukan via email atau notifikasi in-app minimal 7 hari sebelum berlaku.</p>
+
+    <h2>10. Kontak Kami</h2>
+    <div class="contact">
+      <p><b>BerUang</b> — Produk dari ekosistem BerSatu Suite</p>
+      <p>Pengelola: Hendry Phang</p>
+      <p>📧 Email: <a href="mailto:info@berstock.id">info@berstock.id</a></p>
+      <p>📱 WhatsApp: <a href="https://wa.me/6282124848924">+62 821-2484-8924</a></p>
+      <p>🌐 Website: <a href="https://berstock.id">berstock.id</a></p>
+    </div>
+
+    <div class="footer-link">
+      <a href="/">← Kembali ke berstock.id</a> · <a href="/app.html">Buka BerUang</a>
+    </div>
+  </div>
+</body>
+</html>
