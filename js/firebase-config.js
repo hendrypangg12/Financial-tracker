@@ -28,8 +28,8 @@ const PAYMENT_INFO = {
   qris: true,  // true = tersedia QRIS (scan via WA admin)
 };
 
-// Trial hari (0 = tanpa trial, user langsung paywall setelah daftar)
-const TRIAL_DAYS = 0;
+// Trial hari (0 = tanpa trial, 7 = user dapat akses Pro penuh 1 minggu sejak daftar)
+const TRIAL_DAYS = 7;
 
 // Email admin (untuk akses tab Admin Panel)
 // Tambahkan email Anda di sini supaya bisa aktivasi customer dari aplikasi

@@ -894,6 +894,31 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   .affiliate-section { padding: 14px 16px; margin: 16px 0; }
 }
 
+/* Trial countdown badge di topbar */
+.trial-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #8b5a2b;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid #d4af37;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+.trial-badge.trial-urgent {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border-color: #ef4444;
+  animation: pulse-urgent 1.5s ease-in-out infinite;
+}
+@keyframes pulse-urgent {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
 /* ========== FREEMIUM PRO GATING ========== */
 /* Lock badge — hide untuk Pro user, tampil untuk free user */
 .pro-lock {
