@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Berstock All-in-One</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, 'Inter', sans-serif; }
+
+  :root {
+    --bg-dark: #050816;
+    --bg-mid: #0a1628;
+    --gold: #d4af37;
+    --gold-bright: #f5d76e;
+    --gold-dim: #8b7430;
+    --text: #ffffff;
+    --text-dim: rgba(255,255,255,0.65);
+    --border: rgba(212,175,55,0.3);
+  }
+
+  body {
+    width: 1080px;
+    height: 1920px;
+    background: var(--bg-dark);
+    color: var(--text);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(212,175,55,0.12) 0%, transparent 35%),
+      radial-gradient(circle at 80% 70%, rgba(212,175,55,0.08) 0%, transparent 35%),
+      linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    padding: 60px 70px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === HEADER === */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 50px;
+  }
+  .badge-top {
+    color: var(--gold);
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 6px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .badge-top::before {
+    content: ''; width: 24px; height: 1px;
+    background: var(--gold);
+  }
+  .quote-tr {
+    color: var(--gold);
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 3px; text-align: right;
+    line-height: 1.4;
+    position: relative;
+    padding: 0 20px;
+  }
+  .quote-tr::before, .quote-tr::after {
+    color: var(--gold); font-size: 36px;
+    font-family: Georgia, serif;
+    position: absolute;
+  }
+  .quote-tr::before { content: '"'; left: 0; top: -16px; }
+  .quote-tr::after { content: '"'; right: 0; bottom: -28px; }
+
+  /* === HERO TITLE === */
+  .hero-block {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 50px;
+  }
+  .hero-text { min-width: 0; }
+  .brand-name {
+    font-size: 100px; font-weight: 900;
+    line-height: 0.9; letter-spacing: -4px;
+    margin-bottom: 16px;
+  }
+  .brand-name .gold { color: var(--gold); }
+  .tagline {
+    font-size: 22px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .tagline .gold { color: var(--gold); }
+  .desc-line {
+    font-size: 17px; color: var(--text-dim);
+    line-height: 1.5; margin-top: 16px;
+    max-width: 520px;
+  }
+
+  /* POS Device Art (Compact) */
+  .pos-art {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pos-art::before {
+    content: '';
+    position: absolute;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,175,55,0.22) 0%, transparent 60%);
+  }
+  .pos-art::after {
+    content: '';
+    position: absolute;
+    width: 360px; height: 360px;
+    border: 2px dashed rgba(212,175,55,0.4);
+    border-radius: 50%;
+  }
+  .pos-device {
+    position: relative;
+    width: 240px;
+    background: linear-gradient(180deg, #1a2942, #0a1628);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    padding: 12px;
+    z-index: 2;
+    box-shadow: 0 0 40px rgba(212,175,55,0.5);
+  }
+  .pos-screen {
+    background: #050816;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    height: 130px;
+  }
+  .pos-screen-top {
+    display: flex; justify-content: space-between;
+    font-size: 8px; color: var(--gold);
+    font-weight: 700; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .pos-screen-top .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #10b981; display: inline-block; margin-right: 4px;
+  }
+  .pos-chart {
+    display: flex; align-items: flex-end; gap: 4px;
+    height: 50px; margin-bottom: 10px;
+  }
+  .pos-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    border-radius: 2px 2px 0 0;
+  }
+  .pos-bar:nth-child(1) { height: 40%; }
+  .pos-bar:nth-child(2) { height: 65%; }
+  .pos-bar:nth-child(3) { height: 35%; }
+  .pos-bar:nth-child(4) { height: 80%; }
+  .pos-bar:nth-child(5) { height: 55%; }
+  .pos-bar:nth-child(6) { height: 95%; box-shadow: 0 0 8px var(--gold); }
+  .pos-revenue {
+    color: var(--gold);
+    font-size: 18px; font-weight: 900;
+  }
+  .pos-revenue small {
+    font-size: 8px; color: var(--text-dim);
+    font-weight: 400; letter-spacing: 1px;
+    display: block;
+  }
+  .pos-keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .pos-key {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--gold);
+    font-weight: 700;
+  }
+  .pos-key.accent { background: var(--gold); color: var(--bg-dark); }
+
+  .ai-brain-badge {
+    position: absolute;
+    top: 30px; right: calc(50% - 130px);
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    box-shadow: 0 0 30px rgba(212,175,55,0.7);
+    z-index: 4;
+  }
+  .float-elem {
+    position: absolute;
+    background: var(--bg-mid);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px; font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    box-shadow: 0 0 16px rgba(212,175,55,0.3);
+    z-index: 3;
+    white-space: nowrap;
+  }
+  .float-elem.tl { top: 90px; left: 20px; }
+  .float-elem.tr { top: 130px; right: 20px; }
+  .float-elem.bl { bottom: 100px; left: 10px; }
+  .float-elem.br { bottom: 70px; right: 10px; }
+
+  /* === FITUR UNGGULAN === */
+  .section-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 22px;
+    background: rgba(212,175,55,0.025);
+  }
+  .section-title {
+    color: var(--gold);
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 28px;
+  }
+  .feature-item {
+    display: flex; gap: 12px; align-items: center;
+  }
+  .feature-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: rgba(212,175,55,0.08);
+  }
+  .feature-text {
+    font-size: 14px;
+    color: var(--text); font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* === CARA PENGGUNAAN === */
+  .steps-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .step-item {
+    flex: 1;
+    text-align: center;
+  }
+  .step-circle {
+    width: 56px; height: 56px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px;
+    font-size: 22px;
+    background: rgba(212,175,55,0.1);
+    box-shadow: 0 0 16px rgba(212,175,55,0.2);
+  }
+  .step-num {
+    color: var(--gold);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 3px;
+  }
+  .step-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.3;
+    padding: 0 4px;
+  }
+  .step-arrow {
+    color: var(--gold);
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  /* === PRICING + WHY === */
+  .price-why {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .price-card {
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(10,22,40,0.6));
+    position: relative;
+    overflow: hidden;
+  }
+  .price-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    opacity: 0.3;
+  }
+  .price-label {
+    color: var(--gold);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .price-amount {
+    font-size: 60px; font-weight: 900;
+    line-height: 1; color: var(--text);
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+  }
+  .price-amount .unit {
+    color: var(--gold); font-size: 24px;
+  }
+  .price-amount .period {
+    font-size: 13px; color: var(--text-dim);
+    font-weight: 400; letter-spacing: 1px;
+  }
+  .price-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg-dark);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 11px; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .price-features {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    font-size: 9px; color: var(--gold-dim);
+    font-weight: 700; letter-spacing: 1px;
+  }
+  .price-features span::before {
+    content: '•'; color: var(--gold); margin-right: 3px;
+  }
+
+  .why-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    background: rgba(10,22,40,0.5);
+  }
+  .why-title {
+    color: var(--gold);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .why-list {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .why-list li {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .why-list li::before {
+    content: '✓';
+    color: var(--gold);
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* === FOOTER === */
+  .footer-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 28px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(212,175,55,0.05);
+    margin-top: auto;
+  }
+  .footer-tag {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .footer-shield {
+    width: 48px; height: 48px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .footer-text {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; line-height: 1.3;
+    text-transform: uppercase;
+  }
+  .footer-text .gold { color: var(--gold); }
+  .footer-brand {
+    background: var(--gold);
+    color: var(--bg-dark);
+    padding: 14px 30px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 3px;
+    box-shadow: 0 0 24px rgba(212,175,55,0.5);
+  }
+
+  /* Domain footer */
+  .domain-line {
+    text-align: center;
+    color: var(--gold);
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-top: 22px;
+  }
+
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="badge-top">AI POS SYSTEM</div>
+      <div class="quote-tr">KNOWLEDGE<br>IS POWER</div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-block">
+      <div class="hero-text">
+        <h1 class="brand-name">BER<span class="gold">STOCK</span></h1>
+        <div class="tagline">OTOMATISKAN. <span class="gold">UNTUNG NAIK.</span></div>
+        <p class="desc-line">
+          POS System bertenaga AI untuk UMKM Indonesia.<br>
+          Otomatiskan stok, laporan, dan customer — semuanya bisa ditanya langsung lewat chat Telegram.
+        </p>
+      </div>
+
+      <!-- POS Art -->
+      <div class="pos-art">
+        <div class="ai-brain-badge">🧠</div>
+        <div class="float-elem tl">📊 LAPORAN</div>
+        <div class="float-elem tr">🤖 AI BOT</div>
+        <div class="float-elem bl">💸 PROFIT</div>
+        <div class="float-elem br">📦 STOK</div>
+
+        <div class="pos-device">
+          <div class="pos-screen">
+            <div class="pos-screen-top">
+              <span><span class="dot"></span>LIVE</span>
+              <span>BERSTOCK AI</span>
+            </div>
+            <div class="pos-chart">
+              <div class="pos-bar"></div>
+              <div class="pos-bar"></div>
+              <div class="pos-bar"></div>
+              <div class="pos-bar"></div>
+              <div class="pos-bar"></div>
+              <div class="pos-bar"></div>
+            </div>
+            <div class="pos-revenue">Rp 8.5jt
+              <small>OMZET HARI INI</small>
+            </div>
+          </div>
+          <div class="pos-keypad">
+            <div class="pos-key">1</div>
+            <div class="pos-key">2</div>
+            <div class="pos-key">3</div>
+            <div class="pos-key accent">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FITUR UNGGULAN -->
+    <div class="section-card">
+      <h2 class="section-title">FITUR UNGGULAN</h2>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-text">AI Bot Telegram realtime<br>untuk stok &amp; sales</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📦</div>
+          <div class="feature-text">POS + manajemen stok<br>dengan foto produk</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <div class="feature-text">Laporan untung-rugi<br>otomatis &amp; akurat</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">👥</div>
+          <div class="feature-text">Customer 360 +<br>tracker piutang</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛒</div>
+          <div class="feature-text">PO Supplier auto +<br>foto faktur belanja</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">☁️</div>
+          <div class="feature-text">Cloud sync multi-device<br>+ offline mode</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARA PENGGUNAAN -->
+    <div class="section-card">
+      <h2 class="section-title">CARA PENGGUNAAN</h2>
+      <div class="steps-row">
+        <div class="step-item">
+          <div class="step-circle">📝</div>
+          <div class="step-num">1. DAFTAR</div>
+          <div class="step-desc">Akun + pilih paket</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-circle">⚙️</div>
+          <div class="step-num">2. SETUP</div>
+          <div class="step-desc">Input stok via foto</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-circle">💳</div>
+          <div class="step-num">3. JUALAN</div>
+          <div class="step-desc">Auto-update stok</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-circle">💬</div>
+          <div class="step-num">4. CHAT AI</div>
+          <div class="step-desc">Tanya kapan aja</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING + WHY -->
+    <div class="price-why">
+      <div class="price-card">
+        <div class="price-label">HARGA START DARI</div>
+        <div class="price-amount">
+          500<span class="unit">RB</span>
+          <span class="period">/BULAN</span>
+        </div>
+        <div class="price-btn">BERLANGGANAN SEKARANG</div>
+        <div class="price-features">
+          <span>AKSES PENUH</span>
+          <span>UPDATE RUTIN</span>
+          <span>SUPPORT PRIORITAS</span>
+        </div>
+      </div>
+
+      <div class="why-card">
+        <div class="why-title">KENAPA BERSTOCK?</div>
+        <ul class="why-list">
+          <li>Hemat 60 jam/bulan kerjaan manual</li>
+          <li>Data realtime — gak perlu buka laptop</li>
+          <li>Cocok untuk UMKM 50-200 SKU</li>
+          <li>Indonesia native + support WhatsApp</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer-banner">
+      <div class="footer-tag">
+        <div class="footer-shield">🛡️</div>
+        <div class="footer-text">
+          OTOMATISASI ADALAH <span class="gold">KUNCI</span>.<br>
+          BERSTOCK MEMBUKA <span class="gold">PASARNYA</span>.
+        </div>
+      </div>
+      <div class="footer-brand">BERSTOCK</div>
+    </div>
+
+    <div class="domain-line">
+      → BERSTOCK.ID · WA 0821-2484-8924 ←
+    </div>
+
+  </div>
+</body>
+</html>
