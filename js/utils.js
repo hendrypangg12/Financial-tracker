@@ -117,7 +117,41 @@ function showToast(msg, type = 'info') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.hidden = false;
-  el.style.background = type === 'error' ? '#922d22' : type === 'success' ? '#5a8a3a' : '#3e2d21';
+  el.className = 'toast show ' + type;
+  el.style.background = '';
+  // Haptic feedback untuk feedback action (native app feel)
+  haptic(type === 'error' ? 30 : 10);
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => { el.hidden = true; }, 2500);
+  showToast._t = setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => { el.hidden = true; }, 350);
+  }, 2500);
+}
+
+// Haptic feedback — vibration pulse untuk Android native feel
+function haptic(duration = 10) {
+  if (navigator.vibrate && /android/i.test(navigator.userAgent)) {
+    try { navigator.vibrate(duration); } catch (e) {}
+  }
+}
+
+// Count-up number animation untuk KPI cards (Instagram-style)
+function animateNumber(el, target, format = (v) => v) {
+  if (!el) return;
+  const startVal = parseFloat(el.dataset.animValue || 0);
+  const endVal = target;
+  if (startVal === endVal) { el.textContent = format(endVal); return; }
+  const duration = 600;
+  const startTime = performance.now();
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = startVal + (endVal - startVal) * eased;
+    el.textContent = format(current);
+    if (progress < 1) requestAnimationFrame(step);
+    else { el.textContent = format(endVal); el.dataset.animValue = endVal; }
+  }
+  requestAnimationFrame(step);
 }

@@ -20,10 +20,10 @@ function renderDashboard() {
   const expensePrev = sumBy(trxPrev, 'pengeluaran');
   const balancePrev = incomePrev - expensePrev;
 
-  setKPI('kpi-income', formatRupiah(income), pctDelta(income, incomePrev), 'income');
-  setKPI('kpi-expense', formatRupiah(expense), pctDelta(expense, expensePrev), 'expense');
-  setKPI('kpi-balance', formatRupiah(balance), pctDelta(balance, balancePrev), 'income');
-  setKPI('kpi-count', String(trx.length), pctDelta(trx.length, trxPrev.length), 'income');
+  setKPIAnimated('kpi-income', income, formatRupiah, pctDelta(income, incomePrev), 'income');
+  setKPIAnimated('kpi-expense', expense, formatRupiah, pctDelta(expense, expensePrev), 'expense');
+  setKPIAnimated('kpi-balance', balance, formatRupiah, pctDelta(balance, balancePrev), 'income');
+  setKPIAnimated('kpi-count', trx.length, (v) => String(Math.round(v)), pctDelta(trx.length, trxPrev.length), 'income');
 
   renderDailyChart(trx, m, y);
   renderMiniReports(trx, trxPrev, income, expense, balance);
@@ -44,6 +44,23 @@ function sumBy(trx, jenis) {
 
 function setKPI(id, text, pct, goodDir) {
   document.getElementById(id).textContent = text;
+  const delta = document.getElementById(id + '-delta');
+  if (!delta) return;
+  const up = pct >= 0;
+  const arrow = up ? '▲' : '▼';
+  delta.textContent = `${arrow} ${Math.abs(pct).toFixed(0)}% vs Bulan Lalu`;
+  delta.className = 'card-delta ' + (up === (goodDir === 'income') ? 'up' : 'down');
+}
+
+// Animated KPI dengan count-up (premium native feel)
+function setKPIAnimated(id, target, formatFn, pct, goodDir) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (typeof animateNumber === 'function') {
+    animateNumber(el, target, formatFn);
+  } else {
+    el.textContent = formatFn(target);
+  }
   const delta = document.getElementById(id + '-delta');
   if (!delta) return;
   const up = pct >= 0;

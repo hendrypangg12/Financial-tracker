@@ -57,6 +57,8 @@ function attachEvents() {
     document.querySelectorAll(`.tab[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
     document.querySelectorAll(`.bnav-item[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
     document.getElementById('tab-' + tabName).classList.add('active');
+    // Haptic feedback (Android only)
+    if (typeof haptic === 'function') haptic(8);
     // Re-render based on tab
     if (tabName === 'dashboard') renderDashboard();
     if (tabName === 'transaksi') renderTransaksi();
