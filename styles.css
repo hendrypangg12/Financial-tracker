@@ -1046,3 +1046,293 @@ body.is-free-user .pro-lock { display: inline; }
   padding: 6px 12px;
   text-decoration: underline;
 }
+
+/* ============================================================
+   📱 MOBILE NATIVE FEEL — Bottom Nav, FAB, Compact Layout
+   ============================================================ */
+
+/* === BOTTOM NAVIGATION === */
+.bottom-nav {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  z-index: 90;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  box-shadow: 0 -2px 12px rgba(62, 45, 33, 0.08);
+}
+.bnav-item {
+  flex: 1;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.bnav-item:active { transform: scale(0.92); }
+.bnav-item.active { color: var(--primary); }
+.bnav-icon {
+  font-size: 22px;
+  line-height: 1;
+  filter: grayscale(0.4);
+  transition: filter .15s, transform .15s;
+}
+.bnav-item.active .bnav-icon {
+  filter: grayscale(0);
+  transform: scale(1.1);
+}
+.bnav-label {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  font-weight: 700;
+}
+
+/* FAB — Floating Action Button untuk Tambah Transaksi */
+.bnav-fab {
+  position: relative;
+  flex: 0 0 auto;
+}
+.bnav-fab .bnav-fab-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, #6f4518 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 300;
+  margin-top: -22px;
+  margin-bottom: 4px;
+  box-shadow: 0 6px 16px rgba(139, 90, 43, 0.4), 0 2px 4px rgba(139, 90, 43, 0.3);
+  transition: transform .15s, box-shadow .15s;
+}
+.bnav-fab:active .bnav-fab-icon {
+  transform: scale(0.92);
+  box-shadow: 0 3px 8px rgba(139, 90, 43, 0.4);
+}
+.bnav-fab.active .bnav-fab-icon {
+  background: linear-gradient(135deg, #d4af37 0%, #c9a352 100%);
+  transform: rotate(45deg);
+}
+
+/* === MOBILE-FIRST RESPONSIVE — Native App Feel === */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+
+  /* HIDE topbar tabs at mobile, show bottom nav */
+  .topbar nav.tabs { display: none; }
+  .bottom-nav { display: flex; }
+
+  /* Compact topbar */
+  .topbar {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+  .brand { min-width: 0; flex: 1; }
+  .brand-icon-img { width: 40px; height: 40px; }
+  .brand-title { font-size: 16px; font-weight: 800; }
+  .brand-sub { font-size: 11px; }
+
+  /* Topbar actions — hide secondary, show only essentials */
+  .topbar-actions {
+    gap: 6px;
+  }
+  .topbar-actions .btn-ghost,
+  .topbar-actions .btn-danger {
+    display: none; /* Hide Export/Import/Reset — move to user menu */
+  }
+  .btn-upgrade-pro {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+  .trial-badge { font-size: 10px; padding: 4px 8px; }
+
+  /* Main content — mobile padding */
+  main {
+    padding: 12px 14px 80px;
+    max-width: 100%;
+  }
+
+  /* Page head — stack vertical */
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .page-title h1 {
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .page-filters {
+    width: 100%;
+  }
+  .page-filters label { flex: 1; }
+  .page-filters select,
+  .page-filters input[type="search"] {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  /* KPI cards — 2 columns mobile */
+  .cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .card {
+    padding: 14px 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    border-radius: 10px;
+  }
+  .card-label {
+    font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  .card-value {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .card-delta {
+    font-size: 9px;
+  }
+
+  /* Grid 2/3 column → 1 column mobile */
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Panel — mobile padding */
+  .panel {
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .panel-head h3 {
+    font-size: 14px;
+  }
+
+  /* Chart box smaller on mobile */
+  .chart-box { height: 220px; }
+  .chart-box-lg { height: 260px; }
+
+  /* Affiliate section compact */
+  .affiliate-section { padding: 16px; margin: 14px 0; border-radius: 14px; }
+  .affiliate-section h3 { font-size: 15px; }
+  .aff-sub { font-size: 12px; }
+  .aff-grid { gap: 10px; }
+  .aff-card { padding: 12px; }
+
+  /* Buttons larger touch target */
+  .btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 10px;
+    min-height: 44px;
+  }
+  .btn-small {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 36px;
+  }
+
+  /* Forms larger inputs */
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="number"], input[type="search"], input[type="tel"],
+  input[type="date"], textarea, select {
+    font-size: 16px !important; /* Prevent iOS zoom */
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  /* Hide footer on mobile (too much scrolling) */
+  .footer {
+    padding: 16px;
+    font-size: 11px;
+    margin-bottom: 0;
+  }
+
+  /* Modal full-screen on mobile */
+  .modal-card {
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    align-self: flex-end;
+    width: 100%;
+  }
+
+  /* Cross-sell aff card mobile */
+  .aff-icon { width: 40px; height: 40px; font-size: 18px; }
+  .aff-title { font-size: 13px; }
+  .aff-desc { font-size: 11px; }
+  .aff-cta { font-size: 11px; }
+
+  /* Section spacing tighter */
+  section.tab-panel { padding-bottom: 20px; }
+
+  /* Smooth tab transition */
+  .tab-panel.active {
+    animation: slide-up-mobile 0.25s ease-out;
+  }
+  @keyframes slide-up-mobile {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Touch ripple effect on buttons */
+  .btn, .tab, .bnav-item, .aff-card, .card {
+    -webkit-tap-highlight-color: rgba(139, 90, 43, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Hide trial badge in topbar to save space */
+  .trial-badge {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* === EXTRA SMALL — Phones < 400px === */
+@media (max-width: 400px) {
+  .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card { padding: 12px 10px; }
+  .card-value { font-size: 14px; }
+  .brand-sub { display: none; } /* Hide subtitle on tiny phones */
+  main { padding: 10px 12px 80px; }
+}
+
+/* === DARK STATUS BAR (TWA Android) === */
+@media (display-mode: standalone) {
+  /* When running as installed PWA/TWA */
+  body { padding-top: env(safe-area-inset-top); }
+  .topbar { padding-top: max(14px, env(safe-area-inset-top)); }
+}

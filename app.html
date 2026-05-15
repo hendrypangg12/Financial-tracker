@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=23" />
+  <link rel="stylesheet" href="styles.css?v=24" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -643,6 +643,29 @@ TOTAL            86.500"></textarea>
     </section>
   </main>
 
+  <!-- ============ BOTTOM NAVIGATION (Mobile/TWA Native Feel) ============ -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bnav-item active" data-tab="dashboard">
+      <span class="bnav-icon">🏠</span>
+      <span class="bnav-label">Home</span>
+    </button>
+    <button class="bnav-item" data-tab="transaksi">
+      <span class="bnav-icon">📋</span>
+      <span class="bnav-label">Transaksi</span>
+    </button>
+    <button class="bnav-item bnav-fab" data-tab="tambah" aria-label="Tambah Transaksi">
+      <span class="bnav-fab-icon">+</span>
+    </button>
+    <button class="bnav-item" data-tab="hutang">
+      <span class="bnav-icon">💸</span>
+      <span class="bnav-label">Hutang</span>
+    </button>
+    <button class="bnav-item" data-tab="rekap">
+      <span class="bnav-icon">📊</span>
+      <span class="bnav-label">Rekap</span>
+    </button>
+  </nav>
+
   <footer class="footer">
     🐻 <b>BerUang</b> · Catet dulu, biar beneran ber-uang<br>
     <small>Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.</small>
@@ -720,6 +743,6 @@ TOTAL            86.500"></textarea>
   <script src="js/pages.js?v=20"></script>
   <script src="js/admin.js?v=20"></script>
   <script src="js/hutang.js?v=1"></script>
-  <script src="js/app.js?v=24"></script>
+  <script src="js/app.js?v=25"></script>
 </body>
 </html>
