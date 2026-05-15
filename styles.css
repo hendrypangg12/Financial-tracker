@@ -1336,3 +1336,311 @@ body.is-free-user .pro-lock { display: inline; }
   body { padding-top: env(safe-area-inset-top); }
   .topbar { padding-top: max(14px, env(safe-area-inset-top)); }
 }
+
+/* ============================================================
+   ⚡ LEVEL 3 — PREMIUM NATIVE POLISH
+   Skeleton, Bottom Sheet, Haptic, Count-up, Slide Transitions
+   ============================================================ */
+
+/* === SKELETON LOADERS (Instagram-style shimmer) === */
+.skeleton {
+  background: linear-gradient(90deg, #e8e0d0 0%, #f5ede0 50%, #e8e0d0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite ease-in-out;
+  border-radius: 8px;
+  display: inline-block;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-text {
+  height: 14px;
+  width: 100%;
+  margin: 6px 0;
+  border-radius: 6px;
+}
+.skeleton-text.short { width: 60%; }
+.skeleton-text.tiny { width: 30%; height: 10px; }
+.skeleton-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+}
+.skeleton-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* === BOTTOM SHEET MODAL (slide up from bottom) === */
+@media (max-width: 768px) {
+  .modal {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 92vh !important;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    animation: bottom-sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  }
+  /* Handle bar di top bottom-sheet (kayak iOS/Android) */
+  .modal-card::before {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 5px;
+    background: #d6c8b0;
+    border-radius: 3px;
+    margin: 4px auto 14px;
+  }
+  .modal-close {
+    top: 12px !important;
+    right: 16px !important;
+  }
+}
+@keyframes bottom-sheet-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === SLIDE TRANSITIONS antar Tab === */
+@media (max-width: 768px) {
+  .tab-panel { display: none; }
+  .tab-panel.active {
+    display: block;
+    animation: page-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+@keyframes page-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* === CARD PRESS ANIMATION === */
+.card, .panel, .aff-card {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (max-width: 768px) {
+  .card:active, .aff-card:active {
+    transform: scale(0.97);
+  }
+}
+
+/* === BUTTON PRESS (juicy native feel) === */
+.btn {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.btn-primary:active {
+  box-shadow: 0 1px 4px rgba(139, 90, 43, 0.4);
+}
+
+/* === LOADING SPINNER (button state) === */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spinner-rotate 0.7s linear infinite;
+}
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* === EMPTY STATES (dengan icon native) === */
+.empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-soft);
+}
+.empty-state-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+  display: block;
+  filter: grayscale(0.3);
+  opacity: 0.7;
+}
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.empty-state-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 280px;
+  margin: 0 auto 16px;
+}
+
+/* === TOAST NOTIFICATION (native polish) === */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(20, 14, 8, 0.92);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  max-width: 90%;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success {
+  background: rgba(16, 124, 80, 0.95);
+}
+.toast.error {
+  background: rgba(180, 35, 24, 0.95);
+}
+
+/* === COUNT-UP NUMBER ANIMATION === */
+.card-value {
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s;
+}
+
+/* === PRO LOCK BADGE polish === */
+.pro-lock {
+  animation: pro-lock-pulse 2.5s ease-in-out infinite;
+}
+@keyframes pro-lock-pulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.5; }
+}
+
+/* === FAB PRESSED + glow === */
+@media (max-width: 768px) {
+  .bnav-fab .bnav-fab-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--primary);
+    opacity: 0;
+    z-index: -1;
+    animation: fab-pulse 2s ease-in-out infinite;
+  }
+}
+@keyframes fab-pulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(1.15); }
+}
+
+/* === SCROLLBAR HIDE on mobile (native iOS/Android feel) === */
+@media (max-width: 768px) {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* === DISABLE TEXT SELECT for UI elements (native app feel) === */
+.tab, .bnav-item, .btn, .card-icon, .brand,
+.bnav-icon, .bnav-label, .card-label, .pro-lock {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* === SMOOTH SCROLLING === */
+html { scroll-behavior: smooth; }
+@media (max-width: 768px) {
+  body { -webkit-overflow-scrolling: touch; }
+}
+
+/* === LIST ITEM PRESS effect (transaksi rows etc) === */
+@media (max-width: 768px) {
+  tbody tr, .trx-row, .hutang-card {
+    transition: background-color 0.15s, transform 0.1s;
+  }
+  tbody tr:active, .trx-row:active, .hutang-card:active {
+    background-color: rgba(139, 90, 43, 0.05);
+    transform: scale(0.99);
+  }
+}
+
+/* === BRAND TITLE pulse saat tap (interactive hint) === */
+.brand:active .brand-icon-img {
+  transform: scale(0.95) rotate(-5deg);
+  transition: transform 0.15s;
+}
+
+/* === TAB SWITCHING haptic visual === */
+@media (max-width: 768px) {
+  .bnav-item.active .bnav-icon {
+    animation: tab-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+@keyframes tab-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1.1); }
+}
+
+/* === PULL-TO-REFRESH visual hint (CSS only, future-proof) === */
+.ptr-hint {
+  height: 0;
+  overflow: hidden;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 12px;
+  transition: height 0.2s;
+}
+.ptr-active .ptr-hint {
+  height: 32px;
+  padding-top: 8px;
+}
