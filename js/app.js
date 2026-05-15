@@ -49,21 +49,29 @@ function fillTrxFilters() {
 }
 
 function attachEvents() {
-  // Tabs
+  // Tabs — handle both top tabs and bottom-nav (mobile/TWA)
+  function switchToTab(tabName) {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll(`.tab[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
+    document.querySelectorAll(`.bnav-item[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    // Re-render based on tab
+    if (tabName === 'dashboard') renderDashboard();
+    if (tabName === 'transaksi') renderTransaksi();
+    if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
+    if (tabName === 'rekap') renderRekap();
+    if (tabName === 'kategori') renderKategori();
+    if (tabName === 'admin' && typeof renderAdmin === 'function') renderAdmin();
+    // Scroll to top for native-feel
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   document.querySelectorAll('.tab').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      // re-render the tab in case data changed
-      if (btn.dataset.tab === 'dashboard') renderDashboard();
-      if (btn.dataset.tab === 'transaksi') renderTransaksi();
-      if (btn.dataset.tab === 'hutang' && typeof renderHutang === 'function') renderHutang();
-      if (btn.dataset.tab === 'rekap') renderRekap();
-      if (btn.dataset.tab === 'kategori') renderKategori();
-      if (btn.dataset.tab === 'admin' && typeof renderAdmin === 'function') renderAdmin();
-    };
+    btn.onclick = () => switchToTab(btn.dataset.tab);
+  });
+  document.querySelectorAll('.bnav-item').forEach(btn => {
+    btn.onclick = () => switchToTab(btn.dataset.tab);
   });
 
   // Dashboard filter
