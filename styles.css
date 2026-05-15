@@ -1164,10 +1164,98 @@ body.is-free-user .pro-lock { display: inline; }
   }
   .trial-badge { font-size: 10px; padding: 4px 8px; }
 
-  /* Main content — mobile padding */
+  /* Main content — mobile padding (extra bottom buat bottom nav) */
   main {
-    padding: 12px 14px 80px;
+    padding: 12px 14px 120px; /* bottom 120px supaya content gak ke-cut */
     max-width: 100%;
+  }
+
+  /* Tab Tambah — extra scroll padding */
+  #tab-tambah {
+    padding-bottom: 40px;
+  }
+  #tab-tambah .panel {
+    margin-bottom: 14px;
+  }
+  #tab-tambah .form button[type="submit"],
+  #tab-tambah .chat-form button[type="submit"],
+  #tab-tambah .struk-actions .btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  /* FOTO STRUK row — stack vertical di mobile, label tetep clickable */
+  .struk-photo-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .struk-photo-btn,
+  .struk-gallery-btn {
+    width: 100%;
+    padding: 14px 16px !important;
+    font-size: 15px;
+    text-align: center;
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #8b5a2b !important;
+    border: 1.5px solid #d4af37 !important;
+    border-radius: 12px;
+    font-weight: 700;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    min-height: 52px;
+  }
+  .struk-photo-btn:active,
+  .struk-gallery-btn:active {
+    transform: scale(0.97);
+    background: linear-gradient(135deg, #fde68a, #fcd34d) !important;
+  }
+
+  /* Struk actions */
+  .struk-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .struk-actions label {
+    width: 100%;
+  }
+  .struk-actions input[type="date"] {
+    width: 100%;
+  }
+
+  /* Z-index biar bottom nav gak block click button di bawah form */
+  .bottom-nav {
+    z-index: 80;
+  }
+  /* But pastiin tombol primary di form ada di atas bg, gak block-able */
+  form button[type="submit"] {
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Chat panel — input jangan ke-stick bottom nav */
+  .chat-panel {
+    margin-bottom: 20px;
+  }
+  .chat-box {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .chat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chat-form input {
+    width: 100%;
+  }
+  .chat-form .btn {
+    width: 100%;
   }
 
   /* Page head — stack vertical */
