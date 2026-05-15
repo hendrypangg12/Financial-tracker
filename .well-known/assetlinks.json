@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "id.berstock.beruang",
-    "sha256_cert_fingerprints": ["D2:CC:D9:E6:F6:87:49:28:56:08:C5:BD:2C:84:D7:11:8F:C0:21:1A:2E:3C:84:BB:AA:BD:AC:70:D1:1A:34:88"]
+    "sha256_cert_fingerprints": ["E5:22:CC:6B:A4:8A:46:F6:76:30:72:B4:2F:F6:A6:56:DB:4D:38:38:5B:DE:D7:EC:C7:A8:B1:45:29:E7:D2:77"]
   }
 }]
