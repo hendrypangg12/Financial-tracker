@@ -24,15 +24,15 @@ function renderTransaksi() {
   }
   empty.hidden = true;
   tbody.innerHTML = list.map(t => `
-    <tr>
-      <td>${formatTanggal(t.tanggal)}</td>
-      <td>${escapeHtml(t.deskripsi || '-')}</td>
-      <td><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${t.jenis}</span></td>
-      <td class="num"><b style="color:${t.jenis === 'pemasukan' ? '#5a8a3a' : '#c0392b'}">${formatRupiah(t.jumlah)}</b></td>
-      <td>${escapeHtml(t.subKategori || '-')}</td>
-      <td>${escapeHtml(t.kategori || '-')}</td>
-      <td>${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
-      <td class="row-actions">
+    <tr class="trx-row">
+      <td data-label="Tanggal">${formatTanggal(t.tanggal)}</td>
+      <td data-label="Deskripsi" class="trx-desc">${escapeHtml(t.deskripsi || '-')}</td>
+      <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${t.jenis}</span></td>
+      <td class="num trx-amount" data-label="Jumlah"><b style="color:${t.jenis === 'pemasukan' ? '#5a8a3a' : '#c0392b'}">${formatRupiah(t.jumlah)}</b></td>
+      <td data-label="Sub Kategori">${escapeHtml(t.subKategori || '-')}</td>
+      <td data-label="Kategori">${escapeHtml(t.kategori || '-')}</td>
+      <td data-label="Alokasi">${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
+      <td class="row-actions" data-label="Aksi">
         <button class="icon-btn" data-edit="${t.id}" title="Edit">✏️</button>
         <button class="icon-btn danger" data-del="${t.id}" title="Hapus">🗑️</button>
       </td>

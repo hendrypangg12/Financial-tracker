@@ -1644,3 +1644,147 @@ html { scroll-behavior: smooth; }
   height: 32px;
   padding-top: 8px;
 }
+
+/* ============================================================
+   📱 MOBILE TABLE → CARD LAYOUT (Native list feel)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Hide table chrome di mobile */
+  .trx-table, .trx-table tbody {
+    display: block;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .trx-table thead {
+    display: none; /* Hide header — labels via data-label */
+  }
+  .trx-table tr.trx-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "desc amount"
+      "meta meta"
+      "tags actions";
+    gap: 6px 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(62, 45, 33, 0.04);
+    transition: transform 0.1s, box-shadow 0.15s;
+  }
+  .trx-table tr.trx-row:active {
+    transform: scale(0.99);
+    box-shadow: 0 2px 8px rgba(62, 45, 33, 0.1);
+  }
+  .trx-table tr.trx-row td {
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-size: 13px;
+  }
+  /* Hide data-label by default at mobile */
+  .trx-table tr.trx-row td::before {
+    display: none;
+  }
+
+  /* Layout regions */
+  /* Description = top left, bold */
+  .trx-table tr.trx-row td.trx-desc {
+    grid-area: desc;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  /* Amount = top right, big & color */
+  .trx-table tr.trx-row td.trx-amount {
+    grid-area: amount;
+    font-size: 17px;
+    font-weight: 800;
+    text-align: right;
+    line-height: 1.2;
+  }
+  .trx-table tr.trx-row td.trx-amount b {
+    font-size: inherit;
+  }
+  /* Tanggal — small meta below */
+  .trx-table tr.trx-row td[data-label="Tanggal"] {
+    grid-area: meta;
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .trx-table tr.trx-row td[data-label="Tanggal"]::before {
+    content: '📅';
+    display: inline;
+    font-size: 12px;
+  }
+  /* Jenis pill — di kategori row */
+  .trx-table tr.trx-row td[data-label="Jenis"] {
+    grid-area: tags;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .trx-table tr.trx-row td[data-label="Jenis"] .pill {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  /* Hide secondary columns di mobile (clutter) */
+  .trx-table tr.trx-row td[data-label="Sub Kategori"],
+  .trx-table tr.trx-row td[data-label="Kategori"],
+  .trx-table tr.trx-row td[data-label="Alokasi"] {
+    display: none;
+  }
+  /* Actions row */
+  .trx-table tr.trx-row td.row-actions {
+    grid-area: actions;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .trx-table tr.trx-row td.row-actions .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #faf6ee;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .trx-table tr.trx-row td.row-actions .icon-btn:active {
+    transform: scale(0.92);
+    background: #f0e6d0;
+  }
+
+  /* Same approach untuk tabel lain — universal mobile-card */
+  table.trx-table,
+  .panel > table:not(.trx-table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+  }
+}
+
+/* === Container untuk Daftar Transaksi: Hilangkan box-shadow panel di mobile === */
+@media (max-width: 768px) {
+  #tab-transaksi .panel {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+}
