@@ -475,7 +475,100 @@ state = {
 - hendryphang12@gmail.com — Pro (akun bos typo)
 - **edwinabraham456@gmail.com — Trial HABIS** (REAL LEAD, action besok!)
 
-### ⏳ PENDING (Day 5+)
+### ✅ DAY 5-15 (Done — 7-16 Mei 2026)
+
+**Focus utama: Google Play Store launch BerUang via Closed Testing**
+
+#### **📱 BerUang Android — LIVE di Play Store Closed Beta**
+
+| Item | Status | Notes |
+|---|---|---|
+| **Package ID** | ✅ `id.berstock.beruang` | Reverse domain naming |
+| **Developer name** | ✅ Berstock.id | Brand consistent dengan domain |
+| **App name** | ✅ "BerUang- Catat Keuangan" | 23/30 chars |
+| **Build method** | ❓ Belum dokumen | TBD: PWA Builder / Bubblewrap / Capacitor / Native — tanya bos saat session baru |
+| **AAB version** | ✅ 1.0.0 - Closed Beta | Live di Closed Testing track "Alpha" |
+| **Country** | ✅ Indonesia (1 country) | Single market launch |
+
+#### **🎨 Store Listing Assets (Hampir Lengkap)**
+
+| Asset | Status | Detail |
+|---|---|---|
+| **App icon 512×512** | ✅ Done | Mascot beruang berkacamata + buku (gemoy) |
+| **Feature graphic 1024×500** | ✅ Done | Cream "BerUang" + tagline + badge "Auto Dashboard" & "Hutang & Piutang" |
+| **Phone screenshots** | ✅ Done | 4+ slides: "Tracking lengkap", "Foto sekali auto-masuk", "Catat via chat", "Lihat real-time" |
+| **Tablet screenshots** | ❓ Cek status | Opsional |
+| **Promo video YouTube** | ⏳ Empty | Opsional, skip aja |
+| **Short description** (80) | ✅ Done | "Catat keuangan via chat, foto struk & form. Trial Pro 7 hari" (67/80) |
+| **Full description** (4000) | ✅ Started | "🐻 BerUang — Catat dulu, biar beneran ber-uang!" (perlu verify length) |
+| **App category** | ⏳ Cek | Should be Finance |
+| **Email contact** | ✅ Done | hendrypangg12@gmail.com (assumed) |
+| **Website** | ✅ Done | berstock.id |
+| **Privacy Policy URL** | ✅ Done | `berstock.id/privacy.html` |
+
+⚠️ **STATUS:** Ada warning "Some languages have errors" — perlu fix sebelum bisa save final
+
+#### **📋 App Content & Policy Forms**
+
+⏳ **Status TBD per session baru — tanya bos atau verify via screenshot:**
+- Data safety form
+- Content rating questionnaire
+- Target audience (13+)
+- Ads declaration (No ads)
+- Financial features → YES "Personal finance management"
+- News/Health/COVID/Government apps → No
+- Advertising ID → No
+
+#### **👥 Closed Testing — Google Groups Method**
+
+| Item | Status | Notes |
+|---|---|---|
+| **Method** | ✅ Google Groups (bukan Email Lists) | Easier broadcast, gak perlu daftar email 1-1 |
+| **Group name** | ✅ `beruangbetatesters` | https://groups.google.com/g/beruangbetatesters |
+| **Group email** | ✅ `beruangbetatesters@googlegroups.com` | Added ke Play Console testers |
+| **Group permission** | ✅ "Anyone on the web can join" | Auto-join, no manual approval |
+| **Tester opted-in counter** | ✅ **12 / 12** (16 Mei 2026) | TARGET REACHED |
+| **Feedback URL** | ✅ hendrypangg12@gmail.com | |
+
+#### **⏰ Production Timeline (Estimasi)**
+
+| Tanggal | Milestone |
+|---|---|
+| **16 Mei 2026** | ✅ 12 tester opted-in — Timer 14 hari START |
+| **16-30 Mei** | ⏳ Run closed test 14 days |
+| **30 Mei 2026** | ⏳ "Apply for production" button unlocks |
+| **30 Mei - 2 Juni** | ⏳ Submit + answer questionnaire |
+| **2-7 Juni 2026** | ⏳ Google review production access |
+| **~7 Juni 2026** | 🎯 **BERUANG LIVE PUBLIC DI PLAY STORE!** |
+
+#### **🔗 Important Links (BerUang Play Store)**
+
+```
+Play Console:  https://play.google.com/console
+Closed Testing dashboard: (login → BerUang app → Dashboard)
+Tester opt-in link: https://play.google.com/apps/testing/id.berstock.beruang
+Store listing (public, after Production): https://play.google.com/store/apps/details?id=id.berstock.beruang
+Google Group join: https://groups.google.com/g/beruangbetatesters
+```
+
+#### **⚠️ KRITIKAL — JAGA AGAR COUNTER GAK DROP**
+
+- Counter harus tetap **≥12 testers** selama **14 hari berturut-turut**
+- Kalau ada tester uninstall → counter drop → **TIMER RESET KE 0!**
+- **Saran:** recruit buffer 15-17 tester biar safe
+- **Reminder ke tester:** jangan uninstall, buka app sesekali (gak harus tiap hari)
+
+#### **🎨 Marketing Assets BerUang Launch (Day 5-15)**
+
+| Asset | Status | File |
+|---|---|---|
+| **Behind The Scenes carousel** (6 slides) | ✅ Done (16 Mei) | `beruang-behind-scenes.html` + `carousel-bts/*.png` |
+| Countdown teaser 7 days | ⏳ Belum | Saya bisa render kalau diminta |
+| Launch day post + story + reels | ⏳ Belum | Saya bisa render kalau diminta |
+| WA broadcast template tester | ✅ Done (di chat) | "Jangan uninstall 14 hari" reminder |
+| Production questionnaire jawaban | ⏳ Belum draft | Tunggu "Preview questions" dari bos |
+
+### ⏳ PENDING (Day 16+)
 | Item | Status | Notes |
 |---|---|---|
 | **🔥 Email Edwin Abraham** | URGENT | Template ready di chat. Send via Gmail manual |
@@ -708,7 +801,8 @@ state = {
 ### Live Production Links
 - **🌟 Homepage utama (custom domain):** https://berstock.id ⭐ NEW
 - **Linktree BerSatu Suite:** https://berstock.id/linktree.html
-- **BerUang app:** https://berstock.id/app.html (atau hendrypangg12.github.io/Financial-tracker/app.html)
+- **BerUang app (web/PWA):** https://berstock.id/app.html (atau hendrypangg12.github.io/Financial-tracker/app.html)
+- **BerUang Android (Play Store Closed Beta):** https://play.google.com/apps/testing/id.berstock.beruang (Production ~7 Juni 2026)
 - **BerUang landing:** https://berstock.id/landing.html
 - **BerBisnis app:** https://berstock.id/tokountung/app.html
 - **BerBisnis Pro landing:** https://berstock.id/berbisnis-pro.html
