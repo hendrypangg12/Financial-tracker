@@ -307,6 +307,12 @@ state = {
 6. **Update file ini** kalau ada keputusan arsitektur baru
 7. **Saat restart session:** BACA file ini DULU sebelum mulai task baru
 8. **Setup actions yang butuh user:** kasih instruksi step-by-step yang jelas (owner non-technical untuk hal cloud/API)
+9. **AUTO-UPDATE CLAUDE.md tanpa nanya** (permission default by owner — 16 Mei 2026):
+   - Setiap selesai task besar / milestone → langsung update CLAUDE.md
+   - Setiap ada keputusan bisnis di chat → langsung catat
+   - Setiap ada bug/quirk baru ditemukan → langsung dokumen di section Skills
+   - Commit & push auto, gak perlu konfirmasi
+   - Tujuannya: memory persistent antar session, gak ada "amnesia" lagi
 
 ---
 
