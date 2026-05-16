@@ -508,16 +508,24 @@ state = {
 
 ⚠️ **STATUS:** Ada warning "Some languages have errors" — perlu fix sebelum bisa save final
 
-#### **📋 App Content & Policy Forms**
+#### **📋 App Content & Policy Forms (10/11 Complete — 91%)**
 
-⏳ **Status TBD per session baru — tanya bos atau verify via screenshot:**
-- Data safety form
-- Content rating questionnaire
-- Target audience (13+)
-- Ads declaration (No ads)
-- Financial features → YES "Personal finance management"
-- News/Health/COVID/Government apps → No
-- Advertising ID → No
+✅ **VERIFIED DONE (per screenshot 16 Mei 2026):**
+- ✅ Set privacy policy → `berstock.id/privacy.html`
+- ✅ App access
+- ✅ Ads (No ads)
+- ✅ Content rating
+- ✅ Target audience
+- ✅ Data safety
+- ✅ Government apps
+- ✅ Financial features → YES "Personal finance management"
+- ✅ Health
+- ✅ Select app category & contact details
+
+⏳ **REMAINING (1 task):**
+- ⏳ **Set up your store listing** — ada error "Some languages have errors" yang perlu fix
+
+⚠️ **NOTE:** Bos pernah liat error message — kemungkinan di translation Default Indonesian (asset size salah atau field kosong). Saat session baru, fix dulu sebelum bisa apply Production.
 
 #### **👥 Closed Testing — Google Groups Method**
 
