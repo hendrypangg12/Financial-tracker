@@ -10,35 +10,43 @@
 
 **Status saat ini:**
 - ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
+- ✅ Store listing SUBSTANTIVELY COMPLETE — semua asset & description udah upload (icon, feature graphic, 4+ screenshots, short + full description)
 - ✅ **12/12 tester opted-in** via Google Group `beruangbetatesters` — TIMER 14 HARI RUNNING (16 Mei → 30 Mei)
 - ✅ 10/11 App content forms VERIFIED done
-- ⏳ 1 task remaining: **fix "Some languages have errors" di Store Listing**
+- ⚠️ Dashboard nunjukin ⚪ "Set up your store listing" tapi **BUKAN BLOCKER** untuk Production — kemungkinan minor warning di translation tambahan / Google's perfectionist checklist
 - 🎯 **Estimasi LIVE PUBLIC: ~7 Juni 2026**
 
-**Yang HARUS dikerjain di session berikutnya (urutan prioritas):**
+**Catatan PENTING (bos koreksi 16 Mei 2026):**
+> Walaupun dashboard nunjukin "10/11 complete" dan ada warning "Some languages have errors", FAKTA-nya app udah berhasil masuk Closed Testing dengan 12 tester install. Artinya store listing minimum udah valid. Warning yang muncul kemungkinan:
+> - Translation tambahan (English, dll) yang opsional belum diisi → bisa di-remove via "Manage translations" kalau gak dipake
+> - Tablet screenshots opsional belum di-upload
+> - Promo video YouTube opsional kosong
+>
+> **TIDAK akan block "Apply for Production" tanggal 30 Mei nanti.**
 
-1. 🚨 **Fix Store Listing error** (lihat detail di section DAY 5-15 di bawah)
-   - Buka Play Console → Set up your store listing
-   - Klik "Manage translations" → cari bahasa yang error (icon ⚠️)
-   - Fix field merah → Save
-   - Result: 11/11 complete ✅
+**Yang HARUS dikerjain di session berikutnya (urutan prioritas REVISI):**
 
-2. ⚠️ **Daily monitor counter** (5 menit/hari)
+1. ⚠️ **Daily monitor counter** (5 menit/hari) — PALING KRITIKAL
    - Buka [play.google.com/console](https://play.google.com/console) → Dashboard
    - Pastikan counter "X testers currently opted-in" tetap **≥12**
    - Kalau drop di bawah 12 → TIMER RESET, emergency recruit pengganti
 
-3. 🛡️ **Recruit BUFFER 3-5 tester ekstra** (target 15-17 total) biar safe
+2. 🛡️ **Recruit BUFFER 3-5 tester ekstra** (target 15-17 total) biar safe kalau ada uninstall
 
-4. 📝 **Generate Production questionnaire draft** (sebelum 30 Mei)
+3. 📝 **Generate Production questionnaire draft** (sebelum 30 Mei)
    - Klik "Preview questions" di Play Console Dashboard
    - Screenshot pertanyaan → kasih ke Claude → generate jawaban
    - Pertanyaan tipikal: cara recruit tester, feedback received, changes made, user discovery
 
-5. 🎨 **Marketing pre-launch sambil nunggu 14 hari:**
+4. 🎨 **Marketing pre-launch sambil nunggu 14 hari:**
    - Behind The Scenes carousel: ✅ DONE (16 Mei, file `beruang-behind-scenes.html`)
    - Countdown teaser 7 days story: ⏳ TBD
    - Launch day post + reels: ⏳ TBD
+
+5. 🔧 **(OPSIONAL, low priority) Cleanup Store Listing warning**
+   - Buka Play Console → Set up your store listing
+   - Klik "Manage translations" → hapus bahasa selain Indonesian kalau gak dipake
+   - Atau biarin aja, bukan blocker
 
 ### 🐻 Quick Facts BerUang Play Store
 - Package: `id.berstock.beruang`
@@ -552,7 +560,7 @@ state = {
 | **Website** | ✅ Done | berstock.id |
 | **Privacy Policy URL** | ✅ Done | `berstock.id/privacy.html` |
 
-⚠️ **STATUS:** Ada warning "Some languages have errors" — perlu fix sebelum bisa save final
+⚠️ **STATUS:** Ada warning "Some languages have errors" — TAPI **BUKAN BLOCKER** (bos koreksi 16 Mei). App udah live di Closed Testing = store listing valid. Warning kemungkinan dari translation tambahan opsional yang belum diisi. Bisa di-cleanup nanti, gak akan block Production apply.
 
 #### **📋 App Content & Policy Forms (10/11 Complete — 91%)**
 
@@ -568,10 +576,10 @@ state = {
 - ✅ Health
 - ✅ Select app category & contact details
 
-⏳ **REMAINING (1 task):**
-- ⏳ **Set up your store listing** — ada error "Some languages have errors" yang perlu fix
+⏳ **REMAINING (1 task — non-blocking):**
+- ⏳ **Set up your store listing** — Dashboard nunjukin ⚪ tapi store listing substantively complete (bukti: udah live Closed Testing dengan 12 tester install)
 
-⚠️ **NOTE:** Bos pernah liat error message — kemungkinan di translation Default Indonesian (asset size salah atau field kosong). Saat session baru, fix dulu sebelum bisa apply Production.
+⚠️ **CLARIFICATION (16 Mei 2026):** Bos KOREKSI saya — walaupun ada warning "Some languages have errors", itu BUKAN BLOCKER. App udah berhasil masuk Closed Testing dengan asset lengkap (icon, feature graphic, 4+ screenshots, descriptions). Warning kemungkinan dari translation opsional (English, dll) atau Google perfectionist checklist. Tidak block apply Production tanggal 30 Mei.
 
 #### **👥 Closed Testing — Google Groups Method**
 
