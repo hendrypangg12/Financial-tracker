@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>BerUang — Behind The Scenes Carousel (6 Slides)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #fbf6ee;
+  --cream-deep: #f0e9d8;
+  --cream-warm: #fef3e2;
+  --brown: #8b5a2b;
+  --brown-dark: #5d3a1a;
+  --brown-light: #b07a48;
+  --ink: #4a3328;
+  --gold: #c9a352;
+  --gold-bright: #d4af37;
+  --orange: #e8842a;
+  --green: #5b8a3a;
+  --green-bright: #4caf50;
+  --red: #c44848;
+  --blue: #4a7ba8;
+}
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #1a1a1a;
+  min-height: 100vh; padding: 30px 0;
+}
+.slides { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+.slide {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: 80px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+.slide-num {
+  position: absolute; top: 36px; right: 50px;
+  font-size: 18px; font-weight: 700;
+  color: rgba(74,51,40,.35); letter-spacing: 3px;
+  z-index: 10;
+}
+.slide-wm {
+  position: absolute; bottom: 36px; right: 50px;
+  font-size: 16px; font-weight: 700; opacity: .55;
+  display: flex; align-items: center; gap: 10px; z-index: 10;
+  color: var(--brown);
+}
+.slide-wm img { width: 32px; height: 32px; border-radius: 8px; }
+
+/* ============ SLIDE 1: COVER ============ */
+.s1 {
+  background: linear-gradient(135deg, var(--cream) 0%, var(--cream-warm) 100%);
+  align-items: center; justify-content: center; text-align: center;
+  color: var(--ink);
+}
+.s1::before { content: '💰'; position: absolute; top: 100px; left: 110px; font-size: 110px; opacity: .12; transform: rotate(-15deg); }
+.s1::after { content: '🚀'; position: absolute; bottom: 130px; right: 110px; font-size: 130px; opacity: .15; transform: rotate(10deg); }
+.s1-coin1 { position: absolute; top: 220px; right: 150px; font-size: 80px; opacity: .12; transform: rotate(20deg); }
+.s1-coin2 { position: absolute; bottom: 280px; left: 110px; font-size: 90px; opacity: .12; transform: rotate(-20deg); }
+.s1-stars { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); font-size: 24px; letter-spacing: 8px; color: var(--gold); opacity: .9; z-index: 2; }
+
+.s1 .badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 26px; border-radius: 999px;
+  background: var(--brown); color: var(--cream);
+  font-size: 18px; font-weight: 700; letter-spacing: 1.5px;
+  margin-bottom: 24px;
+  position: relative; z-index: 2;
+}
+.s1 .mascot {
+  width: 260px; height: 260px; border-radius: 36px;
+  background: #fff; padding: 16px; margin-bottom: 36px;
+  box-shadow: 0 24px 70px rgba(139,90,43,.3), 0 0 0 8px rgba(255,255,255,.5);
+  position: relative; z-index: 2;
+}
+.s1 .mascot img { width: 100%; height: 100%; object-fit: contain; }
+.s1 h1 {
+  font-size: 110px; font-weight: 900; letter-spacing: -4px;
+  color: var(--brown-dark); line-height: 0.95; margin-bottom: 30px;
+  position: relative; z-index: 2;
+}
+.s1 h1 .accent {
+  display: inline-block; color: var(--gold-bright);
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: 110%;
+}
+.s1 .sub {
+  font-size: 32px; color: var(--brown); font-weight: 500;
+  margin-bottom: 48px; max-width: 800px; line-height: 1.4;
+  position: relative; z-index: 2;
+}
+.s1 .swipe {
+  display: inline-flex; align-items: center; gap: 16px;
+  padding: 20px 44px; border-radius: 999px;
+  background: var(--brown); color: var(--cream);
+  font-weight: 700; font-size: 26px;
+  position: relative; z-index: 2;
+  box-shadow: 0 10px 30px rgba(139,90,43,.4);
+}
+
+/* ============ SLIDE 2: THE STRUGGLE ============ */
+.s2 {
+  background: linear-gradient(180deg, #fef3e2 0%, var(--cream-deep) 100%);
+  color: var(--ink);
+}
+.s2 .tag {
+  display: inline-block; padding: 8px 24px; border-radius: 999px;
+  background: var(--red); color: #fff;
+  font-size: 17px; font-weight: 700; letter-spacing: 2px;
+  margin-bottom: 28px;
+}
+.s2 h2 {
+  font-size: 80px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.0; margin-bottom: 16px; color: var(--brown-dark);
+}
+.s2 h2 .scratch {
+  font-family: 'Caveat', cursive; color: var(--red); font-size: 110%;
+}
+.s2 .lead {
+  font-size: 28px; color: var(--brown); line-height: 1.45;
+  max-width: 850px; margin-bottom: 50px;
+}
+.problems {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-top: 30px;
+}
+.prob {
+  background: #fff; padding: 36px 32px; border-radius: 24px;
+  border: 3px solid var(--cream-deep);
+  box-shadow: 0 8px 24px rgba(74,51,40,.08);
+  position: relative;
+}
+.prob::before {
+  content: ''; position: absolute; top: 0; left: 36px;
+  width: 56px; height: 8px; background: var(--red);
+  border-radius: 0 0 8px 8px;
+}
+.prob .emj { font-size: 56px; margin-bottom: 16px; display: block; }
+.prob .num { font-size: 56px; font-weight: 900; color: var(--red); line-height: 1; margin-bottom: 12px; }
+.prob .desc { font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+
+/* ============ SLIDE 3: THE BUILD ============ */
+.s3 {
+  background: linear-gradient(180deg, var(--cream) 0%, #f0e9d8 100%);
+  color: var(--ink);
+}
+.s3 .tag {
+  display: inline-block; padding: 8px 24px; border-radius: 999px;
+  background: var(--green); color: #fff;
+  font-size: 17px; font-weight: 700; letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.s3 h2 {
+  font-size: 90px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.0; margin-bottom: 18px; color: var(--brown-dark);
+}
+.s3 h2 .accent {
+  font-family: 'Caveat', cursive; color: var(--green); font-size: 110%;
+}
+.s3 .lead {
+  font-size: 28px; color: var(--brown); line-height: 1.45;
+  max-width: 900px; margin-bottom: 44px;
+}
+.features {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+}
+.feat {
+  background: #fff; padding: 26px 26px; border-radius: 22px;
+  display: flex; align-items: center; gap: 18px;
+  border: 3px solid var(--cream-deep);
+  box-shadow: 0 6px 20px rgba(74,51,40,.06);
+}
+.feat .icn { font-size: 48px; flex-shrink: 0; width: 78px; height: 78px;
+  background: var(--cream-warm); border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.feat .ttl { font-size: 22px; font-weight: 800; color: var(--brown-dark); margin-bottom: 4px; line-height: 1.1; }
+.feat .sub2 { font-size: 16px; color: var(--ink); line-height: 1.3; opacity: .8; }
+
+/* ============ SLIDE 4: TIMELINE / JOURNEY ============ */
+.s4 {
+  background: linear-gradient(180deg, var(--cream-warm) 0%, var(--cream) 100%);
+  color: var(--ink);
+}
+.s4 .tag {
+  display: inline-block; padding: 8px 24px; border-radius: 999px;
+  background: var(--gold-bright); color: var(--brown-dark);
+  font-size: 17px; font-weight: 800; letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+.s4 h2 {
+  font-size: 80px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1.0; margin-bottom: 16px; color: var(--brown-dark);
+}
+.s4 h2 .accent {
+  font-family: 'Caveat', cursive; color: var(--gold-bright); font-size: 105%;
+}
+.s4 .lead {
+  font-size: 25px; color: var(--brown); margin-bottom: 36px;
+}
+.timeline {
+  margin-top: 24px; position: relative;
+}
+.timeline::before {
+  content: ''; position: absolute; left: 50px; top: 30px; bottom: 30px;
+  width: 4px; background: var(--gold); border-radius: 2px;
+}
+.tl-item {
+  display: flex; gap: 24px; align-items: flex-start;
+  margin-bottom: 26px; position: relative;
+}
+.tl-dot {
+  width: 104px; height: 104px; border-radius: 50%;
+  background: #fff; border: 5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 900; color: var(--brown-dark);
+  flex-shrink: 0; z-index: 2;
+  box-shadow: 0 6px 18px rgba(201,163,82,.3);
+  line-height: 1;
+}
+.tl-dot.done { background: var(--green-bright); border-color: var(--green); color: #fff; }
+.tl-dot.now { background: var(--orange); border-color: #d97120; color: #fff; animation: pulse-now 1.6s infinite; }
+@keyframes pulse-now { 0%,100% { box-shadow: 0 6px 18px rgba(232,132,42,.5);} 50%{ box-shadow: 0 6px 28px rgba(232,132,42,.9);} }
+.tl-body { flex: 1; padding-top: 6px; }
+.tl-day { font-size: 14px; font-weight: 800; color: var(--brown); letter-spacing: 2px; margin-bottom: 4px; }
+.tl-ttl { font-size: 26px; font-weight: 800; color: var(--brown-dark); line-height: 1.15; margin-bottom: 4px; }
+.tl-desc { font-size: 17px; color: var(--ink); opacity: .8; line-height: 1.3; }
+
+/* ============ SLIDE 5: WHERE WE ARE ============ */
+.s5 {
+  background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown) 60%, var(--brown-light) 100%);
+  color: var(--cream);
+  align-items: center; justify-content: center; text-align: center;
+}
+.s5 .badge-live {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 28px; border-radius: 999px;
+  background: var(--green-bright); color: #fff;
+  font-size: 18px; font-weight: 800; letter-spacing: 2px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 28px rgba(76,175,80,.4);
+}
+.s5 .badge-live::before { content: '●'; animation: blink 1s infinite; }
+@keyframes blink { 50%{opacity:.3;} }
+
+.s5 .big-num {
+  font-size: 280px; font-weight: 900; line-height: 0.9;
+  color: var(--gold-bright); letter-spacing: -10px;
+  margin-bottom: 8px;
+  text-shadow: 0 10px 40px rgba(0,0,0,.3);
+}
+.s5 .big-sub {
+  font-size: 44px; font-weight: 800; color: #fff;
+  margin-bottom: 36px; letter-spacing: -1px;
+}
+.s5 .big-sub .accent {
+  font-family: 'Caveat', cursive; color: var(--gold-bright); font-size: 110%;
+}
+
+.progress-track {
+  width: 780px; height: 32px; background: rgba(255,255,255,.15);
+  border-radius: 999px; padding: 6px; margin-bottom: 24px;
+  border: 2px solid rgba(255,255,255,.2);
+}
+.progress-fill {
+  width: 75%; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-bright) 100%);
+  box-shadow: 0 0 20px rgba(212,175,55,.6);
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 14px;
+  font-size: 14px; font-weight: 800; color: var(--brown-dark);
+}
+.s5 .progress-label { font-size: 22px; color: rgba(251,246,238,.85); margin-bottom: 48px; font-weight: 600; }
+
+.s5 .stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px;
+  width: 800px;
+}
+.stat-card {
+  background: rgba(255,255,255,.1); border-radius: 22px;
+  padding: 28px 18px; backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,.15);
+}
+.stat-card .v { font-size: 64px; font-weight: 900; color: var(--gold-bright); line-height: 1; margin-bottom: 8px; }
+.stat-card .l { font-size: 18px; color: rgba(251,246,238,.9); font-weight: 600; }
+
+/* ============ SLIDE 6: CTA ============ */
+.s6 {
+  background: linear-gradient(135deg, var(--cream) 0%, #f5ebd4 100%);
+  color: var(--ink);
+  align-items: center; justify-content: center; text-align: center;
+}
+.s6::before { content: '🎁'; position: absolute; top: 110px; left: 130px; font-size: 100px; opacity: .12; transform: rotate(-15deg); }
+.s6::after { content: '⭐'; position: absolute; bottom: 130px; right: 130px; font-size: 110px; opacity: .15; transform: rotate(15deg); }
+
+.s6 .mascot-sm {
+  width: 180px; height: 180px; border-radius: 28px;
+  background: #fff; padding: 12px; margin-bottom: 26px;
+  box-shadow: 0 18px 50px rgba(139,90,43,.3);
+  position: relative; z-index: 2;
+}
+.s6 .mascot-sm img { width: 100%; height: 100%; object-fit: contain; }
+
+.s6 h2 {
+  font-size: 92px; font-weight: 900; letter-spacing: -2px;
+  line-height: 0.98; margin-bottom: 16px; color: var(--brown-dark);
+  position: relative; z-index: 2;
+}
+.s6 h2 .accent {
+  font-family: 'Caveat', cursive; color: var(--gold-bright); font-size: 110%;
+}
+.s6 .lead-cta {
+  font-size: 28px; color: var(--brown); font-weight: 600;
+  margin-bottom: 36px; max-width: 800px; line-height: 1.4;
+  position: relative; z-index: 2;
+}
+.bonus-list {
+  background: #fff; padding: 32px 40px; border-radius: 28px;
+  margin-bottom: 40px;
+  border: 4px solid var(--gold);
+  box-shadow: 0 14px 40px rgba(201,163,82,.3);
+  position: relative; z-index: 2;
+}
+.bonus-list .ttl {
+  font-size: 22px; font-weight: 900; color: var(--brown-dark);
+  margin-bottom: 18px; letter-spacing: 1px;
+}
+.bonus-list ul { list-style: none; text-align: left; }
+.bonus-list li {
+  font-size: 22px; color: var(--ink); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+}
+.bonus-list li::before { content: '✅'; font-size: 22px; flex-shrink: 0; }
+
+.s6 .cta-box {
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative; z-index: 2;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 20px 50px; border-radius: 999px;
+  font-weight: 800; font-size: 24px;
+  box-shadow: 0 12px 30px rgba(139,90,43,.3);
+}
+.cta-btn.primary { background: var(--brown); color: var(--cream); }
+.cta-btn.secondary { background: #fff; color: var(--brown-dark); border: 3px solid var(--brown); }
+.s6 .contact {
+  margin-top: 24px; font-size: 20px; color: var(--brown);
+  font-weight: 700;
+  position: relative; z-index: 2;
+}
+</style>
+</head>
+<body>
+<div class="slides">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide s1">
+    <div class="slide-num">01 / 06</div>
+    <div class="s1-coin1">🪙</div>
+    <div class="s1-coin2">💵</div>
+    <div class="s1-stars">★ ★ ★ ★ ★</div>
+    <div class="badge">🐻 BEHIND THE SCENES</div>
+    <div class="mascot"><img src="assets/mascot-beruang.png" alt="BerUang Mascot" /></div>
+    <h1>Dari Ide<br/>ke <span class="accent">Play Store</span></h1>
+    <div class="sub">Journey bikin app catat keuangan dari nol — tanpa investor, tanpa team gede</div>
+    <div class="swipe">Swipe ke kanan →</div>
+    <div class="slide-wm"><img src="assets/logo-beruang.png" /> BerUang · berstock.id</div>
+  </div>
+
+  <!-- SLIDE 2: THE STRUGGLE -->
+  <div class="slide s2">
+    <div class="slide-num">02 / 06</div>
+    <div class="tag">❌ REAL PROBLEM</div>
+    <h2>Kenapa orang <span class="scratch">susah</span><br/>catat keuangan?</h2>
+    <div class="lead">Padahal semua orang tau penting. Tapi 80% Indonesia gagal konsisten. Kenapa?</div>
+    <div class="problems">
+      <div class="prob">
+        <span class="emj">📝</span>
+        <div class="num">5 menit</div>
+        <div class="desc">Buang waktu nulis manual tiap transaksi di Excel atau buku</div>
+      </div>
+      <div class="prob">
+        <span class="emj">😩</span>
+        <div class="num">3 hari</div>
+        <div class="desc">Rata-rata orang menyerah catat keuangan setelah cuma 3 hari</div>
+      </div>
+      <div class="prob">
+        <span class="emj">🤯</span>
+        <div class="num">Ribet</div>
+        <div class="desc">App finance yang ada terlalu kaku — banyak form, banyak field</div>
+      </div>
+      <div class="prob">
+        <span class="emj">💸</span>
+        <div class="num">Bocor</div>
+        <div class="desc">Tau-tau gaji ludes, gak tau lari ke mana uangnya</div>
+      </div>
+    </div>
+    <div class="slide-wm"><img src="assets/logo-beruang.png" /> BerUang · berstock.id</div>
+  </div>
+
+  <!-- SLIDE 3: THE BUILD -->
+  <div class="slide s3">
+    <div class="slide-num">03 / 06</div>
+    <div class="tag">💡 THE SOLUTION</div>
+    <h2>Maka kami <span class="accent">bikin</span><br/>BerUang 🐻</h2>
+    <div class="lead">App catat keuangan paling minim friction — cukup chat, foto struk, atau form simple</div>
+    <div class="features">
+      <div class="feat">
+        <div class="icn">💬</div>
+        <div>
+          <div class="ttl">Catat via Chat</div>
+          <div class="sub2">"Beli kopi 25rb" — auto-parse</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="icn">📸</div>
+        <div>
+          <div class="ttl">Foto Struk OCR</div>
+          <div class="sub2">Sekali foto, transaksi auto-input</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="icn">📊</div>
+        <div>
+          <div class="ttl">Dashboard Real-time</div>
+          <div class="sub2">Lihat uang habis ke mana</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="icn">🤝</div>
+        <div>
+          <div class="ttl">Hutang & Piutang</div>
+          <div class="sub2">Track siapa pinjem dari kamu</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="icn">☁️</div>
+        <div>
+          <div class="ttl">Cloud Sync</div>
+          <div class="sub2">Data aman, multi-device</div>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="icn">📱</div>
+        <div>
+          <div class="ttl">Offline-First</div>
+          <div class="sub2">Internet putus, tetap jalan</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-wm"><img src="assets/logo-beruang.png" /> BerUang · berstock.id</div>
+  </div>
+
+  <!-- SLIDE 4: TIMELINE -->
+  <div class="slide s4">
+    <div class="slide-num">04 / 06</div>
+    <div class="tag">📅 THE JOURNEY</div>
+    <h2>5 hari, 1 <span class="accent">solo dev</span></h2>
+    <div class="lead">Dari first commit sampe Play Store Closed Beta</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-day">DAY 1</div>
+          <div class="tl-ttl">Bangun core app: input, dashboard, OCR struk</div>
+          <div class="tl-desc">Vanilla HTML/CSS/JS — no framework, no waste</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-day">DAY 2</div>
+          <div class="tl-ttl">Cloud sync + tab Hutang/Piutang</div>
+          <div class="tl-desc">Firebase Auth + Firestore — multi-device ready</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-day">DAY 3</div>
+          <div class="tl-ttl">SEO, GA4, custom domain berstock.id</div>
+          <div class="tl-desc">Landing page + chat widget pro 22 flows</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-day">DAY 4</div>
+          <div class="tl-ttl">Submit ke Play Store Closed Testing</div>
+          <div class="tl-desc">Bundle AAB + store listing + screenshots</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot now">5</div>
+        <div class="tl-body">
+          <div class="tl-day">DAY 5 — HARI INI</div>
+          <div class="tl-ttl">9 dari 12 tester opted-in! 🔥</div>
+          <div class="tl-desc">14 hari lagi → app LIVE di Play Store public</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-wm"><img src="assets/logo-beruang.png" /> BerUang · berstock.id</div>
+  </div>
+
+  <!-- SLIDE 5: WHERE WE ARE NOW -->
+  <div class="slide s5">
+    <div class="slide-num" style="color: rgba(251,246,238,.4);">05 / 06</div>
+    <div class="badge-live">LIVE BETA SEKARANG</div>
+    <div class="big-num">9<span style="font-size: 160px; opacity: .6;">/12</span></div>
+    <div class="big-sub">Beta Tester <span class="accent">aktif</span></div>
+    <div class="progress-track">
+      <div class="progress-fill">75%</div>
+    </div>
+    <div class="progress-label">Tinggal 3 tester lagi → start 14 hari testing</div>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="v">5</div>
+        <div class="l">Hari Build</div>
+      </div>
+      <div class="stat-card">
+        <div class="v">100%</div>
+        <div class="l">Solo Dev</div>
+      </div>
+      <div class="stat-card">
+        <div class="v">0</div>
+        <div class="l">Investor</div>
+      </div>
+    </div>
+    <div class="slide-wm" style="color: rgba(251,246,238,.7);"><img src="assets/logo-beruang.png" /> BerUang · berstock.id</div>
+  </div>
+
+  <!-- SLIDE 6: CTA -->
+  <div class="slide s6">
+    <div class="slide-num">06 / 06</div>
+    <div class="mascot-sm"><img src="assets/mascot-beruang.png" /></div>
+    <h2>Mau jadi <span class="accent">Early Tester?</span></h2>
+    <div class="lead-cta">Tinggal 3 tester lagi sebelum BerUang lolos ke Play Store public. Mau ikutan?</div>
+    <div class="bonus-list">
+      <div class="ttl">🎁 BONUS EARLY TESTER</div>
+      <ul>
+        <li>Lifetime PRO gratis (value Rp 125rb)</li>
+        <li>Nama masuk Hall of Fame app</li>
+        <li>Suara kamu nentuin fitur baru</li>
+        <li>Akses prioritas update Pro</li>
+      </ul>
+    </div>
+    <div class="cta-box">
+      <div class="cta-btn primary">💬 DM "TESTER" ke @berstock.ai</div>
+      <div class="cta-btn secondary">📱 WA 0821-2484-8924</div>
+    </div>
+    <div class="contact">berstock.id · 5 menit doang, gratis selamanya 🐻</div>
+  </div>
+
+</div>
+</body>
+</html>
