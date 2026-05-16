@@ -541,8 +541,10 @@ state = {
 | **Developer name** | ✅ Berstock.id | Brand consistent dengan domain |
 | **App name** | ✅ "BerUang- Catat Keuangan" | 23/30 chars |
 | **Build method** | ❓ Belum dokumen | TBD: PWA Builder / Bubblewrap / Capacitor / Native — tanya bos saat session baru |
-| **AAB version** | ✅ 1.0.0 - Closed Beta | Live di Closed Testing track "Alpha" |
-| **Country** | ✅ Indonesia (1 country) | Single market launch |
+| **AAB version** | ✅ 1.0.0 | Same version untuk Internal + Closed track |
+| **Internal testing release** | ✅ "1.0.0 - Initial Launch" | May 15, 2026 11:11 AM |
+| **Closed testing release** | ✅ "1.0.0 - Closed Beta" track "Alpha" | May 16, 2026 9:06 AM |
+| **Country** | ✅ Indonesia (1 of 177 available) | Single market launch, bisa expand ke SEA setelah Production |
 
 #### **🎨 Store Listing Assets (Hampir Lengkap)**
 
