@@ -4,6 +4,52 @@
 
 ---
 
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 16 Mei 2026)
+
+### 📱 BerUang Android di Google Play Store — HAMPIR LIVE!
+
+**Status saat ini:**
+- ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
+- ✅ **12/12 tester opted-in** via Google Group `beruangbetatesters` — TIMER 14 HARI RUNNING (16 Mei → 30 Mei)
+- ✅ 10/11 App content forms VERIFIED done
+- ⏳ 1 task remaining: **fix "Some languages have errors" di Store Listing**
+- 🎯 **Estimasi LIVE PUBLIC: ~7 Juni 2026**
+
+**Yang HARUS dikerjain di session berikutnya (urutan prioritas):**
+
+1. 🚨 **Fix Store Listing error** (lihat detail di section DAY 5-15 di bawah)
+   - Buka Play Console → Set up your store listing
+   - Klik "Manage translations" → cari bahasa yang error (icon ⚠️)
+   - Fix field merah → Save
+   - Result: 11/11 complete ✅
+
+2. ⚠️ **Daily monitor counter** (5 menit/hari)
+   - Buka [play.google.com/console](https://play.google.com/console) → Dashboard
+   - Pastikan counter "X testers currently opted-in" tetap **≥12**
+   - Kalau drop di bawah 12 → TIMER RESET, emergency recruit pengganti
+
+3. 🛡️ **Recruit BUFFER 3-5 tester ekstra** (target 15-17 total) biar safe
+
+4. 📝 **Generate Production questionnaire draft** (sebelum 30 Mei)
+   - Klik "Preview questions" di Play Console Dashboard
+   - Screenshot pertanyaan → kasih ke Claude → generate jawaban
+   - Pertanyaan tipikal: cara recruit tester, feedback received, changes made, user discovery
+
+5. 🎨 **Marketing pre-launch sambil nunggu 14 hari:**
+   - Behind The Scenes carousel: ✅ DONE (16 Mei, file `beruang-behind-scenes.html`)
+   - Countdown teaser 7 days story: ⏳ TBD
+   - Launch day post + reels: ⏳ TBD
+
+### 🐻 Quick Facts BerUang Play Store
+- Package: `id.berstock.beruang`
+- Developer: Berstock.id
+- App name: "BerUang- Catat Keuangan"
+- Google Group: `beruangbetatesters@googlegroups.com` (anyone can join, auto-join)
+- Tester opt-in link: https://play.google.com/apps/testing/id.berstock.beruang
+- Build method: ❓ **BELUM TER-DOKUMEN** (TBD: PWA Builder / Bubblewrap / Capacitor / Native — TANYA BOS SAAT SESSION BARU)
+
+---
+
 ## 👤 OWNER PROYEK
 
 - **Nama:** Hendry Phang
@@ -577,32 +623,43 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 | Production questionnaire jawaban | ⏳ Belum draft | Tunggu "Preview questions" dari bos |
 
 ### ⏳ PENDING (Day 16+)
+
+**🔥 BerUang Play Store (URGENT — lihat TOP PRIORITY di atas)**
 | Item | Status | Notes |
 |---|---|---|
-| **🔥 Email Edwin Abraham** | URGENT | Template ready di chat. Send via Gmail manual |
-| **🔥 WA outreach 2 calon klien FnB** | URGENT | WA opener 4 versi (A/B/C/D) ready |
-| Conditional render Feature Flags | 🟡 In progress | Toggle UI ada, actual feature implementation pending (Step 4-6) |
-| Bot worker deploy `/api/lead` | ⏳ User action | `cd bot && wrangler deploy` |
-| Set ADMIN_TELEGRAM_CHAT_ID | ⏳ User action | Dari @userinfobot |
-| Mark conversion di GA4 | ⏳ User action | lead_captured + whatsapp_click → mark conversion |
-| Update IG bio @berstock.ai | ⏳ User action | Tambah link berstock.id |
-| Token rotation (Anthropic + Telegram + CF) | ⏳ Pending | WAJIB rotate (sempat lewat chat lama) |
+| Fix Store Listing "Some languages have errors" | 🚨 URGENT | Manage translations → cari bahasa error → fix field merah |
+| Daily monitor counter ≥12 testers | ⚠️ Daily | Play Console Dashboard, 5 menit/hari |
+| Recruit buffer 3-5 tester ekstra | 🟡 Recommended | Target 15-17 biar safe kalau ada yang uninstall |
+| Generate Production questionnaire draft | ⏳ Before 30 Mei | Screenshot "Preview questions" → Claude generate jawaban |
+| Build method tracking | ❓ Cek dengan bos | Tanya: PWA Builder / Bubblewrap / Capacitor / Native? |
 
-
+**🔥 Lead engagement (carry-over dari Day 4)**
 | Item | Status | Notes |
 |---|---|---|
-| **Email Edwin Abraham (LEAD!)** | ⏳ URGENT | Template ready, send via Gmail manual |
-| **WA outreach 2 calon klien FnB** | ⏳ URGENT | WA opener templates ada (4 versi A/B/C/D) |
+| Email Edwin Abraham | ⏳ URGENT | Template ready di chat lama. Send via Gmail manual |
+| WA outreach 2 calon klien FnB | ⏳ URGENT | WA opener templates 4 versi (A/B/C/D) di chat lama |
+
+**🤖 Bot deployment & secrets**
+| Item | Status | Notes |
+|---|---|---|
 | Bot worker deploy `/api/lead` | ⏳ User action | `cd bot && wrangler deploy` |
 | Set ADMIN_TELEGRAM_CHAT_ID secret | ⏳ User action | Dari @userinfobot, untuk lead notif Telegram |
-| Mark conversion di GA4 | ⏳ User action | lead_captured + whatsapp_click → mark as conversion |
-| Update IG bio @berstock.ai | ⏳ User action | Tambah link berstock.id |
-| Google Login BerBisnis | ⚠️ Bug | Email/password works, Google fail (popup-redirect issue) |
-| Token rotation (Anthropic + Telegram + CF API) | ⏳ Pending | WAJIB rotate (sempat lewat chat lama) |
+| Set ADMIN_KEY Cloudflare Worker | ⏳ Belum di-set | Dibutuhkan untuk admin-berstock.html provision |
 | GitHub Actions auto-deploy bot | ⏳ Setup ready | File `.github/workflows/deploy-bot.yml` ada, butuh `CLOUDFLARE_API_TOKEN` di GitHub Secrets |
-| ADMIN_KEY Cloudflare Worker | ⏳ Belum di-set | Dibutuhkan untuk admin-berstock.html provision |
-| Customization 3 Klien (Feature Flags Tutorial) | 🟡 In Progress | Step 2/6 selesai (infrastructure di auth.js). Belum: admin UI toggle, render conditional, customize bot, testing |
+| Token rotation (Anthropic + Telegram + CF API) | ⏳ Pending | WAJIB rotate (sempat lewat chat lama, security risk) |
+
+**📊 Analytics & Marketing**
+| Item | Status | Notes |
+|---|---|---|
+| Mark conversion di GA4 | ⏳ User action | lead_captured + whatsapp_click → mark conversion |
+| Update IG bio @berstock.ai | ⏳ User action | Tambah link berstock.id |
 | Beruang celebrate mascot upload | ⏳ Pending | User mau upload PNG dari mockup Manus → save ke `assets/mascot-berstock.png` |
+
+**🛠️ Dev work in progress**
+| Item | Status | Notes |
+|---|---|---|
+| Conditional render Feature Flags Step 3-6 | 🟡 In Progress | Step 2/6 selesai (infrastructure di auth.js). Belum: admin UI toggle, render conditional, customize bot, testing |
+| Google Login BerBisnis bug | ⚠️ Bug | Email/password works, Google fail (popup-redirect issue) |
 
 ### 📋 ROADMAP (Phase 2-3)
 | Item | Status | Notes |
