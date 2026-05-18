@@ -312,7 +312,7 @@ state = {
 
 ### G. CSS Hidden Override Pattern (BUG KAMBUHAN!)
 - **Setiap container dengan `display: flex/grid/block` HARUS punya `[hidden] { display: none !important }`**
-- Sudah kena 4× di proyek ini: `.modal`, `.auth-form`, `.login-screen`, `#app-main`
+- Sudah kena **5×** di proyek ini: `.modal`, `.auth-form`, `.login-screen`, `#app-main`, `.ai-paywall-modal` (Day 16, 18 Mei 2026)
 - **CHECKLIST baru:** kalau bikin container yang punya display rule, langsung tambah hidden override
 
 ### H. Landing Page Pattern yang Bagus (Day 2 learning)
