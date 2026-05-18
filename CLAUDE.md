@@ -20,14 +20,20 @@
 
 **Real tester engagement confirmed!** Tester "R" pake BerUang dengan data real (Rp 50jt pemasukan), bukan cuma install lalu uninstall. Engagement = quality signal untuk Production review.
 
-⚠️ **CATATAN PENTING (KOREKSI 18 Mei):**
-> Walaupun 12 tester opted-in sejak Sabtu 16 Mei, Google official counter
-> baru nunjukin "1 day" hari Senin 18 Mei. Kemungkinan:
-> - Google butuh stabilisasi 24-36 jam sebelum mulai count "Day 1"
-> - Atau ada brief drop/sync delay di Sabtu/Minggu yang reset counter
+⚠️ **CATATAN PENTING (KOREKSI 18 Mei oleh bos):**
+> **PENCAPAIAN 12 TESTER: Sabtu 16 Mei 2026** (achievement bos, dalam 1 hari!)
 >
-> **Yang penting: Google's counter HARI INI = "1 day". Butuh stay 12 tester
-> selama 13 hari lagi untuk unlock Apply Production.**
+> Google's "14-day continuous" counter punya delay sendiri (kemungkinan
+> 24-36 jam stabilisasi atau timezone UTC). Per Senin 18 Mei pagi,
+> counter Google nunjukin "1 day".
+>
+> **2 angka beda:**
+> - Achievement bos: 12 tester reached **Sab 16 Mei** ✅
+> - Google counter: 1 day per **Sen 18 Mei** (Day 1 of 14)
+>
+> **Yang Google pake buat unlock Production = counter mereka.**
+> Tapi pas isi questionnaire, BANGGAKAN pencapaian Sabtu sebagai
+> "achieved 12 testers in 1 day via WA + Google Group + Instagram".
 
 ### 📅 Timeline Production (REVISI per Google counter)
 
