@@ -4,17 +4,20 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 16 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 18 Mei 2026)
 
 ### 📱 BerUang Android di Google Play Store — HAMPIR LIVE!
 
-**Status saat ini:**
+**Status saat ini (Day 3 of 14):**
 - ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
-- ✅ Store listing SUBSTANTIVELY COMPLETE — semua asset & description udah upload (icon, feature graphic, 4+ screenshots, short + full description)
-- ✅ **12/12 tester opted-in** via Google Group `beruangbetatesters` — TIMER 14 HARI RUNNING (16 Mei → 30 Mei)
-- ✅ 10/11 App content forms VERIFIED done
-- ⚠️ Dashboard nunjukin ⚪ "Set up your store listing" tapi **BUKAN BLOCKER** untuk Production — kemungkinan minor warning di translation tambahan / Google's perfectionist checklist
+- ✅ Store listing SUBSTANTIVELY COMPLETE
+- ✅ **12/12 tester opted-in** — Timer 14 hari RUNNING (16 Mei → 30 Mei)
+- ✅ **Tester aktif pakai app** — bukti via screenshot 18 Mei (user "R" lagi pake dashboard)
+- ✅ 10/11 App content forms done
+- ✅ Bug fix dari real tester feedback (18 Mei): cross-sell pindah ke bawah dashboard
 - 🎯 **Estimasi LIVE PUBLIC: ~7 Juni 2026**
+
+**Real tester engagement confirmed!** Tester "R" pake BerUang dengan data real (Rp 50jt pemasukan), bukan cuma install lalu uninstall. Engagement = quality signal untuk Production review.
 
 **Catatan PENTING (bos koreksi 16 Mei 2026):**
 > Walaupun dashboard nunjukin "10/11 complete" dan ada warning "Some languages have errors", FAKTA-nya app udah berhasil masuk Closed Testing dengan 12 tester install. Artinya store listing minimum udah valid. Warning yang muncul kemungkinan:
@@ -728,9 +731,18 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 - `js/hutang.js` — Tab Hutang & Piutang personal (NEW Day 2)
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
-**Cache Versions Last Update (Day 2):**
+**Cache Versions Last Update:**
 - BerBisnis: styles v=23, app v=19, sales v=7, products v=5, etc.
-- BerUang: styles v=21, app v=22, sync v=22, hutang v=1, storage v=21
+- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21
+- BerUang Service Worker: **beruang-v15** (Day 16 — cross-sell layout fix)
+
+**Day 16 Bug Fix (18 Mei 2026):**
+- Cross-sell BerSatu Suite di dashboard BerUang dipindah dari TENGAH ke BAWAH
+  (sebelumnya bikin user harus scroll panjang buat liat chart utama)
+- Bug ditemukan via screenshot real tester pakai app
+- File: `app.html` line 360 (sebelumnya line 228)
+- LESSON LEARNED: Cross-sell/ad placement di MIDDLE = bad UX. Letakkan di BOTTOM
+  setelah user finished consuming primary value.
 
 ---
 
