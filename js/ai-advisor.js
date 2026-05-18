@@ -37,6 +37,9 @@ function initAIAdvisor() {
   closeBtn?.addEventListener("click", closeAIChat);
   overlay?.addEventListener("click", closeAIChat);
   paywallClose?.addEventListener("click", closePaywall);
+
+  // Tombol "← Kembali ke Home" (top of panel, always visible)
+  document.getElementById("ai-chat-back")?.addEventListener("click", closeAIChat);
   paywall?.addEventListener("click", (e) => {
     if (e.target === paywall) closePaywall();
   });

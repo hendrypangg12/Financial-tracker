@@ -1976,6 +1976,26 @@ html { scroll-behavior: smooth; }
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Tombol BACK paling atas — selalu visible biar user gak bingung balik */
+.ai-chat-back {
+  background: #fbf6ee;
+  border: none;
+  border-bottom: 1px solid #ead7b8;
+  color: var(--brown);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 20px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.ai-chat-back:active { background: #f0e9d8; }
+.ai-chat-back span { font-size: 22px; line-height: 1; }
+
 .ai-chat-head {
   display: flex;
   align-items: center;
