@@ -34,7 +34,9 @@ const TRIAL_DAYS = 7;
 // Email admin (untuk akses tab Admin Panel)
 // Tambahkan email Anda di sini supaya bisa aktivasi customer dari aplikasi
 const ADMIN_EMAILS = [
-  'hendryphang12@gmail.com',  // Email utama admin
+  'hendryphang12@gmail.com',   // Email admin utama (typo "phang")
+  'hendrypangg12@gmail.com',   // Email primary owner
+  'hendrypangg12@icloud.com',  // Email Apple/Anthropic owner
   // Tambah email lain di sini jika perlu (misal partner)
 ];
 
