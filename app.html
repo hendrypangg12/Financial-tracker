@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=29" />
+  <link rel="stylesheet" href="styles.css?v=30" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -645,6 +645,75 @@ TOTAL            86.500"></textarea>
   </main>
 
   <!-- ============ BOTTOM NAVIGATION (Mobile/TWA Native Feel) ============ -->
+  <!-- ============ AI ADVISOR — Beruang Akuntan Gemoy ============ -->
+  <button class="ai-fab" id="ai-fab" aria-label="Tanya Beruang AI Advisor" hidden>
+    <span class="ai-fab-icon">🐻</span>
+    <span class="ai-fab-badge">PRO</span>
+  </button>
+
+  <div class="ai-chat-overlay" id="ai-chat-overlay" hidden></div>
+
+  <div class="ai-chat-panel" id="ai-chat-panel" hidden>
+    <div class="ai-chat-head">
+      <div class="ai-chat-head-info">
+        <div class="ai-chat-avatar">🐻</div>
+        <div>
+          <div class="ai-chat-title">Beruang Akuntan</div>
+          <div class="ai-chat-sub">AI Advisor · paham data lo</div>
+        </div>
+      </div>
+      <button class="ai-chat-close" id="ai-chat-close" aria-label="Tutup">✕</button>
+    </div>
+
+    <div class="ai-chat-body" id="ai-chat-body">
+      <!-- Greeting awal -->
+      <div class="ai-bubble ai-bubble-bot">
+        <div class="ai-bubble-meta">🐻 Beruang Akuntan</div>
+        Halo bos! 👋 Aku Beruang Akuntan, AI Advisor yang paham data keuangan kamu.
+        Coba tanya apa aja soal pengeluaran, target nabung, atau saran hemat ✨
+      </div>
+      <!-- Suggestion chips -->
+      <div class="ai-chips" id="ai-chips">
+        <button class="ai-chip" data-q="Pengeluaran aku bulan ini gimana?">📊 Cek pengeluaran bulan ini</button>
+        <button class="ai-chip" data-q="Saran hemat buat aku apa?">💡 Saran hemat</button>
+        <button class="ai-chip" data-q="Bandingkan bulan ini sama bulan lalu">🔄 Bandingkan bulan lalu</button>
+        <button class="ai-chip" data-q="Kategori pengeluaran terbesarku apa?">🎯 Kategori terbesar</button>
+      </div>
+    </div>
+
+    <form class="ai-chat-form" id="ai-chat-form">
+      <input type="text" class="ai-chat-input" id="ai-chat-input"
+             placeholder="Tanya apa aja, bos…" maxlength="500" autocomplete="off" />
+      <button type="submit" class="ai-chat-send" id="ai-chat-send" aria-label="Kirim">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </form>
+
+    <div class="ai-chat-foot">
+      <span id="ai-quota-info">💎 Pro • 30 query/hari</span>
+    </div>
+  </div>
+
+  <!-- Paywall preview untuk free user -->
+  <div class="ai-paywall-modal" id="ai-paywall-modal" hidden>
+    <div class="ai-paywall-card">
+      <button class="ai-paywall-close" id="ai-paywall-close" aria-label="Tutup">✕</button>
+      <div class="ai-paywall-mascot">🐻💎</div>
+      <h2>Tanya Beruang Akuntan</h2>
+      <p class="ai-paywall-sub">AI Advisor 24/7 yang paham data kamu — eksklusif untuk Pro</p>
+      <div class="ai-paywall-features">
+        <div class="ai-paywall-feat">✨ Saran spending personal</div>
+        <div class="ai-paywall-feat">🎯 Prediksi target nabung</div>
+        <div class="ai-paywall-feat">📊 Analisa kategori otomatis</div>
+        <div class="ai-paywall-feat">💬 Chat 24/7, kapan aja</div>
+      </div>
+      <button class="btn btn-primary btn-block" id="ai-paywall-upgrade">
+        💎 Upgrade ke Pro — Rp 35rb/bulan
+      </button>
+      <small class="ai-paywall-note">Lifetime Rp 125rb sekali bayar — hemat 70%</small>
+    </div>
+  </div>
+
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bnav-item active" data-tab="dashboard">
       <span class="bnav-icon">🏠</span>
@@ -744,6 +813,7 @@ TOTAL            86.500"></textarea>
   <script src="js/pages.js?v=21"></script>
   <script src="js/admin.js?v=20"></script>
   <script src="js/hutang.js?v=1"></script>
-  <script src="js/app.js?v=27"></script>
+  <script src="js/ai-advisor.js?v=1"></script>
+  <script src="js/app.js?v=28"></script>
 </body>
 </html>

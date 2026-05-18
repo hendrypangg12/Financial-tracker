@@ -8,6 +8,7 @@
 
 import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
 import { askClaude } from "./claude.js";
+import { handleAdvise } from "./advise.js";
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -45,6 +46,7 @@ export default {
         case "/api/pull":  return await handlePull(request, env);
         case "/api/provision": return await handleProvision(request, env);
         case "/api/lead":  return await handleLead(request, env);
+        case "/api/advise": return await handleAdvise(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

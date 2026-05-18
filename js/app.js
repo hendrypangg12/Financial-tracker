@@ -503,6 +503,11 @@ document.addEventListener('DOMContentLoaded', () => {
       updateUserMenu(user, profile);
       // Setup gating UI untuk free user
       setupProGating(profile);
+      // Init AI Advisor (FAB Beruang Akuntan)
+      if (typeof initAIAdvisor === 'function') {
+        initAIAdvisor();
+        if (typeof showAIFab === 'function') showAIFab();
+      }
     });
   } else {
     // Fallback: Firebase gagal load, jalankan standalone (localStorage only)
