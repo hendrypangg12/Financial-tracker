@@ -8,16 +8,38 @@
 
 ### 📱 BerUang Android di Google Play Store — HAMPIR LIVE!
 
-**Status saat ini (Day 3 of 14):**
+**Status saat ini (Day 1 of 14 per Google counter):**
 - ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
 - ✅ Store listing SUBSTANTIVELY COMPLETE
-- ✅ **12/12 tester opted-in** — Timer 14 hari RUNNING (16 Mei → 30 Mei)
-- ✅ **Tester aktif pakai app** — bukti via screenshot 18 Mei (user "R" lagi pake dashboard)
+- ✅ **12/12 tester opted-in** sejak Sabtu 16 Mei 2026
+- ✅ Google official counter: **"12 testers have currently been opted in for 1 day"** (per 18 Mei pagi)
+- ✅ **Tester aktif pakai app** — bukti via screenshot 18 Mei (user "R" lagi pake dashboard, data real Rp 50jt)
 - ✅ 10/11 App content forms done
 - ✅ Bug fix dari real tester feedback (18 Mei): cross-sell pindah ke bawah dashboard
-- 🎯 **Estimasi LIVE PUBLIC: ~7 Juni 2026**
+- 🎯 **Estimasi LIVE PUBLIC: ~5-8 Juni 2026**
 
 **Real tester engagement confirmed!** Tester "R" pake BerUang dengan data real (Rp 50jt pemasukan), bukan cuma install lalu uninstall. Engagement = quality signal untuk Production review.
+
+⚠️ **CATATAN PENTING (KOREKSI 18 Mei):**
+> Walaupun 12 tester opted-in sejak Sabtu 16 Mei, Google official counter
+> baru nunjukin "1 day" hari Senin 18 Mei. Kemungkinan:
+> - Google butuh stabilisasi 24-36 jam sebelum mulai count "Day 1"
+> - Atau ada brief drop/sync delay di Sabtu/Minggu yang reset counter
+>
+> **Yang penting: Google's counter HARI INI = "1 day". Butuh stay 12 tester
+> selama 13 hari lagi untuk unlock Apply Production.**
+
+### 📅 Timeline Production (REVISI per Google counter)
+
+| Tanggal | Day | Milestone |
+|---|---|---|
+| **Sab 16 Mei** | — | 12 tester reached (bos counter) |
+| **Sen 18 Mei** | Day 1 | Google official count start |
+| **Sel 27 Mei** | Day 10 | 4 hari lagi sebelum unlock |
+| **Sab 31 Mei** | Day 14 | 🎯 "Apply for production" UNLOCK |
+| **31 Mei - 3 Jun** | — | Submit + answer questionnaire |
+| **3-7 Juni** | — | Google review production |
+| **~5-8 Juni 2026** | — | 🚀 **APP LIVE PUBLIC!** |
 
 **Catatan PENTING (bos koreksi 16 Mei 2026):**
 > Walaupun dashboard nunjukin "10/11 complete" dan ada warning "Some languages have errors", FAKTA-nya app udah berhasil masuk Closed Testing dengan 12 tester install. Artinya store listing minimum udah valid. Warning yang muncul kemungkinan:
