@@ -1889,6 +1889,16 @@ html { scroll-behavior: smooth; }
    🐻 AI ADVISOR — Beruang Akuntan Gemoy (Pro feature)
    ============================================================ */
 
+/* CRITICAL: Override [hidden] biar dismiss button bener-bener jalan.
+   Tanpa ini, modal/panel stuck visible walaupun JS set hidden=true */
+.ai-fab[hidden],
+.ai-chat-overlay[hidden],
+.ai-chat-panel[hidden],
+.ai-paywall-modal[hidden],
+.ai-bubble-typing[hidden] {
+  display: none !important;
+}
+
 /* Floating Action Button */
 .ai-fab {
   position: fixed;
