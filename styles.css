@@ -1946,7 +1946,7 @@ html { scroll-behavior: smooth; }
   position: fixed;
   inset: 0;
   background: rgba(74, 51, 40, 0.5);
-  z-index: 998;
+  z-index: 1500; /* Di atas bottom-nav (1000) */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: ai-fade-in 0.2s ease;
@@ -1956,7 +1956,7 @@ html { scroll-behavior: smooth; }
 /* Chat Panel — bottom sheet style on mobile, modal on desktop */
 .ai-chat-panel {
   position: fixed;
-  z-index: 999;
+  z-index: 1600; /* Di atas overlay & bottom-nav */
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -2149,10 +2149,21 @@ html { scroll-behavior: smooth; }
     right: 0;
     left: 0;
     width: 100%;
-    height: 90vh;
-    height: 90dvh;
-    max-height: none;
-    border-radius: 20px 20px 0 0;
+    /* Dynamic viewport height — ke-resize otomatis pas keyboard iOS/Android muncul */
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    /* Fallback buat browser lama (gak support dvh) */
+    height: 100vh;
+  }
+  /* Override dvh support */
+  @supports (height: 100dvh) {
+    .ai-chat-panel { height: 100dvh; }
+  }
+
+  /* Chat form jangan ketutup keyboard — pakai safe-area + sticky bottom */
+  .ai-chat-form {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
 

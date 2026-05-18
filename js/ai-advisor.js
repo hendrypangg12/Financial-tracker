@@ -82,12 +82,51 @@ function showAIFab() {
 function openAIChat() {
   document.getElementById("ai-chat-overlay").hidden = false;
   document.getElementById("ai-chat-panel").hidden = false;
+  setupVisualViewportListener();
   setTimeout(() => document.getElementById("ai-chat-input")?.focus(), 200);
 }
 
 function closeAIChat() {
   document.getElementById("ai-chat-overlay").hidden = true;
   document.getElementById("ai-chat-panel").hidden = true;
+  teardownVisualViewportListener();
+}
+
+/**
+ * Handle iOS / Android keyboard appear/disappear.
+ * Pas keyboard muncul, viewport height berkurang.
+ * Adjust chat panel height pakai visualViewport API supaya input field
+ * tetep visible di atas keyboard.
+ */
+let vvListener = null;
+function setupVisualViewportListener() {
+  if (!window.visualViewport) return; // Browser lama, skip
+  const panel = document.getElementById("ai-chat-panel");
+  if (!panel) return;
+
+  vvListener = () => {
+    const vh = window.visualViewport.height;
+    panel.style.height = `${vh}px`;
+    panel.style.maxHeight = `${vh}px`;
+    // Scroll chat body ke bawah biar latest message keliatan
+    const body = document.getElementById("ai-chat-body");
+    if (body) body.scrollTop = body.scrollHeight;
+  };
+  window.visualViewport.addEventListener("resize", vvListener);
+  window.visualViewport.addEventListener("scroll", vvListener);
+  vvListener(); // trigger sekali
+}
+
+function teardownVisualViewportListener() {
+  if (!window.visualViewport || !vvListener) return;
+  window.visualViewport.removeEventListener("resize", vvListener);
+  window.visualViewport.removeEventListener("scroll", vvListener);
+  const panel = document.getElementById("ai-chat-panel");
+  if (panel) {
+    panel.style.height = "";
+    panel.style.maxHeight = "";
+  }
+  vvListener = null;
 }
 
 function openPaywall() {
