@@ -2102,26 +2102,37 @@ html { scroll-behavior: smooth; }
   padding: 12px;
   background: #fff;
   border-top: 1px solid var(--cream-deep, #f0e9d8);
+  align-items: center;
 }
 .ai-chat-input {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0; /* prevent overflow di flex */
   border: 1.5px solid #ead7b8;
   border-radius: 999px;
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 16px; /* iOS minimum 16px biar gak auto-zoom */
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
+  -webkit-appearance: none;
 }
 .ai-chat-input:focus { border-color: var(--brown); }
 .ai-chat-send {
-  width: 40px; height: 40px;
+  flex-shrink: 0; /* PENTING: jangan shrink, always visible */
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--brown) 0%, var(--accent) 100%);
-  color: #fff; border: none;
-  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 20px;
 }
 .ai-chat-send:active { transform: scale(0.92); }
 .ai-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
