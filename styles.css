@@ -1060,9 +1060,15 @@ body.is-free-user .pro-lock { display: inline; }
   right: 0;
   background: #fff;
   border-top: 1px solid var(--line);
-  z-index: 90;
+  z-index: 1000; /* Tinggi banget biar gak ke-cover URL bar mobile browser */
   padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
   box-shadow: 0 -2px 12px rgba(62, 45, 33, 0.08);
+  /* GPU layer biar smooth + gak hilang saat scroll di Android Chrome/Brave */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 .bnav-item {
   flex: 1;
@@ -1228,9 +1234,9 @@ body.is-free-user .pro-lock { display: inline; }
     width: 100%;
   }
 
-  /* Z-index biar bottom nav gak block click button di bawah form */
+  /* Bottom nav tetap z-index tinggi di mobile (jangan diturunin biar gak hilang) */
   .bottom-nav {
-    z-index: 80;
+    z-index: 1000;
   }
   /* But pastiin tombol primary di form ada di atas bg, gak block-able */
   form button[type="submit"] {
