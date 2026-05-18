@@ -729,6 +729,7 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 ### 📋 ROADMAP (Phase 2-3)
 | Item | Status | Notes |
 |---|---|---|
+| **Cekat CRM (monorepo subfolder)** | 🆕 Day 17 Plan | Rebuild di `/cekat-crm/` folder repo ini — full-stack React + Vite + Express + SQLite + AI Haiku 4.5. Integration dengan BerBisnis (customer data sync) |
 | Agent Pembukuan | 📋 Roadmap | Setelah Berstock validated 3+ paying customers |
 | Agent HRD | 📋 Roadmap | Phase 2 |
 | Agent Sales/CRM | 📋 Roadmap | Phase 3 |
@@ -736,6 +737,48 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 | iOS/Android native app | 📋 Roadmap | PWA dulu, native nanti |
 | Affiliate dashboard custom | 📋 Roadmap | Kalau Lynk built-in gak cukup |
 | Meta Pixel di landing pages | 📋 Roadmap | Untuk track ads conversion |
+
+---
+
+## 🆕 CEKAT CRM — REBUILD PLAN (Day 17, besok)
+
+**Context (per malam 18 Mei 00:18 WIB):**
+- Bos coba bikin Cekat CRM di session Claude lain (repo `hendrypangg12/Claude`)
+- Build full-stack MVP: React + Vite + Express + SQLite + AI Agent (Claude Haiku 4.5)
+- Branch session lain: `claude/new-session-8fl5o` (1589 baris)
+- **GAK BISA migrate langsung** karena cross-repo isolation di Claude Code sandbox
+- **DECISION:** Rebuild di folder `/cekat-crm/` repo Financial-tracker (monorepo)
+
+**Vision Integration:**
+```
+[BerBisnis POS] → customer data → [Cekat CRM]
+[Cekat CRM] → marketing follow-up → [WA via Berstock bot]
+[Berstock Telegram] → owner approve → action
+```
+
+Use case real:
+- Customer beli di BerBisnis (Rp 500rb)
+- Cekat CRM auto-detect: "Pak Budi udah belanja 5x bulan ini"
+- AI Agent kasih saran follow-up
+- Owner approve via Berstock Telegram → CRM kirim WA otomatis
+
+**TODO Day 17 (besok):**
+1. Bos kasih saya screenshot README.md / spec Cekat CRM dari session lain
+2. Saya scaffold folder `/cekat-crm/` dengan struktur:
+   ```
+   /cekat-crm/
+     frontend/   (React + Vite)
+     backend/    (Express + SQLite)
+     ai-agent/   (Claude Haiku 4.5)
+     README.md
+   ```
+3. Rebuild MVP feature dengan pattern integrasi BerBisnis
+4. Commit + push ke deployment branch
+
+**Tech stack notes:**
+- Frontend: React 18 + Vite (vs vanilla JS BerUang/BerBisnis)
+- Backend: Express + SQLite (vs Cloudflare Worker untuk Berstock)
+- AI: Claude Haiku 4.5 (cost-efficient untuk CRM operations)
 
 ---
 
