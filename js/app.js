@@ -504,9 +504,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Setup gating UI untuk free user
       setupProGating(profile);
       // Init AI Advisor (FAB Beruang Akuntan)
+      // ⚠️ FAB di-hide sementara — backend /api/advise belum di-deploy.
+      // Uncomment showAIFab() setelah backend live.
       if (typeof initAIAdvisor === 'function') {
         initAIAdvisor();
-        if (typeof showAIFab === 'function') showAIFab();
+        // if (typeof showAIFab === 'function') showAIFab();
       }
     });
   } else {
