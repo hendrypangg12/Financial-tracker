@@ -641,13 +641,27 @@ function setupAuthUI() {
   }
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
+
+  // Tombol Admin Panel di user dropdown (buat mobile yang gak ada topbar nav)
+  const btnAdminPanel = document.getElementById('btn-admin-panel');
+  if (btnAdminPanel) {
+    btnAdminPanel.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      switchTab('admin');
+    };
+  }
 }
 
 function updateUserMenu(user, profile) {
-  // Show/hide tab Admin berdasarkan email user
+  // Show/hide tab Admin + tombol Admin di dropdown berdasarkan email user
+  const userIsAdmin = typeof isAdmin === 'function' && isAdmin();
   document.querySelectorAll('.tab-admin').forEach(t => {
-    t.hidden = !(typeof isAdmin === 'function' && isAdmin());
+    t.hidden = !userIsAdmin;
   });
+  // Tombol Admin Panel di user dropdown
+  const btnAdminPanel = document.getElementById('btn-admin-panel');
+  if (btnAdminPanel) btnAdminPanel.hidden = !userIsAdmin;
   const avatar = document.getElementById('user-avatar');
   const name = document.getElementById('user-name');
   const email = document.getElementById('user-email');
