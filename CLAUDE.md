@@ -98,7 +98,12 @@ Buffer ultra-safe dari risk uninstall.
 - App name: "BerUang- Catat Keuangan"
 - Google Group: `beruangbetatesters@googlegroups.com` (anyone can join, auto-join)
 - Tester opt-in link: https://play.google.com/apps/testing/id.berstock.beruang
-- Build method: ❓ **BELUM TER-DOKUMEN** (TBD: PWA Builder / Bubblewrap / Capacitor / Native — TANYA BOS SAAT SESSION BARU)
+- Build method: ✅ **PWA Builder** (pwabuilder.com) — upload AAB ke Play Console
+  → APK adalah **TWA (Trusted Web Activity)** wrapper Chrome Custom Tab
+  → Load content dari `berstock.id/app.html` setiap launch
+  → Asset CSS/JS gak di-bundle, fetch dari web
+  → Update web = update app (asal Service Worker pickup)
+  → JANGAN tester uninstall — counter reset!
 
 ---
 
@@ -590,7 +595,7 @@ state = {
 | **Package ID** | ✅ `id.berstock.beruang` | Reverse domain naming |
 | **Developer name** | ✅ Berstock.id | Brand consistent dengan domain |
 | **App name** | ✅ "BerUang- Catat Keuangan" | 23/30 chars |
-| **Build method** | ❓ Belum dokumen | TBD: PWA Builder / Bubblewrap / Capacitor / Native — tanya bos saat session baru |
+| **Build method** | ✅ PWA Builder | Upload AAB ke Play Console — TWA wrapper, asset dari berstock.id |
 | **AAB version** | ✅ 1.0.0 | Same version untuk Internal + Closed track |
 | **Internal testing release** | ✅ "1.0.0 - Initial Launch" | May 15, 2026 11:11 AM |
 | **Closed testing release** | ✅ "1.0.0 - Closed Beta" track "Alpha" | May 16, 2026 9:06 AM |
