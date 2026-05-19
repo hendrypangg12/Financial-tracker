@@ -740,45 +740,108 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 
 ---
 
-## 🆕 CEKAT CRM — REBUILD PLAN (Day 17, besok)
+## 🆕 CEKAT CRM — MIGRATED & READY (Day 17, 19 Mei 2026)
 
-**Context (per malam 18 Mei 00:18 WIB):**
-- Bos coba bikin Cekat CRM di session Claude lain (repo `hendrypangg12/Claude`)
-- Build full-stack MVP: React + Vite + Express + SQLite + AI Agent (Claude Haiku 4.5)
-- Branch session lain: `claude/new-session-8fl5o` (1589 baris)
-- **GAK BISA migrate langsung** karena cross-repo isolation di Claude Code sandbox
-- **DECISION:** Rebuild di folder `/cekat-crm/` repo Financial-tracker (monorepo)
+**STATUS:** ✅ **FULL IMPORTED** ke `/cekat-crm/` (commit `2ca2aa8`)
 
-**Vision Integration:**
+**Source:** GitHub tarball public dari `hendrypangg12/Claude` branch `claude/new-session-8fl5o`. 36 file (15 client + 16 server + 4 root marketing) ke-download via curl, tanpa copy-paste manual.
+
+**Project internal name:** "BerBisnis (MVP)" — namespace integrate dengan BerBisnis POS.
+
+### Tech Stack
+- **Server:** Node.js + Express + better-sqlite3 + bcryptjs + jsonwebtoken + @anthropic-ai/sdk + twilio
+- **Client:** React + Vite + React Router
+- **AI:** Claude Haiku 4.5 + prompt caching
+- **WA:** Twilio Sandbox (sandbox number `+1 415 523 8886`)
+- **Storage:** SQLite (`data.db`, gitignored, auto-generated)
+
+### Fitur yang Udah Ada
+- 🔐 Auth (JWT, register/login)
+- 👥 Contact CRUD + tag + notes
+- 📥 CSV bulk import (max 500 per file)
+- 💬 Inbox conversation + chat view (status: open/closed)
+- 🤖 AI auto-reply Claude Haiku (di luar jam kerja)
+- 🧠 AI Suggest (admin minta saran balasan)
+- ⚡ Quick Reply templates
+- 📚 Knowledge Base editor (SOP bisnis untuk AI context)
+- 🕐 Working hours config
+- 👋 Auto-greeting customer baru
+- 📱 Twilio WhatsApp integration (sandbox)
+- 📊 Dashboard analytics 14-hari
+- 🎭 4 tone AI (Ramah/Formal/Santai/Singkat)
+
+### Database Schema (Current)
+```sql
+users (id, email, name, password_hash, created_at)
+contacts (id, user_id, name, phone, email, tag, notes, created_at)
+conversations (id, user_id, contact_id, channel, ai_enabled, status, updated_at)
+messages (id, conversation_id, sender ['customer'|'agent'|'ai'], body, created_at)
+knowledge (id, user_id, content, updated_at)
+settings (user_id, working_hours_enabled, work_start, work_end, work_days,
+          business_name, greeting, ai_tone, updated_at)
+quick_replies (id, user_id, label, body, created_at)
 ```
-[BerBisnis POS] → customer data → [Cekat CRM]
-[Cekat CRM] → marketing follow-up → [WA via Berstock bot]
-[Berstock Telegram] → owner approve → action
+
+### Integration Plan dengan BerBisnis + Berstock (NEXT)
+
+**Phase 1 — Schema Extension:**
+```sql
+ALTER TABLE contacts ADD external_id TEXT;        -- link ke BerBisnis customer
+ALTER TABLE contacts ADD total_spent INTEGER DEFAULT 0;
+ALTER TABLE contacts ADD total_outstanding INTEGER DEFAULT 0;
+ALTER TABLE contacts ADD transaction_count INTEGER DEFAULT 0;
+ALTER TABLE contacts ADD last_purchase_date TEXT;
+ALTER TABLE contacts ADD customer_status TEXT DEFAULT 'active';
+ALTER TABLE contacts ADD loyalty_score INTEGER DEFAULT 0;
+
+CREATE TABLE berbisnis_sync (
+  user_id INTEGER PRIMARY KEY,
+  tenant_id TEXT,           -- link ke Berstock bot tenant
+  api_key TEXT,
+  last_sync_at TEXT,
+  auto_sync INTEGER DEFAULT 1
+);
+
+CREATE TABLE ai_suggestions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  contact_id INTEGER NOT NULL,
+  trigger_type TEXT,        -- 'loyalty' | 'outstanding' | 'winback'
+  suggested_message TEXT,
+  status TEXT DEFAULT 'pending',
+  telegram_message_id TEXT,
+  created_at TEXT,
+  sent_at TEXT
+);
 ```
 
-Use case real:
-- Customer beli di BerBisnis (Rp 500rb)
-- Cekat CRM auto-detect: "Pak Budi udah belanja 5x bulan ini"
-- AI Agent kasih saran follow-up
-- Owner approve via Berstock Telegram → CRM kirim WA otomatis
+**Phase 2 — New Endpoints:**
+- `POST /api/sync/berbisnis` — Receive customer data from BerBisnis cloud-sync
+- `POST /api/ai-suggestions/scan` — Trigger AI analyze 3 use case (loyalty/utang/winback)
+- `POST /api/ai-suggestions/:id/approve` — Approve & send WA
+- `POST /api/telegram/webhook` — Bridge ke Berstock bot
 
-**TODO Day 17 (besok):**
-1. Bos kasih saya screenshot README.md / spec Cekat CRM dari session lain
-2. Saya scaffold folder `/cekat-crm/` dengan struktur:
-   ```
-   /cekat-crm/
-     frontend/   (React + Vite)
-     backend/    (Express + SQLite)
-     ai-agent/   (Claude Haiku 4.5)
-     README.md
-   ```
-3. Rebuild MVP feature dengan pattern integrasi BerBisnis
-4. Commit + push ke deployment branch
+**Phase 3 — Berstock Bot Extension:**
+- Tambah handler di `bot/src/` untuk push suggestion ke owner Telegram
+- Inline keyboard "Approve / Reject / Edit" callback
+- Call back ke Cekat CRM `/api/ai-suggestions/:id/approve`
 
-**Tech stack notes:**
-- Frontend: React 18 + Vite (vs vanilla JS BerUang/BerBisnis)
-- Backend: Express + SQLite (vs Cloudflare Worker untuk Berstock)
-- AI: Claude Haiku 4.5 (cost-efficient untuk CRM operations)
+### 3 Killer Use Case (confirmed bos 19 Mei)
+
+1. **💰 Loyalty Follow-up** — Customer baru beli / repeat → thank you + cross-sell
+2. **💸 Outstanding Reminder** — Tempo > 7 hari → polite WA reminder
+3. **🔄 Win-back Campaign** — Loyal customer (>3 trx) tapi gak balik 30 hari → promo
+
+### Bisnis & Marketing Asset (Already Built!)
+- ✅ `pitch-deck.html` — 13-slide pitch deck standalone HTML
+- ✅ `sales-kit.md` — outreach script + objection handler
+- ✅ `mockup.html` — static preview untuk demo
+- ✅ README.md detailed dengan setup guide + pricing AI
+
+### Cost Estimate AI
+- Claude Haiku 4.5: Input $1/1M token, Output $5/1M token
+- Prompt caching aktif → 90% hemat req ke-2 dst
+- 1 chat (10 turn) ≈ Rp 50-200
 
 ---
 
