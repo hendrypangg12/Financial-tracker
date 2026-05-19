@@ -1,11 +1,29 @@
 import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, join, isAbsolute } from 'path';
+import { mkdirSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const db = new Database(join(__dirname, '..', 'data.db'));
+
+// Database path:
+// - Default: ../data.db (relative to src/, jadi server/data.db)
+// - Production (Railway): set DATABASE_PATH=/data/data.db (mount persistent volume)
+const dbPath = process.env.DATABASE_PATH
+  ? (isAbsolute(process.env.DATABASE_PATH)
+      ? process.env.DATABASE_PATH
+      : join(__dirname, '..', process.env.DATABASE_PATH))
+  : join(__dirname, '..', 'data.db');
+
+// Ensure parent dir exists (penting kalau volume baru di-mount kosong)
+try {
+  mkdirSync(dirname(dbPath), { recursive: true });
+} catch {}
+
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+
+console.log(`[db] SQLite ready at: ${dbPath}`);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
