@@ -6,7 +6,7 @@
 //   GET  /api/health       — Healthcheck
 //   GET  /                 — Landing/info
 
-import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
+import { sendMessage, sendTyping, parseUpdate, answerCallbackQuery, editMessageText } from "./telegram.js";
 import { askClaude } from "./claude.js";
 import { handleAdvise } from "./advise.js";
 import {
@@ -47,6 +47,7 @@ export default {
         case "/api/provision": return await handleProvision(request, env);
         case "/api/lead":  return await handleLead(request, env);
         case "/api/advise": return await handleAdvise(request, env);
+        case "/api/notify-suggestion": return await handleNotifySuggestion(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });
@@ -72,6 +73,12 @@ async function handleTelegramWebhook(request, env, ctx) {
   const update = await request.json();
   const parsed = parseUpdate(update);
   if (!parsed) return jsonResponse({ ok: true, skipped: "no_message" });
+
+  // === Callback query handler (Cekat CRM approve/reject buttons) ===
+  if (parsed.isCallback) {
+    ctx.waitUntil(handleCekatCallback(parsed, env));
+    return jsonResponse({ ok: true, handled: "callback" });
+  }
 
   const { chatId, text, isCommand, command, args } = parsed;
   const token = env.TELEGRAM_BOT_TOKEN;
@@ -405,6 +412,163 @@ async function handleLead(request, env) {
 function escapeMd(s) {
   if (!s) return "";
   return String(s).replace(/[_*[\]()~`>#+=|{}.!-]/g, "\\$&");
+}
+
+// =============================================================================
+// CEKAT CRM BRIDGE — Handle Approve/Reject callback dari Telegram inline button
+// =============================================================================
+async function handleCekatCallback(parsed, env) {
+  const { callbackId, callbackData, chatId, messageId } = parsed;
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const cekatUrl = env.CEKAT_API_URL; // e.g. https://cekat-crm.example
+  const bridgeKey = env.CEKAT_BRIDGE_KEY;
+
+  // Format: "cekat_approve:42" atau "cekat_reject:42"
+  const match = /^cekat_(approve|reject):(\d+)$/.exec(callbackData || "");
+  if (!match) {
+    await answerCallbackQuery(token, callbackId, "Callback tidak dikenali");
+    return;
+  }
+  const [, action, suggestionIdStr] = match;
+  const suggestionId = parseInt(suggestionIdStr, 10);
+
+  // Acknowledge tap (biar Telegram gak nampilin loading spinner)
+  await answerCallbackQuery(token, callbackId, action === "approve" ? "⏳ Mengirim..." : "Rejected");
+
+  if (!cekatUrl) {
+    await editMessageText(token, chatId, messageId,
+      `⚠️ Cekat CRM URL belum di-set di Worker secrets.\nSet CEKAT_API_URL terlebih dahulu.`,
+      { reply_markup: { inline_keyboard: [] } });
+    return;
+  }
+
+  // Call Cekat CRM API
+  const endpoint = `${cekatUrl}/api/ai-suggestions/${suggestionId}/${action}`;
+  try {
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${bridgeKey}`,
+        "X-Telegram-User-Id": String(parsed.userId || ""),
+      },
+    });
+
+    if (resp.ok) {
+      const data = await resp.json().catch(() => ({}));
+      const statusEmoji = action === "approve" ? "✅" : "❌";
+      const statusLabel = action === "approve" ? "*Approved & Sent*" : "*Rejected*";
+      await editMessageText(token, chatId, messageId,
+        `${statusEmoji} ${statusLabel}\n\n_Saran AI udah di-handle. Buka Cekat CRM untuk detail._`,
+        { reply_markup: { inline_keyboard: [] } });
+    } else {
+      const errText = await resp.text();
+      await editMessageText(token, chatId, messageId,
+        `⚠️ Gagal ${action}: ${errText.slice(0, 200)}`,
+        { reply_markup: { inline_keyboard: [] } });
+    }
+  } catch (err) {
+    await editMessageText(token, chatId, messageId,
+      `⚠️ Error connect ke Cekat CRM: ${err.message}`,
+      { reply_markup: { inline_keyboard: [] } });
+  }
+}
+
+// =============================================================================
+// CEKAT CRM BRIDGE — Notification ke owner Telegram tentang AI Suggestion
+// =============================================================================
+//
+// Endpoint: POST /api/notify-suggestion
+// Auth: Bearer token (CEKAT_BRIDGE_KEY env var)
+//
+// Request body: {
+//   chat_id: "<telegram chat_id owner>",
+//   suggestion: {
+//     id: 42,
+//     trigger_type: "outstanding",
+//     contact_name: "Pak Budi",
+//     contact_phone: "0812...",
+//     message: "Halo Pak Budi...",
+//     reason: "Outstanding Rp 500rb, 12 hari overdue",
+//     cekat_url: "https://cekat-crm.example/inbox?suggestion=42"
+//   }
+// }
+async function handleNotifySuggestion(request, env) {
+  if (request.method !== "POST") return jsonResponse({ error: "POST only" }, 405);
+
+  // Simple auth: bearer token
+  const auth = request.headers.get("Authorization") || "";
+  const token = auth.replace(/^Bearer\s+/i, "");
+  const expectedKey = env.CEKAT_BRIDGE_KEY;
+  if (expectedKey && token !== expectedKey) {
+    return jsonResponse({ error: "Unauthorized" }, 401);
+  }
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({ error: "Invalid JSON" }, 400); }
+
+  const { chat_id, suggestion } = body;
+  if (!chat_id || !suggestion) {
+    return jsonResponse({ error: "chat_id + suggestion required" }, 400);
+  }
+
+  const triggerLabel = {
+    loyalty: "💰 Loyalty Follow-up",
+    outstanding: "💸 Outstanding Reminder",
+    winback: "🔄 Win-back Campaign",
+    manual: "✍️ Manual Suggestion",
+  }[suggestion.trigger_type] || "✨ AI Suggestion";
+
+  const text = [
+    `${triggerLabel}`,
+    ``,
+    `*Customer:* ${suggestion.contact_name}${suggestion.contact_phone ? ` (${suggestion.contact_phone})` : ""}`,
+    suggestion.reason ? `*Alasan:* _${suggestion.reason}_` : null,
+    ``,
+    `*Saran pesan:*`,
+    `\`\`\``,
+    String(suggestion.message || "").slice(0, 600),
+    `\`\`\``,
+    ``,
+    `Tap tombol di bawah untuk approve / reject:`,
+  ].filter(Boolean).join("\n");
+
+  // Inline keyboard buttons untuk approve/reject + edit (link buka Cekat CRM)
+  const buttons = [
+    [
+      { text: "✅ Approve", callback_data: `cekat_approve:${suggestion.id}` },
+      { text: "❌ Reject", callback_data: `cekat_reject:${suggestion.id}` },
+    ],
+  ];
+  if (suggestion.cekat_url) {
+    buttons.push([{ text: "✏️ Edit di Cekat CRM", url: suggestion.cekat_url }]);
+  }
+
+  const tgRes = await fetch(
+    `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id,
+        text,
+        parse_mode: "Markdown",
+        disable_web_page_preview: true,
+        reply_markup: { inline_keyboard: buttons },
+      }),
+    }
+  );
+
+  if (!tgRes.ok) {
+    const err = await tgRes.text();
+    return jsonResponse({ error: `Telegram error: ${err}` }, 502);
+  }
+
+  const tgData = await tgRes.json();
+  return jsonResponse({
+    ok: true,
+    telegram_message_id: tgData.result?.message_id,
+  });
 }
 
 // =============================================================================

@@ -78,16 +78,87 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
+
+  -- ===== BERBISNIS INTEGRATION TABLES =====
+
+  -- Konfigurasi sync per user dengan tenant Berstock bot
+  CREATE TABLE IF NOT EXISTS berbisnis_sync (
+    user_id INTEGER PRIMARY KEY,
+    tenant_id TEXT,
+    api_key TEXT,
+    berstock_worker_url TEXT DEFAULT 'https://berstock-bot.hendrypangg12.workers.dev',
+    last_sync_at TEXT,
+    last_sync_status TEXT,
+    last_sync_count INTEGER DEFAULT 0,
+    auto_sync INTEGER DEFAULT 1,
+    auto_sync_interval_hours INTEGER DEFAULT 6,
+    telegram_chat_id TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- AI-generated suggestions menunggu approval owner
+  CREATE TABLE IF NOT EXISTS ai_suggestions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    contact_id INTEGER NOT NULL,
+    trigger_type TEXT NOT NULL CHECK(trigger_type IN ('loyalty','outstanding','winback','manual')),
+    trigger_reason TEXT,
+    suggested_message TEXT NOT NULL,
+    context_snapshot TEXT,
+    status TEXT DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected','sent','failed')),
+    telegram_message_id TEXT,
+    edited_message TEXT,
+    error_message TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    decided_at TEXT,
+    sent_at TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_ai_suggestions_user_status
+    ON ai_suggestions(user_id, status);
+
+  CREATE INDEX IF NOT EXISTS idx_ai_suggestions_contact
+    ON ai_suggestions(contact_id);
 `);
 
-// Migrations for existing DB files
+// ===== MIGRATIONS for existing DB files =====
+
 const convCols = db.prepare('PRAGMA table_info(conversations)').all();
 if (!convCols.some((c) => c.name === 'status')) {
   db.exec("ALTER TABLE conversations ADD COLUMN status TEXT DEFAULT 'open'");
 }
+
 const settingsCols = db.prepare('PRAGMA table_info(settings)').all();
 if (settingsCols.length > 0 && !settingsCols.some((c) => c.name === 'ai_tone')) {
   db.exec("ALTER TABLE settings ADD COLUMN ai_tone TEXT DEFAULT 'friendly'");
 }
+
+// ===== BerBisnis integration migration — additive columns ke contacts =====
+const contactCols = db.prepare('PRAGMA table_info(contacts)').all();
+const wantedContactCols = [
+  ['external_id', "TEXT"],
+  ['total_spent', "INTEGER DEFAULT 0"],
+  ['total_outstanding', "INTEGER DEFAULT 0"],
+  ['transaction_count', "INTEGER DEFAULT 0"],
+  ['last_purchase_date', "TEXT"],
+  ['customer_status', "TEXT DEFAULT 'active'"],
+  ['loyalty_score', "INTEGER DEFAULT 0"],
+  ['avg_transaction', "INTEGER DEFAULT 0"],
+  ['source', "TEXT DEFAULT 'manual'"],
+];
+for (const [col, type] of wantedContactCols) {
+  if (!contactCols.some((c) => c.name === col)) {
+    db.exec(`ALTER TABLE contacts ADD COLUMN ${col} ${type}`);
+  }
+}
+
+// Index untuk external_id biar sync cepat
+db.exec(
+  "CREATE INDEX IF NOT EXISTS idx_contacts_external_id ON contacts(user_id, external_id)"
+);
 
 export default db;

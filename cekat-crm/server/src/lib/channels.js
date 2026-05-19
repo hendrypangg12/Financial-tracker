@@ -44,3 +44,38 @@ export async function sendToChannel(conversation, body) {
     body,
   });
 }
+
+/**
+ * Kirim WhatsApp ke nomor langsung (tanpa conversation context).
+ * Dipakai oleh AI Suggestions approval flow.
+ *
+ * @param {Object} args
+ * @param {number} args.userId  - User ID Cekat CRM (untuk audit)
+ * @param {string} args.contactPhone - Nomor telepon (E.164 atau "08xxxx")
+ * @param {string} args.message - Pesan WA
+ */
+export async function sendOutboundMessage({ userId, contactPhone, message }) {
+  if (!contactPhone) throw new Error('contactPhone required');
+  if (!message?.trim()) throw new Error('message required');
+
+  const client = getTwilio();
+  if (!client) {
+    // Mode dev / Twilio belum di-config → log only, anggap "sent" simulator
+    console.log(`[sendOutboundMessage SIMULATOR user=${userId}] To: ${contactPhone}\n${message}`);
+    return { simulated: true };
+  }
+
+  // Normalize ke E.164 + prefix whatsapp:
+  let clean = contactPhone.replace(/\D/g, '');
+  // Tambah country code Indonesia kalau diawali 0
+  if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+  const to = `whatsapp:+${clean}`;
+
+  const result = await client.messages.create({
+    from: process.env.TWILIO_WHATSAPP_FROM,
+    to,
+    body: message,
+  });
+
+  return { sid: result.sid, status: result.status };
+}

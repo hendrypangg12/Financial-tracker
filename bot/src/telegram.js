@@ -44,9 +44,25 @@ export async function sendTyping(token, chatId) {
 
 /**
  * Parse Telegram webhook update payload.
- * @returns {{chatId, userId, username, text, isCommand, command, args}|null}
+ * @returns {Object|null} parsed update info
+ *   {chatId, userId, username, text, isCommand, command, args}
+ *   atau {isCallback: true, callbackId, callbackData, chatId, userId, messageId}
  */
 export function parseUpdate(update) {
+  // Callback query (inline button tap)
+  if (update?.callback_query) {
+    const cb = update.callback_query;
+    return {
+      isCallback: true,
+      callbackId: cb.id,
+      callbackData: cb.data,
+      chatId: cb.message?.chat?.id,
+      messageId: cb.message?.message_id,
+      userId: cb.from?.id,
+      username: cb.from?.username || cb.from?.first_name || 'unknown',
+    };
+  }
+
   const msg = update?.message || update?.edited_message;
   if (!msg) return null;
 
@@ -68,6 +84,41 @@ export function parseUpdate(update) {
   }
 
   return { chatId, userId, username, text, isCommand, command, args };
+}
+
+/**
+ * Answer callback_query (acknowledge user tap inline button).
+ */
+export async function answerCallbackQuery(token, callbackId, text) {
+  const url = `${TG_API}${token}/answerCallbackQuery`;
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      callback_query_id: callbackId,
+      text: text || '',
+      show_alert: false,
+    }),
+  }).catch((e) => console.error('answerCallbackQuery error:', e));
+}
+
+/**
+ * Edit existing message (untuk update inline keyboard setelah owner tap).
+ */
+export async function editMessageText(token, chatId, messageId, text, opts = {}) {
+  const url = `${TG_API}${token}/editMessageText`;
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      message_id: messageId,
+      text: truncateForTelegram(text),
+      parse_mode: opts.parse_mode || 'Markdown',
+      disable_web_page_preview: true,
+      ...opts,
+    }),
+  }).catch((e) => console.error('editMessageText error:', e));
 }
 
 /**

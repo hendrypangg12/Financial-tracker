@@ -10,6 +10,8 @@ import settingsRoutes from './routes/settings.js';
 import quickRepliesRoutes from './routes/quick-replies.js';
 import analyticsRoutes from './routes/analytics.js';
 import twilioWebhookRoutes from './routes/twilio-webhook.js';
+import syncRoutes from './routes/sync.js';
+import aiSuggestionsRoutes from './routes/ai-suggestions.js';
 import './db.js';
 
 const app = express();
@@ -29,6 +31,8 @@ app.use('/api/knowledge', requireAuth, knowledgeRoutes);
 app.use('/api/settings', requireAuth, settingsRoutes);
 app.use('/api/quick-replies', requireAuth, quickRepliesRoutes);
 app.use('/api/analytics', requireAuth, analyticsRoutes);
+app.use('/api/sync', requireAuth, syncRoutes);
+app.use('/api/ai-suggestions', requireAuth, aiSuggestionsRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
