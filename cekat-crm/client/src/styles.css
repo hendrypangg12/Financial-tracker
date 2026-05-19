@@ -410,3 +410,31 @@ tr:hover { background: #f9fafb; }
   .chat-messages { padding: 12px; }
   .msg { max-width: 85%; }
 }
+
+/* === Form group untuk halaman BerBisnis Integration === */
+.form-group {
+  margin-bottom: 14px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="number"] {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-group input:focus {
+  border-color: #3b82f6;
+}

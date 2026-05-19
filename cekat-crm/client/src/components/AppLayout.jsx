@@ -20,6 +20,12 @@ export default function AppLayout() {
         <NavLink to="/contacts" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
           👥 Kontak
         </NavLink>
+        <NavLink to="/ai-suggestions" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+          🤖 AI Suggestions
+        </NavLink>
+        <NavLink to="/berbisnis" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+          🏪 Integrasi BerBisnis
+        </NavLink>
         <NavLink to="/knowledge" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
           📚 Knowledge Base
         </NavLink>

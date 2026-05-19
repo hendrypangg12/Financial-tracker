@@ -8,6 +8,8 @@ import Inbox from './pages/Inbox.jsx';
 import Contacts from './pages/Contacts.jsx';
 import Knowledge from './pages/Knowledge.jsx';
 import Settings from './pages/Settings.jsx';
+import BerBisnis from './pages/BerBisnis.jsx';
+import AISuggestions from './pages/AISuggestions.jsx';
 
 function RequireAuth({ children }) {
   return getToken() ? children : <Navigate to="/login" replace />;
@@ -30,6 +32,8 @@ export default function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="inbox" element={<Inbox />} />
         <Route path="contacts" element={<Contacts />} />
+        <Route path="ai-suggestions" element={<AISuggestions />} />
+        <Route path="berbisnis" element={<BerBisnis />} />
         <Route path="knowledge" element={<Knowledge />} />
         <Route path="settings" element={<Settings />} />
       </Route>
