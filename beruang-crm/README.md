@@ -30,7 +30,7 @@ Prasyarat: **Node.js 20+**.
 
 ```bash
 # 1. Install dependencies
-cd cekat-crm/server && npm install
+cd beruang-crm/server && npm install
 cd ../client && npm install
 
 # 2. Setup env file untuk server
@@ -47,10 +47,10 @@ Buka 2 terminal:
 
 ```bash
 # Terminal 1 — backend
-cd cekat-crm/server && npm run dev   # http://localhost:3001
+cd beruang-crm/server && npm run dev   # http://localhost:3001
 
 # Terminal 2 — frontend
-cd cekat-crm/client && npm run dev   # http://localhost:5173
+cd beruang-crm/client && npm run dev   # http://localhost:5173
 ```
 
 Buka http://localhost:5173 di browser, klik "Daftar" untuk buat akun.
@@ -110,7 +110,7 @@ Restart server. Sekarang WhatsApp yang join sandbox → masuk ke Inbox CRM Anda 
 ## Struktur
 
 ```
-cekat-crm/
+beruang-crm/
 ├── server/
 │   ├── src/
 │   │   ├── index.js

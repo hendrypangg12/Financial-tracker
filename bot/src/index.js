@@ -74,9 +74,9 @@ async function handleTelegramWebhook(request, env, ctx) {
   const parsed = parseUpdate(update);
   if (!parsed) return jsonResponse({ ok: true, skipped: "no_message" });
 
-  // === Callback query handler (Cekat CRM approve/reject buttons) ===
+  // === Callback query handler (Beruang CRM approve/reject buttons) ===
   if (parsed.isCallback) {
-    ctx.waitUntil(handleCekatCallback(parsed, env));
+    ctx.waitUntil(handleCrmCallback(parsed, env));
     return jsonResponse({ ok: true, handled: "callback" });
   }
 
@@ -417,14 +417,14 @@ function escapeMd(s) {
 // =============================================================================
 // CEKAT CRM BRIDGE — Handle Approve/Reject callback dari Telegram inline button
 // =============================================================================
-async function handleCekatCallback(parsed, env) {
+async function handleCrmCallback(parsed, env) {
   const { callbackId, callbackData, chatId, messageId } = parsed;
   const token = env.TELEGRAM_BOT_TOKEN;
-  const cekatUrl = env.CEKAT_API_URL; // e.g. https://cekat-crm.example
-  const bridgeKey = env.CEKAT_BRIDGE_KEY;
+  const crmUrl = env.BERUANG_CRM_API_URL; // e.g. https://beruang-crm.example
+  const bridgeKey = env.BERUANG_CRM_BRIDGE_KEY;
 
-  // Format: "cekat_approve:42" atau "cekat_reject:42"
-  const match = /^cekat_(approve|reject):(\d+)$/.exec(callbackData || "");
+  // Format: "crm_approve:42" atau "crm_reject:42"
+  const match = /^crm_(approve|reject):(\d+)$/.exec(callbackData || "");
   if (!match) {
     await answerCallbackQuery(token, callbackId, "Callback tidak dikenali");
     return;
@@ -435,15 +435,15 @@ async function handleCekatCallback(parsed, env) {
   // Acknowledge tap (biar Telegram gak nampilin loading spinner)
   await answerCallbackQuery(token, callbackId, action === "approve" ? "⏳ Mengirim..." : "Rejected");
 
-  if (!cekatUrl) {
+  if (!crmUrl) {
     await editMessageText(token, chatId, messageId,
-      `⚠️ Cekat CRM URL belum di-set di Worker secrets.\nSet CEKAT_API_URL terlebih dahulu.`,
+      `⚠️ Beruang CRM URL belum di-set di Worker secrets.\nSet BERUANG_CRM_API_URL terlebih dahulu.`,
       { reply_markup: { inline_keyboard: [] } });
     return;
   }
 
-  // Call Cekat CRM API
-  const endpoint = `${cekatUrl}/api/ai-suggestions/${suggestionId}/${action}`;
+  // Call Beruang CRM API
+  const endpoint = `${crmUrl}/api/ai-suggestions/${suggestionId}/${action}`;
   try {
     const resp = await fetch(endpoint, {
       method: "POST",
@@ -459,7 +459,7 @@ async function handleCekatCallback(parsed, env) {
       const statusEmoji = action === "approve" ? "✅" : "❌";
       const statusLabel = action === "approve" ? "*Approved & Sent*" : "*Rejected*";
       await editMessageText(token, chatId, messageId,
-        `${statusEmoji} ${statusLabel}\n\n_Saran AI udah di-handle. Buka Cekat CRM untuk detail._`,
+        `${statusEmoji} ${statusLabel}\n\n_Saran AI udah di-handle. Buka Beruang CRM untuk detail._`,
         { reply_markup: { inline_keyboard: [] } });
     } else {
       const errText = await resp.text();
@@ -469,7 +469,7 @@ async function handleCekatCallback(parsed, env) {
     }
   } catch (err) {
     await editMessageText(token, chatId, messageId,
-      `⚠️ Error connect ke Cekat CRM: ${err.message}`,
+      `⚠️ Error connect ke Beruang CRM: ${err.message}`,
       { reply_markup: { inline_keyboard: [] } });
   }
 }
@@ -479,7 +479,7 @@ async function handleCekatCallback(parsed, env) {
 // =============================================================================
 //
 // Endpoint: POST /api/notify-suggestion
-// Auth: Bearer token (CEKAT_BRIDGE_KEY env var)
+// Auth: Bearer token (BERUANG_CRM_BRIDGE_KEY env var)
 //
 // Request body: {
 //   chat_id: "<telegram chat_id owner>",
@@ -490,7 +490,7 @@ async function handleCekatCallback(parsed, env) {
 //     contact_phone: "0812...",
 //     message: "Halo Pak Budi...",
 //     reason: "Outstanding Rp 500rb, 12 hari overdue",
-//     cekat_url: "https://cekat-crm.example/inbox?suggestion=42"
+//     crm_url: "https://beruang-crm.example/inbox?suggestion=42"
 //   }
 // }
 async function handleNotifySuggestion(request, env) {
@@ -499,7 +499,7 @@ async function handleNotifySuggestion(request, env) {
   // Simple auth: bearer token
   const auth = request.headers.get("Authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
-  const expectedKey = env.CEKAT_BRIDGE_KEY;
+  const expectedKey = env.BERUANG_CRM_BRIDGE_KEY;
   if (expectedKey && token !== expectedKey) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
@@ -533,15 +533,15 @@ async function handleNotifySuggestion(request, env) {
     `Tap tombol di bawah untuk approve / reject:`,
   ].filter(Boolean).join("\n");
 
-  // Inline keyboard buttons untuk approve/reject + edit (link buka Cekat CRM)
+  // Inline keyboard buttons untuk approve/reject + edit (link buka Beruang CRM)
   const buttons = [
     [
-      { text: "✅ Approve", callback_data: `cekat_approve:${suggestion.id}` },
-      { text: "❌ Reject", callback_data: `cekat_reject:${suggestion.id}` },
+      { text: "✅ Approve", callback_data: `crm_approve:${suggestion.id}` },
+      { text: "❌ Reject", callback_data: `crm_reject:${suggestion.id}` },
     ],
   ];
-  if (suggestion.cekat_url) {
-    buttons.push([{ text: "✏️ Edit di Cekat CRM", url: suggestion.cekat_url }]);
+  if (suggestion.crm_url) {
+    buttons.push([{ text: "✏️ Edit di Beruang CRM", url: suggestion.crm_url }]);
   }
 
   const tgRes = await fetch(

@@ -50,7 +50,7 @@ export async function sendToChannel(conversation, body) {
  * Dipakai oleh AI Suggestions approval flow.
  *
  * @param {Object} args
- * @param {number} args.userId  - User ID Cekat CRM (untuk audit)
+ * @param {number} args.userId  - User ID Beruang CRM (untuk audit)
  * @param {string} args.contactPhone - Nomor telepon (E.164 atau "08xxxx")
  * @param {string} args.message - Pesan WA
  */

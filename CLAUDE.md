@@ -729,7 +729,7 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 ### 📋 ROADMAP (Phase 2-3)
 | Item | Status | Notes |
 |---|---|---|
-| **Cekat CRM (monorepo subfolder)** | 🆕 Day 17 Plan | Rebuild di `/cekat-crm/` folder repo ini — full-stack React + Vite + Express + SQLite + AI Haiku 4.5. Integration dengan BerBisnis (customer data sync) |
+| **Beruang CRM (monorepo subfolder)** | 🆕 Day 17 Plan | Rebuild di `/beruang-crm/` folder repo ini — full-stack React + Vite + Express + SQLite + AI Haiku 4.5. Integration dengan BerBisnis (customer data sync) |
 | Agent Pembukuan | 📋 Roadmap | Setelah Berstock validated 3+ paying customers |
 | Agent HRD | 📋 Roadmap | Phase 2 |
 | Agent Sales/CRM | 📋 Roadmap | Phase 3 |
@@ -742,7 +742,7 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 
 ## 🆕 CEKAT CRM — MIGRATED & READY (Day 17, 19 Mei 2026)
 
-**STATUS:** ✅ **FULL IMPORTED** ke `/cekat-crm/` (commit `2ca2aa8`)
+**STATUS:** ✅ **FULL IMPORTED** ke `/beruang-crm/` (commit `2ca2aa8`)
 
 **Source:** GitHub tarball public dari `hendrypangg12/Claude` branch `claude/new-session-8fl5o`. 36 file (15 client + 16 server + 4 root marketing) ke-download via curl, tanpa copy-paste manual.
 
@@ -824,7 +824,7 @@ CREATE TABLE ai_suggestions (
 **Phase 3 — Berstock Bot Extension:**
 - Tambah handler di `bot/src/` untuk push suggestion ke owner Telegram
 - Inline keyboard "Approve / Reject / Edit" callback
-- Call back ke Cekat CRM `/api/ai-suggestions/:id/approve`
+- Call back ke Beruang CRM `/api/ai-suggestions/:id/approve`
 
 ### 3 Killer Use Case (confirmed bos 19 Mei)
 

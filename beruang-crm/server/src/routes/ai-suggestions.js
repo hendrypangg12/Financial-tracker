@@ -266,7 +266,7 @@ async function notifyOwnerViaTelegram({ userId, suggestionId, triggerType, conta
 
   const workerUrl = config.berstock_worker_url || 'https://berstock-bot.hendrypangg12.workers.dev';
   const bridgeKey = process.env.BERSTOCK_BRIDGE_KEY || '';
-  const cekatPublicUrl = process.env.CEKAT_PUBLIC_URL || ''; // e.g. https://crm.berstock.id
+  const crmPublicUrl = process.env.BERUANG_CRM_PUBLIC_URL || ''; // e.g. https://crm.berstock.id
 
   const resp = await fetch(`${workerUrl}/api/notify-suggestion`, {
     method: 'POST',
@@ -283,7 +283,7 @@ async function notifyOwnerViaTelegram({ userId, suggestionId, triggerType, conta
         contact_phone: contact.phone,
         message,
         reason,
-        cekat_url: cekatPublicUrl ? `${cekatPublicUrl}/inbox?suggestion=${suggestionId}` : undefined,
+        crm_url: crmPublicUrl ? `${crmPublicUrl}/inbox?suggestion=${suggestionId}` : undefined,
       },
     }),
   });

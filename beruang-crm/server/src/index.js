@@ -65,5 +65,5 @@ app.use((err, _req, res, _next) => {
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-  console.log(`BerBisnis server listening on http://localhost:${port}`);
+  console.log(`Beruang CRM server listening on http://localhost:${port}`);
 });

@@ -1,9 +1,9 @@
 // Sync customer data dari BerBisnis POS (via Berstock bot Cloudflare Worker)
 //
 // Flow:
-//   1. Owner Cekat CRM set tenant_id + api_key (dari Berstock bot)
+//   1. Owner Beruang CRM set tenant_id + api_key (dari Berstock bot)
 //   2. Klik "Sync from BerBisnis" atau auto-sync cron
-//   3. Cekat CRM call POST {BERSTOCK_WORKER}/api/pull → terima sales[]
+//   3. Beruang CRM call POST {BERSTOCK_WORKER}/api/pull → terima sales[]
 //   4. Aggregate sales → customers (group by nama+telepon)
 //   5. Upsert ke contacts table dengan external_id sebagai unique key
 

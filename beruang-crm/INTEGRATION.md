@@ -1,4 +1,4 @@
-# Cekat CRM ↔ BerBisnis + Berstock Integration
+# Beruang CRM ↔ BerBisnis + Berstock Integration
 
 > Built: 19 Mei 2026 (Day 17 BerUang launch period)
 > Status: ✅ **CODE COMPLETE** — siap test setelah deploy
@@ -7,12 +7,12 @@
 
 ## 🎯 OVERVIEW
 
-Cekat CRM sekarang **terintegrasi penuh** dengan ekosistem BerSatu Suite:
+Beruang CRM sekarang **terintegrasi penuh** dengan ekosistem BerSatu Suite:
 
 ```
 ┌─────────────────┐         ┌──────────────────┐
-│  BerBisnis POS  │  sync   │   Cekat CRM      │
-│  (tokountung/)  │ ──────► │   (cekat-crm/)   │
+│  BerBisnis POS  │  sync   │   Beruang CRM      │
+│  (tokountung/)  │ ──────► │   (beruang-crm/)   │
 │                 │ customer│                  │
 │  • Sales        │ data    │  • Contact list  │
 │  • Customer 360 │         │  • AI Suggestion │
@@ -42,19 +42,19 @@ Cekat CRM sekarang **terintegrasi penuh** dengan ekosistem BerSatu Suite:
 
 ## 🔄 DATA FLOW
 
-### **1. Customer Sync (BerBisnis → Cekat CRM)**
+### **1. Customer Sync (BerBisnis → Beruang CRM)**
 
-Owner di Cekat CRM klik "Sync from BerBisnis" (atau auto-sync setiap 6 jam):
+Owner di Beruang CRM klik "Sync from BerBisnis" (atau auto-sync setiap 6 jam):
 
 ```
-Cekat CRM Backend
+Beruang CRM Backend
    │
    │  GET {BERSTOCK_WORKER}/api/pull?tenant_id=X&api_key=Y
    ▼
 Berstock Bot Worker
    │  Returns: { data: { sales: [...] } }
    ▼
-Cekat CRM aggregateCustomers()
+Beruang CRM aggregateCustomers()
    │  Group by nama+telepon, sum total_belanja, dll
    ▼
 Upsert ke contacts table
@@ -106,7 +106,7 @@ Halo Pak Budi 👋
 Sekedar reminder ramah, ada tagihan...
 ```
 
-[✅ Approve] [❌ Reject] [✏️ Edit di Cekat CRM]
+[✅ Approve] [❌ Reject] [✏️ Edit di Beruang CRM]
 ```
 
 **Owner tap "✅ Approve":**
@@ -114,13 +114,13 @@ Sekedar reminder ramah, ada tagihan...
 Telegram callback_query
    │
    ▼
-Berstock bot handleCekatCallback()
+Berstock bot handleCrmCallback()
    │
    ▼
-POST {CEKAT_API}/api/ai-suggestions/{id}/approve
+POST {BERUANG_CRM_API}/api/ai-suggestions/{id}/approve
    │
    ▼
-Cekat CRM:
+Beruang CRM:
    1. Mark suggestion as 'approved'
    2. Send WA via Twilio
    3. Save outbound message ke conversations
@@ -132,7 +132,7 @@ Telegram edit message: "✅ Approved & Sent"
 
 ## ⚙️ CONFIG REQUIRED
 
-### **Cekat CRM** (`server/.env`)
+### **Beruang CRM** (`server/.env`)
 
 ```bash
 # Existing
@@ -147,8 +147,8 @@ TWILIO_AUTH_TOKEN=...
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
 
 # BerBisnis + Berstock integration
-BERSTOCK_BRIDGE_KEY=<shared-secret>     # ⚠️ SAMA dengan CEKAT_BRIDGE_KEY di Berstock bot
-CEKAT_PUBLIC_URL=https://cekat.berstock.id
+BERSTOCK_BRIDGE_KEY=<shared-secret>     # ⚠️ SAMA dengan BERUANG_CRM_BRIDGE_KEY di Berstock bot
+BERUANG_CRM_PUBLIC_URL=https://beruang-crm.berstock.id
 ```
 
 ### **Berstock Bot Worker** (Cloudflare secrets)
@@ -160,9 +160,9 @@ TELEGRAM_BOT_TOKEN=<bot-token>
 TELEGRAM_WEBHOOK_SECRET=<random>
 ADMIN_KEY=<admin-only>
 
-# NEW: Cekat CRM bridge
-CEKAT_BRIDGE_KEY=<shared-secret>         # ⚠️ SAMA dengan BERSTOCK_BRIDGE_KEY di Cekat
-CEKAT_API_URL=https://cekat.berstock.id  # URL Cekat CRM API
+# NEW: Beruang CRM bridge
+BERUANG_CRM_BRIDGE_KEY=<shared-secret>         # ⚠️ SAMA dengan BERSTOCK_BRIDGE_KEY di Beruang CRM
+BERUANG_CRM_API_URL=https://beruang-crm.berstock.id  # URL Beruang CRM API
 ```
 
 ---
@@ -171,7 +171,7 @@ CEKAT_API_URL=https://cekat.berstock.id  # URL Cekat CRM API
 
 Setelah deploy, tiap owner UMKM perlu:
 
-1. **Daftar di Cekat CRM** (`/register`)
+1. **Daftar di Beruang CRM** (`/register`)
 2. **Buka Settings → Integration BerBisnis**
 3. **Isi:**
    - `tenant_id` (dari Berstock bot — provision oleh admin)
@@ -184,7 +184,7 @@ Setelah deploy, tiap owner UMKM perlu:
 
 ## 📊 NEW ENDPOINTS
 
-### Cekat CRM (semua perlu JWT auth):
+### Beruang CRM (semua perlu JWT auth):
 
 ```
 GET    /api/sync/config              Get sync config current user
@@ -203,15 +203,15 @@ GET    /api/ai-suggestions/stats     Stats per trigger type
 ### Berstock Bot Worker:
 
 ```
-POST   /api/notify-suggestion        Push notif ke Telegram (called by Cekat)
-                                     Auth: Bearer CEKAT_BRIDGE_KEY
+POST   /api/notify-suggestion        Push notif ke Telegram (called by Beruang CRM)
+                                     Auth: Bearer BERUANG_CRM_BRIDGE_KEY
 
 (Plus existing /webhook handler udah extended dengan callback support)
 ```
 
 ---
 
-## 🗄️ NEW DATABASE TABLES (Cekat CRM)
+## 🗄️ NEW DATABASE TABLES (Beruang CRM)
 
 ### `contacts` (extended)
 ```sql
@@ -279,22 +279,22 @@ Recommended Pro tier pricing: **Rp 200rb-500rb/bln** untuk break-even + margin.
 
 ## ⚠️ NEXT TODO BEFORE LIVE
 
-1. **Deploy Cekat CRM** ke server publik (Railway / Render / VPS):
+1. **Deploy Beruang CRM** ke server publik (Railway / Render / VPS):
    - Frontend: Vite build → static hosting
    - Backend: Express + SQLite (persistent volume)
-   - Domain: cekat.berstock.id?
+   - Domain: beruang-crm.berstock.id?
 
 2. **Set env vars di Berstock bot (Cloudflare)**:
    ```bash
-   wrangler secret put CEKAT_BRIDGE_KEY     # shared secret
-   wrangler secret put CEKAT_API_URL        # URL Cekat backend
+   wrangler secret put BERUANG_CRM_BRIDGE_KEY     # shared secret
+   wrangler secret put BERUANG_CRM_API_URL        # URL Beruang CRM backend
    wrangler deploy
    ```
 
-3. **Set env vars di Cekat CRM server (.env)**:
+3. **Set env vars di Beruang CRM server (.env)**:
    ```bash
-   BERSTOCK_BRIDGE_KEY=<sama dengan CEKAT_BRIDGE_KEY>
-   CEKAT_PUBLIC_URL=https://cekat.berstock.id
+   BERSTOCK_BRIDGE_KEY=<sama dengan BERUANG_CRM_BRIDGE_KEY>
+   BERUANG_CRM_PUBLIC_URL=https://beruang-crm.berstock.id
    ```
 
 4. **UI work (TODO)**:
