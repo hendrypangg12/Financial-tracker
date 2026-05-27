@@ -304,15 +304,23 @@ function processChats(frame) {
   }
 }
 
+const MAX_WALKERS = 3; // maks beruang jalan bareng — sisanya tetap kerja di desk
+function countWalkers() {
+  return bears.filter(b => b.active && b.state === 'walking').length;
+}
+
 function updateBear(b, frame) {
   b.typePhase += 0.35;
   if (!b.active) return;
   if (b.chatUntil > frame) return; // lagi ngobrol, diem dulu
   if (b.state === 'sit') {
     if (frame >= b.nextActionFrame) {
-      // gerak lebih rame: 80% chance jalan-jalan
-      if (Math.random() < 0.8) planWaypoints(b, frame);
-      else b.nextActionFrame = frame + 18 + Math.floor(Math.random()*30);
+      // jalan kalau slot walker masih ada — biar kantor gak kosong
+      if (countWalkers() < MAX_WALKERS && Math.random() < 0.7) {
+        planWaypoints(b, frame);
+      } else {
+        b.nextActionFrame = frame + 25 + Math.floor(Math.random()*45);
+      }
     }
     return;
   }
