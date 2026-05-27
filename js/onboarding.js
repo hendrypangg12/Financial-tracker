@@ -85,17 +85,17 @@ function showOnboarding() {
       </div>
 
       <div class="onb-sec">
-        <h3>💳 Saldo di Rekening</h3>
-        <p class="hint">Tulis nama bank/e-wallet & saldonya. Contoh: BCA, BNI, GoPay, Dana.</p>
+        <h3>💳 Saldo di Rekening (uang cair)</h3>
+        <p class="hint">Bank/e-wallet & saldonya (BCA, BNI, GoPay, Dana, cash). 👉 Ini <b>langsung masuk ke Sisa Saldo</b> kamu.</p>
         <div id="onb-rekening">${onbRowHtml('Nama bank / e-wallet', 'Saldo (Rp)')}</div>
         <button type="button" class="onb-add" data-add="onb-rekening" data-nama="Nama bank / e-wallet" data-jml="Saldo (Rp)">+ Tambah rekening</button>
       </div>
 
       <div class="onb-sec">
-        <h3>📈 Investasi</h3>
-        <p class="hint">Saham, reksadana, emas, kripto, dll — beserta nilainya sekarang.</p>
-        <div id="onb-investasi">${onbRowHtml('Jenis (saham/reksadana)', 'Nilai (Rp)')}</div>
-        <button type="button" class="onb-add" data-add="onb-investasi" data-nama="Jenis (saham/reksadana)" data-jml="Nilai (Rp)">+ Tambah investasi</button>
+        <h3>📈 Investasi &amp; Aset</h3>
+        <p class="hint">Saham, reksadana, emas, kripto, properti, kendaraan, dll. 👉 Dihitung sebagai <b>kekayaan</b>, TERPISAH dari saldo harian (gak ikut Sisa Saldo).</p>
+        <div id="onb-investasi">${onbRowHtml('Jenis (saham/emas/rumah)', 'Nilai (Rp)')}</div>
+        <button type="button" class="onb-add" data-add="onb-investasi" data-nama="Jenis (saham/emas/rumah)" data-jml="Nilai (Rp)">+ Tambah aset</button>
       </div>
 
       <div class="onb-sec">
@@ -149,6 +149,15 @@ function showOnboarding() {
     if (del) del.closest('.onb-row').remove();
   });
 
+  // Format ribuan otomatis di field nominal (4000000 → 4.000.000) biar gak salah nol
+  screen.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.classList && (t.classList.contains('onb-jml') || t.id === 'onb-kost' || t.id === 'onb-cicilan')) {
+      const digits = t.value.replace(/[^\d]/g, '');
+      t.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+    }
+  });
+
   document.getElementById('onb-skip').addEventListener('click', () => finishOnboarding(false));
   document.getElementById('onb-save').addEventListener('click', () => finishOnboarding(true));
 }
@@ -177,9 +186,10 @@ function finishOnboarding(save) {
       const namaUser = (document.getElementById('onb-nama-user').value || '').trim();
       if (namaUser) { state.userName = namaUser; saveState(); }
 
-      // Aset rekening + investasi → state.assets (info terpisah, gak masuk cashflow)
+      // Saldo rekening/e-wallet (uang cair) → pemasukan "Saldo Awal" → MASUK Sisa Saldo
       onbReadRows('onb-rekening', 'rekening', (nama, jml) =>
-        addAsset({ jenis: 'rekening', nama: nama || 'Rekening', jumlah: jml }));
+        addTransaction({ jenis: 'pemasukan', jumlah: jml, kategori: 'Saldo Awal', subKategori: 'Saldo Awal', alokasi: '', tanggal: todayISO(), deskripsi: 'Saldo awal ' + (nama || 'rekening') }));
+      // Investasi/properti/kendaraan (gak cair) → state.assets (kekayaan TERPISAH dari cashflow)
       onbReadRows('onb-investasi', 'investasi', (nama, jml) =>
         addAsset({ jenis: 'investasi', nama: nama || 'Investasi', jumlah: jml }));
 
