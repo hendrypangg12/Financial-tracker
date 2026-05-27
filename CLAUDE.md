@@ -928,8 +928,8 @@ CREATE TABLE ai_suggestions (
 
 **Cache Versions Last Update (per 27 Mei 2026):**
 - BerUang: **styles v=38**, **app v=34**, firebase-config v=22, presence v=2, sync v=23,
-  hutang v=1, storage v=22, dashboard v=22, ai-advisor v=6, **onboarding v=4**
-  · Service Worker **beruang-v28**
+  hutang v=1, storage v=22, dashboard v=22, ai-advisor v=6, **onboarding v=5**
+  · Service Worker **beruang-v29**
 - **🔄 Reset Data & Mulai Ulang (item dropdown akun, mobile-friendly):** buat user yg
   coba-coba dulu lalu mau serius. Konfirmasi → `resetAll()` (hapus transaksi/hutang/aset/
   userName) + `clearOnboardingDone()` → langsung buka wizard Setup Dana Awal lagi.
@@ -1109,10 +1109,15 @@ cache lama → fix/update gak nyampe ("masih versi lama").
   (`openOnboardingManual`). Flag `beruang-onboarding-done:<email>` di localStorage.
 - **Field:** 👤 Nama, 💳 Rekening (nama+saldo, multi-row), 📈 Investasi, 🤝 Duit di teman,
   💸 Utang kamu, 🔁 Kost + Cicilan KK. Parsing angka via `onbNum` (strip non-digit).
-- **Keputusan desain bos:** aset (rekening+investasi) = **info terpisah** → `state.assets[]`
-  (`addAsset/deleteAsset/assetsTotal`), TIDAK masuk cashflow. Piutang→`hutangs` jenis
-  piutang; utang→`hutangs` jenis hutang. Kost+cicilan = **pengeluaran bulan ini**
-  (`addTransaction`, kategori 'Tempat Tinggal' / 'Cicilan').
+- **Keputusan desain (REVISI bos setelah tes, 27 Mei):** pisahin uang CAIR vs ASET.
+  - **Rekening/e-wallet (BCA/BNI/GoPay)** = uang cair → dicatat **pemasukan "Saldo Awal"**
+    (`addTransaction`) → **MASUK Sisa Saldo**. (Sebelumnya nyangkut di assets → saldo minus.)
+  - **Investasi/properti/kendaraan (saham/emas/rumah)** = `state.assets[]`
+    (`addAsset/deleteAsset/assetsTotal`), TERPISAH dari cashflow (kartu "Aset/Kekayaan").
+  - Piutang→`hutangs` jenis piutang; utang→`hutangs` jenis hutang. Kost+cicilan =
+    **pengeluaran bulan ini** (`addTransaction`, kategori 'Tempat Tinggal' / 'Cicilan').
+- **Format ribuan otomatis** di field nominal onboarding (4000000 → 4.000.000) — listener
+  `input` di `showOnboarding`, `onbNum` tetap strip non-digit pas submit. (onboarding v5)
 - **`state.userName`** (baru) + **`state.assets`** ikut persist: storage.js (save/load/
   export/import/reset) + sync.js (push payload + load + listener). 
 - **Dashboard (`js/dashboard.js`):** `renderGreeting()` "Halo, {nama} 👋" + `renderAssets()`
