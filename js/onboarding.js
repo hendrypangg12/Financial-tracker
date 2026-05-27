@@ -74,7 +74,7 @@ function showOnboarding() {
   screen.innerHTML = `
   <div class="onb-wrap">
     <div class="onb-card">
-      <img class="onb-logo" src="assets/mascot-beruang.png?v=2" alt="BerUang" />
+      <img class="onb-logo" src="assets/logo-berbisnis.png?v=3" alt="BerUang" />
       <h1 class="onb-title">Setup Dana Awal 🐻</h1>
       <p class="onb-sub">Halo bos! Biar dashboard & si Beruang Akuntan langsung paham kondisi duitmu, isi posisi awal di bawah. Isi yang ada aja — sisanya bisa dilewati, bisa diubah kapan aja.</p>
 

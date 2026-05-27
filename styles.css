@@ -1,6 +1,6 @@
 :root {
   /* Palet BerUang: coklat beruang + krem hangat */
-  --bg: #fbf6ee;            /* krem terang — background utama */
+  --bg: #f7f5f1;            /* off-white hangat — background utama (clean/pro) */
   --panel: #ffffff;         /* panel putih bersih */
   --ink: #3e2d21;           /* coklat gelap — teks utama */
   --ink-soft: #8b7355;      /* coklat tanah — teks sekunder */
@@ -111,44 +111,42 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .seg.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 /* KPI CARDS — premium design untuk kesan mahal */
-.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 18px; }
+/* KPI cards — clean/pro: 1 hero saldo gelap + 3 kartu putih seragam (tanpa pelangi) */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
 .card {
-  background: var(--panel); border-radius: 18px; padding: 18px 20px;
-  box-shadow: 0 2px 4px rgba(62, 45, 33, .04), 0 8px 24px rgba(62, 45, 33, .06);
+  background: var(--panel); border-radius: 16px; padding: 14px;
+  box-shadow: 0 1px 2px rgba(62, 45, 33, .05);
   border: 1px solid var(--line); position: relative; overflow: hidden;
-  display: flex; gap: 14px; align-items: center;
-  transition: transform .2s ease, box-shadow .2s ease;
+  display: block;
+  transition: box-shadow .15s ease;
 }
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(62, 45, 33, .06), 0 12px 32px rgba(62, 45, 33, .1);
-}
-.card::before {
-  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-}
-.card-income::before { background: linear-gradient(90deg, #10B981, #84CC16); }
-.card-expense::before { background: linear-gradient(90deg, #EF4444, #F97316); }
-.card-balance::before { background: linear-gradient(90deg, #3B82F6, #6366F1); }
-.card-count::before { background: linear-gradient(90deg, #F59E0B, #EC4899); }
+.card:hover { box-shadow: 0 4px 14px rgba(62, 45, 33, .08); }
+.card::before { display: none; }   /* buang aksen pelangi → lebih clean */
 .card-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  display: grid; place-items: center; font-size: 24px;
-  flex: 0 0 auto;
+  width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center; font-size: 17px;
+  background: #f1ece2; margin-bottom: 9px;
 }
-.card-income .card-icon { background: linear-gradient(135deg, #D1FAE5, #BBF7D0); }
-.card-expense .card-icon { background: linear-gradient(135deg, #FEE2E2, #FED7AA); }
-.card-balance .card-icon { background: linear-gradient(135deg, #DBEAFE, #E0E7FF); }
-.card-count .card-icon { background: linear-gradient(135deg, #FEF3C7, #FCE7F3); }
-.card-body { flex: 1; min-width: 0; }
-.card-label { font-size: 11px; font-weight: 700; letter-spacing: .6px; color: var(--ink-soft); }
-.card-value { font-size: 22px; font-weight: 800; margin: 2px 0 4px; letter-spacing: -.3px; }
-.card-income .card-value { color: #059669; }
-.card-expense .card-value { color: #DC2626; }
-.card-balance .card-value { color: #2563EB; }
-.card-count .card-value { color: #D97706; }
-.card-delta { font-size: 11px; color: var(--ink-soft); font-weight: 500; }
-.card-delta.up { color: #059669; }
-.card-delta.down { color: #DC2626; }
+.card-income .card-icon, .card-expense .card-icon,
+.card-balance .card-icon, .card-count .card-icon { background: #f1ece2; }
+.card-body { min-width: 0; }
+.card-label { font-size: 10px; font-weight: 700; letter-spacing: .4px; color: var(--ink-soft); text-transform: uppercase; }
+.card-value { font-size: 17px; font-weight: 800; margin: 4px 0 2px; letter-spacing: -.3px; color: var(--ink); }
+.card-income .card-value, .card-expense .card-value, .card-count .card-value { color: var(--ink); }
+.card-delta { font-size: 10px; color: var(--ink-soft); font-weight: 600; }
+.card-delta.up { color: #1f7a4d; }
+.card-delta.down { color: #c0392b; }
+
+/* HERO: Sisa Saldo = kartu utama gelap, full-width, paling atas */
+.card-balance {
+  order: -1; grid-column: 1 / -1;
+  background: #221a12; border-color: #221a12; color: #fff;
+  padding: 18px 20px;
+}
+.card-balance .card-icon { display: none; }
+.card-balance .card-label { color: #cdbb95; font-size: 11px; letter-spacing: 1px; }
+.card-balance .card-value { color: #fff; font-size: 30px; margin: 6px 0 2px; }
+.card-balance .card-delta { color: #b9ad97; font-size: 12px; }
 
 /* PANELS — premium card style */
 .panel {
