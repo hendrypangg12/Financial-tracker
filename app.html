@@ -115,6 +115,9 @@
     </div>
   </div>
 
+  <!-- ============ ONBOARDING "SETUP DANA AWAL" (user baru) ============ -->
+  <div id="onboarding-screen" hidden></div>
+
   <header class="topbar">
     <div class="brand">
       <img class="brand-icon-img" src="assets/mascot-beruang.png?v=2" alt="BerUang" />
@@ -152,6 +155,7 @@
           </div>
           <hr>
           <button class="user-item user-item-admin" id="btn-admin-panel" hidden>👨‍💼 Admin Panel</button>
+          <button class="user-item" id="btn-setup-dana">💰 Setup Dana Awal</button>
           <button class="user-item" id="btn-refresh-app" title="Paksa ambil versi terbaru (data aman)">🧹 Bersihkan Cache &amp; Muat Ulang</button>
           <button class="user-item" id="btn-logout">🚪 Logout</button>
         </div>
@@ -178,6 +182,7 @@
           </div>
         </div>
       </div>
+      <div id="dash-greeting" class="dash-greeting" hidden></div>
       <div class="page-head">
         <div class="page-title">
           <span class="emoji">📅</span>
@@ -227,6 +232,8 @@
           </div>
         </div>
       </div>
+
+      <div id="dash-assets" class="dash-assets" hidden></div>
 
       <div class="grid-2">
         <div class="panel">
@@ -813,15 +820,16 @@ TOTAL            86.500"></textarea>
   <script src="js/firebase-config.js?v=22"></script>
   <script>window.PRESENCE_APP = 'beruang';</script>
   <script src="js/presence.js?v=2"></script>
-  <script src="js/storage.js?v=21"></script>
+  <script src="js/storage.js?v=22"></script>
   <script src="js/parser.js?v=20"></script>
-  <script src="js/sync.js?v=22"></script>
+  <script src="js/sync.js?v=23"></script>
   <script src="js/auth.js?v=22"></script>
-  <script src="js/dashboard.js?v=21"></script>
+  <script src="js/dashboard.js?v=22"></script>
   <script src="js/pages.js?v=21"></script>
   <script src="js/admin.js?v=20"></script>
   <script src="js/hutang.js?v=1"></script>
-  <script src="js/ai-advisor.js?v=4"></script>
-  <script src="js/app.js?v=32"></script>
+  <script src="js/ai-advisor.js?v=5"></script>
+  <script src="js/onboarding.js?v=1"></script>
+  <script src="js/app.js?v=33"></script>
 </body>
 </html>

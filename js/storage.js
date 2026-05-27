@@ -2,6 +2,8 @@
 const state = {
   transactions: [],
   hutangs: [], // hutang & piutang personal
+  assets: [],  // aset/dana awal (rekening, investasi) — info kekayaan, TIDAK masuk cashflow
+  userName: '', // nama panggilan user (dari onboarding) — buat sapaan
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
   selectedMonth: new Date().getMonth(),
@@ -16,6 +18,8 @@ function loadState() {
     const data = JSON.parse(raw);
     if (data.transactions) state.transactions = data.transactions;
     if (data.hutangs) state.hutangs = data.hutangs;
+    if (Array.isArray(data.assets)) state.assets = data.assets;
+    if (typeof data.userName === 'string') state.userName = data.userName;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
   } catch (e) {
@@ -28,6 +32,8 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       transactions: state.transactions,
       hutangs: state.hutangs,
+      assets: state.assets,
+      userName: state.userName,
       categories: state.categories,
       target: state.target,
     }));
@@ -88,6 +94,8 @@ function exportData() {
     exportedAt: new Date().toISOString(),
     transactions: state.transactions,
     hutangs: state.hutangs,
+    assets: state.assets,
+    userName: state.userName,
     categories: state.categories,
     target: state.target,
   };
@@ -108,6 +116,8 @@ function importData(file) {
         const data = JSON.parse(reader.result);
         if (Array.isArray(data.transactions)) state.transactions = data.transactions;
         if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
+        if (Array.isArray(data.assets)) state.assets = data.assets;
+        if (typeof data.userName === 'string') state.userName = data.userName;
         if (data.categories) state.categories = data.categories;
         if (data.target != null) state.target = data.target;
         saveState();
@@ -122,9 +132,28 @@ function importData(file) {
 function resetAll() {
   state.transactions = [];
   state.hutangs = [];
+  state.assets = [];
+  state.userName = '';
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   state.target = 0;
   saveState();
+}
+
+// ============================================================
+// ASET / DANA AWAL (rekening, investasi) — info kekayaan, di luar cashflow bulanan
+// shape: { id, jenis: 'rekening'|'investasi'|'lainnya', nama, jumlah }
+// ============================================================
+function addAsset(a) {
+  a.id = a.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  state.assets.push(a);
+  saveState();
+}
+function deleteAsset(id) {
+  state.assets = state.assets.filter(x => x.id !== id);
+  saveState();
+}
+function assetsTotal() {
+  return (state.assets || []).reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
 }
 
 // ============================================================

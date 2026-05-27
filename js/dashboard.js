@@ -5,6 +5,55 @@ function destroyChart(key) {
   if (charts[key]) { charts[key].destroy(); charts[key] = null; }
 }
 
+// Sapaan nama user (dari onboarding "Setup Dana Awal")
+function renderGreeting() {
+  const el = document.getElementById('dash-greeting');
+  if (!el) return;
+  const nama = (state.userName || '').trim();
+  if (!nama) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px;">
+    <span style="font-size:20px;font-weight:800;color:#5d3a1a;">Halo, ${escapeHtmlDash(nama)} 👋</span>
+    <span style="font-size:13px;color:#8a7766;">ini ringkasan keuanganmu</span></div>`;
+}
+
+// Kartu Aset / Kekayaan (info terpisah, gak ngaruh ke Sisa Saldo cashflow)
+function renderAssets() {
+  const el = document.getElementById('dash-assets');
+  if (!el) return;
+  const assets = state.assets || [];
+  if (!assets.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const total = (typeof assetsTotal === 'function') ? assetsTotal() : assets.reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
+  const icon = (j) => j === 'investasi' ? '📈' : (j === 'rekening' ? '💳' : '💼');
+  const rows = assets.map(a => `
+    <li style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #f0e9d8;">
+      <span style="font-size:17px;">${icon(a.jenis)}</span>
+      <span style="flex:1;min-width:0;color:#4a3328;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtmlDash(a.nama || a.jenis || 'Aset')}</span>
+      <span style="font-weight:700;color:#4a3328;">${formatRupiah(Number(a.jumlah) || 0)}</span>
+      <button data-id="${a.id}" title="Hapus" style="flex:0 0 auto;border:none;background:#f7ede0;color:#b91c1c;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:16px;">×</button>
+    </li>`).join('');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>💎 Aset / Kekayaan</h3>
+        <span style="font-size:11px;color:#8a7766;">di luar cashflow bulanan</span>
+      </div>
+      <div style="font-size:24px;font-weight:900;color:#8b5a2b;margin:2px 0 4px;">${formatRupiah(total)}</div>
+      <ul style="list-style:none;padding:0;margin:6px 0 0;">${rows}</ul>
+    </div>`;
+  el.querySelectorAll('button[data-id]').forEach(btn => {
+    btn.onclick = () => {
+      if (typeof deleteAsset === 'function') deleteAsset(btn.dataset.id);
+      renderAssets();
+    };
+  });
+}
+
+function escapeHtmlDash(s) {
+  const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
+}
+
 function renderDashboard() {
   const m = state.selectedMonth, y = state.selectedYear;
   const trx = getTransactionsFor(m, y);
@@ -12,6 +61,8 @@ function renderDashboard() {
   const trxPrev = getTransactionsFor(prev.m, prev.y);
 
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
+  renderGreeting();
+  renderAssets();
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');

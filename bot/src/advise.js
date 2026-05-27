@@ -30,6 +30,12 @@ TONE CONTOH:
 ❌ "Anda memerlukan budget Rp 5.000.000 per bulan untuk mencapai goal."
 ✅ "Kalau mau target Rp 50jt 5 bulan, sisihin Rp 10jt/bulan ya bos. Saat ini kamu cuma sisihin Rp 5jt 💪"
 
+PERTANYAAN GOAL ("kapan bisa beli X" / "cara nabung buat X"):
+- Hitung dari data: (Aset/tabungan sekarang) + (yang bisa ditabung per bulan = pemasukan - pengeluaran)
+- Estimasi: (harga barang - aset sekarang) / tabungan per bulan = berapa bulan lagi
+- Kasih angka konkret + 1-2 saran biar lebih cepat (pos pengeluaran mana yang bisa dipangkas)
+- Kalau tabungan bulanan negatif/nol: jujur bilang "belum bisa nabung, harus benerin pengeluaran dulu" + tunjuk kategori boros
+
 PRINSIP:
 1. JUJUR — kalau data kurang, bilang "Catet dulu transaksinya lebih banyak ya bos, baru aku bisa kasih saran akurat"
 2. PRAKTIS — jangan saran investasi crypto / saham yang berisiko (out of scope)
@@ -164,14 +170,29 @@ function buildUserMessage(question, ctx) {
     return `Pertanyaan: ${question}\n\n(Data spending user tidak tersedia — kasih jawaban general tapi tetap minta user catat transaksi dulu biar bisa kasih advice akurat.)`;
   }
 
-  const lines = [
+  const lines = [];
+  if (ctx.userName) lines.push(`[Nama user: ${ctx.userName} — sapa dengan nama ini]`, "");
+  lines.push(
     `[Data spending user untuk ${ctx.monthName || "bulan ini"}]`,
     "",
     `💰 Total Pemasukan: Rp ${formatRupiah(ctx.totalPemasukan || 0)}`,
     `💸 Total Pengeluaran: Rp ${formatRupiah(ctx.totalPengeluaran || 0)}`,
-    `🏦 Sisa Saldo: Rp ${formatRupiah(ctx.sisaSaldo || 0)}`,
-    `📝 Total Transaksi: ${ctx.totalTransaksi || 0}`,
-  ];
+    `🏦 Sisa Saldo bulan ini: Rp ${formatRupiah(ctx.sisaSaldo || 0)}`,
+    `🐷 Bisa ditabung bulan ini (pemasukan - pengeluaran): Rp ${formatRupiah(ctx.tabunganBulanIni != null ? ctx.tabunganBulanIni : (ctx.sisaSaldo || 0))}`,
+    `📝 Total Transaksi: ${ctx.totalTransaksi || 0}`
+  );
+
+  // Aset / kekayaan (duit yang udah dipunya — penting buat jawab "kapan bisa beli X")
+  if (ctx.assetTotal) {
+    lines.push("", `💎 Total Aset/Tabungan saat ini: Rp ${formatRupiah(ctx.assetTotal)}`);
+    if (Array.isArray(ctx.assetBreakdown)) {
+      ctx.assetBreakdown.slice(0, 8).forEach((a) => {
+        lines.push(`  - ${a.nama} (${a.jenis}): Rp ${formatRupiah(a.jumlah)}`);
+      });
+    }
+  }
+  if (ctx.piutangTotal) lines.push(`🤝 Piutang (dipinjam orang, blm balik): Rp ${formatRupiah(ctx.piutangTotal)}`);
+  if (ctx.hutangTotal) lines.push(`📕 Utang user (blm lunas): Rp ${formatRupiah(ctx.hutangTotal)}`);
 
   if (typeof ctx.compareIncome === "number") {
     const arrow = ctx.compareIncome >= 0 ? "▲" : "▼";

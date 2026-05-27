@@ -511,6 +511,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       init();
       setupWelcomeBanner();
+      // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
+      if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
       // Cloud listener & auto-sync HANYA untuk Pro user
       if (userIsPro) {
         startCloudListener(() => {
@@ -534,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fallback: Firebase gagal load, jalankan standalone (localStorage only)
     init();
     setupWelcomeBanner();
+    if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
   }
 });
 
@@ -667,6 +670,16 @@ function setupAuthUI() {
   }
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
+
+  // Buka ulang onboarding "Setup Dana Awal" dari menu
+  const btnSetupDana = document.getElementById('btn-setup-dana');
+  if (btnSetupDana) {
+    btnSetupDana.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
 
   // Tombol "Bersihkan Cache & Muat Ulang" — escape hatch buat user yang nyangkut
   // di versi lama (PWA homescreen). Unregister SW + hapus Cache API + reload.

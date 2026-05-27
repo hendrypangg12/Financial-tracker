@@ -255,16 +255,40 @@ function buildAdvisorContext() {
       kategori: t.kategori,
     }));
 
+  // Aset / kekayaan (di luar cashflow bulanan)
+  const assets = Array.isArray(state.assets) ? state.assets : [];
+  const assetTotal = assets.reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
+  const assetBreakdown = assets.map((a) => ({
+    jenis: a.jenis || "lainnya",
+    nama: a.nama || a.jenis || "Aset",
+    jumlah: Number(a.jumlah) || 0,
+  }));
+
+  // Hutang & piutang (yang belum lunas)
+  const hutangs = Array.isArray(state.hutangs) ? state.hutangs : [];
+  const piutangTotal = hutangs
+    .filter((h) => h.jenis === "piutang" && !h.lunas)
+    .reduce((s, h) => s + (Number(h.jumlah) || 0), 0);
+  const hutangTotal = hutangs
+    .filter((h) => h.jenis === "hutang" && !h.lunas)
+    .reduce((s, h) => s + (Number(h.jumlah) || 0), 0);
+
   return {
+    userName: (state.userName || "").trim() || null,
     monthName,
     totalPemasukan,
     totalPengeluaran,
     sisaSaldo,
+    tabunganBulanIni: sisaSaldo, // pemasukan - pengeluaran = yang bisa ditabung bulan ini
     totalTransaksi: thisMonth.length,
     compareIncome: pctChange(totalPemasukan, lastPemasukan),
     compareExpense: pctChange(totalPengeluaran, lastPengeluaran),
     categoryBreakdown,
     recentTransactions,
+    assetTotal,
+    assetBreakdown,
+    piutangTotal,
+    hutangTotal,
   };
 }
 
