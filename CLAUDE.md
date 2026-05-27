@@ -995,7 +995,7 @@ jadi tiap render hasil gerakannya beda (nomor frame gak bisa dibandingin antar-r
 
 **LIVE ONLINE (27 Mei 2026):** HTML sekarang dual-mode — dibuka di browser = **animasi jalan terus** (live loop `setInterval` 15fps) + responsive `min(100vw,100vh)`; dipakai render = `__renderFrame` auto-stop live loop + `resetSim()` → video tetap deterministik.
 - Preview live (branch kerja): `https://raw.githack.com/hendrypangg12/Financial-tracker/claude/code-session-work-PkbMp/pt-beruang-pang-office.html`
-- ✅ **DEPLOYED ke berstock.id (27 Mei 2026):** `https://berstock.id/pt-beruang-pang-office.html` (file di branch deploy `claude/financial-tracking-app-QUmrz`). Tombol "Kantor Virtual PT Beruang Pang" dipasang di `linktree.html` (section Enterprise/Pitch). Web scaling pakai `image-rendering:auto` biar teks bersih pas di-downscale.
+- ✅ **DEPLOYED ke berstock.id (27 Mei 2026):** `https://berstock.id/pt-beruang-pang-office.html` (file di branch deploy `claude/financial-tracking-app-QUmrz`). Tombol "Kantor Virtual PT Beruang Pang" dipasang di `linktree.html` (section Enterprise/Pitch) DAN section showcase di homepage `index.html` (preview video autoplay + tombol "Buka versi LIVE", setelah products-section). Web scaling pakai `image-rendering:auto` biar teks bersih pas di-downscale.
 
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
