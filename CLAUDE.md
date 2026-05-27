@@ -740,13 +740,41 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 
 ---
 
-## 🆕 CEKAT CRM — MIGRATED & READY (Day 17, 19 Mei 2026)
+## 🆕 BERUANG CRM — ⏸️ PAUSED (deploy in progress, 24 Mei 2026)
+
+**STATUS:** ⏸️ **PROJECT DISIMPAN SEMENTARA** — bos mau fokus fitur baru dulu.
+
+### Apa yang udah selesai:
+- ✅ Full code imported + integration BerBisnis/Berstock (commit `1a7932f`)
+- ✅ Rename Cekat → Beruang CRM (commit `2d8e50f`)
+- ✅ Frontend UI: BerBisnis Integration + AI Suggestions pages (commit `8a9a910`)
+- ✅ Deploy config: package.json + railway.json + DEPLOY.md (commit `b3fc458`)
+- ✅ Tested local: build OK, server start OK, UI render OK
+
+### Deploy progress (Railway) — TINGGAL LANJUT:
+- ✅ Railway project created (project name: `beneficial-eagerness`)
+- ✅ GitHub repo connected: `hendrypangg12/Financial-tracker`
+- ✅ Branch: `claude/financial-tracking-app-QUmrz`
+- ✅ Root Directory: `beruang-crm`
+- ⏳ **PENDING (lanjut dari sini):**
+  - Set env variables (JWT_SECRET, ANTHROPIC_API_KEY, CLIENT_ORIGIN=*, NODE_ENV=production, DATABASE_PATH=/data/data.db)
+  - Add persistent volume → mount `/data` 1GB
+  - Generate public domain
+  - Set Berstock bot Cloudflare secrets (BERUANG_CRM_BRIDGE_KEY, BERUANG_CRM_API_URL)
+  - End-to-end test
+
+**Untuk lanjut deploy:** baca `beruang-crm/DEPLOY.md` Step 5-8.
+
+---
+
+## 📦 BERUANG CRM — MIGRATED & READY (Day 17, 19 Mei 2026)
 
 **STATUS:** ✅ **FULL IMPORTED** ke `/beruang-crm/` (commit `2ca2aa8`)
 
 **Source:** GitHub tarball public dari `hendrypangg12/Claude` branch `claude/new-session-8fl5o`. 36 file (15 client + 16 server + 4 root marketing) ke-download via curl, tanpa copy-paste manual.
 
 **Project internal name:** "BerBisnis (MVP)" — namespace integrate dengan BerBisnis POS.
+
 
 ### Tech Stack
 - **Server:** Node.js + Express + better-sqlite3 + bcryptjs + jsonwebtoken + @anthropic-ai/sdk + twilio
