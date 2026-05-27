@@ -126,7 +126,7 @@ function drawBear(b, frame) {
 
   ctx.save();
   ctx.globalAlpha = dim;
-  if (b.facing < 0) { ctx.translate(x*2,0); ctx.scale(-1,1); ctx.translate(-x*2,0); }
+  if (b.facing < 0) { ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0); }
 
   // shadow
   ctx.globalAlpha = dim*0.25; ctx.fillStyle='#000';
