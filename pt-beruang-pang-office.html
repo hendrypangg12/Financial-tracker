@@ -84,7 +84,7 @@ const activities = {
   0: ['Catat 12 tester', 'Foto struk OCR', 'Sync Firebase', 'Dashboard real-time'],
   1: ['Hitung HPP', 'Proses POS', 'Cek piutang', 'Laporan untung'],
   2: ['Jawab Telegram', '"Sales 2.5jt"', 'Cek stok habis', 'Saran restock'],
-  3: ['Ngatur agent', 'Review report', 'Strategi cuan', 'Approve project'],
+  3: ['Ngatur agent', 'Presentasi 📊', 'Strategi cuan', 'Approve project'],
   4: ['Follow-up customer', 'Reminder utang', 'Win-back promo', 'Generate AI'],
 };
 
@@ -250,6 +250,72 @@ function drawWhiteboard(x, y) {
   ctx.strokeStyle='#ef4444';
   ctx.beginPath(); ctx.moveTo(x-20,y+24); ctx.lineTo(x+2,y+24); ctx.stroke();
 }
+// AC unit (di dinding atas ruangan)
+function drawAC(x, y, frame) {
+  ctx.fillStyle='#e8eef5'; rr(x-18, y, 36, 12, 2);
+  ctx.fillStyle='#cbd5e1'; rr(x-16, y+8, 32, 3, 1);
+  // angin (garis biru animasi)
+  ctx.strokeStyle='rgba(96,165,250,0.5)'; ctx.lineWidth=1.5;
+  const a = (frame % 20) / 20;
+  for (let i=0;i<3;i++){
+    const yy = y+13 + a*8 + i*5;
+    ctx.beginPath(); ctx.moveTo(x-10+i*8, yy); ctx.lineTo(x-6+i*8, yy+4); ctx.stroke();
+  }
+}
+// Coffee machine
+function drawCoffeeMachine(x, y) {
+  ctx.fillStyle='#3a2418'; rr(x-12, y-26, 24, 28, 3);   // body
+  ctx.fillStyle='#5d3a1a'; rr(x-10, y-24, 20, 8, 2);    // top
+  ctx.fillStyle='#1a1a1a'; rr(x-8, y-12, 16, 8, 1);     // dispenser slot
+  ctx.fillStyle='#d97706'; rr(x-4, y-10, 8, 5, 1);      // cup area glow
+  // steam
+  ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x-3,y-28); ctx.quadraticCurveTo(x-6,y-34,x-3,y-40); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+3,y-28); ctx.quadraticCurveTo(x+6,y-34,x+3,y-40); ctx.stroke();
+  ctx.fillStyle='#7c2d12'; rr(x-14, y+2, 28, 4, 1);     // base
+}
+// Sofa
+function drawSofa(x, y) {
+  ctx.fillStyle='#7c3a52'; rr(x-30, y-14, 60, 20, 5);   // back
+  ctx.fillStyle='#9d4d6a'; rr(x-32, y-4, 64, 16, 5);    // seat
+  ctx.fillStyle='#7c3a52'; rr(x-34, y-8, 8, 18, 3);     // arm L
+  ctx.fillStyle='#7c3a52'; rr(x+26, y-8, 8, 18, 3);     // arm R
+  // cushion lines
+  ctx.strokeStyle='#6b3247'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x, y-2); ctx.lineTo(x, y+10); ctx.stroke();
+}
+// Poster (di dinding)
+function drawPoster(x, y, c, icon) {
+  ctx.fillStyle='#1a1a1a'; rr(x-15, y-1, 30, 38, 2);    // frame
+  ctx.fillStyle=c; rr(x-13, y+1, 26, 28, 1);            // poster
+  ctx.font='16px serif'; ctx.textAlign='center'; ctx.fillStyle='#fff';
+  ctx.fillText(icon, x, y+18);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; rr(x-9, y+24, 18, 2, 1);
+}
+// Coffee cup (di tangan beruang)
+function drawCoffeeCup(x, y) {
+  ctx.fillStyle='#fff'; rr(x-3, y-4, 6, 7, 1);
+  ctx.fillStyle='#7c2d12'; rr(x-2, y-3, 4, 2, 1);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(x+4, y, 2.5, -1.5, 1.5); ctx.stroke();
+  // steam
+  ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x, y-5); ctx.quadraticCurveTo(x-2,y-8,x,y-11); ctx.stroke();
+}
+// Rug bawah meja (nambah detail lantai)
+function drawRug(x, y, c) {
+  ctx.fillStyle=c; rr(x-52, y-26, 104, 52, 9);
+  ctx.strokeStyle='rgba(255,255,255,0.16)'; ctx.lineWidth=2; ctx.strokeRect(x-44, y-19, 88, 38);
+}
+// Rak buku / shelf di dinding
+function drawShelf(x, y) {
+  ctx.fillStyle='#5d3a1a'; rr(x-4, y, 32, 42, 2);
+  ctx.fillStyle='#3a2410'; ctx.fillRect(x-4, y+14, 32, 2); ctx.fillRect(x-4, y+28, 32, 2);
+  const cols=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7'];
+  for(let i=0;i<4;i++){ ctx.fillStyle=cols[i%5]; rr(x+1+i*6, y+3, 4, 10, 1); }
+  for(let i=0;i<4;i++){ ctx.fillStyle=cols[(i+2)%5]; rr(x+1+i*6, y+17, 4, 10, 1); }
+  ctx.fillStyle='#2d7a3a'; ctx.beginPath(); ctx.arc(x+20, y+34, 4, 0, 6.28); ctx.fill();
+}
 
 function drawComputer(cx, cy, on, frame) {
   cx=Math.round(cx); cy=Math.round(cy);
@@ -330,11 +396,14 @@ function updateBear(b, frame) {
   const speed = 4.5;
   if (dist < speed) {
     b.x=wp.x; b.y=wp.y;
-    if (wp.pause) { b.pauseLeft = wp.pause; }
+    if (wp.pause) {
+      b.pauseLeft = wp.pause;
+      if (Math.abs(wp.x - pantryX) < 95) b.hasCoffee = true; // mampir pantry → bawa kopi balik
+    }
     b.wpIdx++;
     if (b.wpIdx >= b.waypoints.length) {
       // balik kerja lebih cepat biar desk gak kosong lama
-      b.state='sit'; b.nextActionFrame = frame + 25 + Math.floor(Math.random()*50);
+      b.state='sit'; b.hasCoffee = false; b.nextActionFrame = frame + 25 + Math.floor(Math.random()*50);
     }
   } else {
     b.x += dx/dist*speed; b.y += dy/dist*speed;
@@ -363,13 +432,18 @@ function drawOffice(frame) {
     }
     ctx.strokeStyle='#2a3050'; ctx.lineWidth=3; ctx.strokeRect(R.x+1.5,R.y+1.5,R.w-3,R.h-3);
 
-    // decorations per room
-    drawPlant(R.x + 22, R.y + R.h - 30);
-    if (idx % 2 === 0) drawClock(R.x + R.w - 24, R.y + 70, frame);
-    if (r.status === 'ceo') drawWhiteboard(R.x + R.w - 40, R.y + R.h - 70);
+    // decorations per room (dinding + lantai biar rame & hidup)
+    const d = deskPos(r);
+    const rugC = r.status==='ceo' ? '#3a2a14' : (r.status==='live' ? '#143024' : (r.status==='build' ? '#2a2410' : '#1a2038'));
+    drawRug(d.x, d.y + 22, rugC);                                   // karpet bawah meja
+    drawAC(R.x + R.w - 34, R.y + 56, frame);                        // AC dinding atas
+    drawPoster(R.x + 28, R.y + 92, r.status==='live' ? '#16803f' : (r.status==='ceo' ? '#8b5a2b' : '#1e3a5f'), r.role.split(' ')[0]);
+    drawShelf(R.x + R.w - 38, R.y + R.h - 80);                      // rak buku
+    drawPlant(R.x + 24, R.y + R.h - 30);                            // tanaman pojok
+    if (idx % 3 === 1) drawClock(R.x + R.w - 60, R.y + 70, frame);  // jam dinding sebagian ruangan
+    if (r.status === 'ceo') drawWhiteboard(R.x + R.w/2, R.y + 70);  // whiteboard presentasi CEO
 
     // desk + computer
-    const d = deskPos(r);
     ctx.fillStyle='#3a2410'; rr(d.x-46, d.y+10, 92, 34, 3);
     ctx.fillStyle='#5d3a1a'; rr(d.x-46, d.y+10, 92, 7, 3);
     drawComputer(d.x, d.y+10, r.status!=='road', frame);
@@ -388,15 +462,36 @@ function drawOffice(frame) {
     ctx.fillText(bt, R.x+R.w/2, R.y+R.h-18);
   });
 
-  // HALLWAY
+  // HALLWAY (lorong karpet gelap)
   const t=30;
   for(let ty=0;ty<hallwayH;ty+=t)for(let tx=0;tx<1080;tx+=t){
     ctx.fillStyle=((tx/t+ty/t)%2===0)?'#1c2438':'#232d44'; ctx.fillRect(tx,hallwayY+ty,t,t);
   }
-  ctx.fillStyle=COL.gold; ctx.globalAlpha=0.12; ctx.fillRect(0,hallwayMidY-3,1080,6); ctx.globalAlpha=1;
-  // pantry: water dispenser + plant in hallway center
-  drawDispenser(pantryX - 60, hallwayMidY + 20);
-  drawPlant(pantryX + 60, hallwayMidY + 18);
+  // garis tengah emas (skip area pantry)
+  const pL=412, pR=668, pW=pR-pL;
+  ctx.fillStyle=COL.gold; ctx.globalAlpha=0.12;
+  ctx.fillRect(0,hallwayMidY-3,pL,6); ctx.fillRect(pR,hallwayMidY-3,1080-pR,6); ctx.globalAlpha=1;
+
+  // ===== PANTRY / DAPUR KOPI — lantai ubin beda (putih-abu) =====
+  const kt=21;
+  for(let ty=0;ty<hallwayH;ty+=kt)for(let tx=0;tx<pW;tx+=kt){
+    ctx.fillStyle=((((tx/kt)|0)+((ty/kt)|0))%2===0)?'#d4dceb':'#a9b6cb';
+    ctx.fillRect(pL+tx, hallwayY+ty, Math.min(kt,pR-pL-tx), Math.min(kt,hallwayH-ty));
+  }
+  ctx.strokeStyle='#8b5a2b'; ctx.lineWidth=3; ctx.strokeRect(pL, hallwayY+2, pW, hallwayH-4);
+  // sign PANTRY
+  ctx.fillStyle='#3a2410'; rr(pL+pW/2-52, hallwayY+4, 104, 18, 4);
+  ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.gold; ctx.textAlign='center';
+  ctx.fillText('PANTRY', pL+pW/2, hallwayY+17);
+  // counter dapur
+  ctx.fillStyle='#8a7458'; rr(pL+12, hallwayMidY+2, pW-24, 7, 2);
+  ctx.fillStyle='#6b5a44'; rr(pL+12, hallwayMidY+7, pW-24, 3, 1);
+  // perabotan pantry
+  drawCoffeeMachine(pL+42, hallwayMidY+30);
+  drawDispenser(pR-34, hallwayMidY+24);
+  drawSofa(pantryX+14, hallwayMidY+30);
+  drawPlant(pL-30, hallwayMidY+18);
+  drawPlant(pR+30, hallwayMidY+18);
 
   // BEARS (depth sort) + bubbles (chat / activity)
   [...bears].sort((a,b)=>a.y-b.y).forEach(b=>{
@@ -419,6 +514,7 @@ function drawOffice(frame) {
       ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-57);
     }
     drawBear(b, frame);
+    if (b.hasCoffee && b.state==='walking') drawCoffeeCup(Math.round(b.x) + 13*b.facing, Math.round(b.y) + 10);
   });
 
   // ===== ROOM HEADER LABELS (pass terakhir, selalu di atas, gak kepotong) =====
