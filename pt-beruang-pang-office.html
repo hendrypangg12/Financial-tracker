@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>PT Beruang Pang — AI Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; min-height: 100vh; background: #0a0e1a; overflow: hidden; }
+body { display: flex; align-items: center; justify-content: center; }
+canvas { display: block; image-rendering: auto; width: min(100vw, 100vh); height: min(100vw, 100vh); }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1080"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// logo beruang berdasi (BerBisnis) buat title bar — lebih elegant dari emoji
+const logoImg = new Image();
+logoImg.src = 'assets/logo-berbisnis.png';
+
+// ============ TIMELINE (45s office loop @ 15fps = 675 frames) ============
+// No intro — langsung suasana kantor natural. CTA persistent di stats bar.
+const FPS = 15;
+const TOTAL = 675;
+
+// ============ COLORS ============
+const COL = {
+  bg: '#0d1120', gold: '#ffd700', white: '#fff', cream: '#f5deb3', muted: '#8896b8',
+  green: '#22c55e', orange: '#f59e0b', gray: '#64748b',
+};
+
+// ============ LAYOUT ============
+const TITLE_H = 96, STATS_H = 64;
+const officeTop = TITLE_H, officeBot = 1080 - STATS_H, officeH = officeBot - officeTop;
+const cols = 4, roomW = 1080 / cols;
+const hallwayH = 96;
+const roomH = (officeH - hallwayH) / 2;
+
+const rooms = [
+  { name: 'BERUANG',    agent: 'Agent Finance', role: '💰 Finance', status: 'live',  col: 0, row: 0 },
+  { name: 'BERBISNIS',  agent: 'Agent Kasir',   role: '📊 POS',     status: 'live',  col: 1, row: 0 },
+  { name: 'BERSTOCK',   agent: 'Agent Stok',    role: '🤖 AI Bot',  status: 'live',  col: 2, row: 0 },
+  { name: 'CEO PANG',   agent: 'Ceo Pang',      role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
+  { name: 'BERUANG CRM',agent: 'Agent CRM',     role: '💬 CRM',     status: 'build', col: 0, row: 1 },
+  { name: 'PEMBUKUAN',  agent: 'Agent Buku',    role: '📚 Account', status: 'road',  col: 1, row: 1 },
+  { name: 'SALES',      agent: 'Agent Sales',   role: '💼 Sales',   status: 'road',  col: 2, row: 1 },
+  { name: 'HRD',        agent: 'Agent HRD',     role: '👥 HR',      status: 'road',  col: 3, row: 1 },
+];
+
+function roomRect(r) {
+  const x = r.col * roomW;
+  const y = officeTop + (r.row === 0 ? 0 : roomH + hallwayH);
+  return { x, y, w: roomW, h: roomH };
+}
+function deskPos(r) { const rr = roomRect(r); return { x: rr.x + rr.w / 2, y: rr.y + rr.h * 0.5 }; }
+const hallwayY = officeTop + roomH;
+const hallwayMidY = hallwayY + hallwayH / 2;
+
+// ============ APPEARANCE ============
+const APPEARANCE = [
+  { fur: '#9b6a3a', shirt: '#22a559', accent: '#16803f', glasses: true,  tie: false, hat: null,  eye: 'normal' },
+  { fur: '#8a5a2e', shirt: '#2563eb', accent: '#1d4ed8', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#a87440', shirt: '#7c3aed', accent: '#5b21b6', glasses: true,  tie: false, hat: 'cap', eye: 'robot'  },
+  { fur: '#7a4e28', shirt: '#1a2540', accent: '#d4af37', glasses: true,  tie: true,  hat: null,  eye: 'normal' },
+  { fur: '#a87440', shirt: '#0d9488', accent: '#0f766e', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#9b6a3a', shirt: '#64748b', accent: '#475569', glasses: true,  tie: false, hat: null,  eye: 'sleepy' },
+  { fur: '#8a5a2e', shirt: '#dc2626', accent: '#b91c1c', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#a87440', shirt: '#db2777', accent: '#be185d', glasses: false, tie: false, hat: null,  eye: 'normal' },
+];
+
+const bears = rooms.map((r, i) => {
+  const d = deskPos(r);
+  return {
+    roomIdx: i, x: d.x, y: d.y, homeX: d.x, homeY: d.y,
+    state: 'sit', facing: 1, walkPhase: Math.random() * 6.28,
+    nextActionFrame: 20 + Math.floor(Math.random() * 50),
+    active: r.status !== 'road',
+    roam: r.status !== 'road' && r.status !== 'ceo', // CEO/bos selalu standby di ruangan
+    smokes: r.status === 'ceo',                       // bos ngerokok sambil mikir bisnis
+    look: APPEARANCE[i], waypoints: [], wpIdx: 0,
+    blinkFrame: Math.floor(Math.random() * 60), typePhase: Math.random() * 6.28,
+    chatWith: null, chatUntil: 0,
+  };
+});
+
+// ===== KARAKTER TAMBAHAN: sekretaris CEO + tamu (biar kantor gak sepi) =====
+const ceoDesk = deskPos(rooms[3]);
+function staticChar(x, y, look, name, lines, facing) {
+  return {
+    roomIdx: 3, x, y, homeX: x, homeY: y, state: 'sit', facing: facing || 1,
+    walkPhase: 0, nextActionFrame: 1e9, active: true, roam: false, smokes: false,
+    look, name, lines, waypoints: [], wpIdx: 0,
+    blinkFrame: Math.floor(Math.random()*60), typePhase: Math.random()*6.28,
+    chatWith: null, chatUntil: 0,
+  };
+}
+const SECRETARY = { fur:'#caa06a', shirt:'#db2777', accent:'#9d174d', glasses:false, tie:false, hat:null, eye:'happy',  female:true, bow:true, hair:'#3a2418' };
+const GUEST_A   = { fur:'#7a4e28', shirt:'#0ea5e9', accent:'#0369a1', glasses:true,  tie:false, hat:null, eye:'normal' };
+const GUEST_B   = { fur:'#a87440', shirt:'#16a34a', accent:'#15803f', glasses:false, tie:false, hat:'cap', eye:'happy'  };
+bears.push(
+  staticChar(ceoDesk.x - 82, ceoDesk.y + 2, SECRETARY, 'Sekretaris', ['Jadwal bos', 'Tamu dateng', 'Meeting jam 2', 'Kopi bos?'], 1),
+  staticChar(540 + 8, hallwayMidY + 8, GUEST_A, 'Tamu', ['Nunggu bos', 'Mau kerjasama', 'Sabar ya', 'Ngopi dulu'], 1),
+  staticChar(86, hallwayMidY, GUEST_B, 'Tamu', ['Permisi...', 'Ada bos?', 'Mau ketemu'], 1),
+);
+
+const activities = {
+  0: ['Catat 12 tester', 'Foto struk OCR', 'Sync Firebase', 'Dashboard real-time'],
+  1: ['Hitung HPP', 'Proses POS', 'Cek piutang', 'Laporan untung'],
+  2: ['Jawab Telegram', '"Sales 2.5jt"', 'Cek stok habis', 'Saran restock'],
+  3: ['"Profit naik 30%!"', '"Gas ekspansi"', '"Target Q2 aman"', '"Mantap tim!"', '"Atur strategi"'],
+  4: ['Follow-up customer', 'Reminder utang', 'Win-back promo', 'Generate AI'],
+};
+
+// ============ HELPERS ============
+function shade(hex, amt) {
+  let h = hex.replace('#', '');
+  let r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  r = Math.max(0,Math.min(255,Math.round(r+r*amt)));
+  g = Math.max(0,Math.min(255,Math.round(g+g*amt)));
+  b = Math.max(0,Math.min(255,Math.round(b+b*amt)));
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fill(); }
+
+// ============ DRAW BEAR (natural humanoid) ============
+function drawBear(b, frame) {
+  const walking = b.state === 'walking';
+  const L = b.look;
+  const fur = b.active ? L.fur : '#6b5340';
+  const furD = shade(fur, -0.28);
+  const muzzle = '#ecd0a8';
+  const shirt = b.active ? L.shirt : '#555';
+  const shirtD = b.active ? L.accent : '#3a3a3a';
+  const dim = b.active ? 1 : 0.5;
+
+  // walk cycle (4-phase smooth)
+  const wc = b.walkPhase;
+  const legL = walking ? Math.sin(wc) * 6 : 0;
+  const armL = walking ? Math.sin(wc) * 5 : 0;
+  // typing animation when sitting active
+  const typing = (b.state === 'sit' && b.active);
+  const typeBob = typing ? Math.sin(b.typePhase) * 2 : 0;
+  const idleBob = Math.sin(frame * 0.06 + b.roomIdx) * 1.2;
+  const bob = walking ? Math.abs(Math.sin(wc)) * 2.5 : idleBob;
+
+  const x = Math.round(b.x), y = Math.round(b.y + bob);
+
+  ctx.save();
+  ctx.globalAlpha = dim;
+  if (b.facing < 0) { ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0); }
+
+  // shadow
+  ctx.globalAlpha = dim*0.25; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(x, y+42, 18, 5, 0, 0, 6.28); ctx.fill();
+  ctx.globalAlpha = dim;
+
+  // LEGS
+  ctx.fillStyle = '#2a2418';
+  rr(x-9, y+24, 8, 15+legL, 3);
+  rr(x+1, y+24, 8, 15-legL, 3);
+  ctx.fillStyle = '#1a1a1a';
+  rr(x-10, y+37+legL, 11, 5, 2);
+  rr(x+0, y+37-legL, 11, 5, 2);
+
+  // BACK ARM
+  const ay = typing ? y+4+typeBob : y+4;
+  ctx.fillStyle = fur;
+  rr(x-16, ay-armL, 7, 16, 3);
+  ctx.fillStyle = muzzle; rr(x-16, ay+13-armL, 7, 5, 2);
+
+  // BODY/SHIRT (rounded torso)
+  ctx.fillStyle = shirt; rr(x-13, y, 26, 26, 7);
+  ctx.fillStyle = shirtD; rr(x-13, y+19, 26, 7, 4);
+  ctx.fillStyle = shade(shirt,0.18); rr(x-7, y-1, 14, 5, 2);
+  if (L.tie) {
+    ctx.fillStyle='#d4af37'; rr(x-2, y+2, 4, 13, 1);
+    ctx.beginPath(); ctx.moveTo(x-4,y+13); ctx.lineTo(x+4,y+13); ctx.lineTo(x,y+19); ctx.closePath(); ctx.fill();
+  }
+  if (L.female) { // rok gaun mengembang
+    ctx.fillStyle = shirt;
+    ctx.beginPath(); ctx.moveTo(x-11, y+17); ctx.lineTo(x+11, y+17);
+    ctx.lineTo(x+18, y+33); ctx.lineTo(x-18, y+33); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = shade(shirt,-0.18); rr(x-18, y+31, 36, 3, 1);
+  }
+
+  // FRONT ARM (typing motion)
+  ctx.fillStyle = fur;
+  rr(x+9, ay+armL, 7, 16, 3);
+  ctx.fillStyle = muzzle; rr(x+9, ay+13+armL, 7, 5, 2);
+
+  // HEAD
+  const hy = y - 24;
+  if (L.hair) { // rambut panjang (karakter cewek) — digambar di belakang kepala
+    ctx.fillStyle = L.hair;
+    rr(x-15, hy-4, 7, 25, 4); rr(x+8, hy-4, 7, 25, 4);
+  }
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.arc(x-11, hy-3, 6.5, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11, hy-3, 6.5, 0, 6.28); ctx.fill();
+  ctx.fillStyle = furD;
+  ctx.beginPath(); ctx.arc(x-11, hy-3, 3, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11, hy-3, 3, 0, 6.28); ctx.fill();
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.arc(x, hy+4, 14, 0, 6.28); ctx.fill();
+  ctx.fillStyle = muzzle;
+  ctx.beginPath(); ctx.ellipse(x, hy+9, 8.5, 6.5, 0, 0, 6.28); ctx.fill();
+
+  if (L.hat === 'cap') {
+    ctx.fillStyle = L.accent; rr(x-14, hy-7, 28, 7, 3); rr(x-2, hy-11, 18, 6, 2);
+  }
+  if (L.bow) { // pita di rambut
+    const bx2 = x+8, by2 = hy-10;
+    ctx.fillStyle = '#f472b6';
+    ctx.beginPath(); ctx.moveTo(bx2,by2); ctx.lineTo(bx2-8,by2-5); ctx.lineTo(bx2-8,by2+5); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(bx2,by2); ctx.lineTo(bx2+8,by2-5); ctx.lineTo(bx2+8,by2+5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#ec4899'; ctx.beginPath(); ctx.arc(bx2,by2,2.6,0,6.28); ctx.fill();
+  }
+
+  // eyes + blink
+  const blink = (frame % 70 >= (b.blinkFrame%70) && frame % 70 < (b.blinkFrame%70)+3);
+  ctx.fillStyle = '#1a1a1a';
+  if (blink) {
+    ctx.fillRect(x-8, hy+2, 5, 1.5); ctx.fillRect(x+3, hy+2, 5, 1.5);
+  } else if (L.eye === 'happy') {
+    ctx.lineWidth=2; ctx.strokeStyle='#1a1a1a';
+    ctx.beginPath(); ctx.arc(x-5,hy+2,2.5,Math.PI,0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x+6,hy+2,2.5,Math.PI,0); ctx.stroke();
+  } else if (L.eye === 'robot') {
+    ctx.fillRect(x-8,hy,5,3); ctx.fillRect(x+3,hy,5,3);
+    ctx.fillStyle='#1e90ff'; ctx.fillRect(x-7,hy+1,2,1); ctx.fillRect(x+5,hy+1,2,1);
+  } else if (L.eye === 'sleepy') {
+    ctx.fillRect(x-8,hy+3,5,2); ctx.fillRect(x+3,hy+3,5,2);
+  } else {
+    ctx.fillRect(x-6,hy,3.5,5); ctx.fillRect(x+3,hy,3.5,5);
+  }
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath(); ctx.arc(x, hy+7, 2.2, 0, 6.28); ctx.fill();
+
+  if (L.female) { // bulu mata + lipstik
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x-8,hy+1); ctx.lineTo(x-11,hy-1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+8,hy+1); ctx.lineTo(x+11,hy-1); ctx.stroke();
+    ctx.fillStyle='#e11d48'; rr(x-2.5, hy+11, 5, 2, 1);
+  }
+
+  if (L.glasses) {
+    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1.5;
+    ctx.strokeRect(x-9, hy-1, 7, 6); ctx.strokeRect(x+2, hy-1, 7, 6);
+    ctx.beginPath(); ctx.moveTo(x-2,hy+1); ctx.lineTo(x+2,hy+1); ctx.stroke();
+  }
+
+  // rokok bos (di mulut) + asap ngebul
+  if (b.smokes) {
+    ctx.fillStyle = '#f5f5f0'; ctx.fillRect(x+6, hy+10, 13, 2.5);          // batang
+    const bara = (Math.floor(frame/4)%2===0) ? '#ff7a1a' : '#ff3a00';
+    ctx.fillStyle = bara; ctx.fillRect(x+18, hy+10, 3, 2.5);               // bara
+    ctx.strokeStyle='rgba(228,228,228,0.5)'; ctx.lineWidth=1.3;
+    const sw = Math.sin(frame*0.22)*3;
+    ctx.beginPath(); ctx.moveTo(x+20, hy+9); ctx.quadraticCurveTo(x+24+sw, hy+1, x+20, hy-7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+20, hy+9); ctx.quadraticCurveTo(x+16-sw, hy, x+21, hy-11); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ===== NAME TAG (di atas kepala, ikut karakter) =====
+  const agentName = b.name || rooms[b.roomIdx].agent;
+  ctx.globalAlpha = dim;
+  ctx.font = '13px VT323'; ctx.textAlign = 'center';
+  const ntw = ctx.measureText(agentName).width + 14;
+  const ntY = y - 50;
+  ctx.fillStyle = b.active ? 'rgba(212,175,55,0.92)' : 'rgba(100,116,139,0.85)';
+  rr(x - ntw/2, ntY, ntw, 17, 4);
+  ctx.fillStyle = b.active ? '#1a1208' : '#e2e8f0';
+  ctx.fillText(agentName, x, ntY + 13);
+  ctx.globalAlpha = 1;
+}
+
+// ============ DECORATIONS ============
+function drawPlant(x, y) {
+  ctx.fillStyle='#5d3a1a'; rr(x-8, y, 16, 12, 2);          // pot
+  ctx.fillStyle='#2d7a3a';
+  ctx.beginPath(); ctx.arc(x, y-4, 11, 0, 6.28); ctx.fill();
+  ctx.fillStyle='#3a9a4a';
+  ctx.beginPath(); ctx.arc(x-5, y-8, 6, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+5, y-6, 6, 0, 6.28); ctx.fill();
+}
+function drawDispenser(x, y) {
+  ctx.fillStyle='#3b82f6'; rr(x-9, y-22, 18, 16, 2);       // bottle
+  ctx.fillStyle='#dbeafe'; rr(x-7, y-20, 14, 12, 2);
+  ctx.fillStyle='#e5e7eb'; rr(x-8, y-6, 16, 22, 2);        // cooler body
+  ctx.fillStyle='#3b82f6'; rr(x-5, y+2, 10, 4, 1);
+}
+function drawClock(x, y, frame) {
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,11,0,6.28); ctx.fill();
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,11,0,6.28); ctx.stroke();
+  const a = frame*0.1;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(a)*5, y+Math.sin(a)*5); ctx.stroke();
+  ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(a*2)*7, y+Math.sin(a*2)*7); ctx.stroke();
+}
+function drawWhiteboard(x, y) {
+  ctx.fillStyle='#f8fafc'; rr(x-26, y, 52, 30, 2);
+  ctx.strokeStyle='#94a3b8'; ctx.lineWidth=2; ctx.strokeRect(x-26, y, 52, 30);
+  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x-20,y+8); ctx.lineTo(x-4,y+8); ctx.stroke();
+  ctx.strokeStyle='#22c55e';
+  ctx.beginPath(); ctx.moveTo(x-20,y+16); ctx.lineTo(x+10,y+16); ctx.stroke();
+  ctx.strokeStyle='#ef4444';
+  ctx.beginPath(); ctx.moveTo(x-20,y+24); ctx.lineTo(x+2,y+24); ctx.stroke();
+}
+// AC unit (di dinding atas ruangan)
+function drawAC(x, y, frame) {
+  ctx.fillStyle='#e8eef5'; rr(x-18, y, 36, 12, 2);
+  ctx.fillStyle='#cbd5e1'; rr(x-16, y+8, 32, 3, 1);
+  // angin (garis biru animasi)
+  ctx.strokeStyle='rgba(96,165,250,0.5)'; ctx.lineWidth=1.5;
+  const a = (frame % 20) / 20;
+  for (let i=0;i<3;i++){
+    const yy = y+13 + a*8 + i*5;
+    ctx.beginPath(); ctx.moveTo(x-10+i*8, yy); ctx.lineTo(x-6+i*8, yy+4); ctx.stroke();
+  }
+}
+// Coffee machine
+function drawCoffeeMachine(x, y) {
+  ctx.fillStyle='#3a2418'; rr(x-12, y-26, 24, 28, 3);   // body
+  ctx.fillStyle='#5d3a1a'; rr(x-10, y-24, 20, 8, 2);    // top
+  ctx.fillStyle='#1a1a1a'; rr(x-8, y-12, 16, 8, 1);     // dispenser slot
+  ctx.fillStyle='#d97706'; rr(x-4, y-10, 8, 5, 1);      // cup area glow
+  // steam
+  ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x-3,y-28); ctx.quadraticCurveTo(x-6,y-34,x-3,y-40); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+3,y-28); ctx.quadraticCurveTo(x+6,y-34,x+3,y-40); ctx.stroke();
+  ctx.fillStyle='#7c2d12'; rr(x-14, y+2, 28, 4, 1);     // base
+}
+// Sofa
+function drawSofa(x, y) {
+  ctx.fillStyle='#7c3a52'; rr(x-30, y-14, 60, 20, 5);   // back
+  ctx.fillStyle='#9d4d6a'; rr(x-32, y-4, 64, 16, 5);    // seat
+  ctx.fillStyle='#7c3a52'; rr(x-34, y-8, 8, 18, 3);     // arm L
+  ctx.fillStyle='#7c3a52'; rr(x+26, y-8, 8, 18, 3);     // arm R
+  // cushion lines
+  ctx.strokeStyle='#6b3247'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x, y-2); ctx.lineTo(x, y+10); ctx.stroke();
+}
+// Poster (di dinding)
+function drawPoster(x, y, c, icon) {
+  ctx.fillStyle='#1a1a1a'; rr(x-15, y-1, 30, 38, 2);    // frame
+  ctx.fillStyle=c; rr(x-13, y+1, 26, 28, 1);            // poster
+  ctx.font='16px serif'; ctx.textAlign='center'; ctx.fillStyle='#fff';
+  ctx.fillText(icon, x, y+18);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; rr(x-9, y+24, 18, 2, 1);
+}
+// Coffee cup (di tangan beruang)
+function drawCoffeeCup(x, y) {
+  ctx.fillStyle='#fff'; rr(x-3, y-4, 6, 7, 1);
+  ctx.fillStyle='#7c2d12'; rr(x-2, y-3, 4, 2, 1);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(x+4, y, 2.5, -1.5, 1.5); ctx.stroke();
+  // steam
+  ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x, y-5); ctx.quadraticCurveTo(x-2,y-8,x,y-11); ctx.stroke();
+}
+// Rug bawah meja (nambah detail lantai)
+function drawRug(x, y, c) {
+  ctx.fillStyle=c; rr(x-52, y-26, 104, 52, 9);
+  ctx.strokeStyle='rgba(255,255,255,0.16)'; ctx.lineWidth=2; ctx.strokeRect(x-44, y-19, 88, 38);
+}
+// Rak buku / shelf di dinding
+function drawShelf(x, y) {
+  ctx.fillStyle='#5d3a1a'; rr(x-4, y, 32, 42, 2);
+  ctx.fillStyle='#3a2410'; ctx.fillRect(x-4, y+14, 32, 2); ctx.fillRect(x-4, y+28, 32, 2);
+  const cols=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7'];
+  for(let i=0;i<4;i++){ ctx.fillStyle=cols[i%5]; rr(x+1+i*6, y+3, 4, 10, 1); }
+  for(let i=0;i<4;i++){ ctx.fillStyle=cols[(i+2)%5]; rr(x+1+i*6, y+17, 4, 10, 1); }
+  ctx.fillStyle='#2d7a3a'; ctx.beginPath(); ctx.arc(x+20, y+34, 4, 0, 6.28); ctx.fill();
+}
+
+// Pintu masuk / keluar (kaca + frame kayu)
+function drawDoor(x, y, w, h, label) {
+  ctx.fillStyle = '#5d3a1a'; rr(x-4, y-4, w+8, h+8, 3);            // frame
+  ctx.fillStyle = '#16203a'; rr(x, y, w, h, 2);                   // doorway gelap
+  ctx.fillStyle = 'rgba(125,211,252,0.22)';
+  rr(x+2, y+3, w/2-3, h-6, 2); rr(x+w/2+1, y+3, w/2-3, h-6, 2);   // 2 panel kaca
+  ctx.fillStyle = '#d4af37';
+  ctx.fillRect(x+w/2-3, y+h/2-7, 2, 14); ctx.fillRect(x+w/2+1, y+h/2-7, 2, 14); // gagang
+  ctx.fillStyle='#0a0e1a'; rr(x+w/2-24, y-17, 48, 14, 3);         // plat label
+  ctx.font='9px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText(label, x+w/2, y-7);
+}
+
+function drawComputer(cx, cy, on, frame) {
+  cx=Math.round(cx); cy=Math.round(cy);
+  ctx.fillStyle='#15151f'; rr(cx-15, cy-22, 30, 23, 2);
+  if (on) {
+    ctx.fillStyle = (Math.floor(frame/4)%2===0) ? '#1e90ff' : '#2563eb';
+    ctx.fillRect(cx-12, cy-19, 24, 17);
+    ctx.fillStyle='rgba(255,255,255,0.75)';
+    for (let i=0;i<4;i++){ const lw=5+((frame+i*3)%13); ctx.fillRect(cx-10, cy-17+i*4, lw, 2); }
+  } else { ctx.fillStyle='#334155'; ctx.fillRect(cx-12, cy-19, 24, 17); }
+  ctx.fillStyle='#15151f'; rr(cx-4, cy+1, 8, 4, 1); rr(cx-9, cy+5, 18, 3, 1);
+  // keyboard
+  ctx.fillStyle='#1a1a1a'; rr(cx-12, cy+9, 24, 6, 1);
+}
+
+// ============ MOVEMENT ============
+const pantryX = 540, pantryY = hallwayMidY;
+function planWaypoints(b, frame) {
+  const room = rooms[b.roomIdx];
+  const rrr = roomRect(room);
+  const exitX = rrr.x + rrr.w/2;
+  const goPantry = Math.random() < 0.4;
+  // sebar posisi nongkrong biar beruang gak numpuk jadi satu gumpalan
+  const slot = (b.roomIdx % 3) - 1; // -1, 0, 1
+  const strollX = goPantry ? pantryX + slot*72 + (Math.random()*24-12) : 120 + Math.random()*840;
+  b.waypoints = [
+    { x: exitX, y: hallwayMidY },
+    { x: strollX, y: hallwayMidY, pause: goPantry ? 18 : 8 },
+    { x: exitX, y: hallwayMidY },
+    { x: b.homeX, y: b.homeY },
+  ];
+  b.wpIdx = 0; b.state = 'walking'; b.pauseLeft = 0;
+}
+// Chat: beruang ngobrol pas ketemu di hallway
+const CHAT_LINES = ['Halo bos!', 'Sibuk nih!', 'Gas terus!', 'Mantap!', 'Ngopi dulu?', 'Semangat!', 'Lancar?', 'Sukses ya!', 'Sini ngobrol', 'Lagi rame'];
+function processChats(frame) {
+  for (let i = 0; i < bears.length; i++) {
+    const a = bears[i];
+    if (!a.active || a.state !== 'walking' || a.chatUntil > frame) continue;
+    if (Math.abs(a.y - hallwayMidY) > 28) continue;
+    for (let j = i + 1; j < bears.length; j++) {
+      const b2 = bears[j];
+      if (!b2.active || b2.state !== 'walking' || b2.chatUntil > frame) continue;
+      if (Math.abs(b2.y - hallwayMidY) > 28) continue;
+      const dist = Math.abs(a.x - b2.x);
+      if (dist < 72 && dist > 22) {
+        a.chatUntil = frame + 28; b2.chatUntil = frame + 28;
+        a.chatLine = CHAT_LINES[Math.floor(Math.random() * CHAT_LINES.length)];
+        b2.chatLine = CHAT_LINES[Math.floor(Math.random() * CHAT_LINES.length)];
+        a.facing = a.x < b2.x ? 1 : -1;
+        b2.facing = b2.x < a.x ? 1 : -1;
+      }
+    }
+  }
+}
+
+const MAX_WALKERS = 2; // maks beruang jalan bareng — sisanya tetap kerja di desk (jaga ruangan gak kosong)
+function countWalkers() {
+  return bears.filter(b => b.active && b.state === 'walking').length;
+}
+
+function updateBear(b, frame) {
+  b.typePhase += 0.35;
+  if (!b.active) return;
+  if (b.chatUntil > frame) return; // lagi ngobrol, diem dulu
+  if (b.state === 'sit') {
+    if (b.roam && frame >= b.nextActionFrame) {
+      // jalan kalau slot walker masih ada — biar kantor gak kosong
+      if (countWalkers() < MAX_WALKERS && Math.random() < 0.5) {
+        planWaypoints(b, frame);
+      } else {
+        b.nextActionFrame = frame + 35 + Math.floor(Math.random()*55);
+      }
+    }
+    return;
+  }
+  if (b.pauseLeft > 0) { b.pauseLeft--; return; }
+  const wp = b.waypoints[b.wpIdx];
+  const dx = wp.x-b.x, dy = wp.y-b.y, dist = Math.hypot(dx,dy);
+  const speed = 4.5;
+  if (dist < speed) {
+    b.x=wp.x; b.y=wp.y;
+    if (wp.pause) {
+      b.pauseLeft = wp.pause;
+      if (Math.abs(wp.x - pantryX) < 95) b.hasCoffee = true; // mampir pantry → bawa kopi balik
+    }
+    b.wpIdx++;
+    if (b.wpIdx >= b.waypoints.length) {
+      // balik kerja lebih cepat biar desk gak kosong lama
+      b.state='sit'; b.hasCoffee = false; b.nextActionFrame = frame + 25 + Math.floor(Math.random()*50);
+    }
+  } else {
+    b.x += dx/dist*speed; b.y += dy/dist*speed;
+    if (Math.abs(dx)>1) b.facing = dx>0?1:-1;
+    b.walkPhase += 0.45;
+  }
+  // CLAMP: jaga bear tetep di area kantor (jangan nembus / ilang)
+  b.x = Math.max(40, Math.min(1040, b.x));
+  b.y = Math.max(officeTop + 40, Math.min(officeBot - 30, b.y));
+}
+
+// ============ SCENE ============
+function drawOffice(frame) {
+  ctx.fillStyle = COL.bg; ctx.fillRect(0,0,1080,1080);
+
+  rooms.forEach((r, idx) => {
+    const R = roomRect(r);
+    let c1,c2;
+    if (r.status==='live'){c1='#16301c';c2='#1a3a22';}
+    else if (r.status==='build'){c1='#2a2410';c2='#332c14';}
+    else if (r.status==='ceo'){c1='#2a1c10';c2='#3a2818';}
+    else {c1='#1a1a2e';c2='#22223a';}
+    const t=30;
+    for(let ty=0;ty<R.h;ty+=t)for(let tx=0;tx<R.w;tx+=t){
+      ctx.fillStyle=((tx/t+ty/t)%2===0)?c1:c2; ctx.fillRect(R.x+tx,R.y+ty,t,t);
+    }
+    ctx.strokeStyle='#2a3050'; ctx.lineWidth=3; ctx.strokeRect(R.x+1.5,R.y+1.5,R.w-3,R.h-3);
+
+    // decorations per room (dinding + lantai biar rame & hidup)
+    const d = deskPos(r);
+    const rugC = r.status==='ceo' ? '#3a2a14' : (r.status==='live' ? '#143024' : (r.status==='build' ? '#2a2410' : '#1a2038'));
+    drawRug(d.x, d.y + 22, rugC);                                   // karpet bawah meja
+    drawAC(R.x + R.w - 34, R.y + 56, frame);                        // AC dinding atas
+    drawPoster(R.x + 28, R.y + 92, r.status==='live' ? '#16803f' : (r.status==='ceo' ? '#8b5a2b' : '#1e3a5f'), r.role.split(' ')[0]);
+    drawShelf(R.x + R.w - 38, R.y + R.h - 80);                      // rak buku
+    drawPlant(R.x + 24, R.y + R.h - 30);                            // tanaman pojok
+    if (idx % 3 === 1) drawClock(R.x + R.w - 60, R.y + 70, frame);  // jam dinding sebagian ruangan
+    if (r.status === 'ceo') drawWhiteboard(R.x + R.w/2, R.y + 70);  // whiteboard presentasi CEO
+
+    // desk + computer
+    ctx.fillStyle='#3a2410'; rr(d.x-46, d.y+10, 92, 34, 3);
+    ctx.fillStyle='#5d3a1a'; rr(d.x-46, d.y+10, 92, 7, 3);
+    drawComputer(d.x, d.y+10, r.status!=='road', frame);
+
+    // (room header label digambar di pass terakhir biar gak ke-cover)
+
+    let bc,bt;
+    if(r.status==='live'){bc=COL.green;bt='● LIVE';}
+    else if(r.status==='build'){bc=COL.orange;bt='⚙ BUILDING';}
+    else if(r.status==='ceo'){bc=COL.gold;bt='★ FOUNDER';}
+    else{bc=COL.gray;bt='SOON';}
+    ctx.fillStyle=bc; const bw=bt.length*9+14;
+    rr(R.x+R.w/2-bw/2, R.y+R.h-32, bw, 20, 4);
+    ctx.font='9px "Press Start 2P"';
+    ctx.fillStyle=(r.status==='ceo'||r.status==='live')?'#0a0e1a':'#fff';
+    ctx.fillText(bt, R.x+R.w/2, R.y+R.h-18);
+  });
+
+  // HALLWAY (lorong karpet gelap)
+  const t=30;
+  for(let ty=0;ty<hallwayH;ty+=t)for(let tx=0;tx<1080;tx+=t){
+    ctx.fillStyle=((tx/t+ty/t)%2===0)?'#1c2438':'#232d44'; ctx.fillRect(tx,hallwayY+ty,t,t);
+  }
+  // garis tengah emas (skip area pantry)
+  const pL=412, pR=668, pW=pR-pL;
+  ctx.fillStyle=COL.gold; ctx.globalAlpha=0.12;
+  ctx.fillRect(0,hallwayMidY-3,pL,6); ctx.fillRect(pR,hallwayMidY-3,1080-pR,6); ctx.globalAlpha=1;
+
+  // pintu masuk (kiri) & keluar (kanan)
+  drawDoor(8, hallwayY+14, 44, hallwayH-28, 'MASUK');
+  drawDoor(1028, hallwayY+14, 44, hallwayH-28, 'KELUAR');
+
+  // ===== PANTRY / DAPUR KOPI — lantai ubin beda (putih-abu) =====
+  const kt=21;
+  for(let ty=0;ty<hallwayH;ty+=kt)for(let tx=0;tx<pW;tx+=kt){
+    ctx.fillStyle=((((tx/kt)|0)+((ty/kt)|0))%2===0)?'#d4dceb':'#a9b6cb';
+    ctx.fillRect(pL+tx, hallwayY+ty, Math.min(kt,pR-pL-tx), Math.min(kt,hallwayH-ty));
+  }
+  ctx.strokeStyle='#8b5a2b'; ctx.lineWidth=3; ctx.strokeRect(pL, hallwayY+2, pW, hallwayH-4);
+  // sign PANTRY
+  ctx.fillStyle='#3a2410'; rr(pL+pW/2-52, hallwayY+4, 104, 18, 4);
+  ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.gold; ctx.textAlign='center';
+  ctx.fillText('PANTRY', pL+pW/2, hallwayY+17);
+  // counter dapur
+  ctx.fillStyle='#8a7458'; rr(pL+12, hallwayMidY+2, pW-24, 7, 2);
+  ctx.fillStyle='#6b5a44'; rr(pL+12, hallwayMidY+7, pW-24, 3, 1);
+  // perabotan pantry
+  drawCoffeeMachine(pL+42, hallwayMidY+30);
+  drawDispenser(pR-34, hallwayMidY+24);
+  drawSofa(pantryX+14, hallwayMidY+30);
+  drawPlant(pL-30, hallwayMidY+18);
+  drawPlant(pR+30, hallwayMidY+18);
+
+  // BEARS (depth sort) + bubbles (chat / activity)
+  [...bears].sort((a,b)=>a.y-b.y).forEach(b=>{
+    if (b.chatUntil > frame && b.chatLine) {
+      // CHAT bubble (kuning, pas ngobrol di hallway)
+      ctx.font='16px VT323'; ctx.textAlign='center';
+      const tw=ctx.measureText(b.chatLine).width+16;
+      const by = b.y - 74;
+      ctx.fillStyle='#fde047'; rr(b.x-tw/2, by, tw, 22, 5);
+      // tail
+      ctx.beginPath(); ctx.moveTo(b.x-5, by+22); ctx.lineTo(b.x+5, by+22); ctx.lineTo(b.x, by+30); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#1a1208'; ctx.fillText(b.chatLine, b.x, by+16);
+    } else if (b.state==='sit' && b.active && (b.lines || activities[b.roomIdx])) {
+      const acts=b.lines || activities[b.roomIdx];
+      const act=acts[Math.floor(frame/28 + b.roomIdx)%acts.length];
+      ctx.font='16px VT323'; ctx.textAlign='center';
+      const tw=ctx.measureText(act).width+14;
+      ctx.fillStyle='rgba(10,14,26,0.9)'; rr(b.x-tw/2, b.y-72, tw, 20, 4);
+      ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1; ctx.strokeRect(b.x-tw/2, b.y-72, tw, 20);
+      ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-57);
+    }
+    drawBear(b, frame);
+    if (b.hasCoffee && b.state==='walking') drawCoffeeCup(Math.round(b.x) + 13*b.facing, Math.round(b.y) + 10);
+  });
+
+  // ===== ROOM HEADER LABELS (pass terakhir, selalu di atas, gak kepotong) =====
+  rooms.forEach((r) => {
+    const R = roomRect(r);
+    ctx.fillStyle = 'rgba(8,11,20,0.92)';
+    rr(R.x + 8, R.y + 6, R.w - 16, 44, 5);
+    ctx.strokeStyle = r.status === 'ceo' ? COL.gold : '#2a3050';
+    ctx.lineWidth = 1.5; ctx.strokeRect(R.x + 8, R.y + 6, R.w - 16, 44);
+    ctx.font = '14px "Press Start 2P"'; ctx.textAlign = 'center';
+    ctx.fillStyle = r.status === 'ceo' ? COL.gold : COL.white;
+    ctx.fillText(r.name, R.x + R.w / 2, R.y + 27);
+    ctx.font = '18px VT323'; ctx.fillStyle = COL.muted;
+    ctx.fillText(r.role, R.x + R.w / 2, R.y + 45);
+  });
+
+  // TITLE BAR
+  const g=ctx.createLinearGradient(0,0,1080,0);
+  g.addColorStop(0,'#5d3a1a'); g.addColorStop(0.5,'#8b5a2b'); g.addColorStop(1,'#5d3a1a');
+  ctx.fillStyle=g; ctx.fillRect(0,0,1080,TITLE_H);
+  ctx.fillStyle=COL.gold; ctx.fillRect(0,TITLE_H-4,1080,4);
+  ctx.font='27px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('PT BERUANG PANG', 540, 44);
+  ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.cream;
+  ctx.fillText('FOLLOW @berstock.ai · AI BUAT UMKM 24/7', 540, 72);
+  if (logoImg.complete && logoImg.naturalWidth) {
+    const lh = 76, lw = lh * logoImg.naturalWidth / logoImg.naturalHeight;
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(logoImg, 92 - lw/2, TITLE_H/2 - lh/2, lw, lh);
+    ctx.drawImage(logoImg, 988 - lw/2, TITLE_H/2 - lh/2, lw, lh);
+    ctx.imageSmoothingEnabled = false;
+  } else {
+    ctx.font='42px serif'; ctx.fillText('🐻', 120, 58); ctx.fillText('🐻', 960, 58);
+  }
+
+  // STATS BAR
+  ctx.fillStyle=COL.bg; ctx.fillRect(0,1080-STATS_H,1080,STATS_H);
+  ctx.fillStyle=COL.gold; ctx.fillRect(0,1080-STATS_H,1080,4);
+  const stats=[{n:'4',l:'AI Agent LIVE'},{n:'1',l:'Building'},{n:'100%',l:'Solo Founder'},{n:'INA',l:'Made in Indonesia'}];
+  stats.forEach((s,i)=>{
+    const cx=1080/8*(i*2+1);
+    ctx.font='20px "Press Start 2P"'; ctx.fillStyle=COL.gold; ctx.textAlign='center';
+    ctx.fillText(s.n, cx, 1080-34);
+    ctx.font='16px VT323'; ctx.fillStyle=COL.muted; ctx.fillText(s.l, cx, 1080-14);
+  });
+}
+
+// ============ INTRO ============
+function drawIntro(frame) {
+  const p = frame / INTRO_END; // 0..1
+  ctx.fillStyle = '#0a0e1a'; ctx.fillRect(0,0,1080,1080);
+  // pixel dots bg
+  ctx.globalAlpha = 0.05; ctx.fillStyle='#fff';
+  for(let yy=0;yy<1080;yy+=16)for(let xx=0;xx<1080;xx+=16) ctx.fillRect(xx,yy,1,1);
+  ctx.globalAlpha = 1;
+
+  // bear walks in from left
+  const bx = -60 + p * 600;
+  const tmpBear = { x: bx, y: 560, state:'walking', facing:1, walkPhase: frame*0.5, active:true, look: APPEARANCE[3], roomIdx:3, blinkFrame:0, typePhase:0 };
+  drawBear(tmpBear, frame);
+
+  // title fade in
+  const alpha = Math.min(1, Math.max(0, (p - 0.3) / 0.5));
+  ctx.globalAlpha = alpha;
+  ctx.font = '40px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('PT BERUANG PANG', 540, 420);
+  ctx.font = '16px "Press Start 2P"'; ctx.fillStyle=COL.cream;
+  ctx.fillText('Perusahaan AI buat UMKM', 540, 470);
+  ctx.globalAlpha = 1;
+}
+
+// ============ OUTRO ============
+function drawOutro(frame) {
+  ctx.fillStyle = '#0a0e1a'; ctx.fillRect(0,0,1080,1080);
+  ctx.globalAlpha = 0.05; ctx.fillStyle='#fff';
+  for(let yy=0;yy<1080;yy+=16)for(let xx=0;xx<1080;xx+=16) ctx.fillRect(xx,yy,1,1);
+  ctx.globalAlpha = 1;
+
+  // big bear waving (center)
+  const wave = Math.sin(frame*0.4)*0.3;
+  const tmpBear = { x: 540, y: 480, state:'sit', facing:1, walkPhase:0, active:true, look: APPEARANCE[3], roomIdx:3, blinkFrame:0, typePhase: frame };
+  // draw scaled bear
+  ctx.save(); ctx.translate(540, 200); ctx.scale(2.2, 2.2); ctx.translate(-540, -480);
+  drawBear(tmpBear, frame);
+  ctx.restore();
+
+  ctx.font='30px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('4 AI AGENT LIVE 24/7', 540, 720);
+  ctx.font='18px "Press Start 2P"'; ctx.fillStyle=COL.white;
+  ctx.fillText('Buat UMKM Indonesia naik kelas', 540, 770);
+  // CTA
+  ctx.fillStyle=COL.gold; rr(540-200, 830, 400, 56, 10);
+  ctx.font='18px "Press Start 2P"'; ctx.fillStyle='#0a0e1a';
+  ctx.fillText('FOLLOW @berstock.ai', 540, 866);
+  ctx.font='20px VT323'; ctx.fillStyle=COL.muted;
+  ctx.fillText('🐻 PT Beruang Pang · berstock.id', 540, 930);
+}
+
+// ============ MASTER RENDER + LIVE LOOP ============
+let simFrame = 0;
+let liveTimer = null;
+function resetSim() {
+  simFrame = 0;
+  bears.forEach(b => {
+    b.x = b.homeX; b.y = b.homeY; b.state = 'sit'; b.facing = 1;
+    b.wpIdx = 0; b.waypoints = []; b.chatUntil = 0; b.hasCoffee = false; b.pauseLeft = 0;
+  });
+}
+function step() {
+  bears.forEach(b => updateBear(b, simFrame));
+  processChats(simFrame);
+  drawOffice(simFrame);
+  simFrame++;
+}
+// dipanggil render script (puppeteer): auto-stop live loop + reset → video tetap bersih & deterministik
+window.__renderFrame = (frame) => {
+  if (liveTimer) { clearInterval(liveTimer); liveTimer = null; resetSim(); }
+  while (simFrame <= frame) {
+    bears.forEach(b => updateBear(b, simFrame));
+    processChats(simFrame);
+    simFrame++;
+  }
+  drawOffice(frame);
+};
+window.__TOTAL = TOTAL;
+// DEFAULT: jalan terus di browser (buat dilihat online). Render video otomatis ambil alih via __renderFrame.
+drawOffice(0);
+liveTimer = setInterval(step, 1000 / FPS);
+</script>
+</body>
+</html>
