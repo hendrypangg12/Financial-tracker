@@ -39,7 +39,7 @@ const rooms = [
   { name: 'BERUANG',    agent: 'Agent Finance', role: '💰 Finance', status: 'live',  col: 0, row: 0 },
   { name: 'BERBISNIS',  agent: 'Agent Kasir',   role: '📊 POS',     status: 'live',  col: 1, row: 0 },
   { name: 'BERSTOCK',   agent: 'Agent Stok',    role: '🤖 AI Bot',  status: 'live',  col: 2, row: 0 },
-  { name: 'CEO PANG',   agent: 'Bos Beruang',   role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
+  { name: 'CEO PANG',   agent: 'Ceo Pang',      role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
   { name: 'BERUANG CRM',agent: 'Agent CRM',     role: '💬 CRM',     status: 'build', col: 0, row: 1 },
   { name: 'PEMBUKUAN',  agent: 'Agent Buku',    role: '📚 Account', status: 'road',  col: 1, row: 1 },
   { name: 'SALES',      agent: 'Agent Sales',   role: '💼 Sales',   status: 'road',  col: 2, row: 1 },
@@ -74,6 +74,8 @@ const bears = rooms.map((r, i) => {
     state: 'sit', facing: 1, walkPhase: Math.random() * 6.28,
     nextActionFrame: 20 + Math.floor(Math.random() * 50),
     active: r.status !== 'road',
+    roam: r.status !== 'road' && r.status !== 'ceo', // CEO/bos selalu standby di ruangan
+    smokes: r.status === 'ceo',                       // bos ngerokok sambil mikir bisnis
     look: APPEARANCE[i], waypoints: [], wpIdx: 0,
     blinkFrame: Math.floor(Math.random() * 60), typePhase: Math.random() * 6.28,
     chatWith: null, chatUntil: 0,
@@ -84,7 +86,7 @@ const activities = {
   0: ['Catat 12 tester', 'Foto struk OCR', 'Sync Firebase', 'Dashboard real-time'],
   1: ['Hitung HPP', 'Proses POS', 'Cek piutang', 'Laporan untung'],
   2: ['Jawab Telegram', '"Sales 2.5jt"', 'Cek stok habis', 'Saran restock'],
-  3: ['Ngatur agent', 'Presentasi 📊', 'Strategi cuan', 'Approve project'],
+  3: ['"Profit naik 30%!"', '"Gas ekspansi"', '"Target Q2 aman"', '"Mantap tim!"', '"Atur strategi"'],
   4: ['Follow-up customer', 'Reminder utang', 'Win-back promo', 'Generate AI'],
 };
 
@@ -200,6 +202,17 @@ function drawBear(b, frame) {
     ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1.5;
     ctx.strokeRect(x-9, hy-1, 7, 6); ctx.strokeRect(x+2, hy-1, 7, 6);
     ctx.beginPath(); ctx.moveTo(x-2,hy+1); ctx.lineTo(x+2,hy+1); ctx.stroke();
+  }
+
+  // rokok bos (di mulut) + asap ngebul
+  if (b.smokes) {
+    ctx.fillStyle = '#f5f5f0'; ctx.fillRect(x+6, hy+10, 13, 2.5);          // batang
+    const bara = (Math.floor(frame/4)%2===0) ? '#ff7a1a' : '#ff3a00';
+    ctx.fillStyle = bara; ctx.fillRect(x+18, hy+10, 3, 2.5);               // bara
+    ctx.strokeStyle='rgba(228,228,228,0.5)'; ctx.lineWidth=1.3;
+    const sw = Math.sin(frame*0.22)*3;
+    ctx.beginPath(); ctx.moveTo(x+20, hy+9); ctx.quadraticCurveTo(x+24+sw, hy+1, x+20, hy-7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+20, hy+9); ctx.quadraticCurveTo(x+16-sw, hy, x+21, hy-11); ctx.stroke();
   }
   ctx.restore();
 
@@ -382,7 +395,7 @@ function updateBear(b, frame) {
   if (!b.active) return;
   if (b.chatUntil > frame) return; // lagi ngobrol, diem dulu
   if (b.state === 'sit') {
-    if (frame >= b.nextActionFrame) {
+    if (b.roam && frame >= b.nextActionFrame) {
       // jalan kalau slot walker masih ada — biar kantor gak kosong
       if (countWalkers() < MAX_WALKERS && Math.random() < 0.5) {
         planWaypoints(b, frame);
