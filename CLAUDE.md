@@ -927,12 +927,24 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=38**, **app v=34**, firebase-config v=22, presence v=2, sync v=23,
-  hutang v=1, storage v=22, **dashboard v=23**, ai-advisor v=6, onboarding v=5
-  · Service Worker **beruang-v30**
-- **Dashboard nambah kartu "💸 Hutang & Piutang"** (`renderHutangSummary` di dashboard.js,
-  container `#dash-hutang`): Piutang hijau + Hutang merah + posisi bersih + link "Lihat
-  detail" → tab Hutang. Muncul cuma kalau ada data. Pakai field `nominal`.
+- BerUang: **styles v=39**, **app v=36**, firebase-config v=22, presence v=2, **sync v=24**,
+  **hutang v=2**, **storage v=23**, **dashboard v=25**, ai-advisor v=6, **onboarding v=6**,
+  **recurring v=1** (baru) · Service Worker **beruang-v32**
+- **Dashboard kartu "💸 Hutang & Piutang"** (`renderHutangSummary`): Piutang hijau + Hutang
+  merah + posisi bersih + link ke tab Hutang. Pakai field `nominal`.
+- **🔁 Tagihan Rutin + 🔔 Pengingat (`state.recurring[]` + `js/recurring.js`):** template
+  tagihan bulanan (kost/cicilan/langganan). Kartu "Pengingat" di dashboard = tagihan rutin
+  belum dicatat bulan ini (1-tap "✓ Catat" → transaksi ber-tag `recurringId`+`recurringMonth`
+  anti-dobel) + hutang/piutang jatuh tempo ≤7hr/lewat. Dibuat dari onboarding (kost/cicilan)
+  & checkbox "Jadikan tagihan rutin" di form Tambah. Kelola/hapus di panel "Tagihan Rutin"
+  (tab Tambah). recurring ikut persist (storage+sync+export/reset).
+- **🐛 Fix modal ketutup nav:** `.modal` z-index 50 → **1100** (di atas bottom-nav 1000) →
+  tombol Simpan hutang/edit gak ketutup menu.
+- **💵 Format ribuan GLOBAL semua input uang:** class `.money-input` + listener global di
+  app.js (`fmtThousands` saat ketik, `parseMoney` saat baca). Input jadi `text inputmode=
+  numeric` (BUKAN type=number, biar bisa titik). Kena: Tambah jumlah, Edit jumlah, Hutang
+  nominal, Target. **POLA PENTING:** kalau nambah input uang baru → kasih class money-input
+  + baca via parseMoney + isi via fmtThousands.
 - **🔄 Reset Data & Mulai Ulang (item dropdown akun, mobile-friendly):** buat user yg
   coba-coba dulu lalu mau serius. Konfirmasi → `resetAll()` (hapus transaksi/hutang/aset/
   userName) + `clearOnboardingDone()` → langsung buka wizard Setup Dana Awal lagi.
