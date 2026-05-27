@@ -1,5 +1,5 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v21';
+const CACHE_VERSION = 'beruang-v22';
 const CORE = [
   './',
   './index.html',
@@ -45,7 +45,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (/firebaseio|googleapis|firebase\.com/.test(url.host)) return;
+  if (/firebaseio|firebasedatabase|googleapis|firebase\.com|workers\.dev/.test(url.host)) return;
 
   // NETWORK-FIRST untuk HTML (app.html, index.html, landing.html)
   // Biar update CSS/JS langsung ke-pickup tester tanpa harus uninstall.

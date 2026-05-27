@@ -363,6 +363,25 @@ async function showApp(user, profile) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Service worker (PWA: offline + auto-update versi terbaru buat user homescreen)
+  if ('serviceWorker' in navigator) {
+    let refreshing = false;
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      const checkUpdate = () => { try { reg.update(); } catch (e) {} };
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkUpdate();
+      });
+      setInterval(checkUpdate, 30 * 60 * 1000);
+    }).catch(() => {});
+  }
+
   if (typeof onBerbisnisAuthStateChanged !== 'function' || typeof fbAuth === 'undefined' || !fbAuth) {
     // Firebase tidak load (offline / blocked) — fallback ke mode lama tanpa login
     console.warn('Firebase not loaded — running in offline mode');
