@@ -4,7 +4,20 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 18 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 27 Mei 2026)
+
+### 🆕 SESI 27 MEI 2026 — yang baru selesai (detail di section bawah)
+1. **Homepage**: section showcase "Kantor Virtual" (preview video + tombol LIVE) di `index.html`.
+2. **🟢 LIVE PRESENCE**: tiap orang buka BerUang/BerBisnis = 1 beruang di kantor virtual
+   (`pt-beruang-pang-office.html`) + badge "● N ONLINE". Firebase RTDB udah aktif. FITUR LIVE.
+3. **🐛 Fix**: tombol Admin Panel di dropdown BerUang (salah nama fungsi `switchTab`).
+4. **🔄 Auto-update PWA**: SW + controllerchange auto-reload (BerUang & BerBisnis) →
+   user homescreen otomatis dapat versi terbaru. BerBisnis baru dikasih SW.
+5. **🧹 Tombol "Bersihkan Cache & Muat Ulang"** di BerUang (menu akun) & BerBisnis (Pengaturan)
+   — escape hatch update manual, data aman.
+6. **📲 Insight**: tester Play Store (TWA) AUTO dapat update web, gak perlu APK baru.
+> Branch deploy live: `claude/financial-tracking-app-QUmrz` (yg di-serve berstock.id).
+> Branch kerja sesi ini: `claude/code-session-work-PkbMp` (CLAUDE.md + catatan).
 
 ### 📱 BerUang Android di Google Play Store — HAMPIR LIVE!
 
@@ -913,10 +926,20 @@ CREATE TABLE ai_suggestions (
 - `js/hutang.js` — Tab Hutang & Piutang personal (NEW Day 2)
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
-**Cache Versions Last Update:**
-- BerBisnis: styles v=23, app v=19, sales v=7, products v=5, etc.
-- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21
-- BerUang Service Worker: **beruang-v15** (Day 16 — cross-sell layout fix)
+**Cache Versions Last Update (per 27 Mei 2026):**
+- BerUang: styles v=34, **app v=32**, firebase-config v=22, **presence v=2**, sync v=22,
+  hutang v=1, storage v=21 · Service Worker **beruang-v23**
+- BerBisnis: styles v=24, **app v=22**, firebase-config v=4, auth v=7 · Service Worker
+  **berbisnis-v2** (BARU — sebelumnya BerBisnis gak punya SW)
+- **WAJIB tiap deploy:** bump `?v=` file yg diubah DI app.html + bump `CACHE_VERSION`
+  & samain CORE di sw.js (BerUang `sw.js`, BerBisnis `tokountung/sw.js`). Itu pemicu
+  auto-update. Lupa bump = user lama gak ke-update.
+
+**📲 PLAY STORE / TWA = AUTO DAPAT UPDATE WEB (penting, 27 Mei 2026):**
+APK BerUang (PWA Builder → TWA) cuma cangkang yg load `berstock.id/app.html` tiap launch.
+**Update web = update app** — tester Closed Testing OTOMATIS dapat update tanpa download
+APK ulang (APK tetap v1.0.0). Android (Chrome engine) pickup SW jauh lebih patuh dari iOS.
+AAB baru cuma perlu kalau ganti package/ikon/URL. Counter 12 tester gak kepengaruh update.
 
 **Day 16 Bug Fix (18 Mei 2026):**
 - Cross-sell BerSatu Suite di dashboard BerUang dipindah dari TENGAH ke BAWAH
