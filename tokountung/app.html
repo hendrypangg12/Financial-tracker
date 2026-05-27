@@ -16,6 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="styles.css?v=24" />
 </head>
 <body>
@@ -937,7 +938,9 @@
 
 <div id="toast" class="toast" hidden></div>
 
-<script src="js/firebase-config.js?v=3"></script>
+<script src="js/firebase-config.js?v=4"></script>
+<script>window.PRESENCE_APP = 'berbisnis';</script>
+<script src="../js/presence.js?v=2"></script>
 <script src="js/auth.js?v=7"></script>
 <script src="js/admin.js?v=2"></script>
 <script src="js/firestore-sync.js?v=1"></script>

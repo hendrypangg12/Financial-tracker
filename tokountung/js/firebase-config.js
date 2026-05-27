@@ -3,6 +3,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc",
   authDomain: "ber-uang-735b3.firebaseapp.com",
+  databaseURL: "https://ber-uang-735b3-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "ber-uang-735b3",
   storageBucket: "ber-uang-735b3.firebasestorage.app",
   messagingSenderId: "746768296778",

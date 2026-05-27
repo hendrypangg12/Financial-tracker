@@ -7,11 +7,13 @@
   let db;
   try { db = firebase.database(); } catch (e) { return; }
 
+  // app name: di-set via window.PRESENCE_APP sebelum script ini (default 'beruang')
+  const appName = (typeof window !== 'undefined' && window.PRESENCE_APP) ? String(window.PRESENCE_APP) : 'beruang';
   const id = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
   let ref = null, registered = false;
 
   function stamp() {
-    return { t: firebase.database.ServerValue.TIMESTAMP, app: 'beruang' };
+    return { t: firebase.database.ServerValue.TIMESTAMP, app: appName };
   }
   function register() {
     if (registered) return;

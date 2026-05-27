@@ -454,32 +454,40 @@ function countWalkers() {
   return bears.filter(b => b.active && !b.isUser && b.state === 'walking').length;
 }
 
-// ============ LIVE USER BEARS (presence real-time pengguna BerUang) ============
-// Tiap orang yang lagi BUKA app BerUang = 1 beruang "User" muncul di kantor.
-// Datanya dari Firebase Realtime DB (lihat init di bawah). Cap biar gak penuh/lag.
-const USER_CAP = 8;
+// ============ LIVE USER BEARS (presence real-time pengguna app) ============
+// Tiap orang yang lagi BUKA app = 1 beruang muncul di kantor.
+//  - BerUang  → beruang "User"  nongkrong di ruang BERUANG
+//  - BerBisnis→ beruang "Kasir" nongkrong di ruang BERBISNIS
+// Datanya dari Firebase Realtime DB. TANPA cap (rame gpp) — cuma ada pagar
+// pengaman SAFETY biar HP low-end gak nge-freeze kalau tiba2 ratusan online.
+const SAFETY_BEARS = 80;          // pagar anti-freeze (bukan batas tampilan niat)
 const DOOR_IN_X = 36, DOOR_OUT_X = 1044;
-const USER_LINES = ['Lagi catat 💰', 'Cek dashboard', 'Input struk', 'Liat laporan', 'Catat utang', 'Scan struk'];
-const USER_LOOKS = [
-  { fur:'#9b6a3a', shirt:'#e0a83a', accent:'#b9842a', glasses:false, tie:false, hat:null,  eye:'happy'  },
-  { fur:'#a87440', shirt:'#0ea5e9', accent:'#0369a1', glasses:true,  tie:false, hat:null,  eye:'normal' },
-  { fur:'#8a5a2e', shirt:'#ef5da8', accent:'#be185d', glasses:false, tie:false, hat:null,  eye:'happy'  },
-  { fur:'#caa06a', shirt:'#34d399', accent:'#0f766e', glasses:false, tie:false, hat:'cap', eye:'normal' },
-];
-let liveUserTarget = 0; // di-update oleh subscription Firebase
-let userSeq = 0;
-function userBearsAlive() { return bears.filter(b => b.isUser && !b.exiting); }
-function spawnUserBear(frame) {
-  const look = USER_LOOKS[userSeq % USER_LOOKS.length]; userSeq++;
-  const R = roomRect(rooms[0]); // ruang BERUANG (kiri-atas)
-  const hx = R.x + 34 + Math.random() * (R.w - 68);
-  const hy = R.y + R.h * 0.55 + (Math.random() * 30 - 15);
+const APP_CFG = {
+  beruang:   { room: 0, name: 'User',  lines: ['Lagi catat 💰', 'Cek dashboard', 'Input struk', 'Liat laporan', 'Catat utang', 'Scan struk'],
+    looks: [ { fur:'#9b6a3a', shirt:'#e0a83a', accent:'#b9842a', glasses:false, tie:false, hat:null,  eye:'happy'  },
+             { fur:'#a87440', shirt:'#f59e0b', accent:'#b45309', glasses:true,  tie:false, hat:null,  eye:'normal' },
+             { fur:'#8a5a2e', shirt:'#facc15', accent:'#a16207', glasses:false, tie:false, hat:null,  eye:'happy'  } ] },
+  berbisnis: { room: 1, name: 'Kasir', lines: ['Input penjualan', 'Proses POS', 'Cek stok', 'Catat piutang', 'Cetak struk', 'Restock barang'],
+    looks: [ { fur:'#7a4e28', shirt:'#2563eb', accent:'#1d4ed8', glasses:false, tie:false, hat:null,  eye:'normal' },
+             { fur:'#a87440', shirt:'#0ea5e9', accent:'#0369a1', glasses:true,  tie:false, hat:null,  eye:'happy'  },
+             { fur:'#9b6a3a', shirt:'#1e3a5f', accent:'#0f2942', glasses:false, tie:false, hat:'cap', eye:'normal' } ] },
+};
+let liveByApp = { beruang: 0, berbisnis: 0 }; // target per app (dari Firebase)
+let liveUserCount = 0;                         // total online (buat badge)
+let userSeq = 0, lastSpawnFrame = -99;
+function aliveFor(app) { return bears.filter(b => b.isUser && !b.exiting && b.userApp === app); }
+function spawnUserBear(app, frame) {
+  const cfg = APP_CFG[app] || APP_CFG.beruang;
+  const look = cfg.looks[userSeq % cfg.looks.length]; userSeq++;
+  const R = roomRect(rooms[cfg.room]);
+  const hx = R.x + 30 + Math.random() * (R.w - 60);
+  const hy = R.y + R.h * 0.5 + (Math.random() * 36 - 18);
   bears.push({
-    roomIdx: 0, isUser: true, x: DOOR_IN_X, y: hallwayMidY, homeX: hx, homeY: hy,
+    roomIdx: cfg.room, isUser: true, userApp: app, x: DOOR_IN_X, y: hallwayMidY, homeX: hx, homeY: hy,
     state: 'walking', facing: 1, walkPhase: Math.random() * 6.28,
     nextActionFrame: frame + 30 + Math.floor(Math.random() * 40),
-    active: true, roam: true, smokes: false, look, name: 'User',
-    lines: USER_LINES, waypoints: [{ x: hx, y: hallwayMidY }, { x: hx, y: hy }], wpIdx: 0, pauseLeft: 0,
+    active: true, roam: true, smokes: false, look, name: cfg.name,
+    lines: cfg.lines, waypoints: [{ x: hx, y: hallwayMidY }, { x: hx, y: hy }], wpIdx: 0, pauseLeft: 0,
     blinkFrame: Math.floor(Math.random() * 60), typePhase: Math.random() * 6.28,
     chatWith: null, chatUntil: 0,
   });
@@ -489,13 +497,16 @@ function exitUserBear(b) {
   b.waypoints = [{ x: b.x, y: hallwayMidY }, { x: DOOR_OUT_X, y: hallwayMidY }];
   b.wpIdx = 0; b.state = 'walking'; b.pauseLeft = 0;
 }
+function totalUserBears() { return bears.filter(b => b.isUser && !b.exiting).length; }
 function syncUserBears(frame) {
-  const want = Math.max(0, Math.min(USER_CAP, liveUserTarget | 0));
-  const alive = userBearsAlive();
-  if (alive.length < want) {
-    for (let i = alive.length; i < want; i++) spawnUserBear(frame);
-  } else if (alive.length > want) {
-    for (let i = 0; i < alive.length - want; i++) exitUserBear(alive[alive.length - 1 - i]);
+  for (const app in APP_CFG) {
+    const want = Math.max(0, liveByApp[app] | 0);
+    const alive = aliveFor(app);
+    if (alive.length > want) {
+      for (let i = 0; i < alive.length - want; i++) exitUserBear(alive[alive.length - 1 - i]);
+    } else if (alive.length < want && totalUserBears() < SAFETY_BEARS && frame - lastSpawnFrame >= 4) {
+      spawnUserBear(app, frame); lastSpawnFrame = frame; // 1 per ~4 frame → masuk satu-satu, gak numpuk di pintu
+    }
   }
   // buang beruang-user yang udah nyampe pintu KELUAR
   for (let i = bears.length - 1; i >= 0; i--) {
@@ -693,6 +704,22 @@ function drawOffice(frame) {
     ctx.fillText(s.n, cx, 1080-34);
     ctx.font='16px VT323'; ctx.fillStyle=COL.muted; ctx.fillText(s.l, cx, 1080-14);
   });
+
+  // ===== BADGE "N ONLINE" (real-time pengguna app, cuma di mode live) =====
+  if (liveMode && liveUserCount > 0) {
+    const label = liveUserCount + ' ONLINE';
+    ctx.font = '14px "Press Start 2P"'; ctx.textAlign = 'left';
+    const w = ctx.measureText(label).width + 46;
+    const bx = 540 - w / 2, by = TITLE_H + 12, h = 30;
+    ctx.fillStyle = 'rgba(8,11,20,0.92)'; rr(bx, by, w, h, 9);
+    ctx.strokeStyle = COL.green; ctx.lineWidth = 2; ctx.strokeRect(bx, by, w, h);
+    const pulse = 0.45 + 0.55 * Math.sin(frame * 0.2);
+    ctx.save();
+    ctx.globalAlpha = pulse; ctx.shadowColor = COL.green; ctx.shadowBlur = 10;
+    ctx.fillStyle = COL.green; ctx.beginPath(); ctx.arc(bx + 20, by + h / 2, 6, 0, 6.28); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = COL.green; ctx.fillText(label, bx + 34, by + 20);
+  }
 }
 
 // ============ INTRO ============
@@ -749,6 +776,7 @@ function drawOutro(frame) {
 // ============ MASTER RENDER + LIVE LOOP ============
 let simFrame = 0;
 let liveTimer = null;
+let liveMode = true; // true = dilihat live di browser (badge online ON); false = mode render video
 function resetSim() {
   simFrame = 0;
   for (let i = bears.length - 1; i >= 0; i--) if (bears[i].isUser) bears.splice(i, 1); // bersihin beruang-user → video deterministik
@@ -766,6 +794,7 @@ function step() {
 }
 // dipanggil render script (puppeteer): auto-stop live loop + reset → video tetap bersih & deterministik
 window.__renderFrame = (frame) => {
+  liveMode = false; // badge online + beruang-user disembunyiin di video
   if (liveTimer) { clearInterval(liveTimer); liveTimer = null; resetSim(); }
   while (simFrame <= frame) {
     bears.forEach(b => updateBear(b, simFrame));
@@ -775,7 +804,11 @@ window.__renderFrame = (frame) => {
   drawOffice(frame);
 };
 window.__TOTAL = TOTAL;
-window.__setLiveUsers = (n) => { liveUserTarget = n | 0; }; // hook tes manual
+// hook tes manual: __setLiveUsers(beruang, berbisnis)
+window.__setLiveUsers = (a, b) => {
+  liveByApp.beruang = a | 0; liveByApp.berbisnis = b | 0;
+  liveUserCount = (a | 0) + (b | 0);
+};
 
 // ============ PRESENCE READER (jumlah orang yang lagi BUKA app BerUang) ============
 // Baca node 'presence' di Firebase Realtime DB (project ber-uang-735b3, sama dgn BerUang app).
@@ -792,9 +825,17 @@ window.__setLiveUsers = (n) => { liveUserTarget = n | 0; }; // hook tes manual
     }
     firebase.database().ref('presence').on('value', (snap) => {
       const now = Date.now();
-      let n = 0;
-      snap.forEach((ch) => { const v = ch.val(); if (v && (!v.t || now - v.t < 70000)) n++; });
-      liveUserTarget = n;
+      const cnt = { beruang: 0, berbisnis: 0 };
+      let total = 0;
+      snap.forEach((ch) => {
+        const v = ch.val();
+        if (!v || (v.t && now - v.t >= 70000)) return; // skip stale
+        total++;
+        const app = (v.app === 'berbisnis') ? 'berbisnis' : 'beruang';
+        cnt[app]++;
+      });
+      liveByApp = cnt;
+      liveUserCount = total;
     });
   } catch (e) { /* RTDB belum aktif / offline — abaikan */ }
 })();
