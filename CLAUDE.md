@@ -928,8 +928,11 @@ CREATE TABLE ai_suggestions (
 
 **Cache Versions Last Update (per 27 Mei 2026):**
 - BerUang: **styles v=38**, **app v=34**, firebase-config v=22, presence v=2, sync v=23,
-  hutang v=1, storage v=22, dashboard v=22, ai-advisor v=6, **onboarding v=5**
-  · Service Worker **beruang-v29**
+  hutang v=1, storage v=22, **dashboard v=23**, ai-advisor v=6, onboarding v=5
+  · Service Worker **beruang-v30**
+- **Dashboard nambah kartu "💸 Hutang & Piutang"** (`renderHutangSummary` di dashboard.js,
+  container `#dash-hutang`): Piutang hijau + Hutang merah + posisi bersih + link "Lihat
+  detail" → tab Hutang. Muncul cuma kalau ada data. Pakai field `nominal`.
 - **🔄 Reset Data & Mulai Ulang (item dropdown akun, mobile-friendly):** buat user yg
   coba-coba dulu lalu mau serius. Konfirmasi → `resetAll()` (hapus transaksi/hutang/aset/
   userName) + `clearOnboardingDone()` → langsung buka wizard Setup Dana Awal lagi.
