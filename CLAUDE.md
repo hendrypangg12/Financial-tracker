@@ -968,6 +968,37 @@ CREATE TABLE ai_suggestions (
 - `/profile-pic-berstock.html` — 4 template profile picture
 - `/berstock-pitch-deck.html` — 10 slides A4 landscape
 
+### 🏢 PT BERUANG PANG — VIDEO KANTOR PIXEL-ART (NEW, 27 Mei 2026)
+
+**File:** `pt-beruang-pang-office.html` (source) + `pt-beruang-pang-office.mp4` (output)
+**Tujuan ganda (request bos):** (1) konten sosmed — "perusahaan virtual" biar orang tertarik;
+(2) inventory personal — biar bos inget udah bikin project apa aja.
+
+**Spec:** 1080×1080 (square IG), **45 detik**, 15fps (675 frame), Canvas pixel-art.
+**Render:** `node /tmp/ui-render/render-office-video.cjs` (puppeteer frame-by-frame + ffmpeg H.264).
+Deterministik via `window.__renderFrame(frame)` — TAPI pakai `Math.random()` di pathfinding,
+jadi tiap render hasil gerakannya beda (nomor frame gak bisa dibandingin antar-render).
+
+**Isi kantor (8 ruangan = 8 produk/agent):**
+- BERUANG/Agent Finance, BERBISNIS/Agent Kasir, BERSTOCK/Agent Stok (LIVE)
+- CEO PANG/Ceo Pang (Founder, ngerokok + ngobrolin bisnis, **gak pernah keluar ruangan**)
+- BERUANG CRM/Agent CRM (BUILDING), PEMBUKUAN/SALES/HRD (SOON, dim)
+- Beruang humanoid (kaki-tangan, walk cycle, blink, typing, name-tag, chat & activity bubble)
+- Pantry lantai beda (ubin dapur) + coffee machine/dispenser/sofa, beruang bawa kopi
+- Dekorasi: AC, poster, rak buku, tanaman, jam, whiteboard, karpet
+- Pintu MASUK/KELUAR, 2 tamu (1 di sofa, 1 dekat pintu), **sekretaris cewek** di ruang CEO
+- Title bar pakai **logo `assets/logo-berbisnis.png`** (beruang berdasi) — bukan emoji
+
+**Tuning anti-"beruang ilang":** `MAX_WALKERS=2` + CEO `roam:false` → minimal banyak desk keisi.
+
+### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
+Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
+`ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
+**JANGAN** pakai `x*2` / `-x*2` → itu mirror di titik `2x`, badan ke-render di ~`3x`
+(luar layar) sementara elemen di luar transform (name-tag, cangkir) tetap di posisi benar.
+Gejalanya persis: "karakter ilang tapi benda di tangannya melayang". Ke-fix 1 baris.
+
+
 ### 📅 STRATEGI POSTING (Recommended)
 
 | Hari | Konten | File |
