@@ -17,6 +17,10 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
+// logo beruang berdasi (BerBisnis) buat title bar — lebih elegant dari emoji
+const logoImg = new Image();
+logoImg.src = 'assets/logo-berbisnis.png';
+
 // ============ TIMELINE (45s office loop @ 15fps = 675 frames) ============
 // No intro — langsung suasana kantor natural. CTA persistent di stats bar.
 const FPS = 15;
@@ -616,7 +620,15 @@ function drawOffice(frame) {
   ctx.fillText('PT BERUANG PANG', 540, 44);
   ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.cream;
   ctx.fillText('FOLLOW @berstock.ai · AI BUAT UMKM 24/7', 540, 72);
-  ctx.font='42px serif'; ctx.fillText('🐻', 120, 58); ctx.fillText('🐻', 960, 58);
+  if (logoImg.complete && logoImg.naturalWidth) {
+    const lh = 76, lw = lh * logoImg.naturalWidth / logoImg.naturalHeight;
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(logoImg, 92 - lw/2, TITLE_H/2 - lh/2, lw, lh);
+    ctx.drawImage(logoImg, 988 - lw/2, TITLE_H/2 - lh/2, lw, lh);
+    ctx.imageSmoothingEnabled = false;
+  } else {
+    ctx.font='42px serif'; ctx.fillText('🐻', 120, 58); ctx.fillText('🐻', 960, 58);
+  }
 
   // STATS BAR
   ctx.fillStyle=COL.bg; ctx.fillRect(0,1080-STATS_H,1080,STATS_H);
