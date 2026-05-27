@@ -469,9 +469,28 @@ function setupWelcomeBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Daftarkan service worker (PWA: supaya aplikasi bisa offline & diinstall)
+  // Daftarkan service worker (PWA: offline + auto-update versi terbaru)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    // Auto-reload pas service worker baru ambil alih (versi baru aktif).
+    // Guard: cuma reload kalau halaman EMANG udah dikontrol SW (bukan install pertama),
+    // biar gak reload sia-sia pas kunjungan pertama.
+    let refreshing = false;
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      const checkUpdate = () => { try { reg.update(); } catch (e) {} };
+      // Cek versi baru tiap app dibuka lagi (penting buat user homescreen/PWA standalone)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkUpdate();
+      });
+      // + cek berkala buat sesi yang kebuka lama
+      setInterval(checkUpdate, 30 * 60 * 1000);
+    }).catch(() => {});
   }
   // Setup event login/register/paywall
   setupAuthUI();
