@@ -153,16 +153,16 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 - **9 tools:** get_low_stock, get_product_info, get_today_sales, get_period_summary, get_top_sellers, get_slow_moving, get_restock_suggestion, get_business_overview, **list_all_products** (NEW)
 - **System prompt:** `bot/src/prompt.js` (Bahasa Indonesia, casual-profesional, satuan dari data)
 - **Setup guide:** `bot/README.md`
-- **Tenant pertama:** PT SPC = `tnt_a82328a860e4` (api_key disimpan terpisah)
+- **Tenant pertama:** PT SPC = `tnt_a82328a860e4` (api_key disimpan terpisah) — NOTE: "PT SPC" di sini = tenant/client data (bukan brand). Brand parent company sekarang = **PT Beruang Pang** (rename 27 Mei 2026)
 - **Token rotation:** Cloudflare API token expired 1 Jun 2026, Anthropic + Telegram WAJIB di-rotate (sempat lewat chat hari ini)
 
 ### 4. **BerSatu Neural Command** — Pitch Demo (`/bersatu-demo.html`)
 - **Untuk:** Pitch deck visual ke calon klien enterprise
-- **Konsep:** 6 AI agent terhubung neural network ke **CEO PT SPC** (logo beruang berdasi)
+- **Konsep:** 6 AI agent terhubung neural network ke **CEO PT Beruang Pang** (logo beruang berdasi)
 - **Layout:** Hub-and-spoke (bukan orbital ring)
 - **Background:** Nebula curves + flowing strands (purple/cyan/pink)
-- **Agents:** Stok Manager (LIVE), Telegram Bot (LIVE), CEO PT SPC (LIVE), Pembukuan/Sales/HRD (IDLE — roadmap)
-- **Brand top-left:** "PT SPC" dengan logo beruang
+- **Agents:** Stok Manager (LIVE), Telegram Bot (LIVE), CEO PT Beruang Pang (LIVE), Pembukuan/Sales/HRD (IDLE — roadmap)
+- **Brand top-left:** "PT Beruang Pang" dengan logo beruang
 - **Status badges:** ACT (live, glowing) / IDL (idle, dim)
 
 ### 5. **Berstock Landing Page** (`/landing-berstock.html`)
@@ -381,7 +381,7 @@ state = {
 | Berstock Bot — kode + DEPLOYED | ✅ LIVE | berstock-bot.hendrypangg12.workers.dev |
 | Berstock Bot — tenant PT SPC | ✅ Done | tnt_a82328a860e4 active |
 | Berstock landing page | ✅ Done | /landing-berstock.html |
-| BerSatu Neural Command demo | ✅ Done | CEO PT SPC + 6 agents, hub-spoke |
+| BerSatu Neural Command demo | ✅ Done | CEO PT Beruang Pang + 6 agents, hub-spoke |
 | Two-logo strategy | ✅ Done | BerUang gemoy / BerBisnis berdasi |
 | Bot satuan fix (karton vs pcs) | ✅ Done | satuan dari products lookup |
 
