@@ -668,6 +668,29 @@ function setupAuthUI() {
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
 
+  // Tombol "Bersihkan Cache & Muat Ulang" — escape hatch buat user yang nyangkut
+  // di versi lama (PWA homescreen). Unregister SW + hapus Cache API + reload.
+  // CATATAN: localStorage (data transaksi) & sesi login TIDAK dihapus.
+  const btnRefreshApp = document.getElementById('btn-refresh-app');
+  if (btnRefreshApp) {
+    btnRefreshApp.onclick = async (e) => {
+      e.stopPropagation();
+      btnRefreshApp.disabled = true;
+      btnRefreshApp.textContent = '⏳ Memperbarui…';
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister()));
+        }
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch (err) { /* abaikan, tetap reload */ }
+      window.location.reload();
+    };
+  }
+
   // Tombol Admin Panel di user dropdown (buat mobile yang gak ada topbar nav)
   const btnAdminPanel = document.getElementById('btn-admin-panel');
   if (btnAdminPanel) {

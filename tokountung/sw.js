@@ -2,7 +2,7 @@
 // Scope: /tokountung/. KONSERVATIF: cuma intercept same-origin + CDN statis.
 // Semua call cross-origin (Firebase runtime, worker cloud-sync /api/sync, dll) di-BYPASS
 // total → gak ganggu sync. Non-GET juga bypass (POST sync, sendBeacon).
-const CACHE_VERSION = 'berbisnis-v1';
+const CACHE_VERSION = 'berbisnis-v2';
 const CORE = [
   './',
   './app.html',
@@ -26,7 +26,7 @@ const CORE = [
   './js/edit-sale.js?v=2',
   './js/onboarding.js?v=1',
   './js/cloud-sync.js?v=4',
-  './js/app.js?v=21',
+  './js/app.js?v=22',
 ];
 
 self.addEventListener('install', (event) => {

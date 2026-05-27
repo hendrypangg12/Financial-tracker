@@ -75,6 +75,23 @@ function bindGlobalButtons() {
   });
   if ($('lap-item-search')) $('lap-item-search').addEventListener('input', renderLaporan);
 
+  // "Bersihkan Cache & Muat Ulang" — paksa ambil versi terbaru (data & login aman)
+  if ($('btn-refresh-app')) $('btn-refresh-app').onclick = async () => {
+    const b = $('btn-refresh-app');
+    b.disabled = true; b.textContent = '⏳ Memperbarui…';
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+    } catch (err) { /* abaikan, tetap reload */ }
+    window.location.reload();
+  };
+
   if ($('btn-export')) $('btn-export').onclick = exportData;
   if ($('btn-import')) $('btn-import').onclick = () => $('file-import').click();
   if ($('file-import')) $('file-import').onchange = async (e) => {
