@@ -1094,6 +1094,40 @@ cache lama → fix/update gak nyampe ("masih versi lama").
   CATCH-22: tombol ini baru kepake SETELAH user dapat versi yg ADA tombolnya — instance
   super-lama tetap perlu cold-close/re-add sekali. Sesudah itu, tinggal tap tombol.
 
+### 🆕 ONBOARDING "Setup Dana Awal" + Nama User + AI diperkaya (27 Mei 2026)
+**Request bos:** user baru jangan langsung ke menu utama — bantu setup posisi awal dulu,
++ simpan NAMA user biar app tau "ini keuangan siapa".
+- **`js/onboarding.js` (BARU):** wizard full-screen (`#onboarding-screen`), muncul buat
+  user fresh (belum ada trx/hutang/aset) via `maybeShowOnboarding()` di alur login
+  (`js/app.js`); bisa di-LEWATI; bisa dibuka ulang dari menu dropdown "💰 Setup Dana Awal"
+  (`openOnboardingManual`). Flag `beruang-onboarding-done:<email>` di localStorage.
+- **Field:** 👤 Nama, 💳 Rekening (nama+saldo, multi-row), 📈 Investasi, 🤝 Duit di teman,
+  💸 Utang kamu, 🔁 Kost + Cicilan KK. Parsing angka via `onbNum` (strip non-digit).
+- **Keputusan desain bos:** aset (rekening+investasi) = **info terpisah** → `state.assets[]`
+  (`addAsset/deleteAsset/assetsTotal`), TIDAK masuk cashflow. Piutang→`hutangs` jenis
+  piutang; utang→`hutangs` jenis hutang. Kost+cicilan = **pengeluaran bulan ini**
+  (`addTransaction`, kategori 'Tempat Tinggal' / 'Cicilan').
+- **`state.userName`** (baru) + **`state.assets`** ikut persist: storage.js (save/load/
+  export/import/reset) + sync.js (push payload + load + listener). 
+- **Dashboard (`js/dashboard.js`):** `renderGreeting()` "Halo, {nama} 👋" + `renderAssets()`
+  kartu "💎 Aset/Kekayaan" (total + list + hapus per item), dipanggil di renderDashboard.
+- Bump: storage v22, sync v23, dashboard v22, app v33, onboarding v1, SW **beruang-v24**.
+
+### 🤖 AI ADVISOR "Beruang Akuntan" — UDAH ADA tapi BELUM di-deploy (27 Mei 2026)
+**TEMUAN:** Fitur AI tanya-jawab data user yang bos minta **udah ke-build** (frontend
+`js/ai-advisor.js` chat UI + paywall Pro; backend `bot/src/advise.js` `/api/advise`,
+`claude-sonnet-4-6`, rate-limit 30/hari, prompt caching). Contoh di kode: "Kapan bisa
+beli laptop 15jt?".
+- **⚠️ BLOCKER:** tes `GET/POST /api/advise` → **"Not Found"**. Worker yang live belum
+  punya route ini → **PERLU `cd bot && wrangler deploy`** + pastikan secret
+  **`ANTHROPIC_API_KEY`** di-set di Cloudflare. (Aksi BOS — gak ada akses CF dari sini.)
+- **FAB AI masih di-HIDE** di `js/app.js` (~baris 530, `showAIFab()` di-comment). Setelah
+  worker deploy & dites OK → uncomment `showAIFab()` + bump app.js biar tombol AI muncul.
+- **Sudah diperkaya (siap pas deploy):** `buildAdvisorContext` kirim `userName`, `assetTotal`
+  + breakdown, `piutangTotal`/`hutangTotal`, `tabunganBulanIni`. `advise.js` render data itu
+  + prompt baru buat jawab "kapan bisa beli X" (hitung dari aset + tabungan/bulan).
+- Alur sinergi: onboarding ngisi aset/utang/rutin → AI makin akurat jawab goal.
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
