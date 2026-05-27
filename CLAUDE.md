@@ -1027,6 +1027,16 @@ virtual, masuk dari pintu MASUK, roam di ruangnya. Dipajang **publik** di
 rules published (`presence` read public + per-child write, node lain locked). `databaseURL` match.
 End-to-end ke-test via REST (write/read/delete OK). **FITUR LIVE.**
 
+### 🐛 BUG FIX — Tombol "Admin Panel" di dropdown BerUang (27 Mei 2026)
+Tombol Admin Panel di user-dropdown gak bisa diklik (klik → dropdown nutup, gak
+buka apa2). Akar: handler manggil `switchTab('admin')` padahal fungsi aslinya
+`switchToTab` (nested di `attachEvents()`, gak global) → **ReferenceError**.
+Fix: `js/app.js` ganti jadi klik tab admin programatik
+(`document.querySelector('.tab[data-tab="admin"]').click()`) biar reuse path yang
+udah bener (switchToTab + renderAdmin). app.js bump v=30.
+**LESSON:** kalau ada fungsi nested di dalam fungsi lain, gak bisa dipanggil dari
+luar scope-nya — panggil via elemen/handler yang udah ada, atau bikin global.
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
