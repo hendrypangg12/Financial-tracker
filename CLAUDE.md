@@ -1052,8 +1052,16 @@ cache lama → fix/update gak nyampe ("masih versi lama").
   install SW baru → trigger auto-reload. Kalau lupa bump, user lama gak ke-update.
 - Alur: buka app → browser fetch sw.js (beda byte) → install SW baru → skipWaiting →
   activate → claim → controllerchange → reload → HTML baru (network-first) → JS `?v=` baru.
-- **TODO:** BerBisnis (`tokountung/`) belum dipasang auto-update yang sama — kalau perlu,
-  terapin pola yang sama di SW + registrasinya.
+- **✅ BerBisnis (`tokountung/`) UDAH dipasang juga (27 Mei):** `tokountung/sw.js` BARU
+  (`CACHE_VERSION='berbisnis-v1'`, scope `/tokountung/`, network-first HTML + cache-first
+  asset, KONSERVATIF: cuma same-origin + CDN statis; bypass total Firebase runtime,
+  RTDB `firebasedatabase.app`, worker `/api/sync`, non-GET). Registrasi + auto-reload di
+  `tokountung/js/app.js` (app.js bump v=21). SW BerUang juga tambah bypass
+  `firebasedatabase|workers.dev`, CACHE_VERSION → `beruang-v22`.
+- **⚠️ iOS PWA nyangkut:** instance homescreen LAMA (sebelum punya kode auto-reload)
+  gak bisa di-update dari jarak jauh — user harus SEKALI: cold-close PWA + buka lagi
+  (online) 1-2x, atau hapus ikon homescreen → add ulang dari Safari. Habis sekali itu,
+  auto-update jalan selamanya. (Web/Safari udah confirmed serve versi terbaru.)
 
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
