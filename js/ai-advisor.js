@@ -268,10 +268,10 @@ function buildAdvisorContext() {
   const hutangs = Array.isArray(state.hutangs) ? state.hutangs : [];
   const piutangTotal = hutangs
     .filter((h) => h.jenis === "piutang" && !h.lunas)
-    .reduce((s, h) => s + (Number(h.jumlah) || 0), 0);
+    .reduce((s, h) => s + (Number(h.nominal) || 0), 0);
   const hutangTotal = hutangs
     .filter((h) => h.jenis === "hutang" && !h.lunas)
-    .reduce((s, h) => s + (Number(h.jumlah) || 0), 0);
+    .reduce((s, h) => s + (Number(h.nominal) || 0), 0);
 
   return {
     userName: (state.userName || "").trim() || null,

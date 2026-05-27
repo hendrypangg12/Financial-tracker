@@ -183,13 +183,13 @@ function finishOnboarding(save) {
       onbReadRows('onb-investasi', 'investasi', (nama, jml) =>
         addAsset({ jenis: 'investasi', nama: nama || 'Investasi', jumlah: jml }));
 
-      // Piutang (duit di teman) → hutangs jenis piutang
+      // Piutang (duit di teman) → hutangs jenis piutang (field jumlah = 'nominal')
       onbReadRows('onb-piutang', 'piutang', (nama, jml) =>
-        addHutang({ jenis: 'piutang', nama: nama || 'Teman', jumlah: jml, keterangan: 'Setup dana awal' }));
+        addHutang({ jenis: 'piutang', nama: nama || 'Teman', nominal: jml, keterangan: 'Setup dana awal' }));
 
       // Utang kamu → hutangs jenis hutang
       onbReadRows('onb-utang', 'hutang', (nama, jml) =>
-        addHutang({ jenis: 'hutang', nama: nama || 'Utang', jumlah: jml, keterangan: 'Setup dana awal' }));
+        addHutang({ jenis: 'hutang', nama: nama || 'Utang', nominal: jml, keterangan: 'Setup dana awal' }));
 
       // Biaya rutin → pengeluaran bulan ini
       const kost = onbNum(document.getElementById('onb-kost').value);

@@ -747,18 +747,17 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .hsum-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  border-left: 4px solid #94a3b8;
+  box-shadow: 0 1px 2px rgba(62,45,33,.05);
 }
-.hsum-card.hsum-piutang { border-left-color: #10b981; background: linear-gradient(135deg, #fff, #ecfdf5); }
-.hsum-card.hsum-hutang { border-left-color: #ef4444; background: linear-gradient(135deg, #fff, #fef2f2); }
-.hsum-card.hsum-net { border-left-color: var(--accent, #c9a352); background: linear-gradient(135deg, #fff, #fefce8); }
-.hsum-label { font-size: 12px; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+/* senada dashboard: kartu putih bersih, semantik lewat warna ANGKA (bukan gradient) */
+.hsum-card.hsum-piutang, .hsum-card.hsum-hutang, .hsum-card.hsum-net { background: #fff; }
+.hsum-label { font-size: 11px; color: var(--ink-soft); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
 .hsum-value { font-size: 22px; font-weight: 800; color: var(--ink); margin-top: 4px; }
-.hsum-card.hsum-piutang .hsum-value { color: #10b981; }
-.hsum-card.hsum-hutang .hsum-value { color: #ef4444; }
+.hsum-card.hsum-piutang .hsum-value { color: var(--income); }
+.hsum-card.hsum-hutang .hsum-value { color: var(--expense); }
+.hsum-card.hsum-net .hsum-value { color: var(--primary); }
 .hsum-meta { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 @media (max-width: 640px) {
   .hutang-summary { grid-template-columns: 1fr; }
