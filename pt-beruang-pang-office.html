@@ -13,6 +13,8 @@ canvas { display: block; image-rendering: auto; width: min(100vw, 100vh); height
 </head>
 <body>
 <canvas id="c" width="1080" height="1080"></canvas>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
@@ -449,7 +451,57 @@ function processChats(frame) {
 
 const MAX_WALKERS = 2; // maks beruang jalan bareng — sisanya tetap kerja di desk (jaga ruangan gak kosong)
 function countWalkers() {
-  return bears.filter(b => b.active && b.state === 'walking').length;
+  return bears.filter(b => b.active && !b.isUser && b.state === 'walking').length;
+}
+
+// ============ LIVE USER BEARS (presence real-time pengguna BerUang) ============
+// Tiap orang yang lagi BUKA app BerUang = 1 beruang "User" muncul di kantor.
+// Datanya dari Firebase Realtime DB (lihat init di bawah). Cap biar gak penuh/lag.
+const USER_CAP = 8;
+const DOOR_IN_X = 36, DOOR_OUT_X = 1044;
+const USER_LINES = ['Lagi catat 💰', 'Cek dashboard', 'Input struk', 'Liat laporan', 'Catat utang', 'Scan struk'];
+const USER_LOOKS = [
+  { fur:'#9b6a3a', shirt:'#e0a83a', accent:'#b9842a', glasses:false, tie:false, hat:null,  eye:'happy'  },
+  { fur:'#a87440', shirt:'#0ea5e9', accent:'#0369a1', glasses:true,  tie:false, hat:null,  eye:'normal' },
+  { fur:'#8a5a2e', shirt:'#ef5da8', accent:'#be185d', glasses:false, tie:false, hat:null,  eye:'happy'  },
+  { fur:'#caa06a', shirt:'#34d399', accent:'#0f766e', glasses:false, tie:false, hat:'cap', eye:'normal' },
+];
+let liveUserTarget = 0; // di-update oleh subscription Firebase
+let userSeq = 0;
+function userBearsAlive() { return bears.filter(b => b.isUser && !b.exiting); }
+function spawnUserBear(frame) {
+  const look = USER_LOOKS[userSeq % USER_LOOKS.length]; userSeq++;
+  const R = roomRect(rooms[0]); // ruang BERUANG (kiri-atas)
+  const hx = R.x + 34 + Math.random() * (R.w - 68);
+  const hy = R.y + R.h * 0.55 + (Math.random() * 30 - 15);
+  bears.push({
+    roomIdx: 0, isUser: true, x: DOOR_IN_X, y: hallwayMidY, homeX: hx, homeY: hy,
+    state: 'walking', facing: 1, walkPhase: Math.random() * 6.28,
+    nextActionFrame: frame + 30 + Math.floor(Math.random() * 40),
+    active: true, roam: true, smokes: false, look, name: 'User',
+    lines: USER_LINES, waypoints: [{ x: hx, y: hallwayMidY }, { x: hx, y: hy }], wpIdx: 0, pauseLeft: 0,
+    blinkFrame: Math.floor(Math.random() * 60), typePhase: Math.random() * 6.28,
+    chatWith: null, chatUntil: 0,
+  });
+}
+function exitUserBear(b) {
+  b.exiting = true; b.roam = false; b.chatUntil = 0;
+  b.waypoints = [{ x: b.x, y: hallwayMidY }, { x: DOOR_OUT_X, y: hallwayMidY }];
+  b.wpIdx = 0; b.state = 'walking'; b.pauseLeft = 0;
+}
+function syncUserBears(frame) {
+  const want = Math.max(0, Math.min(USER_CAP, liveUserTarget | 0));
+  const alive = userBearsAlive();
+  if (alive.length < want) {
+    for (let i = alive.length; i < want; i++) spawnUserBear(frame);
+  } else if (alive.length > want) {
+    for (let i = 0; i < alive.length - want; i++) exitUserBear(alive[alive.length - 1 - i]);
+  }
+  // buang beruang-user yang udah nyampe pintu KELUAR
+  for (let i = bears.length - 1; i >= 0; i--) {
+    const b = bears[i];
+    if (b.isUser && b.exiting && b.state === 'sit' && b.x > DOOR_OUT_X - 34) bears.splice(i, 1);
+  }
 }
 
 function updateBear(b, frame) {
@@ -699,12 +751,14 @@ let simFrame = 0;
 let liveTimer = null;
 function resetSim() {
   simFrame = 0;
+  for (let i = bears.length - 1; i >= 0; i--) if (bears[i].isUser) bears.splice(i, 1); // bersihin beruang-user → video deterministik
   bears.forEach(b => {
     b.x = b.homeX; b.y = b.homeY; b.state = 'sit'; b.facing = 1;
     b.wpIdx = 0; b.waypoints = []; b.chatUntil = 0; b.hasCoffee = false; b.pauseLeft = 0;
   });
 }
 function step() {
+  syncUserBears(simFrame);
   bears.forEach(b => updateBear(b, simFrame));
   processChats(simFrame);
   drawOffice(simFrame);
@@ -721,6 +775,30 @@ window.__renderFrame = (frame) => {
   drawOffice(frame);
 };
 window.__TOTAL = TOTAL;
+window.__setLiveUsers = (n) => { liveUserTarget = n | 0; }; // hook tes manual
+
+// ============ PRESENCE READER (jumlah orang yang lagi BUKA app BerUang) ============
+// Baca node 'presence' di Firebase Realtime DB (project ber-uang-735b3, sama dgn BerUang app).
+// Defensif: kalau SDK/RTDB belum siap → diem aja, kantor tetap jalan normal.
+(function initPresence() {
+  try {
+    if (typeof firebase === 'undefined' || !firebase.database) return;
+    if (!firebase.apps.length) {
+      firebase.initializeApp({
+        apiKey: 'AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc',
+        databaseURL: 'https://ber-uang-735b3-default-rtdb.asia-southeast1.firebasedatabase.app',
+        projectId: 'ber-uang-735b3',
+      });
+    }
+    firebase.database().ref('presence').on('value', (snap) => {
+      const now = Date.now();
+      let n = 0;
+      snap.forEach((ch) => { const v = ch.val(); if (v && (!v.t || now - v.t < 70000)) n++; });
+      liveUserTarget = n;
+    });
+  } catch (e) { /* RTDB belum aktif / offline — abaikan */ }
+})();
+
 // DEFAULT: jalan terus di browser (buat dilihat online). Render video otomatis ambil alih via __renderFrame.
 drawOffice(0);
 liveTimer = setInterval(step, 1000 / FPS);
