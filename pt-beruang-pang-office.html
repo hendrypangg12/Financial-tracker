@@ -6,8 +6,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 1080px; height: 1080px; overflow: hidden; background: #0a0e1a; }
-canvas { display: block; image-rendering: pixelated; }
+html, body { width: 100%; min-height: 100vh; background: #0a0e1a; overflow: hidden; }
+body { display: flex; align-items: center; justify-content: center; }
+canvas { display: block; image-rendering: pixelated; width: min(100vw, 100vh); height: min(100vw, 100vh); }
 </style>
 </head>
 <body>
@@ -693,9 +694,25 @@ function drawOutro(frame) {
   ctx.fillText('🐻 PT Beruang Pang · berstock.id', 540, 930);
 }
 
-// ============ MASTER RENDER (deterministic, no intro/outro) ============
+// ============ MASTER RENDER + LIVE LOOP ============
 let simFrame = 0;
+let liveTimer = null;
+function resetSim() {
+  simFrame = 0;
+  bears.forEach(b => {
+    b.x = b.homeX; b.y = b.homeY; b.state = 'sit'; b.facing = 1;
+    b.wpIdx = 0; b.waypoints = []; b.chatUntil = 0; b.hasCoffee = false; b.pauseLeft = 0;
+  });
+}
+function step() {
+  bears.forEach(b => updateBear(b, simFrame));
+  processChats(simFrame);
+  drawOffice(simFrame);
+  simFrame++;
+}
+// dipanggil render script (puppeteer): auto-stop live loop + reset → video tetap bersih & deterministik
 window.__renderFrame = (frame) => {
+  if (liveTimer) { clearInterval(liveTimer); liveTimer = null; resetSim(); }
   while (simFrame <= frame) {
     bears.forEach(b => updateBear(b, simFrame));
     processChats(simFrame);
@@ -704,7 +721,9 @@ window.__renderFrame = (frame) => {
   drawOffice(frame);
 };
 window.__TOTAL = TOTAL;
-window.__renderFrame(0);
+// DEFAULT: jalan terus di browser (buat dilihat online). Render video otomatis ambil alih via __renderFrame.
+drawOffice(0);
+liveTimer = setInterval(step, 1000 / FPS);
 </script>
 </body>
 </html>
