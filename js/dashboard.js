@@ -54,6 +54,45 @@ function escapeHtmlDash(s) {
   const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
 }
 
+// Ringkasan Hutang & Piutang di dashboard (biar gak perlu pindah tab)
+function renderHutangSummary() {
+  const el = document.getElementById('dash-hutang');
+  if (!el) return;
+  const all = state.hutangs || [];
+  const piutang = all.filter(h => h.jenis === 'piutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
+  const hutang = all.filter(h => h.jenis === 'hutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
+  if (piutang === 0 && hutang === 0) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const net = piutang - hutang;
+  const netColor = net >= 0 ? 'var(--income)' : 'var(--expense)';
+  const netStr = (net < 0 ? '-' : '') + formatRupiah(Math.abs(net)).replace(/^Rp\s*/, 'Rp ');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>💸 Hutang &amp; Piutang</h3>
+        <span class="dash-hutang-link" style="font-size:12px;color:#b08a3c;font-weight:600;cursor:pointer;">Lihat detail →</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--ink-soft);text-transform:uppercase;">🟢 Piutang</div>
+          <div style="font-size:16px;font-weight:800;color:var(--income);margin-top:3px;">${formatRupiah(piutang)}</div>
+          <div style="font-size:10px;color:var(--ink-soft);">orang utang ke kamu</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--ink-soft);text-transform:uppercase;">🔴 Hutang</div>
+          <div style="font-size:16px;font-weight:800;color:var(--expense);margin-top:3px;">${formatRupiah(hutang)}</div>
+          <div style="font-size:10px;color:var(--ink-soft);">kamu utang ke orang</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:var(--ink-soft);">Posisi bersih: <b style="color:${netColor};">${netStr}</b></div>
+    </div>`;
+  const link = el.querySelector('.dash-hutang-link');
+  if (link) link.onclick = () => {
+    const tab = document.querySelector('.tab[data-tab="hutang"], .bnav-item[data-tab="hutang"]');
+    if (tab) tab.click();
+  };
+}
+
 function renderDashboard() {
   const m = state.selectedMonth, y = state.selectedYear;
   const trx = getTransactionsFor(m, y);
@@ -63,6 +102,7 @@ function renderDashboard() {
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
   renderGreeting();
   renderAssets();
+  renderHutangSummary();
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');
