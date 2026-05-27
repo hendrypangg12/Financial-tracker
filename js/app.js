@@ -681,6 +681,22 @@ function setupAuthUI() {
     };
   }
 
+  // Reset Data & Mulai Ulang — buat user yang abis coba-coba, mau mulai serius
+  const btnResetData = document.getElementById('btn-reset-data');
+  if (btnResetData) {
+    btnResetData.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (!confirm('Reset semua data & mulai dari awal?\n\nSemua transaksi, hutang/piutang, aset, & nama bakal DIHAPUS (gak bisa dibatalin). Cocok kalau tadi cuma coba-coba.')) return;
+      resetAll();
+      if (typeof clearOnboardingDone === 'function') clearOnboardingDone();
+      if (typeof fillSubCategoriSelects === 'function') fillSubCategoriSelects();
+      renderAll();
+      if (typeof showToast === 'function') showToast('Data direset. Yuk setup dari awal 🐻', 'success');
+      if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
+
   // Tombol "Bersihkan Cache & Muat Ulang" — escape hatch buat user yang nyangkut
   // di versi lama (PWA homescreen). Unregister SW + hapus Cache API + reload.
   // CATATAN: localStorage (data transaksi) & sesi login TIDAK dihapus.

@@ -214,6 +214,12 @@ function openOnboardingManual() {
   showOnboarding();
 }
 
+// Hapus flag "udah onboarding" (dipakai saat Reset Data → biar dianggap user baru lagi)
+function clearOnboardingDone() {
+  try { localStorage.removeItem(onbFlagKey()); } catch (_) {}
+}
+
 // Expose
 window.maybeShowOnboarding = maybeShowOnboarding;
 window.openOnboardingManual = openOnboardingManual;
+window.clearOnboardingDone = clearOnboardingDone;

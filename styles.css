@@ -630,6 +630,7 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .user-item:hover { background: #fee2e2; color: #991b1b; }
 .user-item-admin { color: var(--brand); font-weight: 600; }
 .user-item-admin:hover { background: #fef3c7; color: var(--brown-dark); }
+.user-item-danger { color: #c0392b; font-weight: 600; }
 
 /* ============ ADMIN PANEL ============ */
 .tab-admin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e !important; font-weight: 700 !important; }
