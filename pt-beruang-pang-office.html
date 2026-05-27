@@ -310,27 +310,32 @@ function updateBear(b, frame) {
   if (b.chatUntil > frame) return; // lagi ngobrol, diem dulu
   if (b.state === 'sit') {
     if (frame >= b.nextActionFrame) {
-      if (Math.random() < 0.6) planWaypoints(b, frame);
-      else b.nextActionFrame = frame + 30 + Math.floor(Math.random()*60);
+      // gerak lebih rame: 80% chance jalan-jalan
+      if (Math.random() < 0.8) planWaypoints(b, frame);
+      else b.nextActionFrame = frame + 18 + Math.floor(Math.random()*30);
     }
     return;
   }
-  if (b.pauseLeft > 0) { b.pauseLeft--; b.walkPhase += 0; return; }
+  if (b.pauseLeft > 0) { b.pauseLeft--; return; }
   const wp = b.waypoints[b.wpIdx];
   const dx = wp.x-b.x, dy = wp.y-b.y, dist = Math.hypot(dx,dy);
-  const speed = 4;
+  const speed = 4.5;
   if (dist < speed) {
     b.x=wp.x; b.y=wp.y;
     if (wp.pause) { b.pauseLeft = wp.pause; }
     b.wpIdx++;
     if (b.wpIdx >= b.waypoints.length) {
-      b.state='sit'; b.nextActionFrame = frame + 50 + Math.floor(Math.random()*90);
+      // balik kerja lebih cepat biar desk gak kosong lama
+      b.state='sit'; b.nextActionFrame = frame + 25 + Math.floor(Math.random()*50);
     }
   } else {
     b.x += dx/dist*speed; b.y += dy/dist*speed;
     if (Math.abs(dx)>1) b.facing = dx>0?1:-1;
     b.walkPhase += 0.45;
   }
+  // CLAMP: jaga bear tetep di area kantor (jangan nembus / ilang)
+  b.x = Math.max(40, Math.min(1040, b.x));
+  b.y = Math.max(officeTop + 40, Math.min(officeBot - 30, b.y));
 }
 
 // ============ SCENE ============
@@ -361,13 +366,7 @@ function drawOffice(frame) {
     ctx.fillStyle='#5d3a1a'; rr(d.x-46, d.y+10, 92, 7, 3);
     drawComputer(d.x, d.y+10, r.status!=='road', frame);
 
-    // labels
-    ctx.fillStyle='rgba(10,14,26,0.82)'; rr(R.x+8, R.y+8, R.w-16, 42, 4);
-    ctx.font='15px "Press Start 2P"'; ctx.textAlign='center';
-    ctx.fillStyle = r.status==='ceo'?COL.gold:COL.white;
-    ctx.fillText(r.name, R.x+R.w/2, R.y+26);
-    ctx.font='17px VT323'; ctx.fillStyle=COL.muted;
-    ctx.fillText(r.role, R.x+R.w/2, R.y+44);
+    // (room header label digambar di pass terakhir biar gak ke-cover)
 
     let bc,bt;
     if(r.status==='live'){bc=COL.green;bt='● LIVE';}
@@ -412,6 +411,20 @@ function drawOffice(frame) {
       ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-57);
     }
     drawBear(b, frame);
+  });
+
+  // ===== ROOM HEADER LABELS (pass terakhir, selalu di atas, gak kepotong) =====
+  rooms.forEach((r) => {
+    const R = roomRect(r);
+    ctx.fillStyle = 'rgba(8,11,20,0.92)';
+    rr(R.x + 8, R.y + 6, R.w - 16, 44, 5);
+    ctx.strokeStyle = r.status === 'ceo' ? COL.gold : '#2a3050';
+    ctx.lineWidth = 1.5; ctx.strokeRect(R.x + 8, R.y + 6, R.w - 16, 44);
+    ctx.font = '14px "Press Start 2P"'; ctx.textAlign = 'center';
+    ctx.fillStyle = r.status === 'ceo' ? COL.gold : COL.white;
+    ctx.fillText(r.name, R.x + R.w / 2, R.y + 27);
+    ctx.font = '18px VT323'; ctx.fillStyle = COL.muted;
+    ctx.fillText(r.role, R.x + R.w / 2, R.y + 45);
   });
 
   // TITLE BAR
