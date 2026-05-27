@@ -1128,6 +1128,24 @@ beli laptop 15jt?".
   + prompt baru buat jawab "kapan bisa beli X" (hitung dari aset + tabungan/bulan).
 - Alur sinergi: onboarding ngisi aset/utang/rutin → AI makin akurat jawab goal.
 
+### 🎨 REDESIGN DASHBOARD BerUang "versi pro" + GANTI LOGO (27 Mei 2026)
+**Request bos:** bikin dashboard lebih profesional (dari mockup side-by-side yg disetujui),
++ ganti logo BerUang ke **beruang berdasi** (`assets/logo-berbisnis.png`).
+- **CSS (`styles.css`):** `--bg` krem `#fbf6ee` → off-white `#f7f5f1`. Kartu KPI dirombak:
+  buang aksen pelangi (`.card::before{display:none}`), kartu putih seragam border tipis.
+  **Sisa Saldo jadi HERO** (gelap `#221a12`, full-width, `order:-1; grid-column:1/-1`,
+  value 30px putih). Pemasukan/Pengeluaran/Transaksi = 3 kartu kecil (icon chip netral
+  `#f1ece2`, value warna ink, delta kecil). `.cards` jadi 3-kolom (mobile tetap 2-kolom
+  via media query — angka Rupiah penuh muat).
+- **Logo:** SEMUA `assets/mascot-beruang.png?v=2` → `assets/logo-berbisnis.png?v=3` di
+  app.html (login, paywall, topbar, welcome, favicon, apple-touch) + onboarding.js.
+- **⚠️ INI MENGUBAH "two-logo strategy" lama** (BerUang gemoy / BerBisnis berdasi).
+  Sekarang BerUang JUGA pakai beruang berdasi (bos mau lebih korporat). Mascot gemoy
+  (`mascot-beruang.png`) gak dipake lagi di app — tapi file masih ada (dipakai marketing).
+- Bump: styles v35, onboarding v2, SW **beruang-v25** (+ logo-berbisnis di CORE).
+- **Catatan APK/TWA:** ikon launcher di HP (Play Store APK + homescreen lama) gak ikut
+  berubah — itu di-bake di AAB. Cuma favicon web + logo dalam app yang ganti. Kalau mau
+  ikon launcher ikut berdasi → perlu build & upload AAB baru.
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
