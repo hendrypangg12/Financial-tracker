@@ -17,10 +17,10 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-// ============ TIMELINE (14s office loop @ 15fps = 210 frames) ============
+// ============ TIMELINE (45s office loop @ 15fps = 675 frames) ============
 // No intro — langsung suasana kantor natural. CTA persistent di stats bar.
 const FPS = 15;
-const TOTAL = 210;
+const TOTAL = 675;
 
 // ============ COLORS ============
 const COL = {
@@ -338,10 +338,12 @@ function planWaypoints(b, frame) {
   const rrr = roomRect(room);
   const exitX = rrr.x + rrr.w/2;
   const goPantry = Math.random() < 0.4;
-  const strollX = goPantry ? pantryX + (Math.random()*60-30) : 100 + Math.random()*880;
+  // sebar posisi nongkrong biar beruang gak numpuk jadi satu gumpalan
+  const slot = (b.roomIdx % 3) - 1; // -1, 0, 1
+  const strollX = goPantry ? pantryX + slot*72 + (Math.random()*24-12) : 120 + Math.random()*840;
   b.waypoints = [
     { x: exitX, y: hallwayMidY },
-    { x: strollX, y: hallwayMidY, pause: goPantry ? 25 : 8 },
+    { x: strollX, y: hallwayMidY, pause: goPantry ? 18 : 8 },
     { x: exitX, y: hallwayMidY },
     { x: b.homeX, y: b.homeY },
   ];
@@ -370,7 +372,7 @@ function processChats(frame) {
   }
 }
 
-const MAX_WALKERS = 3; // maks beruang jalan bareng — sisanya tetap kerja di desk
+const MAX_WALKERS = 2; // maks beruang jalan bareng — sisanya tetap kerja di desk (jaga ruangan gak kosong)
 function countWalkers() {
   return bears.filter(b => b.active && b.state === 'walking').length;
 }
@@ -382,10 +384,10 @@ function updateBear(b, frame) {
   if (b.state === 'sit') {
     if (frame >= b.nextActionFrame) {
       // jalan kalau slot walker masih ada — biar kantor gak kosong
-      if (countWalkers() < MAX_WALKERS && Math.random() < 0.7) {
+      if (countWalkers() < MAX_WALKERS && Math.random() < 0.5) {
         planWaypoints(b, frame);
       } else {
-        b.nextActionFrame = frame + 25 + Math.floor(Math.random()*45);
+        b.nextActionFrame = frame + 35 + Math.floor(Math.random()*55);
       }
     }
     return;
