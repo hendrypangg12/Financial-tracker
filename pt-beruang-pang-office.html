@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>PT Beruang Pang — AI Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 1080px; height: 1080px;
+  overflow: hidden;
+  background: #0a0e1a;
+  font-family: 'VT323', monospace;
+  image-rendering: pixelated;
+}
+
+.scene {
+  width: 1080px; height: 1080px;
+  position: relative;
+  background:
+    linear-gradient(180deg, #1a1f35 0%, #0d1120 100%);
+  overflow: hidden;
+}
+
+/* ====== TITLE BANNER ====== */
+.title-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 110px;
+  background: linear-gradient(90deg, #5d3a1a 0%, #8b5a2b 50%, #5d3a1a 100%);
+  border-bottom: 4px solid #d4af37;
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; z-index: 100;
+  box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+}
+.title-bar .logo { font-size: 48px; }
+.title-bar h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 30px; color: #ffd700;
+  text-shadow: 3px 3px 0 #4a2511;
+  letter-spacing: 1px;
+}
+.title-bar .sub {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px; color: #f5deb3;
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  letter-spacing: 2px;
+}
+
+/* ====== OFFICE FLOOR ====== */
+.office {
+  position: absolute; top: 110px; left: 0; right: 0; bottom: 70px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 80px repeat(3, 1fr);
+  gap: 0;
+}
+
+/* CEO room — top full width */
+.ceo-room {
+  grid-column: 1 / 3;
+  background:
+    repeating-linear-gradient(45deg, #2a1810 0px, #2a1810 20px, #2f1c12 20px, #2f1c12 40px);
+  border-bottom: 3px solid #d4af37;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+
+/* Agent rooms */
+.room {
+  border: 2px solid #2a3050;
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px;
+}
+.room.live { background: linear-gradient(135deg, #14301c 0%, #0d2014 100%); }
+.room.building { background: linear-gradient(135deg, #2a2410 0%, #1a1808 100%); }
+.room.roadmap { background: linear-gradient(135deg, #1a1a2e 0%, #12121e 100%); }
+
+/* Desk */
+.desk {
+  width: 90px; height: 32px;
+  background: #5d3a1a;
+  border: 2px solid #3a2410;
+  border-radius: 3px;
+  margin-top: 8px;
+  position: relative;
+}
+.desk::before {
+  content: '💻'; position: absolute; top: -18px; left: 50%;
+  transform: translateX(-50%); font-size: 20px;
+}
+
+/* Bear character */
+.bear {
+  font-size: 52px;
+  animation: bob 1.2s ease-in-out infinite;
+  filter: drop-shadow(2px 4px 3px rgba(0,0,0,0.5));
+  position: relative; z-index: 5;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.bear.b2 { animation-delay: 0.2s; }
+.bear.b3 { animation-delay: 0.4s; }
+.bear.b4 { animation-delay: 0.6s; }
+.bear.b5 { animation-delay: 0.1s; }
+.bear.b6 { animation-delay: 0.3s; }
+.bear.b7 { animation-delay: 0.5s; }
+.bear.b8 { animation-delay: 0.7s; }
+
+.bear.idle { animation: none; opacity: 0.55; filter: grayscale(0.6) drop-shadow(2px 4px 3px rgba(0,0,0,0.5)); }
+
+/* Agent name + status */
+.agent-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px; color: #fff;
+  margin-top: 6px; text-align: center;
+  text-shadow: 1px 1px 0 #000;
+}
+.agent-role {
+  font-size: 17px; color: #b8c4e0; text-align: center;
+  margin-top: 2px;
+}
+
+/* Status label floating */
+.status-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 5px 9px;
+  border-radius: 4px;
+  margin-top: 8px;
+  white-space: nowrap;
+  position: relative;
+}
+.status-label.live {
+  background: #16a34a; color: #fff;
+  box-shadow: 0 0 12px rgba(34,197,94,0.6);
+}
+.status-label.live::before {
+  content: '●'; margin-right: 4px; animation: blink 1s infinite;
+}
+.status-label.building {
+  background: #d97706; color: #fff;
+}
+.status-label.building::before {
+  content: '⚙'; margin-right: 4px; display: inline-block;
+  animation: spin 2s linear infinite;
+}
+.status-label.roadmap {
+  background: #475569; color: #cbd5e1;
+}
+@keyframes blink { 50% { opacity: 0.3; } }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Activity ticker (floating speech) */
+.activity {
+  font-family: 'VT323', monospace;
+  font-size: 16px; color: #7dd3fc;
+  position: absolute; top: 6px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,14,26,0.85);
+  border: 1px solid #1e3a5f;
+  padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap;
+  max-width: 95%; overflow: hidden;
+}
+
+/* CEO */
+.ceo-bear { font-size: 64px; animation: bob 1.5s ease-in-out infinite; }
+.ceo-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px; color: #ffd700; margin-left: 16px;
+  text-shadow: 2px 2px 0 #000;
+}
+.ceo-sub { font-size: 18px; color: #f5deb3; margin-left: 16px; }
+
+/* ====== BOTTOM STATS BAR ====== */
+.stats-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+  background: #0d1120;
+  border-top: 3px solid #d4af37;
+  display: flex; align-items: center; justify-content: space-around;
+  z-index: 100;
+}
+.stat {
+  text-align: center;
+}
+.stat .num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px; color: #ffd700;
+}
+.stat .lbl {
+  font-size: 16px; color: #b8c4e0; margin-top: 2px;
+}
+
+/* Pixel dots decoration */
+.dots {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+  background-image: radial-gradient(#fff 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="dots"></div>
+
+  <!-- TITLE -->
+  <div class="title-bar">
+    <span class="logo">🐻</span>
+    <h1>PT BERUANG PANG</h1>
+    <div class="sub">AI COMMAND CENTER · 24/7 BUAT UMKM INDONESIA</div>
+  </div>
+
+  <!-- OFFICE -->
+  <div class="office">
+    <!-- CEO ROOM -->
+    <div class="ceo-room">
+      <span class="ceo-bear">🐻</span>
+      <div>
+        <div class="ceo-label">CEO · HENDRY PANG</div>
+        <div class="ceo-sub">"Ngatur semua AI agent, biar UMKM makin cuan"</div>
+      </div>
+    </div>
+
+    <!-- ROW 1: BerUang + BerBisnis -->
+    <div class="room live">
+      <div class="activity" id="act1">Catat keuangan 12 tester...</div>
+      <span class="bear b2">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">BERUANG</div>
+      <div class="agent-role">💰 Personal Finance</div>
+      <div class="status-label live">LIVE · Play Store</div>
+    </div>
+
+    <div class="room live">
+      <div class="activity" id="act2">Hitung HPP + stok real-time...</div>
+      <span class="bear b3">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">BERBISNIS</div>
+      <div class="agent-role">📊 POS & Stok UMKM</div>
+      <div class="status-label live">LIVE</div>
+    </div>
+
+    <!-- ROW 2: Berstock + Beruang CRM -->
+    <div class="room live">
+      <div class="activity" id="act3">Jawab owner via Telegram...</div>
+      <span class="bear b4">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">BERSTOCK</div>
+      <div class="agent-role">🤖 AI Bot Telegram</div>
+      <div class="status-label live">LIVE · Production</div>
+    </div>
+
+    <div class="room building">
+      <div class="activity" id="act4">Follow-up customer loyal...</div>
+      <span class="bear b5">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">BERUANG CRM</div>
+      <div class="agent-role">💬 Customer Relations</div>
+      <div class="status-label building">BUILDING</div>
+    </div>
+
+    <!-- ROW 3: Roadmap agents -->
+    <div class="room roadmap">
+      <span class="bear b6 idle">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">PEMBUKUAN</div>
+      <div class="agent-role">📚 Accounting AI</div>
+      <div class="status-label roadmap">COMING SOON</div>
+    </div>
+
+    <div class="room roadmap">
+      <span class="bear b7 idle">🐻</span>
+      <div class="desk"></div>
+      <div class="agent-name">SALES + HRD</div>
+      <div class="agent-role">💼 Sales & HR AI</div>
+      <div class="status-label roadmap">COMING SOON</div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat"><div class="num">4</div><div class="lbl">AI Agent LIVE</div></div>
+    <div class="stat"><div class="num">1</div><div class="lbl">Building</div></div>
+    <div class="stat"><div class="num">100%</div><div class="lbl">Solo Founder</div></div>
+    <div class="stat"><div class="num">🇮🇩</div><div class="lbl">Made in Indonesia</div></div>
+  </div>
+</div>
+</body>
+</html>
