@@ -103,6 +103,7 @@ function renderDashboard() {
   renderGreeting();
   renderAssets();
   renderHutangSummary();
+  if (typeof renderReminder === 'function') renderReminder();
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');

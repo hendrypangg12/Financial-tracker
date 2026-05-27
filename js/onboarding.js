@@ -201,11 +201,19 @@ function finishOnboarding(save) {
       onbReadRows('onb-utang', 'hutang', (nama, jml) =>
         addHutang({ jenis: 'hutang', nama: nama || 'Utang', nominal: jml, keterangan: 'Setup dana awal' }));
 
-      // Biaya rutin → pengeluaran bulan ini
+      // Biaya rutin → pengeluaran bulan ini + jadi TAGIHAN RUTIN (nge-remind bulan depan)
+      const ym = new Date().toISOString().slice(0, 7);
+      const hari = parseInt(todayISO().slice(8, 10), 10) || 1;
+      function rutinDanCatat(jml, kategori, subKategori, nama) {
+        const rec = { nama, jumlah: jml, hariTagih: hari, kategori, subKategori, alokasi: 'Kebutuhan' };
+        let rid = null;
+        if (typeof addRecurring === 'function') { addRecurring(rec); rid = rec.id; }
+        addTransaction({ jenis: 'pengeluaran', jumlah: jml, kategori, subKategori, alokasi: 'Kebutuhan', tanggal: todayISO(), deskripsi: nama, recurringId: rid, recurringMonth: rid ? ym : undefined });
+      }
       const kost = onbNum(document.getElementById('onb-kost').value);
       const cicilan = onbNum(document.getElementById('onb-cicilan').value);
-      if (kost > 0) addTransaction({ jenis: 'pengeluaran', jumlah: kost, kategori: 'Tempat Tinggal', subKategori: 'Kost/Sewa', alokasi: 'Kebutuhan', tanggal: todayISO(), deskripsi: 'Kost/sewa bulanan' });
-      if (cicilan > 0) addTransaction({ jenis: 'pengeluaran', jumlah: cicilan, kategori: 'Cicilan', subKategori: 'Cicilan Kartu Kredit', alokasi: 'Kebutuhan', tanggal: todayISO(), deskripsi: 'Cicilan kartu kredit' });
+      if (kost > 0) rutinDanCatat(kost, 'Tempat Tinggal', 'Kost/Sewa', 'Kost/sewa bulanan');
+      if (cicilan > 0) rutinDanCatat(cicilan, 'Cicilan', 'Cicilan Kartu Kredit', 'Cicilan kartu kredit');
 
       if (typeof showToast === 'function') showToast('Dana awal tersimpan! Selamat datang 🐻', 'success');
     } catch (e) {

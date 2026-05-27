@@ -65,6 +65,7 @@ function attachEvents() {
     if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
     if (tabName === 'rekap') renderRekap();
     if (tabName === 'kategori') renderKategori();
+    if (tabName === 'tambah' && typeof renderRecurringManager === 'function') renderRecurringManager();
     if (tabName === 'admin' && typeof renderAdmin === 'function') renderAdmin();
     // Scroll to top for native-feel
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -95,16 +96,27 @@ function attachEvents() {
     e.preventDefault();
     const fd = new FormData(form);
     const t = Object.fromEntries(fd.entries());
+    const jadikanRutin = t.jadikanRutin === 'on';
+    delete t.jadikanRutin;
     t.jumlah = +t.jumlah;
     if (!t.jumlah || t.jumlah <= 0) { showToast('Jumlah harus > 0', 'error'); return; }
     const info = findCategoryForSub(t.subKategori, t.jenis);
     t.kategori = info.kategori;
     if (!t.alokasi && info.alokasi) t.alokasi = info.alokasi;
+    // Tagihan rutin (cuma pengeluaran) — buat template + tag transaksi ini sbg posting bln ini
+    if (jadikanRutin && t.jenis === 'pengeluaran' && typeof addRecurring === 'function') {
+      const hari = parseInt(String(t.tanggal || todayISO()).slice(8, 10), 10) || 1;
+      const rec = { nama: t.deskripsi || t.subKategori || 'Tagihan', jumlah: t.jumlah, hariTagih: hari, kategori: t.kategori, subKategori: t.subKategori, alokasi: t.alokasi || 'Kebutuhan' };
+      addRecurring(rec);
+      t.recurringId = rec.id;
+      t.recurringMonth = (new Date()).toISOString().slice(0, 7);
+    }
     addTransaction(t);
-    showToast('Transaksi ditambahkan', 'success');
+    showToast(jadikanRutin ? 'Transaksi + tagihan rutin disimpan 🔁' : 'Transaksi ditambahkan', 'success');
     form.reset();
     form.querySelector('[name="tanggal"]').value = todayISO();
     fillSubCategoriSelects();
+    if (typeof renderRecurringManager === 'function') renderRecurringManager();
     renderAll();
   };
 

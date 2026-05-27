@@ -3,6 +3,7 @@ const state = {
   transactions: [],
   hutangs: [], // hutang & piutang personal
   assets: [],  // aset/dana awal (rekening, investasi) — info kekayaan, TIDAK masuk cashflow
+  recurring: [], // tagihan rutin bulanan (kost, cicilan, langganan) — buat reminder
   userName: '', // nama panggilan user (dari onboarding) — buat sapaan
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
@@ -19,6 +20,7 @@ function loadState() {
     if (data.transactions) state.transactions = data.transactions;
     if (data.hutangs) state.hutangs = data.hutangs;
     if (Array.isArray(data.assets)) state.assets = data.assets;
+    if (Array.isArray(data.recurring)) state.recurring = data.recurring;
     if (typeof data.userName === 'string') state.userName = data.userName;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
@@ -33,6 +35,7 @@ function saveState() {
       transactions: state.transactions,
       hutangs: state.hutangs,
       assets: state.assets,
+      recurring: state.recurring,
       userName: state.userName,
       categories: state.categories,
       target: state.target,
@@ -95,6 +98,7 @@ function exportData() {
     transactions: state.transactions,
     hutangs: state.hutangs,
     assets: state.assets,
+    recurring: state.recurring,
     userName: state.userName,
     categories: state.categories,
     target: state.target,
@@ -117,6 +121,7 @@ function importData(file) {
         if (Array.isArray(data.transactions)) state.transactions = data.transactions;
         if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
         if (Array.isArray(data.assets)) state.assets = data.assets;
+        if (Array.isArray(data.recurring)) state.recurring = data.recurring;
         if (typeof data.userName === 'string') state.userName = data.userName;
         if (data.categories) state.categories = data.categories;
         if (data.target != null) state.target = data.target;
@@ -133,6 +138,7 @@ function resetAll() {
   state.transactions = [];
   state.hutangs = [];
   state.assets = [];
+  state.recurring = [];
   state.userName = '';
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   state.target = 0;
@@ -154,6 +160,25 @@ function deleteAsset(id) {
 }
 function assetsTotal() {
   return (state.assets || []).reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
+}
+
+// ============================================================
+// TAGIHAN RUTIN (recurring) — kost, cicilan, langganan tiap bulan
+// shape: { id, nama, jumlah, hariTagih (1-28), kategori, subKategori, alokasi }
+// transaksi yg dicatat dari sini di-tag: recurringId + recurringMonth ('YYYY-MM')
+// ============================================================
+function addRecurring(r) {
+  r.id = r.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  state.recurring.push(r);
+  saveState();
+}
+function deleteRecurring(id) {
+  state.recurring = state.recurring.filter(x => x.id !== id);
+  saveState();
+}
+function recurringPostedThisMonth(id, ym) {
+  const m = ym || new Date().toISOString().slice(0, 7);
+  return state.transactions.some(t => t.recurringId === id && t.recurringMonth === m);
 }
 
 // ============================================================
