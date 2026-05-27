@@ -66,7 +66,7 @@ body {
   background: transparent; border: none; padding: 8px 14px; border-radius: 999px;
   color: var(--ink-soft); font-weight: 500; cursor: pointer;
 }
-.tab:hover { background: #eef2fb; color: var(--ink); }
+.tab:hover { background: #f3ecdd; color: var(--ink); }
 .tab.active { background: var(--ink); color: #fff; }
 .topbar-actions { display: flex; gap: 8px; }
 
@@ -364,10 +364,10 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .pill { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
 .pill-in  { background: var(--income-bg);  color: var(--income); }
 .pill-out { background: var(--expense-bg); color: var(--expense); }
-.pill-alok { background: #eef2ff; color: #3730a3; }
+.pill-alok { background: #f3ecdd; color: #8b5a2b; }
 .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
 .icon-btn { border: none; background: transparent; cursor: pointer; color: var(--ink-soft); padding: 2px 6px; border-radius: 6px; }
-.icon-btn:hover { background: #eef2fb; color: var(--ink); }
+.icon-btn:hover { background: #f3ecdd; color: var(--ink); }
 .icon-btn.danger:hover { background: #fee2e2; color: var(--expense); }
 .empty { text-align: center; color: var(--ink-soft); padding: 40px 0; }
 
@@ -441,7 +441,7 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .kat-group h4 { margin: 0 0 6px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
 .kat-group ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .kat-group li {
-  background: #f8fafc; border: 1px solid var(--line); padding: 4px 8px; border-radius: 999px; font-size: 12px;
+  background: #f7f2e9; border: 1px solid var(--line); padding: 4px 8px; border-radius: 999px; font-size: 12px;
   display: inline-flex; gap: 6px; align-items: center;
 }
 .kat-group li button { border: none; background: transparent; cursor: pointer; color: var(--ink-soft); }
