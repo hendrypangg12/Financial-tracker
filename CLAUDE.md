@@ -1146,6 +1146,13 @@ beli laptop 15jt?".
 - **Catatan APK/TWA:** ikon launcher di HP (Play Store APK + homescreen lama) gak ikut
   berubah — itu di-bake di AAB. Cuma favicon web + logo dalam app yang ganti. Kalau mau
   ikon launcher ikut berdasi → perlu build & upload AAB baru.
+- **Tab lain disenadain (styles v36, SW beruang-v26):** kartu ringkasan Hutang
+  (`.hsum-card`) dibikin putih bersih (buang gradient + border warna) — semantik lewat
+  warna ANGKA (piutang=income, hutang=expense, net=primary). Transaksi & Rekap udah clean.
+- **🐛 FIX field `nominal`:** hutang/piutang pakai field **`nominal`** (bukan `jumlah`).
+  Onboarding (`addHutang`) & `buildAdvisorContext` sempat salah tulis `jumlah` → piutang/
+  utang dari onboarding tampil Rp 0. Udah dibetulin ke `nominal`. (onboarding v3, ai-advisor v6)
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
