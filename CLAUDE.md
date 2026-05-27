@@ -993,6 +993,10 @@ jadi tiap render hasil gerakannya beda (nomor frame gak bisa dibandingin antar-r
 
 **Tuning anti-"beruang ilang":** `MAX_WALKERS=2` + CEO `roam:false` → minimal banyak desk keisi.
 
+**LIVE ONLINE (27 Mei 2026):** HTML sekarang dual-mode — dibuka di browser = **animasi jalan terus** (live loop `setInterval` 15fps) + responsive `min(100vw,100vh)`; dipakai render = `__renderFrame` auto-stop live loop + `resetSim()` → video tetap deterministik.
+- Preview live (branch kerja): `https://raw.githack.com/hendrypangg12/Financial-tracker/claude/code-session-work-PkbMp/pt-beruang-pang-office.html`
+- ⏳ **Deploy ke berstock.id PENDING** (bos pilih "pakai preview dulu" 27 Mei). Kalau mau live permanen: pindah file ke branch deploy `claude/financial-tracking-app-QUmrz` → `berstock.id/pt-beruang-pang-office.html` (+ opsi tombol di `linktree.html`).
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
