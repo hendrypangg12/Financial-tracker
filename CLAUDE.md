@@ -1062,6 +1062,14 @@ cache lama → fix/update gak nyampe ("masih versi lama").
   gak bisa di-update dari jarak jauh — user harus SEKALI: cold-close PWA + buka lagi
   (online) 1-2x, atau hapus ikon homescreen → add ulang dari Safari. Habis sekali itu,
   auto-update jalan selamanya. (Web/Safari udah confirmed serve versi terbaru.)
+- **🧹 Tombol "Bersihkan Cache & Muat Ulang" (escape hatch manual, 27 Mei):** ide dari
+  app Daily Generator bos. Handler: unregister SEMUA service worker + hapus SEMUA Cache API
+  + `location.reload()`. **localStorage (data transaksi) & sesi login TIDAK dihapus** →
+  data aman. Lokasi: BerUang = item di user-dropdown (`#btn-refresh-app`, `js/app.js`);
+  BerBisnis = panel "Versi Aplikasi" di tab Pengaturan (`bindGlobalButtons`). Bump:
+  BerUang app.js v32 + sw `beruang-v23`; BerBisnis app.js v22 + sw `berbisnis-v2`.
+  CATCH-22: tombol ini baru kepake SETELAH user dapat versi yg ADA tombolnya — instance
+  super-lama tetap perlu cold-close/re-add sekali. Sesudah itu, tinggal tap tombol.
 
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
