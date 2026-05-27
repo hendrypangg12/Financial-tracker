@@ -655,7 +655,8 @@ function setupAuthUI() {
     btnAdminPanel.onclick = (e) => {
       e.stopPropagation();
       document.getElementById('user-dropdown').hidden = true;
-      switchTab('admin');
+      const adminTab = document.querySelector('.tab[data-tab="admin"], .bnav-item[data-tab="admin"]');
+      if (adminTab) adminTab.click(); // reuse handler tab (switchToTab + renderAdmin)
     };
   }
 }
