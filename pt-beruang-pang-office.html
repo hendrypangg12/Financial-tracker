@@ -17,480 +17,448 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
+// ============ TIMELINE (15s total @ 15fps = 225 frames) ============
+const FPS = 15;
+const INTRO_END = 30;    // 0-30   (2s intro)
+const MAIN_END = 195;    // 30-195 (11s main office)
+const OUTRO_END = 225;   // 195-225 (2s outro)
+const TOTAL = OUTRO_END;
+
 // ============ COLORS ============
 const COL = {
-  bg: '#0d1120',
-  titleBar: '#5d3a1a', titleBar2: '#8b5a2b', gold: '#ffd700',
-  floorLive: '#16301c', floorLive2: '#1a3a22',
-  floorBuild: '#2a2410', floorBuild2: '#332c14',
-  floorRoad: '#1a1a2e', floorRoad2: '#22223a',
-  hallway: '#1c2438', hallway2: '#232d44',
-  wall: '#2a3050', wallLight: '#3a4570',
-  desk: '#5d3a1a', deskDark: '#3a2410',
-  white: '#ffffff', cream: '#f5deb3', muted: '#8896b8',
+  bg: '#0d1120', gold: '#ffd700', white: '#fff', cream: '#f5deb3', muted: '#8896b8',
   green: '#22c55e', orange: '#f59e0b', gray: '#64748b',
-  screen: '#1e90ff', screenOff: '#334155',
 };
 
 // ============ LAYOUT ============
-const TITLE_H = 100;
-const STATS_H = 70;
-const officeTop = TITLE_H;
-const officeBot = 1080 - STATS_H;
-const officeH = officeBot - officeTop;
+const TITLE_H = 96, STATS_H = 64;
+const officeTop = TITLE_H, officeBot = 1080 - STATS_H, officeH = officeBot - officeTop;
+const cols = 4, roomW = 1080 / cols;
+const hallwayH = 96;
+const roomH = (officeH - hallwayH) / 2;
 
-// 8 rooms in 4 cols x 2 rows, with hallway between
-const cols = 4, rows = 2;
-const roomW = 1080 / cols;        // 270
-const hallwayH = 90;
-const roomH = (officeH - hallwayH) / rows;  // (910-90)/2 = 410
-
-// Rooms definition
 const rooms = [
-  // row 0 (top)
-  { name: 'BERUANG',    role: '💰 Finance',   status: 'live',  col: 0, row: 0 },
-  { name: 'BERBISNIS',  role: '📊 POS',       status: 'live',  col: 1, row: 0 },
-  { name: 'BERSTOCK',   role: '🤖 AI Bot',    status: 'live',  col: 2, row: 0 },
-  { name: 'CEO PANG',   role: '🐻 Founder',   status: 'ceo',   col: 3, row: 0 },
-  // row 1 (bottom)
-  { name: 'BERUANG CRM',role: '💬 CRM',       status: 'build', col: 0, row: 1 },
-  { name: 'PEMBUKUAN',  role: '📚 Account',   status: 'road',  col: 1, row: 1 },
-  { name: 'SALES',      role: '💼 Sales',     status: 'road',  col: 2, row: 1 },
-  { name: 'HRD',        role: '👥 HR',        status: 'road',  col: 3, row: 1 },
+  { name: 'BERUANG',    role: '💰 Finance', status: 'live',  col: 0, row: 0 },
+  { name: 'BERBISNIS',  role: '📊 POS',     status: 'live',  col: 1, row: 0 },
+  { name: 'BERSTOCK',   role: '🤖 AI Bot',  status: 'live',  col: 2, row: 0 },
+  { name: 'CEO PANG',   role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
+  { name: 'BERUANG CRM',role: '💬 CRM',     status: 'build', col: 0, row: 1 },
+  { name: 'PEMBUKUAN',  role: '📚 Account', status: 'road',  col: 1, row: 1 },
+  { name: 'SALES',      role: '💼 Sales',   status: 'road',  col: 2, row: 1 },
+  { name: 'HRD',        role: '👥 HR',      status: 'road',  col: 3, row: 1 },
 ];
 
 function roomRect(r) {
   const x = r.col * roomW;
-  let y = officeTop + (r.row === 0 ? 0 : roomH + hallwayH);
+  const y = officeTop + (r.row === 0 ? 0 : roomH + hallwayH);
   return { x, y, w: roomW, h: roomH };
 }
-function deskPos(r) {
-  const rr = roomRect(r);
-  return { x: rr.x + rr.w / 2, y: rr.y + rr.h * 0.52 };
-}
-const hallwayY = officeTop + roomH;  // top of hallway
+function deskPos(r) { const rr = roomRect(r); return { x: rr.x + rr.w / 2, y: rr.y + rr.h * 0.5 }; }
+const hallwayY = officeTop + roomH;
 const hallwayMidY = hallwayY + hallwayH / 2;
 
-// ============ BEARS ============
-// Tiap bear punya appearance unik: warna baju, aksesoris, warna bulu, gaya muka
+// ============ APPEARANCE ============
 const APPEARANCE = [
-  { fur: '#8b5a2b', shirt: '#22a559', accent: '#16803f', glasses: true,  tie: false, hat: null,    eye: 'normal' }, // BerUang - hijau
-  { fur: '#7a4a22', shirt: '#2563eb', accent: '#1d4ed8', glasses: false, tie: false, hat: null,    eye: 'happy'  }, // BerBisnis - biru
-  { fur: '#9c6630', shirt: '#7c3aed', accent: '#5b21b6', glasses: true,  tie: false, hat: 'cap',   eye: 'robot'  }, // Berstock - ungu, topi
-  { fur: '#6b4423', shirt: '#1a2540', accent: '#d4af37', glasses: true,  tie: true,  hat: null,    eye: 'normal' }, // CEO - jas formal + dasi gold
-  { fur: '#a06a38', shirt: '#0d9488', accent: '#0f766e', glasses: false, tie: false, hat: null,    eye: 'happy'  }, // Beruang CRM - teal
-  { fur: '#8b5a2b', shirt: '#64748b', accent: '#475569', glasses: true,  tie: false, hat: null,    eye: 'sleepy' }, // Pembukuan - abu
-  { fur: '#7a4a22', shirt: '#dc2626', accent: '#b91c1c', glasses: false, tie: false, hat: null,    eye: 'happy'  }, // Sales - merah
-  { fur: '#9c6630', shirt: '#db2777', accent: '#be185d', glasses: false, tie: false, hat: null,    eye: 'normal' }, // HRD - pink
+  { fur: '#9b6a3a', shirt: '#22a559', accent: '#16803f', glasses: true,  tie: false, hat: null,  eye: 'normal' },
+  { fur: '#8a5a2e', shirt: '#2563eb', accent: '#1d4ed8', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#a87440', shirt: '#7c3aed', accent: '#5b21b6', glasses: true,  tie: false, hat: 'cap', eye: 'robot'  },
+  { fur: '#7a4e28', shirt: '#1a2540', accent: '#d4af37', glasses: true,  tie: true,  hat: null,  eye: 'normal' },
+  { fur: '#a87440', shirt: '#0d9488', accent: '#0f766e', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#9b6a3a', shirt: '#64748b', accent: '#475569', glasses: true,  tie: false, hat: null,  eye: 'sleepy' },
+  { fur: '#8a5a2e', shirt: '#dc2626', accent: '#b91c1c', glasses: false, tie: false, hat: null,  eye: 'happy'  },
+  { fur: '#a87440', shirt: '#db2777', accent: '#be185d', glasses: false, tie: false, hat: null,  eye: 'normal' },
 ];
 
 const bears = rooms.map((r, i) => {
   const d = deskPos(r);
   return {
-    roomIdx: i,
-    x: d.x, y: d.y,
-    homeX: d.x, homeY: d.y,
-    state: 'sit',
-    targetX: d.x, targetY: d.y,
-    facing: 1,
-    walkPhase: Math.random() * Math.PI * 2,
-    nextActionFrame: Math.floor(Math.random() * 60) + 30,
-    color: r.status,
-    active: r.status === 'live' || r.status === 'build' || r.status === 'ceo',
-    look: APPEARANCE[i],
-    waypoints: [],
-    wpIdx: 0,
+    roomIdx: i, x: d.x, y: d.y, homeX: d.x, homeY: d.y,
+    state: 'sit', facing: 1, walkPhase: Math.random() * 6.28,
+    nextActionFrame: 20 + Math.floor(Math.random() * 50),
+    active: r.status !== 'road',
+    look: APPEARANCE[i], waypoints: [], wpIdx: 0,
+    blinkFrame: Math.floor(Math.random() * 60), typePhase: Math.random() * 6.28,
+    chatWith: null, chatUntil: 0,
   };
 });
 
-// Activity texts per room
 const activities = {
-  0: ['Catat 12 tester', 'Foto struk OCR', 'Sync Firebase'],
-  1: ['Hitung HPP', 'Proses POS', 'Cek piutang'],
-  2: ['Jawab Telegram', 'Cek stok habis', 'Saran restock'],
-  3: ['Ngatur agent', 'Review report', 'Strategi UMKM'],
-  4: ['Follow-up customer', 'Reminder utang', 'Win-back'],
+  0: ['Catat 12 tester', 'Foto struk OCR', 'Sync Firebase', 'Dashboard real-time'],
+  1: ['Hitung HPP', 'Proses POS', 'Cek piutang', 'Laporan untung'],
+  2: ['Jawab Telegram', '"Sales 2.5jt"', 'Cek stok habis', 'Saran restock'],
+  3: ['Ngatur agent', 'Review report', 'Strategi cuan', 'Approve project'],
+  4: ['Follow-up customer', 'Reminder utang', 'Win-back promo', 'Generate AI'],
 };
 
-// ============ SPRITE DRAWING — Humanoid Bear ============
+// ============ HELPERS ============
+function shade(hex, amt) {
+  let h = hex.replace('#', '');
+  let r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  r = Math.max(0,Math.min(255,Math.round(r+r*amt)));
+  g = Math.max(0,Math.min(255,Math.round(g+g*amt)));
+  b = Math.max(0,Math.min(255,Math.round(b+b*amt)));
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fill(); }
+
+// ============ DRAW BEAR (natural humanoid) ============
 function drawBear(b, frame) {
   const walking = b.state === 'walking';
   const L = b.look;
   const fur = b.active ? L.fur : '#6b5340';
-  const furDark = shade(fur, -0.25);
-  const muzzle = '#e8c9a0';
+  const furD = shade(fur, -0.28);
+  const muzzle = '#ecd0a8';
   const shirt = b.active ? L.shirt : '#555';
-  const shirtDark = b.active ? L.accent : '#444';
+  const shirtD = b.active ? L.accent : '#3a3a3a';
   const dim = b.active ? 1 : 0.5;
 
-  // walking cycle
-  const step = walking ? Math.sin(b.walkPhase) : 0;
-  const bob = walking ? Math.abs(Math.sin(b.walkPhase)) * 3 : Math.sin(frame * 0.07 + b.roomIdx) * 1.5;
-  const x = Math.round(b.x);
-  const y = Math.round(b.y + bob);
+  // walk cycle (4-phase smooth)
+  const wc = b.walkPhase;
+  const legL = walking ? Math.sin(wc) * 6 : 0;
+  const armL = walking ? Math.sin(wc) * 5 : 0;
+  // typing animation when sitting active
+  const typing = (b.state === 'sit' && b.active);
+  const typeBob = typing ? Math.sin(b.typePhase) * 2 : 0;
+  const idleBob = Math.sin(frame * 0.06 + b.roomIdx) * 1.2;
+  const bob = walking ? Math.abs(Math.sin(wc)) * 2.5 : idleBob;
+
+  const x = Math.round(b.x), y = Math.round(b.y + bob);
 
   ctx.save();
   ctx.globalAlpha = dim;
-  if (b.facing < 0) { ctx.translate(x * 2, 0); ctx.scale(-1, 1); ctx.translate(-x * 2, 0); }
+  if (b.facing < 0) { ctx.translate(x*2,0); ctx.scale(-1,1); ctx.translate(-x*2,0); }
 
   // shadow
-  ctx.globalAlpha = dim * 0.28;
-  ctx.fillStyle = '#000';
-  ctx.beginPath();
-  ctx.ellipse(x, y + 40, 20, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.globalAlpha = dim*0.25; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(x, y+42, 18, 5, 0, 0, 6.28); ctx.fill();
   ctx.globalAlpha = dim;
 
-  // ===== LEGS (di belakang badan) =====
-  const legSwing = step * 6;
-  ctx.fillStyle = '#2a2418'; // celana gelap
-  // kaki kiri
-  ctx.fillRect(x - 9, y + 22, 8, 16 + legSwing);
-  // kaki kanan
-  ctx.fillRect(x + 1, y + 22, 8, 16 - legSwing);
-  // sepatu
+  // LEGS
+  ctx.fillStyle = '#2a2418';
+  rr(x-9, y+24, 8, 15+legL, 3);
+  rr(x+1, y+24, 8, 15-legL, 3);
   ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(x - 10, y + 36 + legSwing, 10, 5);
-  ctx.fillRect(x + 0, y + 36 - legSwing, 10, 5);
+  rr(x-10, y+37+legL, 11, 5, 2);
+  rr(x+0, y+37-legL, 11, 5, 2);
 
-  // ===== ARMS (di belakang) =====
-  const armSwing = step * 5;
+  // BACK ARM
+  const ay = typing ? y+4+typeBob : y+4;
   ctx.fillStyle = fur;
-  // tangan kiri (belakang)
-  ctx.fillRect(x - 16, y + 2 - armSwing, 7, 18);
-  ctx.fillStyle = muzzle; // telapak
-  ctx.fillRect(x - 16, y + 18 - armSwing, 7, 5);
+  rr(x-16, ay-armL, 7, 16, 3);
+  ctx.fillStyle = muzzle; rr(x-16, ay+13-armL, 7, 5, 2);
 
-  // ===== BODY / SHIRT =====
-  ctx.fillStyle = shirt;
-  ctx.fillRect(x - 13, y, 26, 24);
-  // shading baju
-  ctx.fillStyle = shirtDark;
-  ctx.fillRect(x - 13, y + 18, 26, 6);
-  // collar
-  ctx.fillStyle = shade(shirt, 0.2);
-  ctx.fillRect(x - 8, y, 16, 4);
-
-  // tie (CEO)
+  // BODY/SHIRT (rounded torso)
+  ctx.fillStyle = shirt; rr(x-13, y, 26, 26, 7);
+  ctx.fillStyle = shirtD; rr(x-13, y+19, 26, 7, 4);
+  ctx.fillStyle = shade(shirt,0.18); rr(x-7, y-1, 14, 5, 2);
   if (L.tie) {
-    ctx.fillStyle = '#d4af37';
-    ctx.fillRect(x - 2, y + 2, 4, 14);
-    ctx.beginPath();
-    ctx.moveTo(x - 4, y + 14); ctx.lineTo(x + 4, y + 14); ctx.lineTo(x, y + 20);
-    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#d4af37'; rr(x-2, y+2, 4, 13, 1);
+    ctx.beginPath(); ctx.moveTo(x-4,y+13); ctx.lineTo(x+4,y+13); ctx.lineTo(x,y+19); ctx.closePath(); ctx.fill();
   }
 
-  // ===== ARMS (depan) =====
+  // FRONT ARM (typing motion)
   ctx.fillStyle = fur;
-  ctx.fillRect(x + 9, y + 2 + armSwing, 7, 18);
-  ctx.fillStyle = muzzle;
-  ctx.fillRect(x + 9, y + 18 + armSwing, 7, 5);
+  rr(x+9, ay+armL, 7, 16, 3);
+  ctx.fillStyle = muzzle; rr(x+9, ay+13+armL, 7, 5, 2);
 
-  // ===== HEAD =====
-  const hy = y - 26;
-  // ears
+  // HEAD
+  const hy = y - 24;
   ctx.fillStyle = fur;
-  ctx.beginPath(); ctx.arc(x - 12, hy - 2, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(x + 12, hy - 2, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = furDark;
-  ctx.beginPath(); ctx.arc(x - 12, hy - 2, 3.5, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(x + 12, hy - 2, 3.5, 0, Math.PI * 2); ctx.fill();
-  // head round
+  ctx.beginPath(); ctx.arc(x-11, hy-3, 6.5, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11, hy-3, 6.5, 0, 6.28); ctx.fill();
+  ctx.fillStyle = furD;
+  ctx.beginPath(); ctx.arc(x-11, hy-3, 3, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11, hy-3, 3, 0, 6.28); ctx.fill();
   ctx.fillStyle = fur;
-  ctx.beginPath(); ctx.arc(x, hy + 4, 15, 0, Math.PI * 2); ctx.fill();
-  // muzzle
+  ctx.beginPath(); ctx.arc(x, hy+4, 14, 0, 6.28); ctx.fill();
   ctx.fillStyle = muzzle;
-  ctx.beginPath(); ctx.ellipse(x, hy + 9, 9, 7, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x, hy+9, 8.5, 6.5, 0, 0, 6.28); ctx.fill();
 
-  // hat (Berstock cap)
   if (L.hat === 'cap') {
-    ctx.fillStyle = L.accent;
-    ctx.fillRect(x - 14, hy - 8, 28, 7);
-    ctx.fillRect(x - 2, hy - 12, 18, 6);
+    ctx.fillStyle = L.accent; rr(x-14, hy-7, 28, 7, 3); rr(x-2, hy-11, 18, 6, 2);
   }
 
-  // eyes (variasi)
+  // eyes + blink
+  const blink = (frame % 70 >= (b.blinkFrame%70) && frame % 70 < (b.blinkFrame%70)+3);
   ctx.fillStyle = '#1a1a1a';
-  if (L.eye === 'happy') {
-    // happy (^ ^)
-    ctx.lineWidth = 2; ctx.strokeStyle = '#1a1a1a';
-    ctx.beginPath(); ctx.arc(x - 6, hy + 2, 3, Math.PI, 0); ctx.stroke();
-    ctx.beginPath(); ctx.arc(x + 6, hy + 2, 3, Math.PI, 0); ctx.stroke();
+  if (blink) {
+    ctx.fillRect(x-8, hy+2, 5, 1.5); ctx.fillRect(x+3, hy+2, 5, 1.5);
+  } else if (L.eye === 'happy') {
+    ctx.lineWidth=2; ctx.strokeStyle='#1a1a1a';
+    ctx.beginPath(); ctx.arc(x-5,hy+2,2.5,Math.PI,0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x+6,hy+2,2.5,Math.PI,0); ctx.stroke();
   } else if (L.eye === 'robot') {
-    ctx.fillRect(x - 9, hy, 6, 3);
-    ctx.fillRect(x + 3, hy, 6, 3);
-    ctx.fillStyle = '#1e90ff';
-    ctx.fillRect(x - 8, hy + 1, 2, 1);
-    ctx.fillRect(x + 4, hy + 1, 2, 1);
+    ctx.fillRect(x-8,hy,5,3); ctx.fillRect(x+3,hy,5,3);
+    ctx.fillStyle='#1e90ff'; ctx.fillRect(x-7,hy+1,2,1); ctx.fillRect(x+5,hy+1,2,1);
   } else if (L.eye === 'sleepy') {
-    ctx.fillRect(x - 9, hy + 3, 6, 2);
-    ctx.fillRect(x + 3, hy + 3, 6, 2);
+    ctx.fillRect(x-8,hy+3,5,2); ctx.fillRect(x+3,hy+3,5,2);
   } else {
-    ctx.fillRect(x - 7, hy, 4, 5);
-    ctx.fillRect(x + 3, hy, 4, 5);
+    ctx.fillRect(x-6,hy,3.5,5); ctx.fillRect(x+3,hy,3.5,5);
   }
-  // nose
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(x, hy + 7, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath(); ctx.arc(x, hy+7, 2.2, 0, 6.28); ctx.fill();
 
-  // glasses
   if (L.glasses) {
-    ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 1.5;
-    ctx.strokeRect(x - 10, hy - 2, 8, 7);
-    ctx.strokeRect(x + 2, hy - 2, 8, 7);
-    ctx.beginPath(); ctx.moveTo(x - 2, hy + 1); ctx.lineTo(x + 2, hy + 1); ctx.stroke();
+    ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=1.5;
+    ctx.strokeRect(x-9, hy-1, 7, 6); ctx.strokeRect(x+2, hy-1, 7, 6);
+    ctx.beginPath(); ctx.moveTo(x-2,hy+1); ctx.lineTo(x+2,hy+1); ctx.stroke();
   }
-
   ctx.restore();
 }
 
-// helper: shade hex color
-function shade(hex, amt) {
-  let h = hex.replace('#', '');
-  let r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), bl = parseInt(h.slice(4, 6), 16);
-  r = Math.max(0, Math.min(255, Math.round(r + r * amt)));
-  g = Math.max(0, Math.min(255, Math.round(g + g * amt)));
-  bl = Math.max(0, Math.min(255, Math.round(bl + bl * amt)));
-  return '#' + [r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('');
+// ============ DECORATIONS ============
+function drawPlant(x, y) {
+  ctx.fillStyle='#5d3a1a'; rr(x-8, y, 16, 12, 2);          // pot
+  ctx.fillStyle='#2d7a3a';
+  ctx.beginPath(); ctx.arc(x, y-4, 11, 0, 6.28); ctx.fill();
+  ctx.fillStyle='#3a9a4a';
+  ctx.beginPath(); ctx.arc(x-5, y-8, 6, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+5, y-6, 6, 0, 6.28); ctx.fill();
+}
+function drawDispenser(x, y) {
+  ctx.fillStyle='#3b82f6'; rr(x-9, y-22, 18, 16, 2);       // bottle
+  ctx.fillStyle='#dbeafe'; rr(x-7, y-20, 14, 12, 2);
+  ctx.fillStyle='#e5e7eb'; rr(x-8, y-6, 16, 22, 2);        // cooler body
+  ctx.fillStyle='#3b82f6'; rr(x-5, y+2, 10, 4, 1);
+}
+function drawClock(x, y, frame) {
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,11,0,6.28); ctx.fill();
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,11,0,6.28); ctx.stroke();
+  const a = frame*0.1;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(a)*5, y+Math.sin(a)*5); ctx.stroke();
+  ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.cos(a*2)*7, y+Math.sin(a*2)*7); ctx.stroke();
+}
+function drawWhiteboard(x, y) {
+  ctx.fillStyle='#f8fafc'; rr(x-26, y, 52, 30, 2);
+  ctx.strokeStyle='#94a3b8'; ctx.lineWidth=2; ctx.strokeRect(x-26, y, 52, 30);
+  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x-20,y+8); ctx.lineTo(x-4,y+8); ctx.stroke();
+  ctx.strokeStyle='#22c55e';
+  ctx.beginPath(); ctx.moveTo(x-20,y+16); ctx.lineTo(x+10,y+16); ctx.stroke();
+  ctx.strokeStyle='#ef4444';
+  ctx.beginPath(); ctx.moveTo(x-20,y+24); ctx.lineTo(x+2,y+24); ctx.stroke();
 }
 
 function drawComputer(cx, cy, on, frame) {
-  cx = Math.round(cx); cy = Math.round(cy);
-  // monitor
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(cx - 16, cy - 22, 32, 24);
-  // screen
+  cx=Math.round(cx); cy=Math.round(cy);
+  ctx.fillStyle='#15151f'; rr(cx-15, cy-22, 30, 23, 2);
   if (on) {
-    const flicker = (Math.floor(frame / 4) % 2 === 0);
-    ctx.fillStyle = flicker ? '#1e90ff' : '#2563eb';
-    ctx.fillRect(cx - 13, cy - 19, 26, 18);
-    // code lines on screen
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    for (let i = 0; i < 4; i++) {
-      const lw = 6 + ((frame + i * 3) % 14);
-      ctx.fillRect(cx - 11, cy - 17 + i * 4, lw, 2);
-    }
-  } else {
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(cx - 13, cy - 19, 26, 18);
-  }
-  // stand
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(cx - 4, cy + 2, 8, 4);
-  ctx.fillRect(cx - 10, cy + 6, 20, 3);
+    ctx.fillStyle = (Math.floor(frame/4)%2===0) ? '#1e90ff' : '#2563eb';
+    ctx.fillRect(cx-12, cy-19, 24, 17);
+    ctx.fillStyle='rgba(255,255,255,0.75)';
+    for (let i=0;i<4;i++){ const lw=5+((frame+i*3)%13); ctx.fillRect(cx-10, cy-17+i*4, lw, 2); }
+  } else { ctx.fillStyle='#334155'; ctx.fillRect(cx-12, cy-19, 24, 17); }
+  ctx.fillStyle='#15151f'; rr(cx-4, cy+1, 8, 4, 1); rr(cx-9, cy+5, 18, 3, 1);
+  // keyboard
+  ctx.fillStyle='#1a1a1a'; rr(cx-12, cy+9, 24, 6, 1);
 }
 
-// ============ MOVEMENT LOGIC ============
-function planWaypoints(b) {
-  // Walk from home to hallway, stroll, return home
+// ============ MOVEMENT ============
+const pantryX = 540, pantryY = hallwayMidY;
+function planWaypoints(b, frame) {
   const room = rooms[b.roomIdx];
-  const rr = roomRect(room);
-  const exitX = rr.x + rr.w / 2;
-  const hallTargetX = 120 + Math.random() * 840;
+  const rrr = roomRect(room);
+  const exitX = rrr.x + rrr.w/2;
+  const goPantry = Math.random() < 0.4;
+  const strollX = goPantry ? pantryX + (Math.random()*60-30) : 100 + Math.random()*880;
   b.waypoints = [
-    { x: exitX, y: hallwayMidY },              // exit to hallway
-    { x: hallTargetX, y: hallwayMidY },        // stroll
-    { x: exitX, y: hallwayMidY },              // come back
-    { x: b.homeX, y: b.homeY },                // sit down
+    { x: exitX, y: hallwayMidY },
+    { x: strollX, y: hallwayMidY, pause: goPantry ? 25 : 8 },
+    { x: exitX, y: hallwayMidY },
+    { x: b.homeX, y: b.homeY },
   ];
-  b.wpIdx = 0;
-  b.state = 'walking';
+  b.wpIdx = 0; b.state = 'walking'; b.pauseLeft = 0;
 }
-
 function updateBear(b, frame) {
-  if (!b.active) return; // roadmap bears stay idle
-
+  b.typePhase += 0.35;
+  if (!b.active) return;
   if (b.state === 'sit') {
-    if (frame >= b.nextActionFrame && Math.random() < 0.5) {
-      planWaypoints(b);
-    } else if (frame >= b.nextActionFrame) {
-      b.nextActionFrame = frame + 40 + Math.floor(Math.random() * 80);
+    if (frame >= b.nextActionFrame) {
+      if (Math.random() < 0.6) planWaypoints(b, frame);
+      else b.nextActionFrame = frame + 30 + Math.floor(Math.random()*60);
     }
     return;
   }
-
-  // walking — move toward current waypoint
+  if (b.pauseLeft > 0) { b.pauseLeft--; b.walkPhase += 0; return; }
   const wp = b.waypoints[b.wpIdx];
-  const dx = wp.x - b.x, dy = wp.y - b.y;
-  const dist = Math.hypot(dx, dy);
-  const speed = 4.5;
+  const dx = wp.x-b.x, dy = wp.y-b.y, dist = Math.hypot(dx,dy);
+  const speed = 4;
   if (dist < speed) {
-    b.x = wp.x; b.y = wp.y;
+    b.x=wp.x; b.y=wp.y;
+    if (wp.pause) { b.pauseLeft = wp.pause; }
     b.wpIdx++;
     if (b.wpIdx >= b.waypoints.length) {
-      b.state = 'sit';
-      b.nextActionFrame = frame + 60 + Math.floor(Math.random() * 100);
+      b.state='sit'; b.nextActionFrame = frame + 50 + Math.floor(Math.random()*90);
     }
   } else {
-    b.x += (dx / dist) * speed;
-    b.y += (dy / dist) * speed;
-    if (Math.abs(dx) > 1) b.facing = dx > 0 ? 1 : -1;
-    b.walkPhase += 0.4;
+    b.x += dx/dist*speed; b.y += dy/dist*speed;
+    if (Math.abs(dx)>1) b.facing = dx>0?1:-1;
+    b.walkPhase += 0.45;
   }
 }
 
-// ============ SCENE DRAWING ============
-function drawScene(frame) {
-  // bg
-  ctx.fillStyle = COL.bg;
-  ctx.fillRect(0, 0, 1080, 1080);
+// ============ SCENE ============
+function drawOffice(frame) {
+  ctx.fillStyle = COL.bg; ctx.fillRect(0,0,1080,1080);
 
-  // ===== ROOMS =====
-  rooms.forEach((r) => {
-    const rr = roomRect(r);
-    // floor tile pattern
-    let c1, c2;
-    if (r.status === 'live') { c1 = COL.floorLive; c2 = COL.floorLive2; }
-    else if (r.status === 'build') { c1 = COL.floorBuild; c2 = COL.floorBuild2; }
-    else if (r.status === 'ceo') { c1 = '#2a1c10'; c2 = '#3a2818'; }
-    else { c1 = COL.floorRoad; c2 = COL.floorRoad2; }
-    const tile = 30;
-    for (let ty = 0; ty < rr.h; ty += tile) {
-      for (let tx = 0; tx < rr.w; tx += tile) {
-        ctx.fillStyle = ((tx / tile + ty / tile) % 2 === 0) ? c1 : c2;
-        ctx.fillRect(rr.x + tx, rr.y + ty, tile, tile);
-      }
+  rooms.forEach((r, idx) => {
+    const R = roomRect(r);
+    let c1,c2;
+    if (r.status==='live'){c1='#16301c';c2='#1a3a22';}
+    else if (r.status==='build'){c1='#2a2410';c2='#332c14';}
+    else if (r.status==='ceo'){c1='#2a1c10';c2='#3a2818';}
+    else {c1='#1a1a2e';c2='#22223a';}
+    const t=30;
+    for(let ty=0;ty<R.h;ty+=t)for(let tx=0;tx<R.w;tx+=t){
+      ctx.fillStyle=((tx/t+ty/t)%2===0)?c1:c2; ctx.fillRect(R.x+tx,R.y+ty,t,t);
     }
-    // walls
-    ctx.strokeStyle = COL.wall; ctx.lineWidth = 3;
-    ctx.strokeRect(rr.x + 1.5, rr.y + 1.5, rr.w - 3, rr.h - 3);
+    ctx.strokeStyle='#2a3050'; ctx.lineWidth=3; ctx.strokeRect(R.x+1.5,R.y+1.5,R.w-3,R.h-3);
 
-    // desk
+    // decorations per room
+    drawPlant(R.x + 22, R.y + R.h - 30);
+    if (idx % 2 === 0) drawClock(R.x + R.w - 24, R.y + 70, frame);
+    if (r.status === 'ceo') drawWhiteboard(R.x + R.w - 40, R.y + R.h - 70);
+
+    // desk + computer
     const d = deskPos(r);
-    ctx.fillStyle = COL.deskDark;
-    ctx.fillRect(d.x - 48, d.y + 8, 96, 38);
-    ctx.fillStyle = COL.desk;
-    ctx.fillRect(d.x - 48, d.y + 8, 96, 8);
+    ctx.fillStyle='#3a2410'; rr(d.x-46, d.y+10, 92, 34, 3);
+    ctx.fillStyle='#5d3a1a'; rr(d.x-46, d.y+10, 92, 7, 3);
+    drawComputer(d.x, d.y+10, r.status!=='road', frame);
 
-    // computer on desk
-    drawComputer(d.x, d.y + 8, r.status !== 'road', frame);
+    // labels
+    ctx.fillStyle='rgba(10,14,26,0.82)'; rr(R.x+8, R.y+8, R.w-16, 42, 4);
+    ctx.font='15px "Press Start 2P"'; ctx.textAlign='center';
+    ctx.fillStyle = r.status==='ceo'?COL.gold:COL.white;
+    ctx.fillText(r.name, R.x+R.w/2, R.y+26);
+    ctx.font='17px VT323'; ctx.fillStyle=COL.muted;
+    ctx.fillText(r.role, R.x+R.w/2, R.y+44);
 
-    // room label (top)
-    ctx.fillStyle = 'rgba(10,14,26,0.8)';
-    ctx.fillRect(rr.x + 8, rr.y + 8, rr.w - 16, 44);
-    ctx.font = '16px "Press Start 2P"';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = r.status === 'ceo' ? COL.gold : COL.white;
-    ctx.fillText(r.name, rr.x + rr.w / 2, rr.y + 28);
-    ctx.font = '18px VT323';
-    ctx.fillStyle = COL.muted;
-    ctx.fillText(r.role, rr.x + rr.w / 2, rr.y + 46);
-
-    // status badge (bottom)
-    let badgeCol, badgeTxt;
-    if (r.status === 'live') { badgeCol = COL.green; badgeTxt = '● LIVE'; }
-    else if (r.status === 'build') { badgeCol = COL.orange; badgeTxt = '⚙ BUILDING'; }
-    else if (r.status === 'ceo') { badgeCol = COL.gold; badgeTxt = '★ FOUNDER'; }
-    else { badgeCol = COL.gray; badgeTxt = 'SOON'; }
-    ctx.fillStyle = badgeCol;
-    const bw = badgeTxt.length * 10 + 16;
-    ctx.fillRect(rr.x + rr.w / 2 - bw / 2, rr.y + rr.h - 36, bw, 22);
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillStyle = (r.status === 'ceo' || r.status === 'live') ? '#0a0e1a' : '#fff';
-    ctx.fillText(badgeTxt, rr.x + rr.w / 2, rr.y + rr.h - 21);
-
-    // activity bubble (only for active rooms, when bear sitting)
-    const bear = bears[r.row * 4 + r.col] || bears.find(bb => bb.roomIdx === rooms.indexOf(r));
+    let bc,bt;
+    if(r.status==='live'){bc=COL.green;bt='● LIVE';}
+    else if(r.status==='build'){bc=COL.orange;bt='⚙ BUILDING';}
+    else if(r.status==='ceo'){bc=COL.gold;bt='★ FOUNDER';}
+    else{bc=COL.gray;bt='SOON';}
+    ctx.fillStyle=bc; const bw=bt.length*9+14;
+    rr(R.x+R.w/2-bw/2, R.y+R.h-32, bw, 20, 4);
+    ctx.font='9px "Press Start 2P"';
+    ctx.fillStyle=(r.status==='ceo'||r.status==='live')?'#0a0e1a':'#fff';
+    ctx.fillText(bt, R.x+R.w/2, R.y+R.h-18);
   });
 
-  // ===== HALLWAY =====
-  const tile = 30;
-  for (let ty = 0; ty < hallwayH; ty += tile) {
-    for (let tx = 0; tx < 1080; tx += tile) {
-      ctx.fillStyle = ((tx / tile + ty / tile) % 2 === 0) ? COL.hallway : COL.hallway2;
-      ctx.fillRect(tx, hallwayY + ty, tile, tile);
-    }
+  // HALLWAY
+  const t=30;
+  for(let ty=0;ty<hallwayH;ty+=t)for(let tx=0;tx<1080;tx+=t){
+    ctx.fillStyle=((tx/t+ty/t)%2===0)?'#1c2438':'#232d44'; ctx.fillRect(tx,hallwayY+ty,t,t);
   }
-  // hallway carpet line
-  ctx.fillStyle = COL.gold;
-  ctx.globalAlpha = 0.15;
-  ctx.fillRect(0, hallwayMidY - 3, 1080, 6);
-  ctx.globalAlpha = 1;
+  ctx.fillStyle=COL.gold; ctx.globalAlpha=0.12; ctx.fillRect(0,hallwayMidY-3,1080,6); ctx.globalAlpha=1;
+  // pantry: water dispenser + plant in hallway center
+  drawDispenser(pantryX - 60, hallwayMidY + 20);
+  drawPlant(pantryX + 60, hallwayMidY + 18);
 
-  // ===== BEARS (sorted by y for depth) =====
-  const sortedBears = [...bears].sort((a, b) => a.y - b.y);
-  sortedBears.forEach((b) => {
-    // activity bubble above sitting active bear
-    if (b.state === 'sit' && b.active && activities[b.roomIdx]) {
-      const acts = activities[b.roomIdx];
-      const act = acts[Math.floor(frame / 30) % acts.length];
-      ctx.font = '17px VT323';
-      ctx.textAlign = 'center';
-      const tw = ctx.measureText(act).width + 16;
-      ctx.fillStyle = 'rgba(10,14,26,0.9)';
-      ctx.fillRect(b.x - tw / 2, b.y - 60, tw, 22);
-      ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1;
-      ctx.strokeRect(b.x - tw / 2, b.y - 60, tw, 22);
-      ctx.fillStyle = '#7dd3fc';
-      ctx.fillText(act, b.x, b.y - 44);
+  // BEARS (depth sort) + activity bubbles
+  [...bears].sort((a,b)=>a.y-b.y).forEach(b=>{
+    if (b.state==='sit' && b.active && activities[b.roomIdx]) {
+      const acts=activities[b.roomIdx];
+      const act=acts[Math.floor(frame/28)%acts.length];
+      ctx.font='16px VT323'; ctx.textAlign='center';
+      const tw=ctx.measureText(act).width+14;
+      ctx.fillStyle='rgba(10,14,26,0.9)'; rr(b.x-tw/2, b.y-58, tw, 20, 4);
+      ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1; ctx.strokeRect(b.x-tw/2, b.y-58, tw, 20);
+      ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-43);
     }
     drawBear(b, frame);
   });
 
-  // ===== TITLE BAR =====
-  const grd = ctx.createLinearGradient(0, 0, 1080, 0);
-  grd.addColorStop(0, COL.titleBar);
-  grd.addColorStop(0.5, COL.titleBar2);
-  grd.addColorStop(1, COL.titleBar);
-  ctx.fillStyle = grd;
-  ctx.fillRect(0, 0, 1080, TITLE_H);
-  ctx.fillStyle = COL.gold;
-  ctx.fillRect(0, TITLE_H - 4, 1080, 4);
-  // title text
-  ctx.font = '28px "Press Start 2P"';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = COL.gold;
-  ctx.fillText('PT BERUANG PANG', 540, 48);
-  ctx.font = '12px "Press Start 2P"';
-  ctx.fillStyle = COL.cream;
-  ctx.fillText('AI COMMAND CENTER · 24/7 BUAT UMKM', 540, 76);
-  // bear logo
-  ctx.font = '44px serif';
-  ctx.fillText('🐻', 130, 62);
-  ctx.fillText('🐻', 950, 62);
+  // TITLE BAR
+  const g=ctx.createLinearGradient(0,0,1080,0);
+  g.addColorStop(0,'#5d3a1a'); g.addColorStop(0.5,'#8b5a2b'); g.addColorStop(1,'#5d3a1a');
+  ctx.fillStyle=g; ctx.fillRect(0,0,1080,TITLE_H);
+  ctx.fillStyle=COL.gold; ctx.fillRect(0,TITLE_H-4,1080,4);
+  ctx.font='27px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('PT BERUANG PANG', 540, 44);
+  ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.cream;
+  ctx.fillText('AI COMMAND CENTER · 24/7 BUAT UMKM', 540, 72);
+  ctx.font='42px serif'; ctx.fillText('🐻', 120, 58); ctx.fillText('🐻', 960, 58);
 
-  // ===== STATS BAR =====
-  ctx.fillStyle = COL.bg;
-  ctx.fillRect(0, 1080 - STATS_H, 1080, STATS_H);
-  ctx.fillStyle = COL.gold;
-  ctx.fillRect(0, 1080 - STATS_H, 1080, 4);
-  const stats = [
-    { n: '4', l: 'AI Agent LIVE' },
-    { n: '1', l: 'Building' },
-    { n: '100%', l: 'Solo Founder' },
-    { n: 'INA', l: 'Made in Indonesia' },
-  ];
-  stats.forEach((s, i) => {
-    const cx = 1080 / 8 * (i * 2 + 1);
-    ctx.font = '22px "Press Start 2P"';
-    ctx.fillStyle = COL.gold;
-    ctx.textAlign = 'center';
-    ctx.fillText(s.n, cx, 1080 - 38);
-    ctx.font = '17px VT323';
-    ctx.fillStyle = COL.muted;
-    ctx.fillText(s.l, cx, 1080 - 16);
+  // STATS BAR
+  ctx.fillStyle=COL.bg; ctx.fillRect(0,1080-STATS_H,1080,STATS_H);
+  ctx.fillStyle=COL.gold; ctx.fillRect(0,1080-STATS_H,1080,4);
+  const stats=[{n:'4',l:'AI Agent LIVE'},{n:'1',l:'Building'},{n:'100%',l:'Solo Founder'},{n:'INA',l:'Made in Indonesia'}];
+  stats.forEach((s,i)=>{
+    const cx=1080/8*(i*2+1);
+    ctx.font='20px "Press Start 2P"'; ctx.fillStyle=COL.gold; ctx.textAlign='center';
+    ctx.fillText(s.n, cx, 1080-34);
+    ctx.font='16px VT323'; ctx.fillStyle=COL.muted; ctx.fillText(s.l, cx, 1080-14);
   });
 }
 
-// ============ ANIMATION LOOP (deterministic) ============
-let currentFrame = 0;
-function renderFrame(frame) {
-  // advance all bear states up to this frame (deterministic stepping)
-  bears.forEach((b) => updateBear(b, frame));
-  drawScene(frame);
+// ============ INTRO ============
+function drawIntro(frame) {
+  const p = frame / INTRO_END; // 0..1
+  ctx.fillStyle = '#0a0e1a'; ctx.fillRect(0,0,1080,1080);
+  // pixel dots bg
+  ctx.globalAlpha = 0.05; ctx.fillStyle='#fff';
+  for(let yy=0;yy<1080;yy+=16)for(let xx=0;xx<1080;xx+=16) ctx.fillRect(xx,yy,1,1);
+  ctx.globalAlpha = 1;
+
+  // bear walks in from left
+  const bx = -60 + p * 600;
+  const tmpBear = { x: bx, y: 560, state:'walking', facing:1, walkPhase: frame*0.5, active:true, look: APPEARANCE[3], roomIdx:3, blinkFrame:0, typePhase:0 };
+  drawBear(tmpBear, frame);
+
+  // title fade in
+  const alpha = Math.min(1, Math.max(0, (p - 0.3) / 0.5));
+  ctx.globalAlpha = alpha;
+  ctx.font = '40px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('PT BERUANG PANG', 540, 420);
+  ctx.font = '16px "Press Start 2P"'; ctx.fillStyle=COL.cream;
+  ctx.fillText('Perusahaan AI buat UMKM', 540, 470);
+  ctx.globalAlpha = 1;
 }
 
-// Expose for puppeteer
-window.__renderFrame = (frame) => {
-  // step simulation frame-by-frame for determinism
-  while (currentFrame <= frame) {
-    bears.forEach((b) => updateBear(b, currentFrame));
-    currentFrame++;
-  }
-  drawScene(frame);
-};
+// ============ OUTRO ============
+function drawOutro(frame) {
+  ctx.fillStyle = '#0a0e1a'; ctx.fillRect(0,0,1080,1080);
+  ctx.globalAlpha = 0.05; ctx.fillStyle='#fff';
+  for(let yy=0;yy<1080;yy+=16)for(let xx=0;xx<1080;xx+=16) ctx.fillRect(xx,yy,1,1);
+  ctx.globalAlpha = 1;
 
-// Initial render
+  // big bear waving (center)
+  const wave = Math.sin(frame*0.4)*0.3;
+  const tmpBear = { x: 540, y: 480, state:'sit', facing:1, walkPhase:0, active:true, look: APPEARANCE[3], roomIdx:3, blinkFrame:0, typePhase: frame };
+  // draw scaled bear
+  ctx.save(); ctx.translate(540, 200); ctx.scale(2.2, 2.2); ctx.translate(-540, -480);
+  drawBear(tmpBear, frame);
+  ctx.restore();
+
+  ctx.font='30px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
+  ctx.fillText('4 AI AGENT LIVE 24/7', 540, 720);
+  ctx.font='18px "Press Start 2P"'; ctx.fillStyle=COL.white;
+  ctx.fillText('Buat UMKM Indonesia naik kelas', 540, 770);
+  // CTA
+  ctx.fillStyle=COL.gold; rr(540-200, 830, 400, 56, 10);
+  ctx.font='18px "Press Start 2P"'; ctx.fillStyle='#0a0e1a';
+  ctx.fillText('FOLLOW @berstock.ai', 540, 866);
+  ctx.font='20px VT323'; ctx.fillStyle=COL.muted;
+  ctx.fillText('🐻 PT Beruang Pang · berstock.id', 540, 930);
+}
+
+// ============ MASTER RENDER (deterministic) ============
+let simFrame = 0;
+window.__renderFrame = (frame) => {
+  if (frame < INTRO_END) { drawIntro(frame); return; }
+  if (frame >= MAIN_END) { drawOutro(frame - MAIN_END); return; }
+  // main: step simulation
+  const mainFrame = frame - INTRO_END;
+  while (simFrame <= mainFrame) {
+    bears.forEach(b => updateBear(b, simFrame));
+    simFrame++;
+  }
+  drawOffice(mainFrame);
+};
+window.__TOTAL = TOTAL;
 window.__renderFrame(0);
 </script>
 </body>
