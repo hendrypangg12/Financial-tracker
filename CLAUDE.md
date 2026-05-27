@@ -997,6 +997,31 @@ jadi tiap render hasil gerakannya beda (nomor frame gak bisa dibandingin antar-r
 - Preview live (branch kerja): `https://raw.githack.com/hendrypangg12/Financial-tracker/claude/code-session-work-PkbMp/pt-beruang-pang-office.html`
 - ✅ **DEPLOYED ke berstock.id (27 Mei 2026):** `https://berstock.id/pt-beruang-pang-office.html` (file di branch deploy `claude/financial-tracking-app-QUmrz`). Tombol "Kantor Virtual PT Beruang Pang" dipasang di `linktree.html` (section Enterprise/Pitch) DAN section showcase di homepage `index.html` (preview video autoplay + tombol "Buka versi LIVE", setelah products-section). Web scaling pakai `image-rendering:auto` biar teks bersih pas di-downscale.
 
+### 🟢 LIVE PRESENCE — Beruang "User" real-time (27 Mei 2026)
+**Konsep (request bos):** tiap orang yang lagi BUKA app BerUang (via web link ATAU
+APK Play Store — sama, TWA load `app.html`) = **1 beruang ber-tag "User"** muncul
+di kantor virtual, masuk dari pintu MASUK, roam di sekitar ruang BERUANG. Cap 8
+biar gak penuh/lag. Dipajang **publik** di `pt-beruang-pang-office.html`.
+
+**Arsitektur (Firebase Realtime Database, project `ber-uang-735b3`):**
+- `js/presence.js` (di app.html): tulis `presence/<sessionId>` = `{t, app}` pakai
+  `onDisconnect().remove()` + heartbeat 30s + visibility-aware (hidden→remove).
+  Defensif total (guard `typeof firebase`), gak ganggu app kalau RTDB off.
+- `app.html`: tambah SDK `firebase-database-compat` + include `presence.js?v=1`.
+  `firebase-config.js` bump v=22, tambah `databaseURL` (region **asia-southeast1**).
+- `pt-beruang-pang-office.html`: subscribe `presence` → hitung child dgn `t` < 70s →
+  `liveUserTarget`. `syncUserBears()` spawn/exit beruang-user (cuma di `step()` live
+  loop). `resetSim()` buang semua `isUser` + `__renderFrame` gak panggil sync →
+  **video render tetap deterministik & bersih** (no beruang-user di MP4).
+- `countWalkers()` exclude `isUser` biar gak ganggu roaming staff.
+- Hook tes lokal: `window.__setLiveUsers(n)`.
+
+**⏳ PENDING USER ACTION (biar live di produksi):** bos WAJIB aktifin Realtime
+Database di Firebase Console (Build → Realtime Database → Create), pilih region
+**Singapore (asia-southeast1)** biar match `databaseURL`. Lalu set RTDB Rules:
+`presence` → `.read: true`, per-child `.write: true` (lock node lain). Kalau region
+beda dari Singapore → update 1 baris `databaseURL` di `js/firebase-config.js`.
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
