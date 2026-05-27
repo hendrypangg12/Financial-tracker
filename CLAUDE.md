@@ -927,9 +927,14 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=37**, **app v=33**, firebase-config v=22, presence v=2, **sync v=23**,
-  hutang v=1, **storage v=22**, **dashboard v=22**, **ai-advisor v=6**, **onboarding v=3**
-  · Service Worker **beruang-v27**
+- BerUang: **styles v=38**, **app v=34**, firebase-config v=22, presence v=2, sync v=23,
+  hutang v=1, storage v=22, dashboard v=22, ai-advisor v=6, **onboarding v=4**
+  · Service Worker **beruang-v28**
+- **🔄 Reset Data & Mulai Ulang (item dropdown akun, mobile-friendly):** buat user yg
+  coba-coba dulu lalu mau serius. Konfirmasi → `resetAll()` (hapus transaksi/hutang/aset/
+  userName) + `clearOnboardingDone()` → langsung buka wizard Setup Dana Awal lagi.
+  (`btn-reset-data` di `js/app.js`; `.user-item-danger` merah. Reset lama `btn-reset` cuma
+  ada di topbar desktop yg ke-hide di mobile.)
 - BerBisnis: styles v=24, **app v=22**, firebase-config v=4, auth v=7 · Service Worker
   **berbisnis-v2** (BARU — sebelumnya BerBisnis gak punya SW)
 - **WAJIB tiap deploy:** bump `?v=` file yg diubah DI app.html + bump `CACHE_VERSION`
