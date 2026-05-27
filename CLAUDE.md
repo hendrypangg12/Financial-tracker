@@ -1037,6 +1037,24 @@ udah bener (switchToTab + renderAdmin). app.js bump v=30.
 **LESSON:** kalau ada fungsi nested di dalam fungsi lain, gak bisa dipanggil dari
 luar scope-nya — panggil via elemen/handler yang udah ada, atau bikin global.
 
+### 🔄 AUTO-UPDATE PWA — user homescreen otomatis dapat versi terbaru (27 Mei 2026)
+**Masalah:** user yang udah "Add to Home Screen" (PWA standalone) nyangkut di versi
+cache lama → fix/update gak nyampe ("masih versi lama").
+**Solusi (BerUang, `js/app.js` + `sw.js`):**
+- SW udah `skipWaiting()` (install) + `clients.claim()` (activate). DITAMBAH di app.js:
+  listener `controllerchange` → `location.reload()` pas SW baru ambil alih. **Guard:**
+  cuma pasang listener kalau `navigator.serviceWorker.controller` udah ada (bukan
+  install pertama) → gak reload sia-sia di kunjungan pertama.
+- `reg.update()` dipanggil tiap `visibilitychange`→visible (app dibalikin ke depan) +
+  interval 30 menit → sesi homescreen yang kebuka lama tetap ke-detect versi baru.
+- **WAJIB tiap deploy app BerUang:** bump `CACHE_VERSION` di `sw.js` (sekarang
+  `beruang-v21`) + samain daftar `CORE` ke versi `?v=` terbaru. Itu yang bikin browser
+  install SW baru → trigger auto-reload. Kalau lupa bump, user lama gak ke-update.
+- Alur: buka app → browser fetch sw.js (beda byte) → install SW baru → skipWaiting →
+  activate → claim → controllerchange → reload → HTML baru (network-first) → JS `?v=` baru.
+- **TODO:** BerBisnis (`tokountung/`) belum dipasang auto-update yang sama — kalau perlu,
+  terapin pola yang sama di SW + registrasinya.
+
 ### 🐛 SKILL BARU — Canvas Mirror Flip (BUG PENTING, 27 Mei 2026)
 Buat flip sprite menghadap kiri, mirror HARUS di titik `x`:
 `ctx.translate(x,0); ctx.scale(-1,1); ctx.translate(-x,0)`.
