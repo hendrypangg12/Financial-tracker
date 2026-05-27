@@ -17,12 +17,10 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-// ============ TIMELINE (15s total @ 15fps = 225 frames) ============
+// ============ TIMELINE (14s office loop @ 15fps = 210 frames) ============
+// No intro — langsung suasana kantor natural. CTA persistent di stats bar.
 const FPS = 15;
-const INTRO_END = 30;    // 0-30   (2s intro)
-const MAIN_END = 195;    // 30-195 (11s main office)
-const OUTRO_END = 225;   // 195-225 (2s outro)
-const TOTAL = OUTRO_END;
+const TOTAL = 210;
 
 // ============ COLORS ============
 const COL = {
@@ -38,14 +36,14 @@ const hallwayH = 96;
 const roomH = (officeH - hallwayH) / 2;
 
 const rooms = [
-  { name: 'BERUANG',    role: '💰 Finance', status: 'live',  col: 0, row: 0 },
-  { name: 'BERBISNIS',  role: '📊 POS',     status: 'live',  col: 1, row: 0 },
-  { name: 'BERSTOCK',   role: '🤖 AI Bot',  status: 'live',  col: 2, row: 0 },
-  { name: 'CEO PANG',   role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
-  { name: 'BERUANG CRM',role: '💬 CRM',     status: 'build', col: 0, row: 1 },
-  { name: 'PEMBUKUAN',  role: '📚 Account', status: 'road',  col: 1, row: 1 },
-  { name: 'SALES',      role: '💼 Sales',   status: 'road',  col: 2, row: 1 },
-  { name: 'HRD',        role: '👥 HR',      status: 'road',  col: 3, row: 1 },
+  { name: 'BERUANG',    agent: 'Agent Finance', role: '💰 Finance', status: 'live',  col: 0, row: 0 },
+  { name: 'BERBISNIS',  agent: 'Agent Kasir',   role: '📊 POS',     status: 'live',  col: 1, row: 0 },
+  { name: 'BERSTOCK',   agent: 'Agent Stok',    role: '🤖 AI Bot',  status: 'live',  col: 2, row: 0 },
+  { name: 'CEO PANG',   agent: 'Bos Beruang',   role: '🐻 Founder', status: 'ceo',   col: 3, row: 0 },
+  { name: 'BERUANG CRM',agent: 'Agent CRM',     role: '💬 CRM',     status: 'build', col: 0, row: 1 },
+  { name: 'PEMBUKUAN',  agent: 'Agent Buku',    role: '📚 Account', status: 'road',  col: 1, row: 1 },
+  { name: 'SALES',      agent: 'Agent Sales',   role: '💼 Sales',   status: 'road',  col: 2, row: 1 },
+  { name: 'HRD',        agent: 'Agent HRD',     role: '👥 HR',      status: 'road',  col: 3, row: 1 },
 ];
 
 function roomRect(r) {
@@ -204,6 +202,18 @@ function drawBear(b, frame) {
     ctx.beginPath(); ctx.moveTo(x-2,hy+1); ctx.lineTo(x+2,hy+1); ctx.stroke();
   }
   ctx.restore();
+
+  // ===== NAME TAG (di atas kepala, ikut karakter) =====
+  const agentName = rooms[b.roomIdx].agent;
+  ctx.globalAlpha = dim;
+  ctx.font = '13px VT323'; ctx.textAlign = 'center';
+  const ntw = ctx.measureText(agentName).width + 14;
+  const ntY = y - 50;
+  ctx.fillStyle = b.active ? 'rgba(212,175,55,0.92)' : 'rgba(100,116,139,0.85)';
+  rr(x - ntw/2, ntY, ntw, 17, 4);
+  ctx.fillStyle = b.active ? '#1a1208' : '#e2e8f0';
+  ctx.fillText(agentName, x, ntY + 13);
+  ctx.globalAlpha = 1;
 }
 
 // ============ DECORATIONS ============
@@ -271,9 +281,33 @@ function planWaypoints(b, frame) {
   ];
   b.wpIdx = 0; b.state = 'walking'; b.pauseLeft = 0;
 }
+// Chat: beruang ngobrol pas ketemu di hallway
+const CHAT_LINES = ['Halo bos!', 'Sibuk nih!', 'Gas terus!', 'Mantap!', 'Ngopi dulu?', 'Semangat!', 'Lancar?', 'Sukses ya!', 'Sini ngobrol', 'Lagi rame'];
+function processChats(frame) {
+  for (let i = 0; i < bears.length; i++) {
+    const a = bears[i];
+    if (!a.active || a.state !== 'walking' || a.chatUntil > frame) continue;
+    if (Math.abs(a.y - hallwayMidY) > 28) continue;
+    for (let j = i + 1; j < bears.length; j++) {
+      const b2 = bears[j];
+      if (!b2.active || b2.state !== 'walking' || b2.chatUntil > frame) continue;
+      if (Math.abs(b2.y - hallwayMidY) > 28) continue;
+      const dist = Math.abs(a.x - b2.x);
+      if (dist < 72 && dist > 22) {
+        a.chatUntil = frame + 28; b2.chatUntil = frame + 28;
+        a.chatLine = CHAT_LINES[Math.floor(Math.random() * CHAT_LINES.length)];
+        b2.chatLine = CHAT_LINES[Math.floor(Math.random() * CHAT_LINES.length)];
+        a.facing = a.x < b2.x ? 1 : -1;
+        b2.facing = b2.x < a.x ? 1 : -1;
+      }
+    }
+  }
+}
+
 function updateBear(b, frame) {
   b.typePhase += 0.35;
   if (!b.active) return;
+  if (b.chatUntil > frame) return; // lagi ngobrol, diem dulu
   if (b.state === 'sit') {
     if (frame >= b.nextActionFrame) {
       if (Math.random() < 0.6) planWaypoints(b, frame);
@@ -357,16 +391,25 @@ function drawOffice(frame) {
   drawDispenser(pantryX - 60, hallwayMidY + 20);
   drawPlant(pantryX + 60, hallwayMidY + 18);
 
-  // BEARS (depth sort) + activity bubbles
+  // BEARS (depth sort) + bubbles (chat / activity)
   [...bears].sort((a,b)=>a.y-b.y).forEach(b=>{
-    if (b.state==='sit' && b.active && activities[b.roomIdx]) {
+    if (b.chatUntil > frame && b.chatLine) {
+      // CHAT bubble (kuning, pas ngobrol di hallway)
+      ctx.font='16px VT323'; ctx.textAlign='center';
+      const tw=ctx.measureText(b.chatLine).width+16;
+      const by = b.y - 74;
+      ctx.fillStyle='#fde047'; rr(b.x-tw/2, by, tw, 22, 5);
+      // tail
+      ctx.beginPath(); ctx.moveTo(b.x-5, by+22); ctx.lineTo(b.x+5, by+22); ctx.lineTo(b.x, by+30); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#1a1208'; ctx.fillText(b.chatLine, b.x, by+16);
+    } else if (b.state==='sit' && b.active && activities[b.roomIdx]) {
       const acts=activities[b.roomIdx];
       const act=acts[Math.floor(frame/28)%acts.length];
       ctx.font='16px VT323'; ctx.textAlign='center';
       const tw=ctx.measureText(act).width+14;
-      ctx.fillStyle='rgba(10,14,26,0.9)'; rr(b.x-tw/2, b.y-58, tw, 20, 4);
-      ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1; ctx.strokeRect(b.x-tw/2, b.y-58, tw, 20);
-      ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-43);
+      ctx.fillStyle='rgba(10,14,26,0.9)'; rr(b.x-tw/2, b.y-72, tw, 20, 4);
+      ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1; ctx.strokeRect(b.x-tw/2, b.y-72, tw, 20);
+      ctx.fillStyle='#7dd3fc'; ctx.fillText(act, b.x, b.y-57);
     }
     drawBear(b, frame);
   });
@@ -379,7 +422,7 @@ function drawOffice(frame) {
   ctx.font='27px "Press Start 2P"'; ctx.textAlign='center'; ctx.fillStyle=COL.gold;
   ctx.fillText('PT BERUANG PANG', 540, 44);
   ctx.font='11px "Press Start 2P"'; ctx.fillStyle=COL.cream;
-  ctx.fillText('AI COMMAND CENTER · 24/7 BUAT UMKM', 540, 72);
+  ctx.fillText('FOLLOW @berstock.ai · AI BUAT UMKM 24/7', 540, 72);
   ctx.font='42px serif'; ctx.fillText('🐻', 120, 58); ctx.fillText('🐻', 960, 58);
 
   // STATS BAR
@@ -445,18 +488,15 @@ function drawOutro(frame) {
   ctx.fillText('🐻 PT Beruang Pang · berstock.id', 540, 930);
 }
 
-// ============ MASTER RENDER (deterministic) ============
+// ============ MASTER RENDER (deterministic, no intro/outro) ============
 let simFrame = 0;
 window.__renderFrame = (frame) => {
-  if (frame < INTRO_END) { drawIntro(frame); return; }
-  if (frame >= MAIN_END) { drawOutro(frame - MAIN_END); return; }
-  // main: step simulation
-  const mainFrame = frame - INTRO_END;
-  while (simFrame <= mainFrame) {
+  while (simFrame <= frame) {
     bears.forEach(b => updateBear(b, simFrame));
+    processChats(simFrame);
     simFrame++;
   }
-  drawOffice(mainFrame);
+  drawOffice(frame);
 };
 window.__TOTAL = TOTAL;
 window.__renderFrame(0);
