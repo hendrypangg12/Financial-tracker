@@ -927,8 +927,9 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: styles v=34, **app v=32**, firebase-config v=22, **presence v=2**, sync v=22,
-  hutang v=1, storage v=21 · Service Worker **beruang-v23**
+- BerUang: **styles v=37**, **app v=33**, firebase-config v=22, presence v=2, **sync v=23**,
+  hutang v=1, **storage v=22**, **dashboard v=22**, **ai-advisor v=6**, **onboarding v=3**
+  · Service Worker **beruang-v27**
 - BerBisnis: styles v=24, **app v=22**, firebase-config v=4, auth v=7 · Service Worker
   **berbisnis-v2** (BARU — sebelumnya BerBisnis gak punya SW)
 - **WAJIB tiap deploy:** bump `?v=` file yg diubah DI app.html + bump `CACHE_VERSION`
