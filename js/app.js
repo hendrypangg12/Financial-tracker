@@ -1,6 +1,21 @@
 // Bootstrap & event handlers
+
+// Helper format ribuan utk SEMUA input uang (class .money-input)
+function parseMoney(v) { return Number(String(v == null ? '' : v).replace(/[^\d]/g, '')) || 0; }
+function fmtThousands(v) { const d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? Number(d).toLocaleString('id-ID') : ''; }
+let moneyInputBound = false;
+function bindMoneyInputs() {
+  if (moneyInputBound) return;
+  moneyInputBound = true;
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t && t.classList && t.classList.contains('money-input')) t.value = fmtThousands(t.value);
+  });
+}
+
 function init() {
   loadState();
+  bindMoneyInputs();
   fillMonthYearSelectors();
   fillSubCategoriSelects();
   fillTrxFilters();
@@ -83,7 +98,7 @@ function attachEvents() {
 
   // Target
   document.getElementById('btn-save-target').onclick = () => {
-    const v = +document.getElementById('input-target').value || 0;
+    const v = parseMoney(document.getElementById('input-target').value);
     state.target = v; saveState(); renderDashboard();
     showToast('Target disimpan', 'success');
   };
@@ -98,7 +113,7 @@ function attachEvents() {
     const t = Object.fromEntries(fd.entries());
     const jadikanRutin = t.jadikanRutin === 'on';
     delete t.jadikanRutin;
-    t.jumlah = +t.jumlah;
+    t.jumlah = parseMoney(t.jumlah);
     if (!t.jumlah || t.jumlah <= 0) { showToast('Jumlah harus > 0', 'error'); return; }
     const info = findCategoryForSub(t.subKategori, t.jenis);
     t.kategori = info.kategori;
@@ -345,7 +360,7 @@ function attachEvents() {
     e.preventDefault();
     const fd = new FormData(editForm);
     const t = Object.fromEntries(fd.entries());
-    t.jumlah = +t.jumlah;
+    t.jumlah = parseMoney(t.jumlah);
     updateTransaction(t.id, t);
     hideEditModal();
     renderAll();
@@ -424,7 +439,7 @@ function openEditModal(id) {
   form.querySelector('[name="id"]').value = t.id;
   form.querySelector('[name="tanggal"]').value = t.tanggal;
   form.querySelector('[name="jenis"]').value = t.jenis;
-  form.querySelector('[name="jumlah"]').value = t.jumlah;
+  form.querySelector('[name="jumlah"]').value = fmtThousands(t.jumlah);
   form.querySelector('[name="deskripsi"]').value = t.deskripsi || '';
   fillSubCategoriSelects();
   form.querySelector('[name="subKategori"]').value = t.subKategori || '';

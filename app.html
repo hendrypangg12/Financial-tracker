@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=38" />
+  <link rel="stylesheet" href="styles.css?v=39" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -346,7 +346,7 @@
             Target pengeluaran bulan ini: <b id="target-bulan">Rp 0</b>
             <label class="inline-edit">
               Ubah target:
-              <input type="number" id="input-target" min="0" step="100000" />
+              <input type="text" inputmode="numeric" id="input-target" class="money-input" placeholder="0" />
               <button class="btn btn-small" id="btn-save-target">Simpan</button>
             </label>
           </div>
@@ -462,7 +462,7 @@
               </select>
             </label>
             <label>Jumlah (Rp)
-              <input type="number" name="jumlah" min="0" step="500" required />
+              <input type="text" inputmode="numeric" name="jumlah" class="money-input" placeholder="0" required />
             </label>
             <label>Deskripsi
               <input type="text" name="deskripsi" placeholder="mis. Bensin Pertamax" required />
@@ -781,7 +781,7 @@ TOTAL            86.500"></textarea>
             <option value="pemasukan">Pemasukan</option>
           </select>
         </label>
-        <label>Jumlah <input type="number" name="jumlah" min="0" step="500" required /></label>
+        <label>Jumlah <input type="text" inputmode="numeric" name="jumlah" class="money-input" placeholder="0" required /></label>
         <label>Deskripsi <input type="text" name="deskripsi" required /></label>
         <label>Sub Kategori <select name="subKategori" required></select></label>
         <label>Kategori <input type="text" name="kategori" readonly /></label>
@@ -815,7 +815,7 @@ TOTAL            86.500"></textarea>
           </select>
         </label>
         <label>Nama Orang<input name="nama" required placeholder="Andi / Mama / Pak Budi" /></label>
-        <label>Nominal (Rp)<input name="nominal" type="number" min="0" required placeholder="200000" /></label>
+        <label>Nominal (Rp)<input name="nominal" type="text" inputmode="numeric" class="money-input" required placeholder="200.000" /></label>
         <label>Jatuh Tempo (opsional)<input name="jatuhTempo" type="date" /></label>
         <label>Catatan (opsional)<textarea name="catatan" rows="2" placeholder="Pinjam buat bensin, dll"></textarea></label>
         <div class="modal-actions">
@@ -837,13 +837,13 @@ TOTAL            86.500"></textarea>
   <script src="js/parser.js?v=20"></script>
   <script src="js/sync.js?v=24"></script>
   <script src="js/auth.js?v=22"></script>
-  <script src="js/dashboard.js?v=24"></script>
+  <script src="js/dashboard.js?v=25"></script>
   <script src="js/pages.js?v=21"></script>
   <script src="js/admin.js?v=20"></script>
-  <script src="js/hutang.js?v=1"></script>
+  <script src="js/hutang.js?v=2"></script>
   <script src="js/ai-advisor.js?v=6"></script>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/onboarding.js?v=6"></script>
-  <script src="js/app.js?v=35"></script>
+  <script src="js/app.js?v=36"></script>
 </body>
 </html>

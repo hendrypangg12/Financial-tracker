@@ -131,7 +131,7 @@ function openHutangModal(h) {
     form.querySelector('[name="id"]').value = h.id;
     form.querySelector('[name="jenis"]').value = h.jenis;
     form.querySelector('[name="nama"]').value = h.nama || '';
-    form.querySelector('[name="nominal"]').value = h.nominal || '';
+    form.querySelector('[name="nominal"]').value = (typeof fmtThousands === 'function') ? fmtThousands(h.nominal) : (h.nominal || '');
     form.querySelector('[name="jatuhTempo"]').value = h.jatuhTempo || '';
     form.querySelector('[name="catatan"]').value = h.catatan || '';
   }
@@ -158,7 +158,7 @@ function setupHutangForm() {
     const data = {
       jenis: fd.get('jenis'),
       nama: (fd.get('nama') || '').trim(),
-      nominal: +fd.get('nominal') || 0,
+      nominal: (typeof parseMoney === 'function') ? parseMoney(fd.get('nominal')) : (+fd.get('nominal') || 0),
       jatuhTempo: fd.get('jatuhTempo') || '',
       catatan: (fd.get('catatan') || '').trim(),
     };

@@ -367,7 +367,7 @@ function renderBudgetRings(trx) {
   }
   const target = state.target || 0;
   document.getElementById('target-bulan').textContent = formatRupiah(target);
-  document.getElementById('input-target').value = target || '';
+  document.getElementById('input-target').value = (typeof fmtThousands === 'function') ? fmtThousands(target) : (target || '');
 
   drawRing('ring-keb', totals.Kebutuhan, target * 0.5, '#c17c3e', 'pct-keb');
   drawRing('ring-kei', totals.Keinginan, target * 0.3, '#c0392b', 'pct-kei');

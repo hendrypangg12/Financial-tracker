@@ -451,7 +451,7 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 
 /* MODAL */
 .modal {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, .5); z-index: 50;
+  position: fixed; inset: 0; background: rgba(15, 23, 42, .5); z-index: 1100; /* di ATAS bottom-nav (1000) biar tombol Simpan gak ketutup */
   padding: 20px;
 }
 .modal[hidden] { display: none !important; }
