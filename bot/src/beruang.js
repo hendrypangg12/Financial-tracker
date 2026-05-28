@@ -106,7 +106,8 @@ export async function handleBeruangWebhook(request, env, ctx) {
           `1️⃣ Buka app BerUang → menu (avatar) → <b>Hubungkan Telegram</b>\n` +
           `2️⃣ Masukin kode ini (berlaku 15 menit):\n\n` +
           `<b>🔑 ${code}</b>\n\n` +
-          `Setelah nyambung, tinggal ketik aja: "bakso 45rb", "gaji 5jt masuk", "bensin 50000" — langsung ke-catat!`);
+          `Setelah nyambung, tinggal ketik aja: "bakso 45rb", "gaji 5jt masuk", "bensin 50000" — langsung ke-catat!`,
+          { parse_mode: "HTML" });
         return;
       }
       if (/^\/(help|bantuan)\b/i.test(text)) {
@@ -130,7 +131,8 @@ export async function handleBeruangWebhook(request, env, ctx) {
       await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
       const tag = entry.jenis === "pemasukan" ? "🟢 Pemasukan" : "🔴 Pengeluaran";
       await sendMessage(token, chatId,
-        `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`);
+        `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`,
+        { parse_mode: "HTML" });
     } catch (e) { /* swallow */ }
   })());
 
@@ -150,7 +152,7 @@ export async function handleBeruangPair(request, env) {
   await env.BOT_DATA.put("btg_chat:" + rec.chatId, JSON.stringify({ email }));
   await env.BOT_DATA.put("btg_mail:" + email, JSON.stringify({ chatId: rec.chatId, pullToken }));
   await env.BOT_DATA.delete("btg_code:" + String(code).trim());
-  if (token) { try { await sendMessage(token, rec.chatId, `✅ Akun <b>${email}</b> tersambung! Sekarang tinggal ketik transaksi, langsung ke-catat 🐻`); } catch (e) {} }
+  if (token) { try { await sendMessage(token, rec.chatId, `✅ Akun <b>${email}</b> tersambung! Sekarang tinggal ketik transaksi, langsung ke-catat 🐻`, { parse_mode: "HTML" }); } catch (e) {} }
   return jres({ ok: true });
 }
 
