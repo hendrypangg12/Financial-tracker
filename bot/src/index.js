@@ -9,7 +9,7 @@
 import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
 import { askClaude } from "./claude.js";
 import { handleAdvise } from "./advise.js";
-import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, sendBillReminders } from "./beruang.js";
+import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, handleBeruangSetupWebhook, handleBeruangDebug, sendBillReminders } from "./beruang.js";
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -54,6 +54,8 @@ export default {
         case "/api/beruang-pull":  return await handleBeruangPull(request, env);
         case "/api/beruang-bills-push": return await handleBeruangBillsPush(request, env);
         case "/api/beruang-bills-test": return await handleBeruangBillsTest(request, env);
+        case "/api/beruang-setup-webhook": return await handleBeruangSetupWebhook(request, env);
+        case "/api/beruang-debug": return await handleBeruangDebug(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

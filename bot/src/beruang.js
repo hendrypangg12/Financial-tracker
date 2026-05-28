@@ -481,6 +481,59 @@ export async function sendBillReminders(env) {
   console.log(`[BillReminders] Done. Scanned: ${scanned}, Sent: ${sent}, Errors: ${errors}`);
 }
 
+// ====== ADMIN: setup Telegram webhook BerUang dengan callback_query ======
+// GET /api/beruang-setup-webhook?admin_key=... — sekali jalan, register webhook
+// dengan allowed_updates yang benar (default Telegram exclude callback_query)
+export async function handleBeruangSetupWebhook(request, env) {
+  const url = new URL(request.url);
+  const adminKey = url.searchParams.get("admin_key");
+  if (!env.ADMIN_KEY || adminKey !== env.ADMIN_KEY) {
+    return jres({ error: "unauthorized — pastikan ADMIN_KEY sudah di-set di Cloudflare secrets" }, 401);
+  }
+  const token = (env.BERUANG_TG_TOKEN || "").trim();
+  if (!token) return jres({ error: "BERUANG_TG_TOKEN not set" }, 500);
+  const webhookUrl = `${url.origin}/beruang-webhook`;
+  const body = {
+    url: webhookUrl,
+    allowed_updates: ["message", "edited_message", "callback_query"],
+  };
+  if (env.TELEGRAM_WEBHOOK_SECRET) body.secret_token = env.TELEGRAM_WEBHOOK_SECRET;
+  const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  return jres({ ok: !!data.ok, webhook: webhookUrl, allowed_updates: body.allowed_updates, telegram_response: data });
+}
+
+// ====== ADMIN: debug KV state untuk email tertentu ======
+// GET /api/beruang-debug?admin_key=...&email=...
+export async function handleBeruangDebug(request, env) {
+  const url = new URL(request.url);
+  const adminKey = url.searchParams.get("admin_key");
+  if (!env.ADMIN_KEY || adminKey !== env.ADMIN_KEY) {
+    return jres({ error: "unauthorized" }, 401);
+  }
+  const email = url.searchParams.get("email");
+  if (!email) return jres({ error: "param email wajib" }, 400);
+  const billsRec = await env.BOT_DATA.get("btg_bills:" + email, "json");
+  const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
+  const inbox = await env.BOT_DATA.get("btg_inbox:" + email, "json");
+  return jres({
+    ok: true,
+    email,
+    linked: !!map,
+    chatId: map ? map.chatId : null,
+    billsCount: billsRec && billsRec.bills ? billsRec.bills.length : 0,
+    bills: billsRec ? billsRec.bills : [],
+    postedCount: billsRec && billsRec.posted ? billsRec.posted.length : 0,
+    posted: billsRec ? billsRec.posted : [],
+    billsUpdatedAt: billsRec ? new Date(billsRec.updatedAt || 0).toISOString() : null,
+    inboxPending: inbox ? inbox.length : 0,
+  });
+}
+
 // ====== DEBUG: trigger reminder manual (admin only) ======
 // GET /api/beruang-bills-test?email=...&admin_key=...&force=1&type=h3|h0
 // Tanpa email: scan semua user (sama kayak cron). Dengan email: cuma 1 user.
