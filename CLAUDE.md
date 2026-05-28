@@ -4,7 +4,7 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 28 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 28 Mei 2026 — sore)
 
 ### 📱 BerUang Android di Google Play Store — 3 HARI LAGI UNLOCK!
 
@@ -755,6 +755,44 @@ curl -X POST "https://api.telegram.org/bot${TOKEN}/setWebhook" \
 | Render asset "Bonus fitur reminder tagihan" | 💡 Saran | IG carousel/reels promote fitur baru ini buat dapet engagement |
 | Cross-promo di app dashboard "Sambungkan Telegram → dapet reminder tagihan otomatis" | 💡 Saran | Tambah banner di tab Hutang/Tagihan kalau user belum link TG |
 
+### ✅ DAY 17 — sore (Done — 28 Mei 2026 lanjutan)
+
+**Follow-up commits setelah Day 17 CLAUDE.md di-push. Total 4 commit + 1 SW bump per commit.**
+
+#### **🆕 sw v40 → v42 — fitur tambahan**
+
+| Commit | Item | File | Notes |
+|---|---|---|---|
+| `8772b99` | **Banner cross-promo Telegram di dashboard** | `js/dashboard.js`, `app.html` | Muncul kalau user punya tagihan rutin TAPI belum link TG. Tap "Sambungkan" → buka modal pairing. Tap × → dismiss 7 hari (localStorage). Auto-hide setelah sambung. **sw v40** |
+| `dc7c4e1` | **Admin endpoints via browser** | `bot/src/beruang.js`, `bot/src/index.js` | `/api/beruang-setup-webhook?admin_key=...` — re-register Telegram webhook dengan `allowed_updates=[message,callback_query]` (fix Day 17 BLOCKER, bos bisa run tanpa terminal). `/api/beruang-debug?admin_key=...&email=...` — inspect KV state per user (bills, posted, inbox count) |
+| `11797ab` | **Auto-login defensive** | `app.html`, `js/auth.js` | `firebase.auth().setPersistence(LOCAL)` eksplisit di init (kadang default jadi SESSION di iOS). Tip "📲 Install ke homescreen biar gak ke-logout" di login screen. **Warning detect Private/Incognito** (probe via indexedDB) — kasih notice "Mode private = data hilang tiap close tab". **sw v41** |
+| `451806c` | **Field "Jatuh tempo tiap tanggal" explicit** | `app.html`, `js/app.js` | Sebelumnya recurring bills assume tanggal = sama dengan tanggal transaksi (creator). Sekarang ada field 1-31 yang muncul saat centang "Jadikan tagihan rutin". Default isi dari tanggal transaksi tapi user bisa override (mis. token Indihome jatuh tempo tgl 10, transaksi catat tgl 8). **sw v42** |
+
+#### **🚨 BLOCKER Day 17 sekarang BISA dibuka via browser**
+
+Sebelumnya bos harus run `curl setWebhook` manual dengan token plain text. Sekarang tinggal:
+
+```
+https://berstock-bot.hendrypangg12.workers.dev/api/beruang-setup-webhook?admin_key=<ADMIN_KEY>
+```
+
+Endpoint ini set `allowed_updates: [message, edited_message, callback_query]` dan return JSON response. Tombol "✅ Udah bayar" bakal langsung jalan setelah ini di-hit sekali.
+
+⚠️ Tetap butuh `ADMIN_KEY` di-set: `cd bot && wrangler secret put ADMIN_KEY`
+
+#### **🤖 AI ADVISOR — sebenarnya sudah LIVE (commits awal Day 17)**
+
+| Item | File | Notes |
+|---|---|---|
+| **FAB AI Advisor di dashboard** | `js/ai-advisor.js`, `app.html` | Floating button kanan-bawah. Tap → Pro user buka chat panel, Free user buka paywall modal |
+| **Worker endpoint /api/advise** | `bot/src/advise.js`, `bot/src/index.js` | POST `{email, message, history, snapshot}` → Claude Sonnet 4.6 dengan system prompt "Beruang Akuntan Gemoy" + financial snapshot user (saldo, transaksi 30hr, kategori top) di USER message untuk caching |
+| **Paywall modal** | `app.html` (`#ai-paywall-modal`) | Gold gradient + screenshot chat mockup. CTA "Upgrade ke Pro Rp 35rb/bln" |
+| **Promo card di dashboard** | `js/dashboard.js` | Card "🤖 Tanya Beruang AI" muncul untuk Free user, hilang kalau Pro |
+
+#### **👁️ Presence tracking (`js/presence.js`)**
+
+File baru, tugasnya: ping `lastSeen` ke Firestore tiap user buka app + tiap 60 detik. Dipakai admin panel buat liat "online status" user. Stop kalau logout atau tab close.
+
 ---
 
 ### ⏳ PENDING (Day 18+)
@@ -849,15 +887,29 @@ curl -X POST "https://api.telegram.org/bot${TOKEN}/setWebhook" \
 - `js/recurring.js` — Tagihan rutin (state.recurring[] + dashboard reminder card)
 - `js/telegram-link.js` — Pairing + pull inbox + push bills (UPDATED Day 17: `schedulePushBillsToBot()` + `pushBillsToBotNow()`)
 - `js/storage.js` — `saveState()` panggil push bills ke bot (UPDATED Day 17)
+- `js/ai-advisor.js` — FAB chat AI "Beruang Akuntan Gemoy" (Pro-only, free user lihat paywall)
+- `js/presence.js` — Heartbeat `lastSeen` ke Firestore tiap 60s (admin panel online status)
+- `js/onboarding.js` — Setup Dana Awal (rekening + investasi tetap aset)
+- `js/dashboard.js` — Render kartu pengingat, ringkasan hutang, promo AI, banner cross-promo TG (UPDATED Day 17 sore)
 
 **Bot Berstock (bot/src/):**
-- `index.js` — Routes worker, cron handler. Tambah `/api/beruang-bills-push` + `/api/beruang-bills-test` + cron `sendBillReminders` (UPDATED Day 17)
-- `beruang.js` — Logic BerUang Telegram. Tambah `handleBeruangBillsPush`, `handleBeruangBillsTest`, `handleBillCallback`, `sendBillReminders`, `sendBillNotif` (UPDATED Day 17)
+- `index.js` — Routes worker, cron handler. Tambah `/api/beruang-bills-push`, `/api/beruang-bills-test`, `/api/beruang-setup-webhook`, `/api/beruang-debug`, `/api/advise` (UPDATED Day 17)
+- `beruang.js` — Logic BerUang Telegram. Tambah `handleBeruangBillsPush`, `handleBeruangBillsTest`, `handleBeruangSetupWebhook`, `handleBeruangDebug`, `handleBillCallback`, `sendBillReminders`, `sendBillNotif`, OCR struk via Claude vision (UPDATED Day 17)
+- `advise.js` — Endpoint AI Advisor. Build snapshot user (saldo, transaksi 30hr, kategori top) → Claude Sonnet 4.6 dengan caching (NEW Day 17)
 
-**Cache Versions Last Update:**
+**Marketing / Asset Baru (Day 17):**
+- `pt-beruang-pang-office.html` + `.mp4` — Reels office tour pakai beruang berdasi
+- `berstock-ai-pos.html` + `berstock-ai-pos-mobile.png` + `berstock-ai-pos-preview.png` — Mockup AI POS
+- `berstock-all-in-one.html` + `.png` — Carousel "All-in-One" suite
+- `technical-whitepaper.html` + `.pdf` — Whitepaper teknis (untuk enterprise pitch)
+- `production-questionnaire-draft.md` — Draft jawaban questionnaire Play Store Production
+- `beruang-behind-scenes.html` + `carousel-bts/*.png` — Behind The Scenes 6 slide
+- `beruang-carousel.html` — Carousel BerUang generic
+
+**Cache Versions Last Update (UPDATED Day 17 sore):**
 - BerBisnis: styles v=23, app v=19, sales v=7, products v=5, etc.
-- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21, **telegram-link v=4** (Day 17)
-- BerUang Service Worker: **beruang-v39** (Day 17 — bill reminders push)
+- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21, telegram-link v=4
+- BerUang Service Worker: **beruang-v42** (Day 17 sore — field jatuh tempo eksplisit; was v39 di pagi)
 
 **Day 16 Bug Fix (18 Mei 2026):**
 - Cross-sell BerSatu Suite di dashboard BerUang dipindah dari TENGAH ke BAWAH
