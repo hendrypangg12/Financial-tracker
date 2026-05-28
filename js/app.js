@@ -540,6 +540,17 @@ document.addEventListener('DOMContentLoaded', () => {
       setupWelcomeBanner();
       // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
       if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
+      // Tarik transaksi dari bot Telegram (kalau tersambung) + auto tiap buka/berkala
+      if (typeof pullTelegramInbox === 'function') {
+        pullTelegramInbox();
+        if (!window.__tgPullBound) {
+          window.__tgPullBound = true;
+          setInterval(() => { if (typeof pullTelegramInbox === 'function') pullTelegramInbox(); }, 60000);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && typeof pullTelegramInbox === 'function') pullTelegramInbox();
+          });
+        }
+      }
       // Cloud listener & auto-sync HANYA untuk Pro user
       if (userIsPro) {
         startCloudListener(() => {
@@ -703,6 +714,16 @@ function setupAuthUI() {
       e.stopPropagation();
       document.getElementById('user-dropdown').hidden = true;
       if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
+
+  // Hubungkan Telegram (catat via chat bot)
+  const btnTgLink = document.getElementById('btn-tg-link');
+  if (btnTgLink) {
+    btnTgLink.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (typeof openTelegramLink === 'function') openTelegramLink();
     };
   }
 
