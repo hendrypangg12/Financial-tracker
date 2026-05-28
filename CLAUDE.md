@@ -927,9 +927,12 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=40**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
-  **hutang v=2**, **storage v=23**, **dashboard v=26**, **ai-advisor v=7**, **onboarding v=6**,
-  **recurring v=1** · Service Worker **beruang-v34**
+- BerUang: **styles v=41**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
+  **hutang v=2**, **storage v=23**, **dashboard v=26**, **ai-advisor v=8**, **onboarding v=6**,
+  **recurring v=1** · Service Worker **beruang-v35**
+- **Avatar AI = beruang berdasi** (`logo-berbisnis.png`) di FAB, header chat, & promo
+  (sebelumnya emoji 🐻). `.ai-fab`/`.ai-chat-avatar`/`.ai-promo-emoji` jadi `<img>` di
+  lingkaran/kotak putih.
 - **🐛 Fix chat AI:** var `--brown`/`--accent` GAK didefinisikan di `:root` → balon user
   (teks putih) & tombol kirim transparan/ilang. Didefinisikan (#8b5a2b/#c9a352) → fixed.
 - **📣 Promo AI di dashboard** (`#ai-promo` + `renderAIPromo` di ai-advisor.js): kartu
