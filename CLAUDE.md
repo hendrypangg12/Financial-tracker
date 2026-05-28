@@ -936,9 +936,14 @@ CREATE TABLE ai_suggestions (
   (tiap buka + 60s) → masuk transaksi. Endpoint worker: `/beruang-webhook`,
   `/api/beruang-pair`, `/api/beruang-pull`. App: `js/telegram-link.js` (pairing +
   pull, simpan pullToken di localStorage `beruang-tg:<email>`).
-  **⏳ PENDING (aksi bos):** set secret **`BERUANG_TG_TOKEN`** di Cloudflare (Workers →
-  berstock-bot → Settings → Variables and Secrets) + deploy worker (GitHub Action).
-  Webhook udah ke-set ke `/beruang-webhook`. Token bot: simpan AMAN (jangan di repo).
+  **✅ DEPLOYED (28 Mei 2026):** `BERUANG_TG_TOKEN` keset di Cloudflare (sebagai Text/
+  Plaintext — masih fungsional, recommended ganti ke Secret kapan-kapan). Worker deployed
+  via push trivial ke `bot/src/beruang.js` di QUmrz (commit `7a1f13b`) → auto-trigger
+  GitHub Action. **Pitfall yang ke-trap:** klik "Re-run all jobs" pakai commit asli run
+  lama (8ec2eab, sebelum beruang ada) → endpoint 404. FIX: "Run workflow" dropdown branch
+  ATAU push commit ke `bot/**` di QUmrz biar workflow checkout tip terbaru. Endpoint
+  `/api/beruang-pull` confirmed HTTP 200. Webhook udah set ke `/beruang-webhook`. Token
+  bot: simpan AMAN (jangan di repo).
 - **Avatar AI = beruang berdasi** (`logo-berbisnis.png`) di FAB, header chat, & promo
   (sebelumnya emoji 🐻). `.ai-fab`/`.ai-chat-avatar`/`.ai-promo-emoji` jadi `<img>` di
   lingkaran/kotak putih.
