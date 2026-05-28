@@ -1907,9 +1907,10 @@ html { scroll-behavior: smooth; }
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--brown) 0%, var(--accent) 100%);
-  border: 3px solid #fff;
+  background: #fff;
+  border: 2px solid #ead7b8;
   box-shadow: 0 8px 24px rgba(139, 90, 43, 0.4);
+  overflow: hidden;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1923,9 +1924,10 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 12px 32px rgba(139, 90, 43, 0.55);
 }
 .ai-fab-icon {
-  font-size: 32px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
 }
 .ai-fab-badge {
   position: absolute;
@@ -2008,9 +2010,10 @@ html { scroll-behavior: smooth; }
 .ai-chat-avatar {
   width: 40px; height: 40px; border-radius: 50%;
   background: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 22px; overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+.ai-chat-avatar img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
 .ai-chat-title { font-weight: 800; font-size: 15px; line-height: 1.2; }
 .ai-chat-sub { font-size: 11px; opacity: 0.9; }
 .ai-chat-close {
@@ -2276,7 +2279,7 @@ html { scroll-behavior: smooth; }
   color: #fff; border-radius: 16px; padding: 16px 16px 16px 16px;
   box-shadow: 0 6px 18px rgba(139, 90, 43, .25);
 }
-.ai-promo-emoji { font-size: 30px; flex: 0 0 auto; line-height: 1; }
+.ai-promo-emoji { width: 46px; height: 46px; flex: 0 0 auto; object-fit: contain; background: #fff; border-radius: 12px; padding: 4px; }
 .ai-promo-body { flex: 1; min-width: 0; }
 .ai-promo-title { font-size: 15px; font-weight: 800; padding-right: 22px; }
 .ai-promo-sub { font-size: 12.5px; line-height: 1.45; color: rgba(255, 255, 255, .92); margin: 4px 0 10px; }

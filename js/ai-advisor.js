@@ -307,7 +307,7 @@ function renderAIPromo() {
   el.innerHTML = `
     <div class="ai-promo-card">
       <button class="ai-promo-x" aria-label="Tutup">×</button>
-      <div class="ai-promo-emoji">🐻</div>
+      <img class="ai-promo-emoji" src="assets/logo-berbisnis.png?v=3" alt="" />
       <div class="ai-promo-body">
         <div class="ai-promo-title">Baru! Tanya <b>Beruang Akuntan</b> 🤖</div>
         <div class="ai-promo-sub">AI yang ngerti duitmu. Tanya <i>"kapan aku bisa beli HP baru?"</i> atau <i>"pengeluaran mana yang boros?"</i> — dijawab pakai data kamu sendiri.</div>
