@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Lounge Beruang v2 — Pico-style mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+  }
+  .game-frame {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    aspect-ratio: 16/10;
+    background: linear-gradient(180deg, #87ceeb 0%, #b8e0f5 40%, #c9eaf0 100%);
+    overflow: hidden;
+    box-shadow: 0 10px 60px rgba(0,0,0,0.5);
+  }
+  /* Sky elements */
+  .cloud {
+    position: absolute;
+    background: rgba(255,255,255,0.85);
+    border-radius: 100px;
+    filter: blur(2px);
+  }
+  .cloud-1 { width: 140px; height: 40px; top: 8%; left: 12%; }
+  .cloud-2 { width: 100px; height: 30px; top: 15%; right: 18%; }
+  .cloud-3 { width: 80px; height: 25px; top: 22%; left: 45%; }
+  .sun {
+    position: absolute;
+    top: 6%; right: 8%;
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, #fff5a3 0%, #ffd966 70%, transparent 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(255,217,102,0.6);
+  }
+
+  /* Ground — isometric diamond */
+  .ground {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 110%;
+    height: 75%;
+    transform: translateX(-50%);
+  }
+  .grass {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(45deg,
+        #6fb04c 0px, #6fb04c 8px,
+        #82c45e 8px, #82c45e 16px);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  .path {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, transparent 35%, #d4c5a8 35%, #d4c5a8 65%, transparent 65%),
+      linear-gradient(45deg, transparent 35%, #d4c5a8 35%, #d4c5a8 65%, transparent 65%);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    opacity: 0.7;
+  }
+
+  /* Billboard (Pico-style "I Started Pico") */
+  .billboard {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    background: linear-gradient(180deg, #ff7043 0%, #f4511e 100%);
+    border: 4px solid #ffd966;
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+    box-shadow: 0 6px 0 #c63d00, 0 10px 24px rgba(0,0,0,0.3);
+    z-index: 3;
+  }
+  .billboard::before, .billboard::after {
+    content: '✨';
+    position: absolute;
+    top: -8px;
+    font-size: 20px;
+  }
+  .billboard::before { left: 10px; }
+  .billboard::after { right: 10px; }
+  .billboard-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 2px 2px 0 #c63d00;
+    letter-spacing: 1px;
+  }
+  .billboard-sub {
+    font-size: 10px;
+    color: #fff5a3;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+  .lamp-post {
+    position: absolute;
+    width: 14px;
+    height: 90px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #333 100%);
+    border-radius: 2px;
+    z-index: 2;
+  }
+  .lamp-post::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: -10px;
+    width: 34px;
+    height: 28px;
+    background: radial-gradient(ellipse, #fff5a3 0%, #ffd966 60%, #1a1a1a 70%);
+    border-radius: 50% 50% 30% 30%;
+    box-shadow: 0 0 20px rgba(255,245,163,0.6);
+  }
+  .lamp-1 { top: 30%; left: 22%; }
+  .lamp-2 { top: 30%; right: 22%; }
+  .lamp-3 { bottom: 25%; left: 10%; }
+  .lamp-4 { bottom: 25%; right: 10%; }
+
+  /* Bench */
+  .bench {
+    position: absolute;
+    width: 110px;
+    height: 30px;
+    z-index: 2;
+  }
+  .bench-seat {
+    position: absolute;
+    bottom: 12px;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(180deg, #d4a574 0%, #8b5a2b 100%);
+    border-radius: 2px;
+  }
+  .bench-seat::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    width: 100%;
+    height: 14px;
+    background: linear-gradient(180deg, #d4a574 0%, #8b5a2b 100%);
+    border-radius: 2px;
+  }
+  .bench-leg-l, .bench-leg-r {
+    position: absolute;
+    bottom: 0;
+    width: 6px;
+    height: 14px;
+    background: #1a1a1a;
+  }
+  .bench-leg-l { left: 8px; }
+  .bench-leg-r { right: 8px; }
+  .bench-1 { bottom: 16%; left: 15%; }
+  .bench-2 { bottom: 16%; right: 15%; }
+
+  /* Fountain (center) */
+  .fountain {
+    position: absolute;
+    bottom: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 60px;
+    z-index: 1;
+  }
+  .fountain-base {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 24px;
+    background: radial-gradient(ellipse at center top, #6ec5d8 0%, #4a9bb0 60%, #2d6b80 100%);
+    border-radius: 50%;
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3);
+  }
+  .fountain-spray {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 40px;
+    background: linear-gradient(180deg, #b3e5f5 0%, rgba(179,229,245,0) 100%);
+    border-radius: 100px;
+    animation: spray 1.5s ease-in-out infinite;
+  }
+  @keyframes spray {
+    0%, 100% { transform: translateX(-50%) scaleY(1); }
+    50% { transform: translateX(-50%) scaleY(1.15); }
+  }
+
+  /* ===== CHIBI CHARACTER ===== */
+  .chibi {
+    position: absolute;
+    width: 60px;
+    z-index: 5;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .chibi:hover { transform: scale(1.06) translateY(-2px); }
+  .chibi-shadow {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 8px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.4), transparent);
+    border-radius: 50%;
+  }
+  .chibi-body {
+    position: relative;
+    animation: idleSway 3s ease-in-out infinite;
+  }
+  @keyframes idleSway {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  /* HEAD — big & round */
+  .head {
+    position: relative;
+    width: 48px;
+    height: 50px;
+    margin: 0 auto;
+    background: #f5d4a8;
+    border-radius: 50% 50% 45% 45%;
+    border: 2px solid #2a1810;
+    z-index: 2;
+  }
+  /* Hair */
+  .hair {
+    position: absolute;
+    top: -6px;
+    left: -4px;
+    right: -4px;
+    height: 22px;
+    background: #3a2418;
+    border-radius: 50% 50% 30% 30% / 80% 80% 20% 20%;
+    border: 2px solid #2a1810;
+    z-index: 3;
+  }
+  /* Eyes */
+  .eye {
+    position: absolute;
+    top: 22px;
+    width: 8px;
+    height: 9px;
+    background: #2a1810;
+    border-radius: 50%;
+    z-index: 4;
+  }
+  .eye::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+  }
+  .eye-l { left: 9px; }
+  .eye-r { right: 9px; }
+  /* Cheek blush */
+  .blush {
+    position: absolute;
+    top: 32px;
+    width: 6px;
+    height: 4px;
+    background: #ff9aa2;
+    border-radius: 50%;
+    opacity: 0.7;
+    z-index: 4;
+  }
+  .blush-l { left: 5px; }
+  .blush-r { right: 5px; }
+  /* Mouth */
+  .mouth {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 3px;
+    border-bottom: 2px solid #2a1810;
+    border-radius: 0 0 100% 100%;
+    z-index: 4;
+  }
+  /* BODY */
+  .torso {
+    position: relative;
+    width: 32px;
+    height: 28px;
+    margin: -8px auto 0;
+    border: 2px solid #2a1810;
+    border-radius: 6px 6px 4px 4px;
+    z-index: 1;
+  }
+  /* Legs */
+  .legs {
+    width: 32px;
+    height: 16px;
+    margin: -2px auto 0;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .leg {
+    width: 11px;
+    height: 16px;
+    background: #1a3a5a;
+    border: 2px solid #2a1810;
+    border-radius: 0 0 4px 4px;
+  }
+  /* Shoes */
+  .leg::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    width: 14px;
+    height: 5px;
+    background: #2a1810;
+    border-radius: 50% 50% 4px 4px / 80% 80% 4px 4px;
+  }
+  .leg:first-child::after { left: -4px; }
+  .leg:last-child::after { right: -4px; }
+
+  /* === CHARACTER VARIANTS === */
+  /* Char 1 — Hendry (bos, dasi gold) */
+  .c1 .torso { background: linear-gradient(180deg, #1a3a5a 0%, #0a1628 100%); }
+  .c1 .torso::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 18px;
+    background: #d4af37;
+    clip-path: polygon(50% 0%, 100% 25%, 75% 100%, 25% 100%, 0% 25%);
+  }
+  .c1 .hair { background: #1a0e08; }
+
+  /* Char 2 — Pak Budi (pakai apron, kepala botak sedikit) */
+  .c2 .head { background: #e8c79a; }
+  .c2 .hair { background: #5a3a28; height: 14px; border-radius: 50% 50% 80% 80% / 100% 100% 30% 30%; }
+  .c2 .torso { background: linear-gradient(180deg, #c89968 0%, #8b5a2b 100%); }
+  .c2 .torso::after {
+    content: '🛒';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+  }
+
+  /* Char 3 — Edwin (chef hat, FnB) */
+  .c3 .head { background: #f5d4a8; }
+  .c3 .hair {
+    background: white;
+    height: 28px;
+    border-radius: 50% 50% 30% 30% / 90% 90% 20% 20%;
+    top: -16px;
+  }
+  .c3 .hair::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0; right: 0;
+    height: 6px;
+    background: white;
+    border: 2px solid #2a1810;
+    border-radius: 4px;
+  }
+  .c3 .torso { background: white; }
+  .c3 .torso::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 6px;
+    background: #2a1810;
+    border-radius: 2px;
+  }
+
+  /* Char 4 — Bu Siti (kerudung) */
+  .c4 .head { background: #f5d4a8; }
+  .c4 .hair {
+    background: #c2185b;
+    height: 38px;
+    top: -8px;
+    border-radius: 50% 50% 40% 40% / 70% 70% 50% 50%;
+    left: -6px;
+    right: -6px;
+  }
+  .c4 .torso { background: linear-gradient(180deg, #f48fb1 0%, #c2185b 100%); }
+  .c4 .leg { background: #c2185b; }
+
+  /* Char 5 — Mas Rio (cowok casual, headphone) */
+  .c5 .head { background: #d4a574; }
+  .c5 .hair { background: #2a1810; }
+  .c5 .head::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -8px;
+    right: -8px;
+    height: 6px;
+    background: #1a1a1a;
+    border-radius: 100px;
+    z-index: 5;
+  }
+  .c5 .head::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: -10px;
+    width: 10px;
+    height: 12px;
+    background: #2a2a2a;
+    border-radius: 4px;
+    z-index: 5;
+    box-shadow: 26px 0 0 #2a2a2a;
+  }
+  .c5 .torso { background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%); }
+  .c5 .leg { background: #2a2a2a; }
+
+  /* Char 6 — Mbak Tari (rambut panjang, ponytail) */
+  .c6 .head { background: #f5d4a8; }
+  .c6 .hair {
+    background: #6b3410;
+    height: 28px;
+    top: -8px;
+    border-radius: 50% 50% 30% 30% / 80% 80% 60% 60%;
+  }
+  .c6 .torso { background: linear-gradient(180deg, #e91e63 0%, #ad1457 100%); }
+  .c6 .leg { background: #3a1a40; }
+
+  .chibi-name {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    text-shadow:
+      -1px -1px 0 #000, 1px -1px 0 #000,
+      -1px 1px 0 #000, 1px 1px 0 #000,
+      0 0 6px rgba(0,0,0,0.6);
+    font-family: 'Fredoka', sans-serif;
+  }
+  /* Speech bubble */
+  .bubble {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: #2a1810;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    border: 2px solid #2a1810;
+    animation: bubbleFloat 5s ease-in-out infinite;
+  }
+  .bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid white;
+    filter: drop-shadow(0 2px 0 #2a1810);
+  }
+  @keyframes bubbleFloat {
+    0%, 90%, 100% { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    10%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* Character positions */
+  .p1 { bottom: 30%; left: 30%; }
+  .p2 { bottom: 24%; left: 44%; }
+  .p3 { bottom: 36%; right: 35%; }
+  .p4 { bottom: 22%; right: 28%; }
+  .p5 { bottom: 14%; left: 38%; }
+  .p6 { bottom: 14%; right: 38%; }
+
+  /* ===== BOTTOM GAME UI ===== */
+  .game-ui {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    padding: 8px 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chat-history-btn {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter';
+    cursor: pointer;
+  }
+  .chat-input-wrap {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    background: white;
+    border-radius: 24px;
+    padding: 2px 2px 2px 14px;
+    max-width: 380px;
+  }
+  .chat-input-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    font-family: 'Inter';
+    color: #2a1810;
+  }
+  .talk-btn {
+    background: linear-gradient(135deg, #ff7043, #f4511e);
+    color: white;
+    border: none;
+    padding: 6px 18px;
+    border-radius: 24px;
+    font-weight: 700;
+    font-family: 'Fredoka';
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .menu-icons {
+    display: flex;
+    gap: 6px;
+  }
+  .menu-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .menu-icon:hover { background: rgba(255,255,255,0.2); }
+  .menu-icon .icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  /* Top brand bar */
+  .top-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    padding: 8px 16px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .top-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-family: 'Fredoka';
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .top-brand-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #ffd966, #d4af37);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .room-label {
+    color: white;
+    font-size: 12px;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+  .badge-mock {
+    background: #e91e63;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* Side dpad */
+  .dpad {
+    position: absolute;
+    bottom: 88px;
+    right: 16px;
+    width: 80px;
+    height: 80px;
+    z-index: 9;
+  }
+  .dpad-btn {
+    position: absolute;
+    background: rgba(255,255,255,0.85);
+    border-radius: 6px;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    color: #2a1810;
+  }
+  .dpad-up { top: 0; left: 50%; transform: translateX(-50%); }
+  .dpad-down { bottom: 0; left: 50%; transform: translateX(-50%); }
+  .dpad-left { left: 0; top: 50%; transform: translateY(-50%); }
+  .dpad-right { right: 0; top: 50%; transform: translateY(-50%); }
+
+  /* Footer caption */
+  .caption {
+    max-width: 1280px;
+    margin: 16px auto;
+    padding: 0 20px;
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .caption strong { color: #ffd966; }
+</style>
+</head>
+<body>
+
+<div class="game-frame">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-brand">
+      <div class="top-brand-icon">🐻</div>
+      <span>Lounge Beruang</span>
+      <span class="room-label">Plaza Berstock</span>
+    </div>
+    <div class="badge-mock">Mockup v2</div>
+  </div>
+
+  <!-- SKY -->
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="sun"></div>
+
+  <!-- GROUND -->
+  <div class="ground">
+    <div class="grass"></div>
+    <div class="path"></div>
+  </div>
+
+  <!-- BILLBOARD -->
+  <div class="billboard">
+    <div class="billboard-title">I Started Berstock</div>
+    <div class="billboard-sub">★ POWERED BY ANTHROPIC ★</div>
+  </div>
+
+  <!-- LAMPS -->
+  <div class="lamp-post lamp-1"></div>
+  <div class="lamp-post lamp-2"></div>
+  <div class="lamp-post lamp-3"></div>
+  <div class="lamp-post lamp-4"></div>
+
+  <!-- BENCHES -->
+  <div class="bench bench-1">
+    <div class="bench-seat"></div>
+    <div class="bench-leg-l"></div>
+    <div class="bench-leg-r"></div>
+  </div>
+  <div class="bench bench-2">
+    <div class="bench-seat"></div>
+    <div class="bench-leg-l"></div>
+    <div class="bench-leg-r"></div>
+  </div>
+
+  <!-- FOUNTAIN -->
+  <div class="fountain">
+    <div class="fountain-spray"></div>
+    <div class="fountain-base"></div>
+  </div>
+
+  <!-- CHARACTERS -->
+  <div class="chibi c1 p1">
+    <div class="bubble">Halo bos! 👋</div>
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Hendry</div>
+  </div>
+
+  <div class="chibi c2 p2">
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Pak Budi</div>
+  </div>
+
+  <div class="chibi c3 p3">
+    <div class="bubble">Roti baru kelar 🍞</div>
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Edwin</div>
+  </div>
+
+  <div class="chibi c4 p4">
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Bu Siti</div>
+  </div>
+
+  <div class="chibi c5 p5">
+    <div class="bubble">Lagi ngoding 🎧</div>
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Mas Rio</div>
+  </div>
+
+  <div class="chibi c6 p6">
+    <div class="chibi-body">
+      <div class="head">
+        <div class="hair"></div>
+        <div class="eye eye-l"></div>
+        <div class="eye eye-r"></div>
+        <div class="blush blush-l"></div>
+        <div class="blush blush-r"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="torso"></div>
+      <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+    </div>
+    <div class="chibi-shadow"></div>
+    <div class="chibi-name">Mbak Tari</div>
+  </div>
+
+  <!-- DPAD -->
+  <div class="dpad">
+    <div class="dpad-btn dpad-up">▲</div>
+    <div class="dpad-btn dpad-down">▼</div>
+    <div class="dpad-btn dpad-left">◀</div>
+    <div class="dpad-btn dpad-right">▶</div>
+  </div>
+
+  <!-- BOTTOM GAME UI -->
+  <div class="game-ui">
+    <button class="chat-history-btn">⌃ Chat History</button>
+    <div class="chat-input-wrap">
+      <input type="text" placeholder="Type here to chat" disabled>
+      <button class="talk-btn">TALK</button>
+    </div>
+    <div class="menu-icons">
+      <div class="menu-icon"><div class="icon">📷</div>CAMERA</div>
+      <div class="menu-icon"><div class="icon">✈️</div>TRAVEL</div>
+      <div class="menu-icon"><div class="icon">👥</div>BUDDIES</div>
+      <div class="menu-icon"><div class="icon">👕</div>CLOSET</div>
+      <div class="menu-icon"><div class="icon">🛍️</div>SHOP</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="caption">
+  <strong>Lounge Beruang v2</strong> — chibi humanoid SVG-style + isometric park. Masih homemade (CSS only, no sprite art beneran), tapi udah lebih dekat ke vibe Ameba Pico. <br>
+  Untuk production beneran: hire sprite artist Rp 2-5jt (Fiverr) → sprite sheet 4 arah + customization layer (hair/outfit/accessories). <br>
+  Stack rencana: <strong>PixiJS</strong> + <strong>Cloudflare Durable Objects</strong> (real-time) + <strong>Firebase Auth</strong>.
+</div>
+
+</body>
+</html>
