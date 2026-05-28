@@ -481,6 +481,72 @@ export async function sendBillReminders(env) {
   console.log(`[BillReminders] Done. Scanned: ${scanned}, Sent: ${sent}, Errors: ${errors}`);
 }
 
+// ====== DEBUG: trigger reminder manual (admin only) ======
+// GET /api/beruang-bills-test?email=...&admin_key=...&force=1&type=h3|h0
+// Tanpa email: scan semua user (sama kayak cron). Dengan email: cuma 1 user.
+// force=1 → bypass dedupe + posted check, kirim semua bill di list (testing).
+export async function handleBeruangBillsTest(request, env) {
+  const url = new URL(request.url);
+  const adminKey = url.searchParams.get("admin_key");
+  if (!env.ADMIN_KEY || adminKey !== env.ADMIN_KEY) {
+    return jres({ error: "unauthorized" }, 401);
+  }
+  const token = (env.BERUANG_TG_TOKEN || "").trim();
+  if (!token) return jres({ error: "BERUANG_TG_TOKEN not set" }, 500);
+
+  const email = url.searchParams.get("email");
+  const force = url.searchParams.get("force") === "1";
+  const forceType = url.searchParams.get("type") || "h3"; // h3 atau h0
+
+  // Mode 1: tanpa email → trigger cron untuk semua user (real run)
+  if (!email) {
+    await sendBillReminders(env);
+    return jres({ ok: true, mode: "scan-all" });
+  }
+
+  // Mode 2: dengan email → trigger untuk 1 user
+  const billsRec = await env.BOT_DATA.get("btg_bills:" + email, "json");
+  if (!billsRec || !billsRec.bills || !billsRec.bills.length) {
+    return jres({ error: "no bills for email", email }, 404);
+  }
+  const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
+  if (!map || !map.chatId) {
+    return jres({ error: "email not linked to Telegram", email }, 404);
+  }
+  const chatId = map.chatId;
+  const ym = new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 7);
+
+  const results = [];
+  for (const bill of billsRec.bills) {
+    if (!force) {
+      if ((billsRec.posted || []).some((p) => p.recurringId === bill.id && p.recurringMonth === ym)) {
+        results.push({ bill: bill.nama, skipped: "already paid this month" });
+        continue;
+      }
+      if (await env.BOT_DATA.get(`btg_notif:${email}:${bill.id}:${ym}:paid`)) {
+        results.push({ bill: bill.nama, skipped: "paid via callback" });
+        continue;
+      }
+      const notifKey = `btg_notif:${email}:${bill.id}:${ym}:${forceType}`;
+      if (await env.BOT_DATA.get(notifKey)) {
+        results.push({ bill: bill.nama, skipped: `already sent ${forceType} this month` });
+        continue;
+      }
+    }
+    const diff = forceType === "h0" ? 0 : 3;
+    try {
+      await sendBillNotif(token, chatId, bill, forceType, diff, ym);
+      if (!force) {
+        await env.BOT_DATA.put(`btg_notif:${email}:${bill.id}:${ym}:${forceType}`, "1", { expirationTtl: TTL_NOTIF });
+      }
+      results.push({ bill: bill.nama, sent: true, type: forceType });
+    } catch (e) {
+      results.push({ bill: bill.nama, error: e.message });
+    }
+  }
+  return jres({ ok: true, mode: "single", email, chatId, ym, force, count: results.length, results });
+}
+
 async function sendBillNotif(token, chatId, bill, type, diff, ym) {
   const headline = type === "h0"
     ? "🔔 <b>Tagihan jatuh tempo HARI INI!</b>"
