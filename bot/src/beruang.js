@@ -96,11 +96,16 @@ export async function handleBeruangWebhook(request, env, ctx) {
   if (!chatId || !text) return jres({ ok: true });
 
   ctx.waitUntil((async () => {
+    const trace = [];
+    const T = (s) => trace.push(`${Date.now()}: ${s}`);
     try {
+      T(`start chatId=${chatId} text=${text.slice(0,40)}`);
       if (/^\/(start|mulai)\b/i.test(text)) {
+        T("match /start");
         const code = genCode();
         await env.BOT_DATA.put("btg_code:" + code, JSON.stringify({ chatId }), { expirationTtl: TTL_CODE });
-        await sendMessage(token, chatId,
+        T("kv put code OK");
+        const ok = await sendMessage(token, chatId,
           `Halo bos! 🐻 Aku <b>BerUang</b> — catat keuangan lewat chat.\n\n` +
           `Hubungkan dulu sama akunmu:\n` +
           `1️⃣ Buka app BerUang → menu (avatar) → <b>Hubungkan Telegram</b>\n` +
@@ -108,32 +113,45 @@ export async function handleBeruangWebhook(request, env, ctx) {
           `<b>🔑 ${code}</b>\n\n` +
           `Setelah nyambung, tinggal ketik aja: "bakso 45rb", "gaji 5jt masuk", "bensin 50000" — langsung ke-catat!`,
           { parse_mode: "HTML" });
+        T(`sendMessage /start returned ${ok}`);
         return;
       }
       if (/^\/(help|bantuan)\b/i.test(text)) {
-        await sendMessage(token, chatId,
+        T("match /help");
+        const ok = await sendMessage(token, chatId,
           `Cara pakai 🐻:\n• Ketik transaksi natural: "kopi 25rb", "gaji 5jt", "grab 30000"\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
+        T(`sendMessage /help returned ${ok}`);
         return;
       }
 
       // pesan biasa → harus udah linked
+      T("plain message, check link");
       const link = await env.BOT_DATA.get("btg_chat:" + chatId, "json");
+      T(`link lookup: ${link ? "FOUND email=" + link.email : "NOT FOUND"}`);
       if (!link || !link.email) {
-        await sendMessage(token, chatId, `Belum tersambung ke akun BerUang. Ketik /mulai dulu ya bos 🐻`);
+        const ok = await sendMessage(token, chatId, `Belum tersambung ke akun BerUang. Ketik /mulai dulu ya bos 🐻`);
+        T(`sendMessage unlinked returned ${ok}`);
         return;
       }
       const entry = parseEntry(text);
-      if (entry.error) { await sendMessage(token, chatId, entry.error); return; }
+      T(`parseEntry: ${entry.error ? "ERR " + entry.error : "OK jumlah=" + entry.jumlah}`);
+      if (entry.error) { const ok = await sendMessage(token, chatId, entry.error); T(`sendMessage err returned ${ok}`); return; }
       // push ke inbox email
       const key = "btg_inbox:" + link.email;
       const arr = (await env.BOT_DATA.get(key, "json")) || [];
       arr.push(entry);
       await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
+      T(`inbox saved, len=${arr.length}`);
       const tag = entry.jenis === "pemasukan" ? "🟢 Pemasukan" : "🔴 Pengeluaran";
-      await sendMessage(token, chatId,
+      const ok = await sendMessage(token, chatId,
         `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`,
         { parse_mode: "HTML" });
-    } catch (e) { /* swallow */ }
+      T(`sendMessage dicatat returned ${ok}`);
+    } catch (e) {
+      T(`ERROR: ${String(e)} | stack: ${(e && e.stack || "").slice(0,300)}`);
+    } finally {
+      try { await env.BOT_DATA.put("btg_debug:last", JSON.stringify({ at: Date.now(), text, chatId, trace }), { expirationTtl: 3600 }); } catch (_) {}
+    }
   })());
 
   return jres({ ok: true });
@@ -154,6 +172,12 @@ export async function handleBeruangPair(request, env) {
   await env.BOT_DATA.delete("btg_code:" + String(code).trim());
   if (token) { try { await sendMessage(token, rec.chatId, `✅ Akun <b>${email}</b> tersambung! Sekarang tinggal ketik transaksi, langsung ke-catat 🐻`, { parse_mode: "HTML" }); } catch (e) {} }
   return jres({ ok: true });
+}
+
+// ====== DEBUG: baca trace terakhir (TEMP, hapus setelah debug kelar) ======
+export async function handleBeruangDebug(request, env) {
+  const data = await env.BOT_DATA.get("btg_debug:last", "json");
+  return jres(data || { empty: true });
 }
 
 // ====== PULL: app tarik inbox {email, pullToken} ======
