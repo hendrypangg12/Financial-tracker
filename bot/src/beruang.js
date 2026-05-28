@@ -2,6 +2,7 @@
 // Alur: user /mulai → dapat kode → masukin di app (pairing) → chat "bakso 45rb"
 // → di-parse → masuk "inbox" KV → app tarik (pull) → masuk ke transaksi user.
 // Token bot: env.BERUANG_TG_TOKEN (secret). KV: env.BOT_DATA.
+// deploy-marker: 1
 
 import { sendMessage } from "./telegram.js";
 
