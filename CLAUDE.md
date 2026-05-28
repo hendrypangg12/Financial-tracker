@@ -927,9 +927,18 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=41**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
+- BerUang: **styles v=41**, **app v=38**, firebase-config v=22, presence v=2, **sync v=24**,
   **hutang v=2**, **storage v=23**, **dashboard v=26**, **ai-advisor v=8**, **onboarding v=6**,
-  **recurring v=1** · Service Worker **beruang-v35**
+  **recurring v=1**, **telegram-link v=1** · Service Worker **beruang-v36**
+- **🤖 Catat via Telegram (@beruangpang2_bot):** worker `bot/src/beruang.js` —
+  `/mulai` kasih kode pairing → user masukin di app (menu "Hubungkan Telegram") →
+  chat natural "bakso 45rb" → parser mandiri → inbox KV per-email → app auto-pull
+  (tiap buka + 60s) → masuk transaksi. Endpoint worker: `/beruang-webhook`,
+  `/api/beruang-pair`, `/api/beruang-pull`. App: `js/telegram-link.js` (pairing +
+  pull, simpan pullToken di localStorage `beruang-tg:<email>`).
+  **⏳ PENDING (aksi bos):** set secret **`BERUANG_TG_TOKEN`** di Cloudflare (Workers →
+  berstock-bot → Settings → Variables and Secrets) + deploy worker (GitHub Action).
+  Webhook udah ke-set ke `/beruang-webhook`. Token bot: simpan AMAN (jangan di repo).
 - **Avatar AI = beruang berdasi** (`logo-berbisnis.png`) di FAB, header chat, & promo
   (sebelumnya emoji 🐻). `.ai-fab`/`.ai-chat-avatar`/`.ai-promo-emoji` jadi `<img>` di
   lingkaran/kotak putih.
