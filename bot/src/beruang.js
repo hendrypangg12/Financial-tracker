@@ -92,7 +92,8 @@ export async function handleBeruangWebhook(request, env, ctx) {
   const msg = update.message || update.edited_message;
   const chatId = msg && msg.chat && msg.chat.id;
   const text = (msg && msg.text || "").trim();
-  if (!chatId || !text) return jres({ ok: true });
+  const photos = (msg && msg.photo) || []; // array of {file_id, width, height, file_size}, largest = last
+  if (!chatId || (!text && photos.length === 0)) return jres({ ok: true });
 
   ctx.waitUntil((async () => {
     try {
@@ -105,29 +106,34 @@ export async function handleBeruangWebhook(request, env, ctx) {
           `1️⃣ Buka app BerUang → menu (avatar) → <b>Hubungkan Telegram</b>\n` +
           `2️⃣ Masukin kode ini (berlaku 15 menit):\n\n` +
           `<b>🔑 ${code}</b>\n\n` +
-          `Setelah nyambung, tinggal ketik aja: "bakso 45rb", "gaji 5jt masuk", "bensin 50000" — langsung ke-catat!`,
+          `Setelah nyambung:\n• Ketik transaksi: "bakso 45rb", "gaji 5jt masuk"\n• 📸 Atau kirim foto struk — auto ke-catat!`,
           { parse_mode: "HTML" });
         return;
       }
       if (/^\/(help|bantuan)\b/i.test(text)) {
         await sendMessage(token, chatId,
-          `Cara pakai 🐻:\n• Ketik transaksi natural: "kopi 25rb", "gaji 5jt", "grab 30000"\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
+          `Cara pakai 🐻:\n• Ketik transaksi: "kopi 25rb", "gaji 5jt", "grab 30000"\n• 📸 Kirim foto struk → auto-baca total + toko\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
         return;
       }
 
-      // pesan biasa → harus udah linked
+      // butuh sudah linked untuk pesan/foto biasa
       const link = await env.BOT_DATA.get("btg_chat:" + chatId, "json");
       if (!link || !link.email) {
         await sendMessage(token, chatId, `Belum tersambung ke akun BerUang. Ketik /mulai dulu ya bos 🐻`);
         return;
       }
+
+      // FOTO STRUK → OCR via Claude vision
+      if (photos.length > 0) {
+        const photo = photos[photos.length - 1]; // largest variant
+        await handleStrukPhoto(env, token, chatId, photo, link.email, msg && msg.caption);
+        return;
+      }
+
+      // TEKS biasa
       const entry = parseEntry(text);
       if (entry.error) { await sendMessage(token, chatId, entry.error); return; }
-      // push ke inbox email
-      const key = "btg_inbox:" + link.email;
-      const arr = (await env.BOT_DATA.get(key, "json")) || [];
-      arr.push(entry);
-      await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
+      await pushInbox(env, link.email, entry);
       const tag = entry.jenis === "pemasukan" ? "🟢 Pemasukan" : "🔴 Pengeluaran";
       await sendMessage(token, chatId,
         `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`,
@@ -136,6 +142,124 @@ export async function handleBeruangWebhook(request, env, ctx) {
   })());
 
   return jres({ ok: true });
+}
+
+async function pushInbox(env, email, entry) {
+  const key = "btg_inbox:" + email;
+  const arr = (await env.BOT_DATA.get(key, "json")) || [];
+  arr.push(entry);
+  await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
+}
+
+// ====== FOTO STRUK — Claude vision ======
+async function handleStrukPhoto(env, token, chatId, photo, email, caption) {
+  const apiKey = (env.ANTHROPIC_API_KEY || "").trim();
+  if (!apiKey) { await sendMessage(token, chatId, "AI vision belum di-setup, ketik manual aja ya bos."); return; }
+
+  // 1) Telegram getFile → dapat file_path
+  const fileRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${encodeURIComponent(photo.file_id)}`);
+  const fileData = await fileRes.json();
+  if (!fileData.ok) { await sendMessage(token, chatId, "Gagal ambil foto, coba kirim lagi."); return; }
+  const filePath = fileData.result.file_path;
+
+  // 2) Acknowledge dulu (Telegram timeout 30s, vision bisa 5-10s)
+  await sendMessage(token, chatId, "📸 Lagi baca struknya, sebentar...");
+
+  // 3) Download foto → base64 (chunked supaya gak overflow argument limit)
+  const imgRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
+  if (!imgRes.ok) { await sendMessage(token, chatId, "Gagal download foto."); return; }
+  const buf = await imgRes.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binStr = "";
+  const CHUNK = 8192;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binStr += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  const base64 = btoa(binStr);
+  const mediaType = /\.png$/i.test(filePath) ? "image/png" : "image/jpeg";
+
+  // 4) Tanya Claude
+  const promptText = `Ini foto struk belanja / nota / bon. Extract data:
+- total: angka total bayar (integer Rupiah, tanpa titik/koma)
+- vendor: nama toko/warung/merchant (kalau gak kelihatan, isi "Belanja")
+- tanggal: format YYYY-MM-DD (kalau gak ada di struk, pakai hari ini: ${new Date().toISOString().slice(0,10)})
+- kategori_tebak: salah satu dari "Makanan", "Transportasi", "Tagihan", "Belanja", "Kesehatan", "Tempat Tinggal", "Lainnya"
+${caption ? `\nUser kasih caption: "${caption}" — bisa pake buat context.` : ""}
+
+JAWAB dengan JSON saja, format persis:
+{"total":50000,"vendor":"Indomaret","tanggal":"2026-05-28","kategori_tebak":"Belanja"}
+
+Kalau foto BUKAN struk atau gak kebaca sama sekali, jawab:
+{"error":"Bukan struk / foto kurang jelas, foto-in ulang yang fokus ke total ya"}`;
+
+  let claudeText;
+  try {
+    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 300,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+            { type: "text", text: promptText },
+          ],
+        }],
+      }),
+    });
+    if (!claudeRes.ok) {
+      const errBody = await claudeRes.text();
+      console.error("Claude vision error:", claudeRes.status, errBody.slice(0,200));
+      await sendMessage(token, chatId, "AI vision lagi sibuk, coba lagi sebentar.");
+      return;
+    }
+    const data = await claudeRes.json();
+    claudeText = (data.content && data.content[0] && data.content[0].text || "").trim();
+  } catch (e) {
+    await sendMessage(token, chatId, "Gagal panggil AI, coba lagi.");
+    return;
+  }
+
+  // 5) Parse JSON dari response
+  let parsed;
+  try {
+    const m = claudeText.match(/\{[\s\S]*\}/);
+    parsed = JSON.parse(m ? m[0] : claudeText);
+  } catch {
+    await sendMessage(token, chatId, "Gak bisa baca struknya, coba foto ulang dengan total yang kelihatan jelas.");
+    return;
+  }
+  if (parsed.error) { await sendMessage(token, chatId, parsed.error); return; }
+
+  const total = parseInt(parsed.total, 10) || 0;
+  if (total <= 0) { await sendMessage(token, chatId, "Total gak ke-baca, ketik manual aja: \"belanja 150rb\""); return; }
+
+  const validKategori = ["Makanan","Transportasi","Tagihan","Belanja","Kesehatan","Tempat Tinggal","Lainnya"];
+  const kategori = validKategori.includes(parsed.kategori_tebak) ? parsed.kategori_tebak : "Belanja";
+  const alokasiMap = { Makanan:"Keinginan", Transportasi:"Kebutuhan", Tagihan:"Kebutuhan", Belanja:"Keinginan", Kesehatan:"Kebutuhan", "Tempat Tinggal":"Kebutuhan", Lainnya:"Keinginan" };
+
+  const entry = {
+    id: "tg_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    tanggal: /^\d{4}-\d{2}-\d{2}$/.test(parsed.tanggal) ? parsed.tanggal : new Date().toISOString().slice(0,10),
+    jenis: "pengeluaran",
+    jumlah: total,
+    deskripsi: (parsed.vendor || "Belanja").toString().slice(0, 80),
+    subKategori: kategori,
+    kategori,
+    alokasi: alokasiMap[kategori] || "Keinginan",
+    _src: "telegram-struk",
+  };
+
+  await pushInbox(env, email, entry);
+  await sendMessage(token, chatId,
+    `✅ Struk ke-catat!\n🔴 Pengeluaran <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n📅 ${entry.tanggal}\n\n<i>Buka app BerUang buat lihat. Salah baca? Edit di app.</i>`,
+    { parse_mode: "HTML" });
 }
 
 // ====== PAIR: app kirim {code, email, pullToken} ======

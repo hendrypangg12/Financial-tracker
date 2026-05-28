@@ -109,15 +109,15 @@ function renderTgModal() {
       <h3 style="margin-top:0">🤖 Telegram Tersambung ✅</h3>
       <p style="color:var(--muted);margin:8px 0 16px">Tinggal chat ke bot, transaksi otomatis masuk app.</p>
       <div style="background:#f1ece2;border-radius:12px;padding:12px 14px;margin-bottom:16px">
-        <div style="font-weight:600;margin-bottom:6px;font-size:13px;color:var(--ink)">Contoh ketik di Telegram:</div>
+        <div style="font-weight:600;margin-bottom:6px;font-size:13px;color:var(--ink)">Cara pakai di Telegram:</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:var(--ink)">
-          <div>• <b>bakso 25rb</b> → ke pengeluaran</div>
-          <div>• <b>gaji 5jt masuk</b> → ke pemasukan</div>
-          <div>• <b>bensin 50000</b> → otomatis kategori</div>
-          <div>• <b>kopi 15rb</b>, <b>grab 30rb</b>, dst.</div>
+          <div>• Ketik <b>bakso 25rb</b> → pengeluaran</div>
+          <div>• Ketik <b>gaji 5jt masuk</b> → pemasukan</div>
+          <div>• <b>📸 Kirim foto struk</b> → auto-baca AI</div>
+          <div>• <b>bensin 50000</b>, <b>kopi 15rb</b>, dst.</div>
         </div>
       </div>
-      <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Nominal otomatis kebaca (rb = ribu, jt = juta). Kategori auto-tebak dari kata kunci.</p>
+      <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Nominal otomatis kebaca (rb = ribu, jt = juta). Foto struk pakai AI vision — total + nama toko auto-extract.</p>
       <div class="modal-actions" style="flex-wrap:wrap;gap:8px">
         <button type="button" class="btn btn-ghost" id="tg-btn-relink">🔄 Ganti Akun</button>
         <button type="button" class="btn btn-ghost" id="tg-btn-pull">⬇️ Tarik Sekarang</button>
@@ -142,7 +142,7 @@ function renderTgModalForm(isRelink) {
   body.innerHTML = `
     <h3 style="margin-top:0">🤖 Catat via Chat Telegram</h3>
     <p style="color:var(--muted);margin:6px 0 18px;font-size:14px">
-      ${isRelink ? "Masukin kode baru buat ganti akun Telegram." : "Tinggal chat bot, transaksi otomatis masuk app. Sekali setup, selamanya jalan."}
+      ${isRelink ? "Masukin kode baru buat ganti akun Telegram." : "Chat transaksi atau 📸 kirim foto struk — bot auto-catat. Sekali setup, selamanya jalan."}
     </p>
 
     <ol style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.7">
