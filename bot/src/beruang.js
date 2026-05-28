@@ -143,10 +143,22 @@ export async function handleBeruangWebhook(request, env, ctx) {
       await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
       T(`inbox saved, len=${arr.length}`);
       const tag = entry.jenis === "pemasukan" ? "🟢 Pemasukan" : "🔴 Pengeluaran";
-      const ok = await sendMessage(token, chatId,
-        `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`,
-        { parse_mode: "HTML" });
-      T(`sendMessage dicatat returned ${ok}`);
+      // DEBUG: raw fetch ke Telegram biar capture error spesifik
+      T(`token length=${(token||"").length} prefix=${(token||"").slice(0,12)}`);
+      const tgUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+      const tgBody = {
+        chat_id: chatId,
+        text: `✅ Dicatat!\n${tag} <b>${fmtRp(entry.jumlah)}</b>\n${entry.deskripsi} · ${entry.kategori}\n\n<i>Buka app BerUang buat lihat (auto-masuk pas dibuka).</i>`,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      };
+      try {
+        const r = await fetch(tgUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(tgBody) });
+        const rt = await r.text();
+        T(`raw send status=${r.status} body=${rt.slice(0,400)}`);
+      } catch (fe) {
+        T(`raw send THREW: ${String(fe)}`);
+      }
     } catch (e) {
       T(`ERROR: ${String(e)} | stack: ${(e && e.stack || "").slice(0,300)}`);
     } finally {
