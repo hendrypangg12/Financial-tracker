@@ -235,9 +235,59 @@ async function pushBillsToBotNow() {
 // Reset cache pas user login/logout
 function resetBillsPushCache() { _billsLastPayload = ""; }
 
+// ====== Promo banner di dashboard ======
+// Tampil kalau user PUNYA tagihan rutin tapi BELUM connect Telegram.
+// Dismiss = sembunyi 7 hari.
+function tgPromoDismissKey() { return "beruang-tg-promo-dismiss:" + (tgEmail() || "local"); }
+function tgPromoDismissed() {
+  try {
+    const ts = parseInt(localStorage.getItem(tgPromoDismissKey()) || "0", 10);
+    if (!ts) return false;
+    return (Date.now() - ts) < 7 * 24 * 3600 * 1000;
+  } catch (_) { return false; }
+}
+function dismissTgPromo() {
+  try { localStorage.setItem(tgPromoDismissKey(), String(Date.now())); } catch (_) {}
+  renderTgBillPromo();
+}
+
+function renderTgBillPromo() {
+  const el = document.getElementById("tg-bill-promo");
+  if (!el) return;
+  const hasBills = typeof state !== "undefined" && Array.isArray(state.recurring) && state.recurring.length > 0;
+  if (!hasBills || tgIsLinked() || tgPromoDismissed()) {
+    el.hidden = true; el.innerHTML = "";
+    return;
+  }
+  const n = state.recurring.length;
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="panel" style="background:linear-gradient(135deg,#fff7e6 0%,#fceec6 100%);border:1px solid #f0d488;position:relative;">
+      <button id="tg-promo-x" aria-label="Tutup" style="position:absolute;top:8px;right:8px;border:none;background:rgba(255,255,255,0.6);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;color:#8b5a2b;">×</button>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:32px;flex-shrink:0;">🔔</div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-weight:700;color:#4a3328;font-size:15px;margin-bottom:4px;">Gak lupa bayar tagihan lagi 🐻</div>
+          <div style="font-size:13px;color:#6b4423;line-height:1.5;">
+            Punya <b>${n}</b> tagihan rutin. Sambungkan Telegram &mdash; bot kirim notif <b>H-3 &amp; hari H</b>, tap "Udah bayar" langsung ke-catat.
+          </div>
+        </div>
+        <button id="tg-promo-link" style="flex-shrink:0;border:none;background:#8b5a2b;color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;">
+          📲 Sambungkan
+        </button>
+      </div>
+    </div>
+  `;
+  const x = document.getElementById("tg-promo-x");
+  if (x) x.onclick = dismissTgPromo;
+  const btn = document.getElementById("tg-promo-link");
+  if (btn) btn.onclick = openTelegramLink;
+}
+
 window.openTelegramLink = openTelegramLink;
 window.pullTelegramInbox = pullTelegramInbox;
 window.tgIsLinked = tgIsLinked;
 window.schedulePushBillsToBot = schedulePushBillsToBot;
 window.pushBillsToBotNow = pushBillsToBotNow;
 window.resetBillsPushCache = resetBillsPushCache;
+window.renderTgBillPromo = renderTgBillPromo;

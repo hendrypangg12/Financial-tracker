@@ -105,6 +105,7 @@ function renderDashboard() {
   renderHutangSummary();
   if (typeof renderReminder === 'function') renderReminder();
   if (typeof renderAIPromo === 'function') renderAIPromo();
+  if (typeof renderTgBillPromo === 'function') renderTgBillPromo();
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');
