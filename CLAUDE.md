@@ -936,14 +936,26 @@ CREATE TABLE ai_suggestions (
   (tiap buka + 60s) → masuk transaksi. Endpoint worker: `/beruang-webhook`,
   `/api/beruang-pair`, `/api/beruang-pull`. App: `js/telegram-link.js` (pairing +
   pull, simpan pullToken di localStorage `beruang-tg:<email>`).
-  **✅ DEPLOYED (28 Mei 2026):** `BERUANG_TG_TOKEN` keset di Cloudflare (sebagai Text/
-  Plaintext — masih fungsional, recommended ganti ke Secret kapan-kapan). Worker deployed
-  via push trivial ke `bot/src/beruang.js` di QUmrz (commit `7a1f13b`) → auto-trigger
-  GitHub Action. **Pitfall yang ke-trap:** klik "Re-run all jobs" pakai commit asli run
-  lama (8ec2eab, sebelum beruang ada) → endpoint 404. FIX: "Run workflow" dropdown branch
-  ATAU push commit ke `bot/**` di QUmrz biar workflow checkout tip terbaru. Endpoint
-  `/api/beruang-pull` confirmed HTTP 200. Webhook udah set ke `/beruang-webhook`. Token
-  bot: simpan AMAN (jangan di repo).
+  **✅ DEPLOYED (28 Mei 2026):** worker deployed via push trivial ke `bot/src/beruang.js`
+  di QUmrz (commit `7a1f13b`) → auto-trigger GitHub Action. Endpoint `/api/beruang-pull`
+  HTTP 200. Webhook udah set ke `/beruang-webhook`. **Fix HTML parse_mode** (commit
+  `3ec3382`): semua sendMessage di beruang.js tambah `{parse_mode:"HTML"}` — tanpa itu,
+  tag `<b>` ke-render mentah karena default sendMessage = Markdown.
+  **⚠️ DUA PITFALL CRITICAL (jangan kena lagi):**
+  1. **"Re-run all jobs" pakai commit ASLI run lama**, BUKAN tip terbaru — kalau klik
+     re-run di run lama (e.g. #9 commit 8ec2eab), deploy commit lama yang gak ada beruang
+     routes → endpoint 404, Telegram gak retry. **FIX:** "Run workflow" dropdown branch
+     ATAU push commit ke `bot/**` di QUmrz biar workflow checkout tip terbaru.
+  2. **🔥 `wrangler deploy` WIPE variable Text/Plaintext yang gak ada di `wrangler.toml`.**
+     Cloudflare nge-sync `[vars]` section sebagai source of truth → variable manual di
+     dashboard yang Type=Text bakal ke-hapus tiap deploy. **Secrets (Type=Secret/encrypted)
+     SELAMAT** karena disimpan terpisah, gak ke-sync wrangler.toml. **PATTERN BENER untuk
+     token rahasia (BERUANG_TG_TOKEN, ANTHROPIC_API_KEY, dll):** dashboard → Add variable
+     → **Type: Secret**, BUKAN Text. Atau via CLI `wrangler secret put NAMA`.
+     Gejala kalau salah: bot diem (gak reply), POST `/beruang-webhook` body kosong balas
+     `{"error":"BERUANG_TG_TOKEN not set"}` HTTP 500. Pertama kali ke-trap 28 Mei 2026 —
+     owner set sebagai Text → deploy pertama jalan (token masih ada) → tapi deploy
+     berikutnya wipe token → bot diem.
 - **Avatar AI = beruang berdasi** (`logo-berbisnis.png`) di FAB, header chat, & promo
   (sebelumnya emoji 🐻). `.ai-fab`/`.ai-chat-avatar`/`.ai-promo-emoji` jadi `<img>` di
   lingkaran/kotak putih.
