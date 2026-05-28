@@ -941,7 +941,9 @@ CREATE TABLE ai_suggestions (
   HTTP 200. Webhook udah set ke `/beruang-webhook`. **Fix HTML parse_mode** (commit
   `3ec3382`): semua sendMessage di beruang.js tambah `{parse_mode:"HTML"}` — tanpa itu,
   tag `<b>` ke-render mentah karena default sendMessage = Markdown.
-  **⚠️ DUA PITFALL CRITICAL (jangan kena lagi):**
+  **✅ FULLY LIVE end-to-end 28 Mei 2026 ~10:00 WIB** — bot bales rapi (bold/italic
+  HTML), parser jalan (auto-kategori makanan/transport/dll), inbox→app auto-pull.
+  **⚠️ TIGA PITFALL CRITICAL yang ke-trap pas debug (jangan kena lagi):**
   1. **"Re-run all jobs" pakai commit ASLI run lama**, BUKAN tip terbaru — kalau klik
      re-run di run lama (e.g. #9 commit 8ec2eab), deploy commit lama yang gak ada beruang
      routes → endpoint 404, Telegram gak retry. **FIX:** "Run workflow" dropdown branch
@@ -953,9 +955,27 @@ CREATE TABLE ai_suggestions (
      token rahasia (BERUANG_TG_TOKEN, ANTHROPIC_API_KEY, dll):** dashboard → Add variable
      → **Type: Secret**, BUKAN Text. Atau via CLI `wrangler secret put NAMA`.
      Gejala kalau salah: bot diem (gak reply), POST `/beruang-webhook` body kosong balas
-     `{"error":"BERUANG_TG_TOKEN not set"}` HTTP 500. Pertama kali ke-trap 28 Mei 2026 —
-     owner set sebagai Text → deploy pertama jalan (token masih ada) → tapi deploy
-     berikutnya wipe token → bot diem.
+     `{"error":"BERUANG_TG_TOKEN not set"}` HTTP 500.
+  3. **🔥 Bot token COPY-PASTE dari iPad sering nyelipin whitespace/newline trailing**
+     → token jadi 47 char (harusnya 46), URL `bot<TOKEN>/sendMessage` jadi invalid →
+     Telegram balas **HTTP 404 "Not Found"**. Bot diem walau token udah Secret + worker
+     ngeyel. **FIX permanen di kode:** `const token = (env.BERUANG_TG_TOKEN || "").trim();`
+     di awal handler — auto buang whitespace, idiot-proof copy-paste.
+  4. **🔥 Telegram webhook auto-throttle** setelah serentet 5xx error. Worker pulih, tapi
+     Telegram berhenti deliver update baru (state-nya nyangkut). pending_update_count=0
+     tapi last_error_date masih lama. **FIX:** panggil `setWebhook` ulang dengan URL
+     sama + `drop_pending_updates:true` → reset state delivery. Wajib dilakuin setiap
+     habis fix bug yang sebabkan 5xx.
+  **🛠️ Debug pattern yang berhasil dipake:** tambah trace `T(string)` push ke array di
+  ctx.waitUntil, simpan ke `btg_debug:last` KV (TTL 1 jam) di finally block, terus bikin
+  GET `/api/beruang-debug` baca balik. Bonus: raw fetch ke Telegram + capture response
+  body bisa kelihatan error spesifik 404 vs 401 vs 400. Setelah bug ketemu, cleanup
+  hapus trace + endpoint (commit `1e32a5f`).
+  **👥 Multi-user:** udah SIAP dari awal. KV per-email (`btg_chat:<chatId>`, `btg_mail:
+  <email>`, `btg_inbox:<email>`) — 1 bot @beruangpang2_bot, isolasi by chatId+email.
+  User baru: /mulai di bot → kode → app BerUang → menu → Hubungkan Telegram → paste.
+  Kapasitas: scale ke jutaan user (KV bisa), bot rate-limit 30 msg/detik. Cost: $0
+  (parser bawaan, gak panggil Anthropic untuk catat transaksi).
 - **Avatar AI = beruang berdasi** (`logo-berbisnis.png`) di FAB, header chat, & promo
   (sebelumnya emoji 🐻). `.ai-fab`/`.ai-chat-avatar`/`.ai-promo-emoji` jadi `<img>` di
   lingkaran/kotak putih.
