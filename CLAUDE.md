@@ -927,9 +927,9 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=39**, **app v=36**, firebase-config v=22, presence v=2, **sync v=24**,
+- BerUang: **styles v=39**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
   **hutang v=2**, **storage v=23**, **dashboard v=25**, ai-advisor v=6, **onboarding v=6**,
-  **recurring v=1** (baru) · Service Worker **beruang-v32**
+  **recurring v=1** · Service Worker **beruang-v33**
 - **Dashboard kartu "💸 Hutang & Piutang"** (`renderHutangSummary`): Piutang hijau + Hutang
   merah + posisi bersih + link ke tab Hutang. Pakai field `nominal`.
 - **🔁 Tagihan Rutin + 🔔 Pengingat (`state.recurring[]` + `js/recurring.js`):** template
@@ -1139,20 +1139,20 @@ cache lama → fix/update gak nyampe ("masih versi lama").
   kartu "💎 Aset/Kekayaan" (total + list + hapus per item), dipanggil di renderDashboard.
 - Bump: storage v22, sync v23, dashboard v22, app v33, onboarding v1, SW **beruang-v24**.
 
-### 🤖 AI ADVISOR "Beruang Akuntan" — UDAH ADA tapi BELUM di-deploy (27 Mei 2026)
-**TEMUAN:** Fitur AI tanya-jawab data user yang bos minta **udah ke-build** (frontend
-`js/ai-advisor.js` chat UI + paywall Pro; backend `bot/src/advise.js` `/api/advise`,
-`claude-sonnet-4-6`, rate-limit 30/hari, prompt caching). Contoh di kode: "Kapan bisa
-beli laptop 15jt?".
-- **⚠️ BLOCKER:** tes `GET/POST /api/advise` → **"Not Found"**. Worker yang live belum
-  punya route ini → **PERLU `cd bot && wrangler deploy`** + pastikan secret
-  **`ANTHROPIC_API_KEY`** di-set di Cloudflare. (Aksi BOS — gak ada akses CF dari sini.)
-- **FAB AI masih di-HIDE** di `js/app.js` (~baris 530, `showAIFab()` di-comment). Setelah
-  worker deploy & dites OK → uncomment `showAIFab()` + bump app.js biar tombol AI muncul.
-- **Sudah diperkaya (siap pas deploy):** `buildAdvisorContext` kirim `userName`, `assetTotal`
-  + breakdown, `piutangTotal`/`hutangTotal`, `tabunganBulanIni`. `advise.js` render data itu
-  + prompt baru buat jawab "kapan bisa beli X" (hitung dari aset + tabungan/bulan).
-- Alur sinergi: onboarding ngisi aset/utang/rutin → AI makin akurat jawab goal.
+### 🤖 AI ADVISOR "Beruang Akuntan" — ✅ LIVE (28 Mei 2026)
+Fitur AI tanya-jawab data user: frontend `js/ai-advisor.js` (chat UI + paywall Pro,
+FAB 🐻), backend `bot/src/advise.js` `/api/advise` (`claude-sonnet-4-6`, rate-limit
+30/hari, prompt caching, persona "Beruang Akuntan Gemoy").
+- **✅ DEPLOYED (28 Mei):** worker di-deploy via **GitHub Action `deploy-bot.yml`**
+  (bos bikin CF API token "Edit Cloudflare Workers" → masuk GitHub secret
+  `CLOUDFLARE_API_TOKEN` → Actions → Run workflow). `ANTHROPIC_API_KEY` udah keset
+  (dari bot Telegram). Endpoint teruji: jawab "kapan bisa beli X" pakai data user. ✅
+- **FAB AI UDAH muncul** (`showAIFab()` di-uncomment di `js/app.js`, app v37). Free user
+  tap → paywall; Pro → chat. Quota 30/hari per email.
+- Context (`buildAdvisorContext`): `userName`, `assetTotal`+breakdown, `piutangTotal`/
+  `hutangTotal`, `tabunganBulanIni`, kategori, transaksi terakhir.
+- **Cara deploy ulang worker ke depan:** GitHub → Actions → "Deploy Berstock Bot" →
+  Run workflow (branch `claude/financial-tracking-app-QUmrz`). Token CF udah di GitHub secret.
 
 ### 🎨 REDESIGN DASHBOARD BerUang "versi pro" + GANTI LOGO (27 Mei 2026)
 **Request bos:** bikin dashboard lebih profesional (dari mockup side-by-side yg disetujui),
