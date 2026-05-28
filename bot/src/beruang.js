@@ -86,7 +86,7 @@ function genCode() { return String(Math.floor(100000 + Math.random() * 900000));
 
 // ====== WEBHOOK Telegram ======
 export async function handleBeruangWebhook(request, env, ctx) {
-  const token = env.BERUANG_TG_TOKEN;
+  const token = (env.BERUANG_TG_TOKEN || "").trim(); // trim whitespace/newline (sering ke-copy)
   if (!token) return jres({ error: "BERUANG_TG_TOKEN not set" }, 500);
   let update;
   try { update = await request.json(); } catch { return jres({ ok: true }); }
@@ -182,7 +182,8 @@ export async function handleBeruangPair(request, env) {
   await env.BOT_DATA.put("btg_chat:" + rec.chatId, JSON.stringify({ email }));
   await env.BOT_DATA.put("btg_mail:" + email, JSON.stringify({ chatId: rec.chatId, pullToken }));
   await env.BOT_DATA.delete("btg_code:" + String(code).trim());
-  if (token) { try { await sendMessage(token, rec.chatId, `✅ Akun <b>${email}</b> tersambung! Sekarang tinggal ketik transaksi, langsung ke-catat 🐻`, { parse_mode: "HTML" }); } catch (e) {} }
+  const tokenTrim = (env.BERUANG_TG_TOKEN || "").trim();
+  if (tokenTrim) { try { await sendMessage(tokenTrim, rec.chatId, `✅ Akun <b>${email}</b> tersambung! Sekarang tinggal ketik transaksi, langsung ke-catat 🐻`, { parse_mode: "HTML" }); } catch (e) {} }
   return jres({ ok: true });
 }
 
