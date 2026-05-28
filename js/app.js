@@ -107,12 +107,27 @@ function attachEvents() {
   const form = document.getElementById('form-transaksi');
   form.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
   form.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-transaksi');
+  // Toggle field "Jatuh tempo tiap tanggal" saat checkbox "Jadikan tagihan rutin" di-centang
+  const chkRutin = document.getElementById('chk-jadikan-rutin');
+  const fieldHariTagih = document.getElementById('field-hari-tagih');
+  if (chkRutin && fieldHariTagih) {
+    chkRutin.addEventListener('change', () => {
+      fieldHariTagih.style.display = chkRutin.checked ? 'block' : 'none';
+      if (chkRutin.checked) {
+        const inp = fieldHariTagih.querySelector('input[name="hariTagih"]');
+        const tgl = form.querySelector('[name="tanggal"]').value;
+        if (inp && !inp.value) inp.value = parseInt(String(tgl || todayISO()).slice(8, 10), 10) || 1;
+      }
+    });
+  }
   form.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(form);
     const t = Object.fromEntries(fd.entries());
     const jadikanRutin = t.jadikanRutin === 'on';
     delete t.jadikanRutin;
+    const hariTagihInput = t.hariTagih;
+    delete t.hariTagih;
     t.jumlah = parseMoney(t.jumlah);
     if (!t.jumlah || t.jumlah <= 0) { showToast('Jumlah harus > 0', 'error'); return; }
     const info = findCategoryForSub(t.subKategori, t.jenis);
@@ -120,7 +135,11 @@ function attachEvents() {
     if (!t.alokasi && info.alokasi) t.alokasi = info.alokasi;
     // Tagihan rutin (cuma pengeluaran) — buat template + tag transaksi ini sbg posting bln ini
     if (jadikanRutin && t.jenis === 'pengeluaran' && typeof addRecurring === 'function') {
-      const hari = parseInt(String(t.tanggal || todayISO()).slice(8, 10), 10) || 1;
+      // Hari tagih: utamakan input eksplisit dari user, fallback ke tanggal transaksi
+      let hari = parseInt(hariTagihInput, 10);
+      if (!hari || hari < 1 || hari > 31) {
+        hari = parseInt(String(t.tanggal || todayISO()).slice(8, 10), 10) || 1;
+      }
       const rec = { nama: t.deskripsi || t.subKategori || 'Tagihan', jumlah: t.jumlah, hariTagih: hari, kategori: t.kategori, subKategori: t.subKategori, alokasi: t.alokasi || 'Kebutuhan' };
       addRecurring(rec);
       t.recurringId = rec.id;
@@ -130,6 +149,7 @@ function attachEvents() {
     showToast(jadikanRutin ? 'Transaksi + tagihan rutin disimpan 🔁' : 'Transaksi ditambahkan', 'success');
     form.reset();
     form.querySelector('[name="tanggal"]').value = todayISO();
+    if (fieldHariTagih) fieldHariTagih.style.display = 'none'; // hide kembali setelah reset
     fillSubCategoriSelects();
     if (typeof renderRecurringManager === 'function') renderRecurringManager();
     renderAll();
