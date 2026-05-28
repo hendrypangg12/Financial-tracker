@@ -4,18 +4,18 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 18 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 28 Mei 2026)
 
-### 📱 BerUang Android di Google Play Store — HAMPIR LIVE!
+### 📱 BerUang Android di Google Play Store — 3 HARI LAGI UNLOCK!
 
-**Status saat ini (Day 1 of 14 per Google counter):**
+**Status saat ini (Day 11 of 14 per Google counter):**
 - ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
 - ✅ Store listing SUBSTANTIVELY COMPLETE
 - ✅ **12/12 tester opted-in** sejak Sabtu 16 Mei 2026
-- ✅ Google official counter: **"12 testers have currently been opted in for 1 day"** (per 18 Mei pagi)
-- ✅ **Tester aktif pakai app** — bukti via screenshot 18 Mei (user "R" lagi pake dashboard, data real Rp 50jt)
+- ✅ Google official counter: **Day 11 of 14** (per 28 Mei)
+- ✅ Tester aktif pakai app — engagement confirmed via screenshot 18 Mei
 - ✅ 10/11 App content forms done
-- ✅ Bug fix dari real tester feedback (18 Mei): cross-sell pindah ke bawah dashboard
+- 🎯 **Sabtu 31 Mei: "Apply for production" UNLOCK**
 - 🎯 **Estimasi LIVE PUBLIC: ~5-8 Juni 2026**
 
 **Real tester engagement confirmed!** Tester "R" pake BerUang dengan data real (Rp 50jt pemasukan), bukan cuma install lalu uninstall. Engagement = quality signal untuk Production review.
@@ -48,13 +48,13 @@ Buffer ultra-safe dari risk uninstall.
 > Tapi pas isi questionnaire, BANGGAKAN pencapaian Sabtu sebagai
 > "achieved 12 testers in 1 day via WA + Google Group + Instagram".
 
-### 📅 Timeline Production (REVISI per Google counter)
+### 📅 Timeline Production (UPDATED 28 Mei)
 
 | Tanggal | Day | Milestone |
 |---|---|---|
 | **Sab 16 Mei** | — | 12 tester reached (bos counter) |
 | **Sen 18 Mei** | Day 1 | Google official count start |
-| **Sel 27 Mei** | Day 10 | 4 hari lagi sebelum unlock |
+| **Kam 28 Mei** | Day 11 | 🟢 **HARI INI** — 3 hari lagi unlock |
 | **Sab 31 Mei** | Day 14 | 🎯 "Apply for production" UNLOCK |
 | **31 Mei - 3 Jun** | — | Submit + answer questionnaire |
 | **3-7 Juni** | — | Google review production |
@@ -687,7 +687,77 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 | WA broadcast template tester | ✅ Done (di chat) | "Jangan uninstall 14 hari" reminder |
 | Production questionnaire jawaban | ⏳ Belum draft | Tunggu "Preview questions" dari bos |
 
-### ⏳ PENDING (Day 16+)
+### ✅ DAY 17 (Done — 28 Mei 2026)
+
+**Focus: Pengingat tagihan rutin via Telegram (notif H-3 + H-0 + inline "Udah bayar" button)**
+
+#### **🔔 BILL REMINDERS — End-to-end Architecture**
+
+| Komponen | File | Notes |
+|---|---|---|
+| **App push bills ke bot** | `js/telegram-link.js` | `schedulePushBillsToBot()` debounced 4s, dipanggil dari `saveState()` di `js/storage.js`. Payload: `{email, pullToken, bills, posted}`. Skip kalau payload sama dengan terakhir (cache hash) |
+| **Endpoint terima bills** | `bot/src/beruang.js` → `handleBeruangBillsPush` | Validate pullToken, sanitize (max 50 bills, cap hariTagih 1-31), simpan ke KV `btg_bills:<email>` TTL 90 hari |
+| **Cron notif H-3 + H-0** | `bot/src/beruang.js` → `sendBillReminders` | List `btg_bills:*` keys, compute due date pakai timezone WIB (UTC+7), kirim notif kalau diff=3 atau diff=0. Cap hari 31 ke last day bulan ini (Feb 30 → 28). Skip kalau bulan ini udah dicatat (via `posted` ledger) atau udah pernah dikirim per-type (dedupe key `btg_notif:` TTL 60 hari) |
+| **Wire cron** | `bot/src/index.js` | `scheduled()` tambah `ctx.waitUntil(sendBillReminders(env))` di samping daily digest |
+| **Callback handler** | `bot/src/beruang.js` → `handleBillCallback` | Inline button `paid:<billId>:<ym>` → push transaksi ke inbox dengan `recurringId+recurringMonth` (app auto-dedupe via `recurringPostedThisMonth`) → update server-side `posted` ledger → edit pesan jadi "✅ Lunas" |
+| **Endpoint debug** | `bot/src/beruang.js` → `handleBeruangBillsTest` | `GET /api/beruang-bills-test?admin_key=...&email=...&force=1&type=h3` — trigger reminder manual buat 1 user atau scan all |
+
+#### **🐛 Telegram Webhook setup requirement (ACTION USER)**
+
+⚠️ **PENDING USER:** Set webhook BerUang bot dengan `allowed_updates=[message,callback_query]` — default Telegram cuma kirim `message`, jadi tombol "✅ Udah bayar" gak akan terdeteksi tanpa update ini.
+
+```bash
+TOKEN="<BERUANG_TG_TOKEN>"
+curl -X POST "https://api.telegram.org/bot${TOKEN}/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://berstock-bot.hendrypangg12.workers.dev/beruang-webhook","allowed_updates":["message","edited_message","callback_query"]}'
+```
+
+#### **📐 Data Flow Lengkap**
+
+```
+[App: saveState()] → debounce 4s
+  → POST /api/beruang-bills-push {email, pullToken, bills, posted}
+  → KV: btg_bills:<email> = {bills, posted, updatedAt}
+
+[Cron 7 AM WIB tiap hari]
+  → list btg_bills:* → loop
+  → for each bill: diff = bill.hariTagih - today
+  → diff===3 OR diff===0 → kirim notif inline_keyboard "Udah bayar"
+  → set btg_notif:<email>:<billId>:<ym>:<h3|h0> (dedupe, TTL 60 hari)
+
+[User tap "✅ Udah bayar"]
+  → callback_query → handleBillCallback
+  → push entry ke btg_inbox:<email> dengan recurringId+recurringMonth
+  → update btg_bills.posted (suppress notif H-0 selanjutnya)
+  → set btg_notif:...:paid (extra suppress)
+  → edit pesan → "✅ Lunas"
+  → app pull inbox berikutnya → transaksi masuk, dedupe via recurringPostedThisMonth
+```
+
+#### **🧠 SKILL BARU**
+
+- **Cloudflare KV `list({prefix})` untuk iterate user data:** pakai cursor pagination, `list_complete` flag untuk break. Cocok buat cron yang scan semua user (alternatif: track index key terpisah, tapi list prefix simpler kalau jumlah user < 1000).
+- **Telegram `allowed_updates` default exclude `callback_query`:** harus eksplisit set via setWebhook. Lesson dipelajari hari ini karena hampir lupa — inline button gak akan jalan tanpa ini.
+- **Dedupe pattern multi-layer untuk notif:**
+  1. App-side: `recurringPostedThisMonth(id)` cek transaksi dengan `recurringId+recurringMonth`
+  2. Server-side: `posted[]` array di `btg_bills:<email>` (di-sync dari app)
+  3. Server-side: `btg_notif:<email>:<billId>:<ym>:<type>` dedupe key TTL 60 hari per notification type
+  Triple-layer biar gak spam notif walaupun ada race condition app sync vs cron jadwal.
+
+#### **⏳ TODO Day 18+**
+
+| Item | Status | Notes |
+|---|---|---|
+| **Set webhook allowed_updates** | 🚨 BLOCKER | Tanpa ini, tombol "Udah bayar" gak jalan |
+| **Set ADMIN_KEY secret** | ⏳ Mungkin belum di-set | `cd bot && wrangler secret put ADMIN_KEY` (untuk debug endpoint + provision tenant) |
+| Test end-to-end | ⏳ User action | Input tagihan di app → 4 detik tunggu → trigger debug endpoint → tap button → verify transaksi masuk app |
+| Render asset "Bonus fitur reminder tagihan" | 💡 Saran | IG carousel/reels promote fitur baru ini buat dapet engagement |
+| Cross-promo di app dashboard "Sambungkan Telegram → dapet reminder tagihan otomatis" | 💡 Saran | Tambah banner di tab Hutang/Tagihan kalau user belum link TG |
+
+---
+
+### ⏳ PENDING (Day 18+)
 
 **🔥 BerUang Play Store (URGENT — lihat TOP PRIORITY di atas)**
 | Item | Status | Notes |
@@ -776,11 +846,18 @@ Google Group join: https://groups.google.com/g/beruangbetatesters
 **App BerUang (root):**
 - `js/hutang.js` — Tab Hutang & Piutang personal (NEW Day 2)
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
+- `js/recurring.js` — Tagihan rutin (state.recurring[] + dashboard reminder card)
+- `js/telegram-link.js` — Pairing + pull inbox + push bills (UPDATED Day 17: `schedulePushBillsToBot()` + `pushBillsToBotNow()`)
+- `js/storage.js` — `saveState()` panggil push bills ke bot (UPDATED Day 17)
+
+**Bot Berstock (bot/src/):**
+- `index.js` — Routes worker, cron handler. Tambah `/api/beruang-bills-push` + `/api/beruang-bills-test` + cron `sendBillReminders` (UPDATED Day 17)
+- `beruang.js` — Logic BerUang Telegram. Tambah `handleBeruangBillsPush`, `handleBeruangBillsTest`, `handleBillCallback`, `sendBillReminders`, `sendBillNotif` (UPDATED Day 17)
 
 **Cache Versions Last Update:**
 - BerBisnis: styles v=23, app v=19, sales v=7, products v=5, etc.
-- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21
-- BerUang Service Worker: **beruang-v15** (Day 16 — cross-sell layout fix)
+- BerUang: styles v=27, app v=26, sync v=22, hutang v=1, storage v=21, **telegram-link v=4** (Day 17)
+- BerUang Service Worker: **beruang-v39** (Day 17 — bill reminders push)
 
 **Day 16 Bug Fix (18 Mei 2026):**
 - Cross-sell BerSatu Suite di dashboard BerUang dipindah dari TENGAH ke BAWAH
