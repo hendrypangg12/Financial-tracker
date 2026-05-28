@@ -292,6 +292,40 @@ function buildAdvisorContext() {
   };
 }
 
+// ============ PROMO AI di dashboard (sekali, dismissible) ============
+function aiPromoKey() {
+  const email = (typeof currentUser !== "undefined" && currentUser && currentUser.email) || "local";
+  return "beruang-ai-promo:" + email;
+}
+function renderAIPromo() {
+  const el = document.getElementById("ai-promo");
+  if (!el) return;
+  let seen = false;
+  try { seen = localStorage.getItem(aiPromoKey()) === "1"; } catch (_) {}
+  if (seen) { el.hidden = true; el.innerHTML = ""; return; }
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="ai-promo-card">
+      <button class="ai-promo-x" aria-label="Tutup">×</button>
+      <div class="ai-promo-emoji">🐻</div>
+      <div class="ai-promo-body">
+        <div class="ai-promo-title">Baru! Tanya <b>Beruang Akuntan</b> 🤖</div>
+        <div class="ai-promo-sub">AI yang ngerti duitmu. Tanya <i>"kapan aku bisa beli HP baru?"</i> atau <i>"pengeluaran mana yang boros?"</i> — dijawab pakai data kamu sendiri.</div>
+        <button class="ai-promo-cta">✨ Coba Sekarang</button>
+      </div>
+    </div>`;
+  const dismiss = () => { try { localStorage.setItem(aiPromoKey(), "1"); } catch (_) {} el.hidden = true; el.innerHTML = ""; };
+  el.querySelector(".ai-promo-x").onclick = dismiss;
+  el.querySelector(".ai-promo-cta").onclick = () => {
+    dismiss();
+    const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
+    const userIsPro = typeof isPro === "function" && isPro(profile);
+    if (userIsPro) { if (typeof openAIChat === "function") openAIChat(); }
+    else { if (typeof openPaywall === "function") openPaywall(); }
+  };
+}
+
 // Expose globals
 window.initAIAdvisor = initAIAdvisor;
 window.showAIFab = showAIFab;
+window.renderAIPromo = renderAIPromo;

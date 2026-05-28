@@ -16,6 +16,8 @@
   --primary: #8b5a2b;       /* coklat beruang — warna utama */
   --primary-dark: #6f4518;  /* coklat gelap untuk hover */
   --primary-ink: #fff;
+  --brown: #8b5a2b;         /* alias coklat (dipakai AI chat: balon user, tombol kirim) */
+  --accent: #c9a352;        /* emas aksen (dipakai AI chat) */
   --cream-2: #f5ebd8;       /* krem aksen */
   --shadow: 0 1px 2px rgba(62, 45, 33, .06), 0 4px 12px rgba(62, 45, 33, .05);
   --radius: 14px;
@@ -2264,3 +2266,20 @@ html { scroll-behavior: smooth; }
   color: var(--ink-soft, #6b5340);
   font-size: 12px;
 }
+
+/* ============ PROMO AI di dashboard (sekali, dismissible) ============ */
+.ai-promo { margin-bottom: 14px; }
+.ai-promo-card {
+  position: relative;
+  display: flex; gap: 12px; align-items: flex-start;
+  background: linear-gradient(135deg, var(--brown) 0%, var(--accent) 100%);
+  color: #fff; border-radius: 16px; padding: 16px 16px 16px 16px;
+  box-shadow: 0 6px 18px rgba(139, 90, 43, .25);
+}
+.ai-promo-emoji { font-size: 30px; flex: 0 0 auto; line-height: 1; }
+.ai-promo-body { flex: 1; min-width: 0; }
+.ai-promo-title { font-size: 15px; font-weight: 800; padding-right: 22px; }
+.ai-promo-sub { font-size: 12.5px; line-height: 1.45; color: rgba(255, 255, 255, .92); margin: 4px 0 10px; }
+.ai-promo-cta { background: #fff; color: var(--brown); border: none; font-weight: 800; font-size: 13px; padding: 9px 16px; border-radius: 999px; cursor: pointer; }
+.ai-promo-cta:active { transform: scale(.96); }
+.ai-promo-x { position: absolute; top: 8px; right: 10px; background: rgba(255, 255, 255, .22); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; font-size: 16px; line-height: 1; cursor: pointer; }
