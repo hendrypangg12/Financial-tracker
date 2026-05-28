@@ -6,6 +6,7 @@ const TG_BOT_USERNAME = "beruangpang2_bot";
 const TG_BOT_URL = "https://t.me/" + TG_BOT_USERNAME;
 const TG_PAIR_ENDPOINT = "https://berstock-bot.hendrypangg12.workers.dev/api/beruang-pair";
 const TG_PULL_ENDPOINT = "https://berstock-bot.hendrypangg12.workers.dev/api/beruang-pull";
+const TG_BILLS_PUSH_ENDPOINT = "https://berstock-bot.hendrypangg12.workers.dev/api/beruang-bills-push";
 
 function tgEmail() {
   return (typeof currentUser !== "undefined" && currentUser && currentUser.email) || "";
@@ -33,6 +34,8 @@ async function linkTelegram(code) {
       tgSetState({ pullToken, linked: true });
       if (typeof showToast === "function") showToast("Telegram tersambung! 🐻", "success");
       pullTelegramInbox();
+      resetBillsPushCache();
+      pushBillsToBotNow(); // langsung kirim bills supaya bot bisa notif
       renderTgModal(); // refresh modal ke state linked
     } else {
       if (typeof showToast === "function") showToast(data && data.error ? data.error : "Gagal menyambung", "error");
@@ -108,7 +111,7 @@ function renderTgModal() {
     body.innerHTML = `
       <h3 style="margin-top:0">🤖 Telegram Tersambung ✅</h3>
       <p style="color:var(--muted);margin:8px 0 16px">Tinggal chat ke bot, transaksi otomatis masuk app.</p>
-      <div style="background:#f1ece2;border-radius:12px;padding:12px 14px;margin-bottom:16px">
+      <div style="background:#f1ece2;border-radius:12px;padding:12px 14px;margin-bottom:12px">
         <div style="font-weight:600;margin-bottom:6px;font-size:13px;color:var(--ink)">Cara pakai di Telegram:</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:var(--ink)">
           <div>• Ketik <b>bakso 25rb</b> → pengeluaran</div>
@@ -117,7 +120,10 @@ function renderTgModal() {
           <div>• <b>bensin 50000</b>, <b>kopi 15rb</b>, dst.</div>
         </div>
       </div>
-      <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Nominal otomatis kebaca (rb = ribu, jt = juta). Foto struk pakai AI vision — total + nama toko auto-extract.</p>
+      <div style="background:#fff7e6;border:1px solid #f0d488;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--ink);line-height:1.5">
+        🔔 <b>Bonus:</b> Tagihan rutin (kost/cicilan/langganan) yang kamu input di app akan otomatis dapat <b>notif H-3 &amp; hari H</b> via Telegram. Tap "Udah bayar" — langsung ke-catat.
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin:0 0 14px">Nominal otomatis kebaca (rb = ribu, jt = juta). Foto struk pakai AI vision.</p>
       <div class="modal-actions" style="flex-wrap:wrap;gap:8px">
         <button type="button" class="btn btn-ghost" id="tg-btn-relink">🔄 Ganti Akun</button>
         <button type="button" class="btn btn-ghost" id="tg-btn-pull">⬇️ Tarik Sekarang</button>
@@ -190,6 +196,48 @@ function renderTgModalForm(isRelink) {
 
 function openTelegramLink() { openTgModal(); }
 
+// ====== PUSH BILLS ke bot (debounced) ======
+// Dipanggil dari saveState(). Bot pakai data ini buat kirim notif H-3 + H-0.
+let _billsPushTimer = null;
+let _billsLastPayload = "";
+function schedulePushBillsToBot() {
+  if (!tgIsLinked()) return;
+  clearTimeout(_billsPushTimer);
+  _billsPushTimer = setTimeout(pushBillsToBotNow, 4000);
+}
+
+async function pushBillsToBotNow() {
+  if (!tgIsLinked()) return;
+  const email = tgEmail();
+  const s = tgState();
+  if (!email || !s || !s.pullToken) return;
+  const bills = (typeof state !== "undefined" && Array.isArray(state.recurring)) ? state.recurring : [];
+  // Hitung posted records dari transactions (untuk dedupe server-side)
+  const posted = [];
+  const seen = new Set();
+  (state.transactions || []).forEach((t) => {
+    if (!t || !t.recurringId || !t.recurringMonth) return;
+    const k = t.recurringId + "|" + t.recurringMonth;
+    if (seen.has(k)) return;
+    seen.add(k);
+    posted.push({ recurringId: t.recurringId, recurringMonth: t.recurringMonth });
+  });
+  const payload = JSON.stringify({ email, pullToken: s.pullToken, bills, posted: posted.slice(-200) });
+  if (payload === _billsLastPayload) return; // skip kalau gak berubah
+  try {
+    const res = await fetch(TG_BILLS_PUSH_ENDPOINT, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: payload,
+    });
+    if (res.ok) _billsLastPayload = payload;
+  } catch (e) { /* offline, biarin */ }
+}
+
+// Reset cache pas user login/logout
+function resetBillsPushCache() { _billsLastPayload = ""; }
+
 window.openTelegramLink = openTelegramLink;
 window.pullTelegramInbox = pullTelegramInbox;
 window.tgIsLinked = tgIsLinked;
+window.schedulePushBillsToBot = schedulePushBillsToBot;
+window.pushBillsToBotNow = pushBillsToBotNow;
+window.resetBillsPushCache = resetBillsPushCache;

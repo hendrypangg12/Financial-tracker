@@ -9,7 +9,7 @@
 import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
 import { askClaude } from "./claude.js";
 import { handleAdvise } from "./advise.js";
-import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull } from "./beruang.js";
+import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, sendBillReminders } from "./beruang.js";
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -19,9 +19,10 @@ import {
 } from "./storage.js";
 
 export default {
-  // Cron handler — Daily Digest jam 7 pagi WIB (00:00 UTC)
+  // Cron handler — jalan 1x sehari pagi WIB (00:00 UTC = 07:00 WIB)
   async scheduled(event, env, ctx) {
     ctx.waitUntil(sendDailyDigestToAllTenants(env));
+    ctx.waitUntil(sendBillReminders(env)); // BerUang: notif H-3 + H-0 tagihan rutin
   },
 
   async fetch(request, env, ctx) {
@@ -51,6 +52,7 @@ export default {
         case "/beruang-webhook":   return await handleBeruangWebhook(request, env, ctx);
         case "/api/beruang-pair":  return await handleBeruangPair(request, env);
         case "/api/beruang-pull":  return await handleBeruangPull(request, env);
+        case "/api/beruang-bills-push": return await handleBeruangBillsPush(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

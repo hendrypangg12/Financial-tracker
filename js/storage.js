@@ -42,6 +42,8 @@ function saveState() {
     }));
     // Sync ke cloud (debounced) kalau user login
     if (typeof pushToCloud === 'function') pushToCloud();
+    // Push recurring bills ke bot (untuk notif H-3/H-0 Telegram)
+    if (typeof schedulePushBillsToBot === 'function') schedulePushBillsToBot();
   } catch (e) {
     console.warn('Gagal menyimpan:', e);
   }

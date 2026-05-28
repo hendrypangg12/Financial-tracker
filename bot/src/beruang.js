@@ -7,6 +7,8 @@ import { sendMessage } from "./telegram.js";
 
 const TTL_CODE = 900;            // kode pairing 15 menit
 const TTL_INBOX = 60 * 60 * 24 * 14; // inbox 14 hari
+const TTL_BILLS = 60 * 60 * 24 * 90; // bills 90 hari (refresh tiap sync)
+const TTL_NOTIF = 60 * 60 * 24 * 60; // dedupe notif 60 hari
 
 function jres(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -89,6 +91,13 @@ export async function handleBeruangWebhook(request, env, ctx) {
   if (!token) return jres({ error: "BERUANG_TG_TOKEN not set" }, 500);
   let update;
   try { update = await request.json(); } catch { return jres({ ok: true }); }
+
+  // Inline button callback ("✅ Udah bayar" pada notif tagihan)
+  if (update.callback_query) {
+    ctx.waitUntil(handleBillCallback(env, token, update.callback_query).catch(() => {}));
+    return jres({ ok: true });
+  }
+
   const msg = update.message || update.edited_message;
   const chatId = msg && msg.chat && msg.chat.id;
   const text = (msg && msg.text || "").trim();
@@ -291,4 +300,203 @@ export async function handleBeruangPull(request, env) {
   const arr = (await env.BOT_DATA.get(key, "json")) || [];
   if (arr.length) await env.BOT_DATA.delete(key); // clear setelah ditarik
   return jres({ ok: true, linked: true, items: arr });
+}
+
+// ====== BILLS PUSH: app kirim recurring bills + posted history ======
+// Body: { email, pullToken, bills: [{id,nama,jumlah,hariTagih,kategori,subKategori,alokasi}], posted: [{recurringId,recurringMonth}] }
+export async function handleBeruangBillsPush(request, env) {
+  if (request.method === "OPTIONS") return jres({ ok: true });
+  let body; try { body = await request.json(); } catch { return jres({ error: "bad json" }, 400); }
+  const { email, pullToken, bills, posted } = body || {};
+  if (!email || !pullToken) return jres({ error: "email, pullToken wajib" }, 400);
+  const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
+  if (!map || map.pullToken !== pullToken) return jres({ ok: false, linked: false }, 401);
+  // Sanitize: cap sizes & required fields
+  const safeBills = (Array.isArray(bills) ? bills : []).slice(0, 50).map((b) => ({
+    id: String(b.id || "").slice(0, 40),
+    nama: String(b.nama || "Tagihan").slice(0, 60),
+    jumlah: Math.max(0, parseInt(b.jumlah, 10) || 0),
+    hariTagih: Math.min(31, Math.max(1, parseInt(b.hariTagih, 10) || 1)),
+    kategori: String(b.kategori || "Tagihan Rutin").slice(0, 40),
+    subKategori: String(b.subKategori || b.nama || "Tagihan").slice(0, 40),
+    alokasi: String(b.alokasi || "Kebutuhan").slice(0, 20),
+  })).filter((b) => b.id && b.jumlah > 0);
+  const safePosted = (Array.isArray(posted) ? posted : []).slice(-200).map((p) => ({
+    recurringId: String(p.recurringId || "").slice(0, 40),
+    recurringMonth: String(p.recurringMonth || "").slice(0, 7),
+  })).filter((p) => p.recurringId && /^\d{4}-\d{2}$/.test(p.recurringMonth));
+  await env.BOT_DATA.put("btg_bills:" + email,
+    JSON.stringify({ bills: safeBills, posted: safePosted, updatedAt: Date.now() }),
+    { expirationTtl: TTL_BILLS });
+  return jres({ ok: true, count: safeBills.length });
+}
+
+// ====== CALLBACK: tombol "✅ Udah bayar" pada notif tagihan ======
+async function handleBillCallback(env, token, cb) {
+  const data = String(cb.data || "");
+  if (!data.startsWith("paid:")) return;
+  const [, billId, ym] = data.split(":");
+  const chatId = cb.message && cb.message.chat && cb.message.chat.id;
+  const msgId = cb.message && cb.message.message_id;
+  if (!chatId || !billId || !ym) { await answerCallback(token, cb.id, "Data invalid"); return; }
+
+  const link = await env.BOT_DATA.get("btg_chat:" + chatId, "json");
+  if (!link || !link.email) { await answerCallback(token, cb.id, "Akun belum tersambung"); return; }
+  const email = link.email;
+
+  const billsRec = await env.BOT_DATA.get("btg_bills:" + email, "json");
+  const bill = (billsRec && billsRec.bills || []).find((b) => b.id === billId);
+  if (!bill) { await answerCallback(token, cb.id, "Tagihan udah dihapus"); return; }
+
+  // Sudah dicatat bulan ini?
+  const alreadyPaid = (billsRec.posted || []).some((p) => p.recurringId === billId && p.recurringMonth === ym);
+  if (alreadyPaid) {
+    await answerCallback(token, cb.id, "Udah dicatat sebelumnya ✓");
+    await editMessageMarkup(token, chatId, msgId);
+    return;
+  }
+
+  // Push transaksi ke inbox (app akan tarik & dedupe via recurringId+recurringMonth)
+  const entry = {
+    id: "tg_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    tanggal: new Date().toISOString().slice(0, 10),
+    jenis: "pengeluaran",
+    jumlah: Number(bill.jumlah) || 0,
+    kategori: bill.kategori || "Tagihan Rutin",
+    subKategori: bill.subKategori || bill.nama || "Tagihan",
+    alokasi: bill.alokasi || "Kebutuhan",
+    deskripsi: bill.nama,
+    recurringId: bill.id,
+    recurringMonth: ym,
+    _src: "telegram-bill",
+  };
+  await pushInbox(env, email, entry);
+
+  // Update server-side posted ledger (untuk suppress notif H-0)
+  billsRec.posted = billsRec.posted || [];
+  billsRec.posted.push({ recurringId: billId, recurringMonth: ym });
+  billsRec.posted = billsRec.posted.slice(-200);
+  await env.BOT_DATA.put("btg_bills:" + email, JSON.stringify(billsRec), { expirationTtl: TTL_BILLS });
+  await env.BOT_DATA.put(`btg_notif:${email}:${billId}:${ym}:paid`, "1", { expirationTtl: TTL_NOTIF });
+
+  await answerCallback(token, cb.id, "✅ Tercatat!");
+  await editMessageText(token, chatId, msgId,
+    `✅ <b>Lunas — ${escapeHtml(bill.nama)}</b>\n💸 ${fmtRp(entry.jumlah)}\n📅 ${entry.tanggal}\n\n<i>Buka app BerUang — transaksi auto-masuk.</i>`,
+    { parse_mode: "HTML" });
+}
+
+function escapeHtml(s) { return String(s || "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" })[c]); }
+
+async function answerCallback(token, cbId, text) {
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: cbId, text }),
+    });
+  } catch (e) {}
+}
+
+async function editMessageText(token, chatId, msgId, text, opts = {}) {
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId, message_id: msgId, text,
+        parse_mode: opts.parse_mode,
+        reply_markup: { inline_keyboard: [] }, // hilangkan tombol
+      }),
+    });
+  } catch (e) {}
+}
+
+async function editMessageMarkup(token, chatId, msgId) {
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, message_id: msgId, reply_markup: { inline_keyboard: [] } }),
+    });
+  } catch (e) {}
+}
+
+// ====== CRON: kirim notif H-3 + H-0 untuk recurring bills ======
+// Dipanggil dari scheduled() di index.js. Cron jalan 1× sehari pagi WIB.
+export async function sendBillReminders(env) {
+  const token = (env.BERUANG_TG_TOKEN || "").trim();
+  if (!token) { console.warn("[BillReminders] BERUANG_TG_TOKEN not set"); return; }
+
+  // Hitung tanggal WIB (cron jalan 00:00 UTC = 07:00 WIB)
+  const nowWib = new Date(Date.now() + 7 * 3600 * 1000);
+  const todayDay = nowWib.getUTCDate();
+  const ym = nowWib.toISOString().slice(0, 7);
+  const lastDay = new Date(Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth() + 1, 0)).getUTCDate();
+
+  let sent = 0, errors = 0, scanned = 0;
+  let cursor;
+  do {
+    const list = await env.BOT_DATA.list({ prefix: "btg_bills:", cursor, limit: 1000 });
+    for (const k of list.keys) {
+      scanned++;
+      try {
+        const email = k.name.slice("btg_bills:".length);
+        const billsRec = await env.BOT_DATA.get(k.name, "json");
+        if (!billsRec || !Array.isArray(billsRec.bills) || !billsRec.bills.length) continue;
+
+        const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
+        if (!map || !map.chatId) continue;
+        const chatId = map.chatId;
+
+        for (const bill of billsRec.bills) {
+          // Cap hari tagih ke last day of month (Feb 30 → Feb 28)
+          const dueDay = Math.min(bill.hariTagih || 1, lastDay);
+          const diff = dueDay - todayDay;
+          let type = null;
+          if (diff === 3) type = "h3";
+          else if (diff === 0) type = "h0";
+          if (!type) continue;
+
+          // Skip kalau sudah dicatat bulan ini
+          if ((billsRec.posted || []).some((p) => p.recurringId === bill.id && p.recurringMonth === ym)) continue;
+          if (await env.BOT_DATA.get(`btg_notif:${email}:${bill.id}:${ym}:paid`)) continue;
+
+          // Dedupe per type
+          const notifKey = `btg_notif:${email}:${bill.id}:${ym}:${type}`;
+          if (await env.BOT_DATA.get(notifKey)) continue;
+
+          await sendBillNotif(token, chatId, bill, type, diff, ym);
+          await env.BOT_DATA.put(notifKey, "1", { expirationTtl: TTL_NOTIF });
+          sent++;
+        }
+      } catch (e) {
+        console.warn("[BillReminders] failed for key", k.name, e.message);
+        errors++;
+      }
+    }
+    cursor = list.cursor;
+    if (list.list_complete) break;
+  } while (cursor);
+
+  console.log(`[BillReminders] Done. Scanned: ${scanned}, Sent: ${sent}, Errors: ${errors}`);
+}
+
+async function sendBillNotif(token, chatId, bill, type, diff, ym) {
+  const headline = type === "h0"
+    ? "🔔 <b>Tagihan jatuh tempo HARI INI!</b>"
+    : `⏰ <b>Tagihan ${diff} hari lagi</b>`;
+  const text =
+    `${headline}\n\n` +
+    `🐻 <b>${escapeHtml(bill.nama)}</b>\n` +
+    `💸 ${fmtRp(bill.jumlah)}\n` +
+    `📅 Setiap tanggal ${bill.hariTagih}\n\n` +
+    `Udah bayar? Tap tombol bawah, langsung ke-catat ke app.`;
+  await sendMessage(token, chatId, text, {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [[
+        { text: "✅ Udah bayar — Catat sekarang", callback_data: `paid:${bill.id}:${ym}` },
+      ]],
+    },
+  });
 }
