@@ -48,6 +48,14 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 const fbAuth = typeof firebase !== 'undefined' ? firebase.auth() : null;
 const fbDb = typeof firebase !== 'undefined' ? firebase.firestore() : null;
 
+// Auto-login: paksa persistence LOCAL (survive browser close, gak expire kecuali user logout manual)
+// LOCAL = localStorage (default di web), SESSION = sessionStorage (hilang tutup tab), NONE = memori only
+if (fbAuth && firebase.auth && firebase.auth.Auth && firebase.auth.Auth.Persistence) {
+  fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((e) => {
+    console.warn('Auth persistence LOCAL fail:', e.message);
+  });
+}
+
 // Aktifkan offline persistence supaya data tetap bisa diakses tanpa internet
 if (fbDb) {
   fbDb.enablePersistence({ synchronizeTabs: true }).catch(() => { /* abaikan error multi-tab */ });

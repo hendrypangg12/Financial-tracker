@@ -576,10 +576,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Deteksi mode browser & tampilkan tip persistent login sesuai situasi
+function detectAuthEnvAndShowTip() {
+  const tipPwa = document.getElementById('auth-pwa-tip');
+  const tipPrivate = document.getElementById('auth-private-warn');
+  if (!tipPwa || !tipPrivate) return;
+  // Standalone PWA = udah install homescreen → tip-nya gak perlu
+  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  const isIosStandalone = window.navigator && window.navigator.standalone === true;
+  if (isStandalone || isIosStandalone) {
+    tipPwa.style.display = 'none';
+    tipPrivate.style.display = 'none';
+    return;
+  }
+  // Test private/incognito: coba write localStorage. Di iOS Safari Private, write throws atau quota 0.
+  let isPrivate = false;
+  try {
+    const k = '__priv_test_' + Date.now();
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+  } catch (e) { isPrivate = true; }
+  // Tambah cek estimate quota (Chrome incognito = quota kecil)
+  if (!isPrivate && navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then((q) => {
+      if (q.quota && q.quota < 120 * 1024 * 1024) { // < 120MB = kemungkinan private
+        tipPrivate.style.display = 'block';
+      }
+    }).catch(() => {});
+  }
+  if (isPrivate) tipPrivate.style.display = 'block';
+  else tipPwa.style.display = 'block';
+}
+
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
   document.getElementById('login-screen').hidden = which !== 'login';
   document.getElementById('paywall-screen').hidden = which !== 'paywall';
+  if (which === 'login') detectAuthEnvAndShowTip();
   const menu = document.getElementById('user-menu');
   if (menu) menu.hidden = which !== 'app';
   if (which === 'paywall') {
