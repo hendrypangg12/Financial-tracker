@@ -927,9 +927,14 @@ CREATE TABLE ai_suggestions (
 - `js/sync.js` — 3-layer auto-sync ke Firestore (UPDATED Day 2)
 
 **Cache Versions Last Update (per 27 Mei 2026):**
-- BerUang: **styles v=39**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
-  **hutang v=2**, **storage v=23**, **dashboard v=25**, ai-advisor v=6, **onboarding v=6**,
-  **recurring v=1** · Service Worker **beruang-v33**
+- BerUang: **styles v=40**, **app v=37**, firebase-config v=22, presence v=2, **sync v=24**,
+  **hutang v=2**, **storage v=23**, **dashboard v=26**, **ai-advisor v=7**, **onboarding v=6**,
+  **recurring v=1** · Service Worker **beruang-v34**
+- **🐛 Fix chat AI:** var `--brown`/`--accent` GAK didefinisikan di `:root` → balon user
+  (teks putih) & tombol kirim transparan/ilang. Didefinisikan (#8b5a2b/#c9a352) → fixed.
+- **📣 Promo AI di dashboard** (`#ai-promo` + `renderAIPromo` di ai-advisor.js): kartu
+  gradient "Tanya Beruang Akuntan" + CTA (Pro→chat, Free→paywall) + X. Muncul sampai
+  di-dismiss/dipakai (flag `beruang-ai-promo:<email>`), abis itu gak muncul lagi.
 - **Dashboard kartu "💸 Hutang & Piutang"** (`renderHutangSummary`): Piutang hijau + Hutang
   merah + posisi bersih + link ke tab Hutang. Pakai field `nominal`.
 - **🔁 Tagihan Rutin + 🔔 Pengingat (`state.recurring[]` + `js/recurring.js`):** template
