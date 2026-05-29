@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BerSatu Threads · Komunitas UMKM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --navy: #0a1628;
+    --navy-2: #16243d;
+    --gold: #d4af37;
+    --gold-bright: #ffd966;
+    --cream: #fbf6ee;
+    --ink: #1a1a1a;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --bg: #f7f7f8;
+    --like: #ef4444;
+    --primary: #1e3a5f;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0a1628 0%, #16243d 100%);
+    min-height: 100vh;
+    padding: 30px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .frame-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 100%;
+    max-width: 430px;
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    position: relative;
+    border: 8px solid #1a1a1a;
+  }
+  .status-bar {
+    background: white;
+    padding: 8px 24px 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .status-icons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  /* HEADER */
+  header {
+    background: white;
+    padding: 8px 16px 12px;
+    border-bottom: 1px solid var(--gray-light);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0 14px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    border: 1.5px solid var(--gold);
+  }
+  .logo-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--navy);
+  }
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .header-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+  }
+  .badge-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: var(--like);
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  .tabs {
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid var(--gray-light);
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  .tab {
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab.active {
+    color: var(--navy);
+    border-bottom-color: var(--gold);
+  }
+  .tab.industry {
+    padding: 8px 14px;
+    background: var(--bg);
+    border-radius: 100px;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  /* FILTER STRIP */
+  .filter-strip {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .filter-strip::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 6px 14px;
+    background: var(--bg);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    border: 1px solid var(--gray-light);
+  }
+  .chip.active {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+
+  /* FEED */
+  .feed {
+    background: var(--bg);
+    padding-bottom: 80px;
+    min-height: 600px;
+  }
+  .thread {
+    background: white;
+    padding: 14px 16px;
+    border-bottom: 8px solid var(--bg);
+    display: flex;
+    gap: 10px;
+  }
+  .ava {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #d4a574, #8b5a2b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    border: 2px solid #ffd966;
+  }
+  .ava.ceo { background: linear-gradient(135deg, var(--navy), var(--navy-2)); border-color: var(--gold); }
+  .ava.fnb { background: linear-gradient(135deg, #f97316, #c2410c); }
+  .ava.beauty { background: linear-gradient(135deg, #ec4899, #be185d); }
+  .ava.ice { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+  .ava.muslim { background: linear-gradient(135deg, #c2185b, #831843); }
+  .thread-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .thread-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+  .author-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .verify {
+    color: var(--gold);
+    font-size: 13px;
+  }
+  .biz-tag {
+    background: var(--bg);
+    color: var(--gray);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .time {
+    color: var(--gray);
+    font-size: 12px;
+  }
+  .more-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    font-size: 18px;
+  }
+  .thread-text {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 4px 0 8px;
+    word-wrap: break-word;
+  }
+  .thread-text a, .hashtag {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .thread-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 12px;
+    margin: 8px 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    overflow: hidden;
+    position: relative;
+  }
+  /* Chart mockup */
+  .chart-mock {
+    background: linear-gradient(135deg, #1e3a5f, #0a1628);
+    color: white;
+    padding: 16px;
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .chart-title {
+    font-size: 12px;
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+  .chart-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+  }
+  .chart-bars {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 60px;
+  }
+  .chart-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    border-radius: 3px 3px 0 0;
+  }
+  /* Cross-promote card */
+  .promo-card {
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #fffbe6 0%, white 100%);
+  }
+  .promo-icon {
+    width: 40px; height: 40px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .promo-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .promo-sub {
+    font-size: 11px;
+    color: var(--gray);
+  }
+  .promo-btn {
+    margin-left: auto;
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .thread-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 10px;
+    color: var(--gray);
+    font-size: 13px;
+  }
+  .action {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .action.liked {
+    color: var(--like);
+  }
+  .action-icon {
+    font-size: 16px;
+  }
+  /* Replies preview */
+  .reply-preview {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    color: var(--gray);
+    font-size: 12px;
+    align-items: center;
+  }
+  .mini-avs {
+    display: flex;
+  }
+  .mini-av {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4a574, #8b5a2b);
+    border: 1.5px solid white;
+    margin-left: -6px;
+  }
+  .mini-av:first-child { margin-left: 0; }
+
+  /* CREATE BUTTON FLOATING */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(212,175,55,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 3px solid white;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid var(--gray-light);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 20px;
+    z-index: 9;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--gray);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .nav-item.active { color: var(--navy); }
+  .nav-icon { font-size: 20px; }
+
+  /* Trending/sidebar style for compare card */
+  .trending {
+    background: linear-gradient(135deg, var(--navy), var(--navy-2));
+    color: white;
+    padding: 14px 16px;
+    border-bottom: 8px solid var(--bg);
+  }
+  .trending-title {
+    font-size: 11px;
+    color: var(--gold-bright);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .trend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .trend-item:last-child { border-bottom: 0; }
+  .trend-rank {
+    color: var(--gold-bright);
+    font-weight: 700;
+    font-size: 13px;
+    width: 18px;
+  }
+  .trend-tag {
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .trend-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Side caption */
+  .caption {
+    max-width: 430px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 24px;
+  }
+  .caption strong { color: #ffd966; }
+</style>
+</head>
+<body>
+
+<div class="frame-label">★ MOCKUP STATIS — KONSEP "BerSatu Threads" ★</div>
+
+<div class="phone">
+
+  <div class="status-bar">
+    <span>22.25</span>
+    <span class="status-icons">📶 🔋</span>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">🐻</div>
+        <div class="logo-text">BerSatu Threads</div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn">🔍</button>
+        <button class="header-btn">🔔<span class="badge-dot"></span></button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active">Untuk Kamu</div>
+      <div class="tab">Ngikutin</div>
+      <div class="tab">Toko Saya</div>
+    </div>
+  </header>
+
+  <div class="filter-strip">
+    <div class="chip active">🌐 Semua</div>
+    <div class="chip">🛒 Sembako</div>
+    <div class="chip">🍔 FnB</div>
+    <div class="chip">💄 Beauty</div>
+    <div class="chip">🍦 Es Krim</div>
+    <div class="chip">👕 Fashion</div>
+  </div>
+
+  <div class="feed">
+
+    <!-- TRENDING WIDGET -->
+    <div class="trending">
+      <div class="trending-title">🔥 Trending di Berstock</div>
+      <div class="trend-item">
+        <span class="trend-rank">1</span>
+        <div>
+          <div class="trend-tag">#PlayStoreLaunch</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6)">BerUang 3 hari lagi live</div>
+        </div>
+        <span class="trend-count">2.4K</span>
+      </div>
+      <div class="trend-item">
+        <span class="trend-rank">2</span>
+        <div>
+          <div class="trend-tag">#TipsCashFlow</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6)">Diskusi nego supplier</div>
+        </div>
+        <span class="trend-count">890</span>
+      </div>
+      <div class="trend-item">
+        <span class="trend-rank">3</span>
+        <div>
+          <div class="trend-tag">#RamadanReady</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6)">Strategi stok</div>
+        </div>
+        <span class="trend-count">512</span>
+      </div>
+    </div>
+
+    <!-- THREAD 1 — Bos -->
+    <div class="thread">
+      <div class="ava ceo">🐻</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Hendry Phang</span>
+          <span class="verify">✓</span>
+          <span class="biz-tag">CEO Berstock</span>
+          <span class="time">· 2j</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Day 11 of 14! 🚀 3 hari lagi BerUang unlock production di Play Store. Bos & temen-temen, doain ya jangan ada tester yg uninstall 🙏 <a class="hashtag">#PlayStoreLaunch</a> <a class="hashtag">#BerUang</a></div>
+        <div class="thread-actions">
+          <div class="action liked"><span class="action-icon">❤️</span> 142</div>
+          <div class="action"><span class="action-icon">💬</span> 28</div>
+          <div class="action"><span class="action-icon">🔁</span> 12</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD 2 — Pak Budi (with promo card) -->
+    <div class="thread">
+      <div class="ava">🐻</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Pak Budi</span>
+          <span class="biz-tag">Sembako · Bekasi</span>
+          <span class="time">· 4j</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Akhirnya restock telor 30 krat! HPP weighted average di BerBisnis hemat 8% bulan ini 💰 Yg butuh telor bisa mampir, harga grosir 👇</div>
+        <div class="promo-card">
+          <div class="promo-icon">🛒</div>
+          <div>
+            <div class="promo-name">Toko Sembako Pak Budi</div>
+            <div class="promo-sub">📍 Bekasi · Grosir & eceran</div>
+          </div>
+          <button class="promo-btn">Lihat →</button>
+        </div>
+        <div class="thread-actions">
+          <div class="action"><span class="action-icon">🤍</span> 47</div>
+          <div class="action"><span class="action-icon">💬</span> 9</div>
+          <div class="action"><span class="action-icon">🔁</span> 3</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD 3 — Edwin (FnB, with image) -->
+    <div class="thread">
+      <div class="ava fnb">👨‍🍳</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Edwin Abraham</span>
+          <span class="biz-tag">FnB · Jakarta</span>
+          <span class="time">· 6j</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Lifesaver! 🙏 Trial habis tapi udah dapet insight: pengeluaran terbesar = ingredient sapi (38% revenue!). Waktunya nego supplier 💪</div>
+        <div class="thread-img chart-mock">
+          <div>
+            <div class="chart-title">📊 BREAKDOWN PENGELUARAN — MEI 2026</div>
+            <div class="chart-value">Rp 38jt</div>
+          </div>
+          <div class="chart-bars">
+            <div class="chart-bar" style="height:80%"></div>
+            <div class="chart-bar" style="height:50%"></div>
+            <div class="chart-bar" style="height:35%"></div>
+            <div class="chart-bar" style="height:25%"></div>
+            <div class="chart-bar" style="height:18%"></div>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);">Sapi · Sayur · Bumbu · Gas · Lain-lain</div>
+        </div>
+        <div class="thread-actions">
+          <div class="action"><span class="action-icon">🤍</span> 89</div>
+          <div class="action"><span class="action-icon">💬</span> 14</div>
+          <div class="action"><span class="action-icon">🔁</span> 6</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD 4 — Bu Siti (question) -->
+    <div class="thread">
+      <div class="ava muslim">🧕</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Bu Siti Halimah</span>
+          <span class="biz-tag">Skincare · Bandung</span>
+          <span class="time">· 8j</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Tanya dong yg jualan skincare juga 🙏 Supplier kemasan jar 30ml yg murah & quality OK dimana ya? Yg di Shopee mahal banget 🥲</div>
+        <div class="reply-preview">
+          <div class="mini-avs">
+            <div class="mini-av"></div>
+            <div class="mini-av" style="background:linear-gradient(135deg,#f97316,#c2410c)"></div>
+            <div class="mini-av" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"></div>
+          </div>
+          <span>Mbak Tari & 11 lainnya bales</span>
+        </div>
+        <div class="thread-actions">
+          <div class="action"><span class="action-icon">🤍</span> 23</div>
+          <div class="action"><span class="action-icon">💬</span> 12</div>
+          <div class="action"><span class="action-icon">🔁</span> 1</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD 5 — Mas Rio -->
+    <div class="thread">
+      <div class="ava ice">🍦</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Mas Rio</span>
+          <span class="biz-tag">Es Krim · Surabaya</span>
+          <span class="time">· 12j</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Tips dari pengalaman 6 bulan jual es krim: <br>1️⃣ Stok varian rasa max 8, jangan kebanyakan<br>2️⃣ Promo "beli 2 gratis 1" Sabtu = boost AOV 40%<br>3️⃣ Catat di BerBisnis biar ketauan rasa apa yg slow-moving<br><br>Repost kalau bermanfaat 🙏</div>
+        <div class="thread-actions">
+          <div class="action liked"><span class="action-icon">❤️</span> 312</div>
+          <div class="action"><span class="action-icon">💬</span> 47</div>
+          <div class="action"><span class="action-icon">🔁</span> 89</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD 6 — Mbak Tari -->
+    <div class="thread">
+      <div class="ava beauty">💄</div>
+      <div class="thread-body">
+        <div class="thread-header">
+          <span class="author-name">Mbak Tari</span>
+          <span class="biz-tag">Beauty · Yogya</span>
+          <span class="time">· 1h</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="thread-text">Cara naikin AOV yg works buat saya: bundle 3 produk dengan diskon 15%. AOV naik dari Rp 80rb → Rp 145rb 🎯 Yg susah: bikin combo yg masuk akal. Saran combo welcome! 🙏</div>
+        <div class="thread-actions">
+          <div class="action"><span class="action-icon">🤍</span> 56</div>
+          <div class="action"><span class="action-icon">💬</span> 18</div>
+          <div class="action"><span class="action-icon">🔁</span> 7</div>
+          <div class="action"><span class="action-icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="fab">+</button>
+
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span>Cari</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">🔔</span>
+      <span>Notif</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Profil</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="caption">
+  <strong>BerSatu Threads</strong> — Threads-style microblog khusus owner UMKM Indonesia. <br>
+  USP: pre-filter industry · verified UMKM only · cross-promote toko gratis · embed di BerUang/BerBisnis. <br>
+  Stack rencana: <strong>Firebase Firestore</strong> (data) + <strong>Firebase Auth</strong> (existing) + <strong>FCM</strong> (push notif) + <strong>R2/Storage</strong> (image).
+</div>
+
+</body>
+</html>

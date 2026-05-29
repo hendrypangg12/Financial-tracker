@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Lounge Beruang · BerSatu Suite (Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-light: #16243d;
+    --gold: #d4af37;
+    --gold-bright: #ffd966;
+    --cream: #fbf6ee;
+    --magenta: #e91e63;
+    --cyan: #06b6d4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #050816 0%, #0a1628 50%, #16243d 100%);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 20px;
+  }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+  }
+  /* ===== TOP BAR ===== */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 16px;
+    padding: 14px 22px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 24px rgba(212,175,55,0.4);
+  }
+  .brand-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--gold-bright);
+    letter-spacing: 0.5px;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .badge-mockup {
+    background: linear-gradient(135deg, var(--magenta), #c2185b);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(233,30,99,0.4);
+  }
+  .topbar-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .room-info {
+    text-align: right;
+  }
+  .room-title {
+    font-size: 14px; font-weight: 600;
+  }
+  .room-count {
+    font-size: 11px; color: var(--cyan);
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  /* ===== ROOM ===== */
+  .room-wrap {
+    position: relative;
+    background: linear-gradient(180deg, #1a2740 0%, #0d1830 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(212,175,55,0.15);
+    overflow: hidden;
+    aspect-ratio: 16 / 11;
+  }
+  .room {
+    position: absolute; inset: 0;
+    perspective: 1200px;
+  }
+  /* Floor (top-down isometric trick) */
+  .floor {
+    position: absolute;
+    inset: 8% 6% 12% 6%;
+    background:
+      repeating-linear-gradient(90deg, rgba(212,175,55,0.04) 0 60px, transparent 60px 120px),
+      repeating-linear-gradient(0deg, rgba(212,175,55,0.04) 0 60px, transparent 60px 120px),
+      linear-gradient(135deg, #2a3a55 0%, #1a2740 100%);
+    border-radius: 20px;
+    box-shadow:
+      inset 0 0 80px rgba(0,0,0,0.5),
+      0 0 0 2px rgba(212,175,55,0.15);
+    transform: rotateX(8deg);
+    transform-origin: center bottom;
+  }
+  .wall-back {
+    position: absolute;
+    top: 5%; left: 6%; right: 6%;
+    height: 12%;
+    background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(212,175,55,0.05));
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 30px;
+  }
+  .wall-art {
+    background: rgba(255,255,255,0.06);
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(212,175,55,0.3);
+    font-size: 11px;
+    color: var(--gold-bright);
+    font-weight: 600;
+  }
+  /* Furniture */
+  .furniture {
+    position: absolute;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    color: rgba(255,255,255,0.6);
+  }
+  .sofa {
+    left: 18%; bottom: 22%;
+    width: 22%; height: 12%;
+    background: linear-gradient(180deg, #3a4a6a 0%, #2a3a55 100%);
+    border-radius: 16px 16px 8px 8px;
+    border-top: 4px solid rgba(212,175,55,0.3);
+  }
+  .table {
+    left: 22%; bottom: 38%;
+    width: 14%; height: 7%;
+    background: linear-gradient(180deg, #6b4423 0%, #4a3015 100%);
+    border-radius: 6px;
+  }
+  .table::after {
+    content: '☕'; font-size: 18px;
+    position: absolute; top: -2px; left: 50%;
+    transform: translateX(-50%);
+  }
+  .desk {
+    right: 14%; top: 28%;
+    width: 16%; height: 8%;
+    background: linear-gradient(180deg, #5a4530 0%, #3a2c1f 100%);
+    border-radius: 4px;
+  }
+  .desk::after {
+    content: '💻'; font-size: 18px;
+    position: absolute; top: -8px; left: 30%;
+  }
+  .desk::before {
+    content: '📊'; font-size: 16px;
+    position: absolute; top: -6px; right: 20%;
+  }
+  .plant {
+    right: 9%; bottom: 20%;
+    width: 8%; height: 12%;
+    background: radial-gradient(circle at 50% 30%, #2d5a3d 0%, #1a3a25 70%);
+    border-radius: 50% 50% 20% 20%;
+  }
+  .plant::after {
+    content: '🪴'; position: absolute; bottom: -6px;
+    left: 50%; transform: translateX(-50%); font-size: 22px;
+  }
+  .whiteboard {
+    left: 8%; top: 22%;
+    width: 16%; height: 10%;
+    background: linear-gradient(180deg, #fbf6ee 0%, #e8dfc8 100%);
+    color: var(--navy);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .whiteboard::before {
+    content: '📌 ROADMAP\AJune: Play Store Live\AJuli: Lounge V1';
+    white-space: pre;
+    font-family: 'Fredoka', sans-serif;
+  }
+  /* ===== AVATARS ===== */
+  .avatar {
+    position: absolute;
+    width: 78px;
+    text-align: center;
+    z-index: 5;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .avatar:hover { transform: scale(1.08); }
+  .avatar-body {
+    width: 64px; height: 64px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #c89968 0%, #8b5a2b 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    box-shadow:
+      0 6px 16px rgba(0,0,0,0.5),
+      inset 0 -4px 8px rgba(0,0,0,0.2),
+      0 0 0 3px rgba(212,175,55,0.4);
+    position: relative;
+    animation: idleBounce 3s ease-in-out infinite;
+  }
+  .avatar:nth-child(odd) .avatar-body { animation-delay: 0.5s; }
+  .avatar:nth-child(3n) .avatar-body { animation-delay: 1s; }
+  @keyframes idleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .avatar-name {
+    margin-top: 6px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold-bright);
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .avatar-shadow {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 8px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.5), transparent);
+    border-radius: 50%;
+    z-index: -1;
+  }
+  /* Speech bubble */
+  .speech {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: var(--navy);
+    padding: 8px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    animation: pop 4s ease-in-out infinite;
+  }
+  .speech::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: white;
+    border-bottom: 0;
+  }
+  @keyframes pop {
+    0%, 90%, 100% { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.9); }
+    10%, 80% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  /* Avatar positions */
+  .a1 { left: 22%; bottom: 30%; }
+  .a2 { left: 35%; bottom: 42%; }
+  .a3 { right: 22%; bottom: 38%; }
+  .a4 { left: 45%; bottom: 18%; }
+  .a5 { right: 35%; bottom: 25%; }
+  .a6 { left: 14%; bottom: 50%; }
+  /* Avatar color variants */
+  .a2 .avatar-body { background: linear-gradient(180deg, #e8c79a 0%, #b8924c 100%); }
+  .a3 .avatar-body { background: linear-gradient(180deg, #a0735a 0%, #5a3d28 100%); }
+  .a4 .avatar-body { background: linear-gradient(180deg, #d4a574 0%, #8b5a2b 100%); }
+  .a5 .avatar-body { background: linear-gradient(180deg, #ba8f63 0%, #6d4520 100%); }
+  .a6 .avatar-body { background: linear-gradient(180deg, #c89968 0%, #8b5a2b 100%); }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .panel {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .panel-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold-bright);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .online-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .online-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+  }
+  .mini-ava {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #c89968, #8b5a2b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 2px solid rgba(212,175,55,0.4);
+  }
+  .online-name {
+    flex: 1;
+    font-weight: 500;
+  }
+  .online-tag {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+  }
+  .dot-status {
+    width: 7px; height: 7px;
+    background: #22c55e;
+    border-radius: 50%;
+  }
+  .dot-idle {
+    background: #facc15;
+  }
+  /* Chat */
+  .chat-input {
+    display: flex; gap: 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 100px;
+    padding: 4px 6px 4px 16px;
+    margin-top: 12px;
+  }
+  .chat-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 13px;
+    font-family: 'Inter';
+  }
+  .chat-input input::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+  .chat-send {
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    border: none;
+    color: var(--navy);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  /* Roadmap card */
+  .roadmap {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .road-item {
+    display: flex; gap: 10px;
+    font-size: 12px;
+    align-items: flex-start;
+  }
+  .road-icon {
+    font-size: 14px;
+  }
+  .road-status-soon { color: var(--cyan); font-weight: 600; }
+  .road-status-now { color: var(--magenta); font-weight: 600; }
+  .road-status-next { color: rgba(255,255,255,0.4); }
+
+  /* Footer note */
+  .footer-note {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .footer-note strong { color: var(--gold-bright); }
+
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .room-wrap { aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🐻</div>
+      <div>
+        <div class="brand-name">Lounge Beruang</div>
+        <div class="brand-sub">BerSatu Suite · Hangout Space</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="room-info">
+        <div class="room-title">Kantor Berstock · Lantai 1</div>
+        <div class="room-count"><span class="live-dot"></span>6 beruang online</div>
+      </div>
+      <div class="badge-mockup">Mockup</div>
+    </div>
+  </div>
+
+  <div class="room-wrap">
+    <div class="room">
+      <div class="wall-back">
+        <div class="wall-art">📈 SALES BOARD</div>
+        <div class="wall-art">🏆 TOP UMKM</div>
+        <div class="wall-art">📺 NEWS</div>
+      </div>
+      <div class="floor">
+        <div class="furniture whiteboard"></div>
+        <div class="furniture desk"></div>
+        <div class="furniture sofa"></div>
+        <div class="furniture table"></div>
+        <div class="furniture plant"></div>
+
+        <div class="avatar a1">
+          <div class="speech">Lagi rame nih bos 🎉</div>
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Hendry</div>
+        </div>
+        <div class="avatar a2">
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Pak Budi</div>
+        </div>
+        <div class="avatar a3">
+          <div class="speech">Coffee break dulu ☕</div>
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Edwin</div>
+        </div>
+        <div class="avatar a4">
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Bu Siti</div>
+        </div>
+        <div class="avatar a5">
+          <div class="speech">Ada yg jual stok telor?</div>
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Mas Rio</div>
+        </div>
+        <div class="avatar a6">
+          <div class="avatar-body">🐻
+            <div class="avatar-shadow"></div>
+          </div>
+          <div class="avatar-name">Mbak Tari</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-title">👥 Online sekarang</div>
+      <div class="online-list">
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Hendry <span class="online-tag">(Bos)</span></div>
+          <div class="dot-status"></div>
+        </div>
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Pak Budi <span class="online-tag">Sembako</span></div>
+          <div class="dot-status"></div>
+        </div>
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Edwin <span class="online-tag">FnB</span></div>
+          <div class="dot-status"></div>
+        </div>
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Bu Siti <span class="online-tag">Kelontong</span></div>
+          <div class="dot-status dot-idle"></div>
+        </div>
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Mas Rio <span class="online-tag">Es Krim</span></div>
+          <div class="dot-status"></div>
+        </div>
+        <div class="online-item">
+          <div class="mini-ava">🐻</div>
+          <div class="online-name">Mbak Tari <span class="online-tag">Skincare</span></div>
+          <div class="dot-status dot-idle"></div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder="Ketik pesan ke ruangan..." disabled>
+        <button class="chat-send">↑</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">🗺️ Roadmap</div>
+      <div class="roadmap">
+        <div class="road-item">
+          <span class="road-icon">🚀</span>
+          <div>
+            <div class="road-status-now">Sekarang</div>
+            <div>BerUang Play Store unlock (31 Mei)</div>
+          </div>
+        </div>
+        <div class="road-item">
+          <span class="road-icon">🐻</span>
+          <div>
+            <div class="road-status-soon">Juli 2026</div>
+            <div>Lounge V1 — private invite-only, 1 room</div>
+          </div>
+        </div>
+        <div class="road-item">
+          <span class="road-icon">🏢</span>
+          <div>
+            <div class="road-status-next">Q4 2026</div>
+            <div>Multi-room + branded billboard space</div>
+          </div>
+        </div>
+        <div class="road-item">
+          <span class="road-icon">🤖</span>
+          <div>
+            <div class="road-status-next">2027</div>
+            <div>CEO Beruang AI NPC + virtual events</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <strong>Catatan:</strong> Ini cuma <em>mockup statis</em> buat visualize konsep — belum interaktif, belum ada backend. <br>
+    Stack rencana: <strong>PixiJS</strong> (2D rendering) + <strong>Cloudflare Durable Objects</strong> (real-time chat) + <strong>Firebase Auth</strong> (login pake akun BerUang).
+  </div>
+
+</div>
+</body>
+</html>
