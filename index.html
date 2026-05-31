@@ -326,7 +326,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6;">
         <li>Fullscreen, tanpa URL bar Safari</li>
         <li>Login persistent, gak login terus</li>
-        <li>Buka dari home screen kayak app native</li>
+        <li>Buka dari home screen kayak app dari APK</li>
         <li>Tetep bisa offline (data lokal)</li>
       </ul>
     </div>
@@ -376,7 +376,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       </div>
       <div class="ios-note">
         <span class="ios-note-ic">💡</span>
-        <span><b>iOS:</b> belum di App Store, tapi bisa install langsung dari Safari (Add to Home Screen) — kayak app native, gratis. <b>Tap badge App Store</b> buat panduan 30 detik.</span>
+        <span><b>iOS:</b> belum di App Store, tapi bisa install langsung dari Safari (Add to Home Screen) — <b>kayak install APK</b>, gratis. <b>Tap badge App Store</b> buat panduan 30 detik.</span>
       </div>
       <div class="hero-trust">
         <span><span class="ic">✓</span> Gratis selamanya untuk basic</span>
@@ -673,7 +673,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 <section class="final-cta">
   <div class="container">
     <h2>Mulai Catet, Mulai Ber-Uang 🐻</h2>
-    <p>Gratis untuk dicoba. Gak perlu kartu kredit. Buka di browser HP, install ke home screen — kayak app native.</p>
+    <p>Gratis untuk dicoba. Gak perlu kartu kredit. Buka di browser HP, install ke home screen — kayak install APK.</p>
     <div class="cta-row">
       <a href="https://play.google.com/apps/testing/id.berstock.beruang" target="_blank" rel="noopener" class="playstore-badge" style="background:#fff;color:var(--ink);" onclick="if(window.gtag)gtag('event','final_cta_play_store');" aria-label="Get it on Google Play">
         <span class="ps-ic">▶</span>
@@ -735,43 +735,21 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 </footer>
 
 <script>
-  // iOS install banner
+  // Modal install iOS — close handler (X, background click, ESC) — selalu attach
   (function() {
-    var ua = navigator.userAgent || '';
-    var isIos = /iPhone|iPad|iPod/.test(ua);
-    var isStandalone = window.navigator.standalone === true ||
-      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-    var DISMISS_KEY = 'ios-install-dismiss';
-    var dismissedAt = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
-    var dismissedRecently = dismissedAt && (Date.now() - dismissedAt) < 7 * 24 * 3600 * 1000;
-    if (!isIos || isStandalone || dismissedRecently) return;
-
-    var banner = document.getElementById('ios-install-banner');
     var modal = document.getElementById('ios-install-modal');
-    var cta = document.getElementById('ios-install-cta');
-    var xBtn = document.getElementById('ios-install-x');
     var closeBtn = document.getElementById('ios-modal-close');
-    if (!banner) return;
-    banner.hidden = false;
+    if (!modal) return;
 
-    function openModal() {
-      modal.hidden = false;
-      modal.style.display = 'flex';
-      if (window.gtag) gtag('event', 'ios_install_modal_open');
-    }
     function closeModal() {
       modal.hidden = true;
       modal.style.display = 'none';
     }
-    function dismiss() {
-      try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (_) {}
-      banner.hidden = true;
-      closeModal();
-    }
-    cta.addEventListener('click', openModal);
-    xBtn.addEventListener('click', dismiss);
-    closeBtn.addEventListener('click', closeModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !modal.hidden) closeModal();
+    });
   })();
 
   // iOS badge di Hero & Final CTA: intercept klik kalau user pakai iPhone/iPad → buka modal
