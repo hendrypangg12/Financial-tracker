@@ -1086,6 +1086,109 @@ footer a:hover { color: var(--gold-bright); }
 </head>
 <body>
 
+<!-- ============ iOS INSTALL BANNER (auto-show iPhone/iPad Safari, dismissible) ============ -->
+<div id="ios-install-banner" hidden style="position:sticky;top:0;z-index:9999;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:13px;line-height:1.4;border-bottom:1px solid #d4af37;">
+  <span style="font-size:20px;flex-shrink:0;">📱</span>
+  <div style="flex:1;min-width:0;">
+    <b style="color:#d4af37;">Install ke iPhone/iPad</b> — pakai BerUang kayak app native, gratis tanpa App Store.
+  </div>
+  <button id="ios-install-cta" style="flex-shrink:0;border:none;background:#d4af37;color:#0a1628;font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;">Cara Install</button>
+  <button id="ios-install-x" aria-label="Tutup" style="flex-shrink:0;border:none;background:rgba(255,255,255,0.15);color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;">×</button>
+</div>
+
+<!-- ============ iOS INSTALL MODAL (visual 3-step) ============ -->
+<div id="ios-install-modal" hidden style="position:fixed;inset:0;z-index:10000;background:rgba(5,8,22,0.85);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Inter',sans-serif;">
+  <div style="background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;color:#1a1a2e;position:relative;">
+    <button id="ios-modal-close" aria-label="Tutup" style="position:absolute;top:12px;right:12px;border:none;background:#f1ece2;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;color:#6b4423;">×</button>
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">📱</div>
+      <h2 style="margin:0 0 4px;font-size:20px;font-weight:800;">Install ke iPhone</h2>
+      <p style="margin:0;color:#6b4423;font-size:13px;">3 langkah · 30 detik · gratis</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#fff7e6;border:1px solid #f0d488;border-radius:12px;">
+        <div style="flex-shrink:0;background:#d4af37;color:#0a1628;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">1</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Tap ikon Share</div>
+          <div style="font-size:13px;color:#6b4423;line-height:1.5;">Di bawah layar Safari, tap ikon <span style="display:inline-block;background:#0a84ff;color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;">⎙</span> (kotak dengan panah ke atas).</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#fff7e6;border:1px solid #f0d488;border-radius:12px;">
+        <div style="flex-shrink:0;background:#d4af37;color:#0a1628;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">2</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Pilih "Add to Home Screen"</div>
+          <div style="font-size:13px;color:#6b4423;line-height:1.5;">Scroll ke bawah di menu Share, tap <b>"Add to Home Screen"</b> (ikon ➕). Kalau bahasa Indonesia: <b>"Tambah ke Layar Utama"</b>.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:#fff7e6;border:1px solid #f0d488;border-radius:12px;">
+        <div style="flex-shrink:0;background:#d4af37;color:#0a1628;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">3</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Tap "Add"</div>
+          <div style="font-size:13px;color:#6b4423;line-height:1.5;">Konfirmasi nama icon (default: <b>BerUang</b>) → tap <b>"Add"</b> di pojok kanan atas. Icon muncul di home screen!</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;padding:14px;background:linear-gradient(135deg,#0a1628 0%,#1e3a5f 100%);color:#fff;border-radius:12px;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:#d4af37;">✨ Bedanya setelah install:</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6;">
+        <li>Fullscreen, tanpa URL bar Safari</li>
+        <li>Login persistent, gak login terus</li>
+        <li>Buka dari home screen kayak app native</li>
+        <li>Tetep bisa offline (data lokal)</li>
+      </ul>
+    </div>
+
+    <a href="app.html" style="display:block;text-align:center;margin-top:14px;background:#d4af37;color:#0a1628;font-weight:700;font-size:14px;padding:12px;border-radius:12px;text-decoration:none;">
+      🐻 Buka app dulu, baru install →
+    </a>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Detect iOS Safari (iPhone, iPad, iPod) — bukan Android, bukan PWA standalone
+    var ua = navigator.userAgent || '';
+    var isIos = /iPhone|iPad|iPod/.test(ua);
+    var isStandalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    var DISMISS_KEY = 'ios-install-dismiss';
+    var dismissedAt = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
+    var dismissedRecently = dismissedAt && (Date.now() - dismissedAt) < 7 * 24 * 3600 * 1000;
+    if (!isIos || isStandalone || dismissedRecently) return;
+
+    var banner = document.getElementById('ios-install-banner');
+    var modal = document.getElementById('ios-install-modal');
+    var cta = document.getElementById('ios-install-cta');
+    var xBtn = document.getElementById('ios-install-x');
+    var closeBtn = document.getElementById('ios-modal-close');
+    if (!banner) return;
+    banner.hidden = false;
+
+    function openModal() {
+      modal.hidden = false;
+      modal.style.display = 'flex';
+      if (window.gtag) gtag('event', 'ios_install_modal_open');
+    }
+    function closeModal() {
+      modal.hidden = true;
+      modal.style.display = 'none';
+    }
+    function dismiss() {
+      try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (_) {}
+      banner.hidden = true;
+      closeModal();
+    }
+    cta.addEventListener('click', openModal);
+    xBtn.addEventListener('click', dismiss);
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+  })();
+</script>
+
 <!-- ============ ANNOUNCEMENT BAR — MARQUEE TICKER ============ -->
 <div class="announce-bar">
   <div class="announce-track">
