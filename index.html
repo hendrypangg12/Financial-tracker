@@ -121,8 +121,7 @@ nav .nav-cta:hover { background: var(--brown-dark); }
 /* App Store Badges — Play Store + iOS */
 .playstore-badge, .ios-badge { display: inline-flex; align-items: center; gap: 12px; background: var(--ink); color: #fff; padding: 10px 22px; border-radius: 10px; text-decoration: none; transition: transform .15s, box-shadow .15s; box-shadow: 0 6px 20px rgba(0,0,0,.15); border: 1px solid rgba(255,255,255,.08); cursor: pointer; }
 .playstore-badge:hover, .ios-badge:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.25); }
-.playstore-badge .ps-ic, .ios-badge .ios-ic { font-size: 24px; line-height: 1; }
-.playstore-badge .ps-ic { color: #34a853; transform: scaleX(0.9); }
+.playstore-badge .ps-ic { width: 26px; height: 26px; flex-shrink: 0; }
 .ios-badge .ios-ic { width: 26px; height: 26px; flex-shrink: 0; }
 
 /* iOS install explanation note */
@@ -358,7 +357,18 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       </p>
       <div class="cta-row">
         <a href="https://play.google.com/apps/testing/id.berstock.beruang" target="_blank" rel="noopener" class="playstore-badge" onclick="if(window.gtag)gtag('event','hero_play_store');" aria-label="Get it on Google Play">
-          <span class="ps-ic">▶</span>
+          <svg class="ps-ic" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="psBlueH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C3FF"/><stop offset="1" stop-color="#0066FF"/></linearGradient>
+              <linearGradient id="psYellowH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE000"/><stop offset="1" stop-color="#FFBD00"/></linearGradient>
+              <linearGradient id="psRedH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A44"/><stop offset="1" stop-color="#C31162"/></linearGradient>
+              <linearGradient id="psGreenH" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00B963"/><stop offset="1" stop-color="#00F076"/></linearGradient>
+            </defs>
+            <path d="M3.609 1.814L13.792 12 3.61 22.186c-.181-.181-.291-.444-.291-.764V2.578c0-.32.11-.583.29-.764z" fill="url(#psBlueH)"/>
+            <path d="M16.81 15.018l-3.018-3.018 3.019-3.018 3.582 2.066c1.183.683 1.183 1.221 0 1.904l-3.583 2.066z" fill="url(#psYellowH)"/>
+            <path d="M13.792 12L3.61 1.814c.181-.181.484-.181.802 0L17.395 9.184 13.792 12z" fill="url(#psGreenH)"/>
+            <path d="M13.792 12l3.603 2.816L4.411 22.186c-.318.181-.621.181-.802 0L13.792 12z" fill="url(#psRedH)"/>
+          </svg>
           <span class="ps-text">
             <span class="ps-small">GET IT ON</span>
             <span class="ps-big">Google Play</span>
@@ -676,7 +686,18 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     <p>Gratis untuk dicoba. Gak perlu kartu kredit. Buka di browser HP, install ke home screen — kayak install APK.</p>
     <div class="cta-row">
       <a href="https://play.google.com/apps/testing/id.berstock.beruang" target="_blank" rel="noopener" class="playstore-badge" style="background:#fff;color:var(--ink);" onclick="if(window.gtag)gtag('event','final_cta_play_store');" aria-label="Get it on Google Play">
-        <span class="ps-ic">▶</span>
+        <svg class="ps-ic" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="psBlueF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C3FF"/><stop offset="1" stop-color="#0066FF"/></linearGradient>
+            <linearGradient id="psYellowF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE000"/><stop offset="1" stop-color="#FFBD00"/></linearGradient>
+            <linearGradient id="psRedF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF3A44"/><stop offset="1" stop-color="#C31162"/></linearGradient>
+            <linearGradient id="psGreenF" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00B963"/><stop offset="1" stop-color="#00F076"/></linearGradient>
+          </defs>
+          <path d="M3.609 1.814L13.792 12 3.61 22.186c-.181-.181-.291-.444-.291-.764V2.578c0-.32.11-.583.29-.764z" fill="url(#psBlueF)"/>
+          <path d="M16.81 15.018l-3.018-3.018 3.019-3.018 3.582 2.066c1.183.683 1.183 1.221 0 1.904l-3.583 2.066z" fill="url(#psYellowF)"/>
+          <path d="M13.792 12L3.61 1.814c.181-.181.484-.181.802 0L17.395 9.184 13.792 12z" fill="url(#psGreenF)"/>
+          <path d="M13.792 12l3.603 2.816L4.411 22.186c-.318.181-.621.181-.802 0L13.792 12z" fill="url(#psRedF)"/>
+        </svg>
         <span class="ps-text">
           <span class="ps-small">GET IT ON</span>
           <span class="ps-big">Google Play</span>
