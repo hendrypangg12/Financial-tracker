@@ -7,21 +7,21 @@
 <meta name="description" content="Bukan sekedar catat — BerUang punya AI yang baca struk, atur kategori otomatis, kasih insight bulanan, dan jawab pertanyaan tentang keuangan lu. Powered by Anthropic. Bahasa Indonesia." />
 <meta name="theme-color" content="#8b5a2b" />
 <link rel="canonical" href="https://berstock.id/" />
-<link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=3" />
-<link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=3" />
+<link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=1" />
+<link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=1" />
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://berstock.id/" />
 <meta property="og:title" content="BerUang — Catat Keuangan Personal · Indonesia 🐻" />
 <meta property="og:description" content="Lihat semua keuangan dalam 1 dashboard. Chat 'bakso 45rb' atau foto struk — otomatis tercatat." />
-<meta property="og:image" content="https://berstock.id/assets/logo-beruang.png" />
+<meta property="og:image" content="https://berstock.id/assets/logo-berbisnis.png" />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="BerUang — Catat Keuangan Personal" />
 <meta name="twitter:description" content="Lihat semua keuangan dalam 1 dashboard. Bahasa Indonesia, mobile-first." />
-<meta name="twitter:image" content="https://berstock.id/assets/logo-beruang.png" />
+<meta name="twitter:image" content="https://berstock.id/assets/logo-berbisnis.png" />
 
 <!-- Geo -->
 <meta name="geo.region" content="ID" />
@@ -134,6 +134,23 @@ nav .nav-cta:hover { background: var(--brown-dark); }
 .phone-frame::before { content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 90px; height: 22px; background: #1a1a1a; border-radius: 999px; z-index: 2; }
 .phone-screen { background: var(--bg); border-radius: 30px; overflow: hidden; min-height: 580px; position: relative; }
 .phone-screen img { width: 100%; display: block; }
+
+/* CSS-only mockup inside phone-screen */
+.mock-screen { padding: 18px 14px 14px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
+.mock-topbar { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--ink-soft); padding: 0 6px; margin-bottom: 2px; }
+.mock-time { font-weight: 700; color: var(--ink); }
+.mock-header { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; padding: 12px 14px; border-radius: 14px; }
+.mock-logo-circle { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.mock-greet { font-weight: 800; font-size: 13px; line-height: 1.2; }
+.mock-sub { font-size: 10px; opacity: .75; }
+.mock-balance { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.mock-label { font-size: 9px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 1px; }
+.mock-amount { font-size: 20px; font-weight: 900; color: var(--green); margin: 2px 0; }
+.mock-trend { font-size: 10px; color: var(--ink-soft); }
+.mock-chat-bubble { padding: 8px 11px; border-radius: 12px; font-size: 11px; line-height: 1.4; max-width: 80%; }
+.mock-chat-bubble.user { background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; align-self: flex-end; }
+.mock-chat-bubble.ai { background: #fff; border: 1px solid var(--line); color: var(--ink); align-self: flex-start; }
+.mock-chat-bubble.ai b { color: var(--brown); }
 
 @media (max-width: 900px) {
   .hero { padding: 40px 18px 50px; }
@@ -316,7 +333,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 <nav>
   <div class="container nav-inner">
     <a href="/" class="logo">
-      <img src="assets/mascot-beruang.png?v=3" alt="BerUang" />
+      <img src="assets/logo-berbisnis.png?v=1" alt="BerUang" />
       <span>BerUang</span>
     </a>
     <a href="app.html" class="nav-cta">Buka App</a>
@@ -356,8 +373,33 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     </div>
     <div class="hero-phone">
       <div class="phone-frame">
-        <div class="phone-screen">
-          <img src="assets/screenshots/screen-1-dashboard.png" alt="Dashboard BerUang" loading="lazy" />
+        <div class="phone-screen mock-screen">
+          <div class="mock-topbar">
+            <span class="mock-time">9:41</span>
+            <span class="mock-icons">●●● 5G</span>
+          </div>
+          <div class="mock-header">
+            <div class="mock-logo-circle">🐻</div>
+            <div>
+              <div class="mock-greet">Halo, Bos!</div>
+              <div class="mock-sub">Beruang AI siap bantu</div>
+            </div>
+          </div>
+          <div class="mock-balance">
+            <div class="mock-label">Sisa Bulan Ini</div>
+            <div class="mock-amount">Rp 3.270.000</div>
+            <div class="mock-trend">↑ Pemasukan 8.5jt · ↓ Keluar 5.2jt</div>
+          </div>
+          <div class="mock-chat-bubble user">bakso 45rb</div>
+          <div class="mock-chat-bubble ai">
+            <b>Beruang AI:</b> ✓ Tercatat<br>
+            <span style="opacity:.7;">Rp 45.000 · 🍜 Makanan</span>
+          </div>
+          <div class="mock-chat-bubble user">📸 [struk Indomaret]</div>
+          <div class="mock-chat-bubble ai">
+            <b>AI Vision:</b> Total Rp 87.500<br>
+            <span style="opacity:.7;">5 items · 28 Mei</span>
+          </div>
         </div>
       </div>
     </div>
@@ -532,36 +574,6 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
   </div>
 </section>
 
-<!-- ============ GALLERY SCREENSHOT ============ -->
-<section class="section gallery-section">
-  <div class="container">
-    <h2>Liat <span class="grad">BerUang Beraksi</span></h2>
-    <p class="subtitle">Screenshot real dari app, bukan mockup.</p>
-    <div class="gallery-grid">
-      <div class="gallery-item">
-        <img src="assets/screenshots/screen-1-dashboard.png" alt="Dashboard" loading="lazy" />
-        <h4>Dashboard</h4>
-        <p>Total pemasukan, pengeluaran, hutang, semua dalam 1 layar.</p>
-      </div>
-      <div class="gallery-item">
-        <img src="assets/screenshots/screen-2-input.png" alt="Input transaksi" loading="lazy" />
-        <h4>Input cepat</h4>
-        <p>Chat-style atau form. Pilih yang paling nyaman.</p>
-      </div>
-      <div class="gallery-item">
-        <img src="assets/screenshots/screen-3-ocr.png" alt="OCR struk" loading="lazy" />
-        <h4>Foto struk</h4>
-        <p>AI vision baca total + toko otomatis.</p>
-      </div>
-      <div class="gallery-item">
-        <img src="assets/screenshots/screen-4-hutang.png" alt="Hutang & Piutang" loading="lazy" />
-        <h4>Hutang & Piutang</h4>
-        <p>Track jatuh tempo. Net position keliatan jelas.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ SOCIAL PROOF (DARK) ============ -->
 <section class="section social-proof">
   <div class="container">
@@ -723,7 +735,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     <div class="foot-grid">
       <div>
         <div class="foot-brand">
-          <img src="assets/mascot-beruang.png?v=3" alt="" />
+          <img src="assets/logo-berbisnis.png?v=1" alt="" />
           <span>BerUang</span>
         </div>
         <p class="foot-tag">"Catet dulu, biar beneran ber-uang"</p>
