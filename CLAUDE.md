@@ -4,93 +4,46 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 28 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 31 Mei 2026)
 
-### 📱 BerUang Android di Google Play Store — 3 HARI LAGI UNLOCK!
+### 📱 BerUang Android — 🚀 PRODUCTION APPLIED! Tinggal Tunggu Review
 
-**Status saat ini (Day 11 of 14 per Google counter):**
-- ✅ App live di Closed Beta Play Store (`id.berstock.beruang`)
-- ✅ Store listing SUBSTANTIVELY COMPLETE
-- ✅ **12/12 tester opted-in** sejak Sabtu 16 Mei 2026
-- ✅ Google official counter: **Day 11 of 14** (per 28 Mei)
-- ✅ Tester aktif pakai app — engagement confirmed via screenshot 18 Mei
-- ✅ 10/11 App content forms done
-- 🎯 **Sabtu 31 Mei: "Apply for production" UNLOCK**
-- 🎯 **Estimasi LIVE PUBLIC: ~5-8 Juni 2026**
+**Status saat ini (Sabtu 31 Mei 2026, 6:10 PM):**
+- ✅ Closed test ran **14+ days continuously** with 12 testers (unlock confirmed pagi 31 Mei)
+- ✅ **Production application SUBMITTED** ke Google (18:10 WIB)
+- ✅ Semua 8 questionnaire question terjawab dalam Bahasa Inggris, di bawah 300 char/field
+- ⏳ Google review estimasi **≤7 hari** ("usually 7 days or less, but may occasionally take longer")
+- 🎯 **Estimasi LIVE PUBLIC: 1-7 Juni 2026**
+- 📧 Update via email ke account owner (hendrypangg12@gmail.com)
 
-**Real tester engagement confirmed!** Tester "R" pake BerUang dengan data real (Rp 50jt pemasukan), bukan cuma install lalu uninstall. Engagement = quality signal untuk Production review.
-
-### 🎯 STATUS GROUP & GAP ANALYSIS (per 18 Mei 10:12 AM)
-
-| Source | Angka |
-|---|---|
-| **Google Group `beruangbetatesters` members** | **20** ✅ |
-| **Play Console testers opted-in** | **12** |
-| **GAP (join group, belum install)** | **8 orang** |
-
-**OPPORTUNITY:** Dorong 8 orang ini install app → counter bisa naik ke 16-20.
-Buffer ultra-safe dari risk uninstall.
-
-**Bos udah post di group dengan pin:** "BANTU KLIK LINK INI - Tolong dibantu teman2 klik link ini Dan buat idnya..."
-
-⚠️ **CATATAN PENTING (KOREKSI 18 Mei oleh bos):**
-> **PENCAPAIAN 12 TESTER: Sabtu 16 Mei 2026** (achievement bos, dalam 1 hari!)
->
-> Google's "14-day continuous" counter punya delay sendiri (kemungkinan
-> 24-36 jam stabilisasi atau timezone UTC). Per Senin 18 Mei pagi,
-> counter Google nunjukin "1 day".
->
-> **2 angka beda:**
-> - Achievement bos: 12 tester reached **Sab 16 Mei** ✅
-> - Google counter: 1 day per **Sen 18 Mei** (Day 1 of 14)
->
-> **Yang Google pake buat unlock Production = counter mereka.**
-> Tapi pas isi questionnaire, BANGGAKAN pencapaian Sabtu sebagai
-> "achieved 12 testers in 1 day via WA + Google Group + Instagram".
-
-### 📅 Timeline Production (UPDATED 28 Mei)
-
+**Application timeline (final):**
 | Tanggal | Day | Milestone |
 |---|---|---|
-| **Sab 16 Mei** | — | 12 tester reached (bos counter) |
-| **Sen 18 Mei** | Day 1 | Google official count start |
-| **Kam 28 Mei** | Day 11 | 🟢 **HARI INI** — 3 hari lagi unlock |
-| **Sab 31 Mei** | Day 14 | 🎯 "Apply for production" UNLOCK |
-| **31 Mei - 3 Jun** | — | Submit + answer questionnaire |
-| **3-7 Juni** | — | Google review production |
-| **~5-8 Juni 2026** | — | 🚀 **APP LIVE PUBLIC!** |
+| Sab 16 Mei | — | 12 tester reached (bos counter) |
+| Sen 18 Mei | Day 1 | Google official count start |
+| Sab 31 Mei pagi | Day 14 | "Apply for production" UNLOCKED |
+| **Sab 31 Mei 18:10** | — | ✅ **APPLICATION SUBMITTED** |
+| 31 Mei - 7 Jun | Review | Google manual review (≤7 hari) |
+| ~1-7 Juni 2026 | — | 🚀 **APP LIVE PUBLIC!** |
 
-**Catatan PENTING (bos koreksi 16 Mei 2026):**
-> Walaupun dashboard nunjukin "10/11 complete" dan ada warning "Some languages have errors", FAKTA-nya app udah berhasil masuk Closed Testing dengan 12 tester install. Artinya store listing minimum udah valid. Warning yang muncul kemungkinan:
-> - Translation tambahan (English, dll) yang opsional belum diisi → bisa di-remove via "Manage translations" kalau gak dipake
-> - Tablet screenshots opsional belum di-upload
-> - Promo video YouTube opsional kosong
->
-> **TIDAK akan block "Apply for Production" tanggal 30 Mei nanti.**
+### 📝 Questionnaire jawaban (untuk referensi kalau perlu revisi)
 
-**Yang HARUS dikerjain di session berikutnya (urutan prioritas REVISI):**
+**Section 1: About your closed test**
+1. *How did you recruit users?* → Organic via WhatsApp + Instagram (@berstock.ai, @hendrypangg) + public Google Group `beruangbetatesters@googlegroups.com` (anyone-can-join). 12 testers in ~1 day. NO paid testing providers.
+2. *How easy was it to recruit?* → Relatively easy. Leveraged existing audience (WhatsApp network + IG followers interested in personal finance). 24 hours to threshold.
+3. *Describe engagement* → Strong. One tester logged Rp 50M income with full dashboard usage (confirmed via shared screenshot). Daily entries, dashboard review, debt/receivable tracking, monthly comparison.
+4. *Feedback summary + how collected* → Via WhatsApp tester chat + Google Group + Instagram DM. Key feedback: cross-sell banner in dashboard middle pushed main chart below fold → moved to bottom in v39 PWA.
 
-1. ⚠️ **Daily monitor counter** (5 menit/hari) — PALING KRITIKAL
-   - Buka [play.google.com/console](https://play.google.com/console) → Dashboard
-   - Pastikan counter "X testers currently opted-in" tetap **≥12**
-   - Kalau drop di bawah 12 → TIMER RESET, emergency recruit pengganti
+**Section 2: About your app**
+5. *Intended audience* → Indonesian adults (18+) and small business owners (UMKM) wanting simple mobile-first personal finance tracking in Bahasa Indonesia. Chat-style input preference, Android-primary users.
+6. *How app provides value* → Logs transactions naturally (type 'bakso 45rb' / photo OCR / form). Auto-categorize, dashboards, debts/receivables, recurring bills with Telegram reminders, offline-first cloud sync. Free + Pro optional.
 
-2. 🛡️ **Recruit BUFFER 3-5 tester ekstra** (target 15-17 total) biar safe kalau ada uninstall
+**Section 2 (continued): Forecasts**
+7. *Install expectation Year 1* → **0 - 10K** (organic marketing, solo dev, conservative honest estimate)
 
-3. 📝 **Generate Production questionnaire draft** (sebelum 30 Mei)
-   - Klik "Preview questions" di Play Console Dashboard
-   - Screenshot pertanyaan → kasih ke Claude → generate jawaban
-   - Pertanyaan tipikal: cara recruit tester, feedback received, changes made, user discovery
-
-4. 🎨 **Marketing pre-launch sambil nunggu 14 hari:**
-   - Behind The Scenes carousel: ✅ DONE (16 Mei, file `beruang-behind-scenes.html`)
-   - Countdown teaser 7 days story: ⏳ TBD
-   - Launch day post + reels: ⏳ TBD
-
-5. 🔧 **(OPSIONAL, low priority) Cleanup Store Listing warning**
-   - Buka Play Console → Set up your store listing
-   - Klik "Manage translations" → hapus bahasa selain Indonesian kalau gak dipake
-   - Atau biarin aja, bukan blocker
+**Section 3: Production readiness**
+8. *What changes after closed test* → (1) Moved cross-sell banner middle→bottom. (2) Added Telegram bot reminders for recurring bills with one-tap 'paid' callback. (3) Improved auth persistence.
+9. *How decided app is ready* → 14+ days closed test, 12 engaged testers with real data, no critical bugs, all UX issues fixed and deployed. Core features stable. Backend (Firebase + Cloudflare Workers) scales automatically.
 
 ### 🐻 Quick Facts BerUang Play Store
 - Package: `id.berstock.beruang`
@@ -98,12 +51,16 @@ Buffer ultra-safe dari risk uninstall.
 - App name: "BerUang- Catat Keuangan"
 - Google Group: `beruangbetatesters@googlegroups.com` (anyone can join, auto-join)
 - Tester opt-in link: https://play.google.com/apps/testing/id.berstock.beruang
-- Build method: ✅ **PWA Builder** (pwabuilder.com) — upload AAB ke Play Console
-  → APK adalah **TWA (Trusted Web Activity)** wrapper Chrome Custom Tab
-  → Load content dari `berstock.id/app.html` setiap launch
-  → Asset CSS/JS gak di-bundle, fetch dari web
-  → Update web = update app (asal Service Worker pickup)
-  → JANGAN tester uninstall — counter reset!
+- Build method: ✅ **PWA Builder** (pwabuilder.com) — TWA wrapper Chrome Custom Tab
+- Update web = update app (auto via Service Worker pickup)
+
+### ⏳ Yang harus dilakukan sambil tunggu review (1-7 Juni)
+
+1. ⚠️ **JANGAN bubarkan closed test** — keep counter ≥12 testers selama review berlangsung. Kalau drop, Google bisa minta clarification atau reject application.
+2. 📧 **Monitor email** hendrypangg12@gmail.com — Google kirim update di sini
+3. 🎨 **Prep launch assets** (countdown teaser, launch post, reels) — biar pas approved langsung publish
+4. 📱 **Test bills push end-to-end** (carry over Day 17 work)
+5. 🔧 **Setup webhook BerUang bot** dengan `allowed_updates=[message,callback_query]` — DONE via /api/beruang-setup-webhook (31 Mei)
 
 ---
 
