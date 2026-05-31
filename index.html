@@ -123,6 +123,13 @@ nav .nav-cta:hover { background: var(--brown-dark); }
 .playstore-badge:hover, .ios-badge:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.25); }
 .playstore-badge .ps-ic, .ios-badge .ios-ic { font-size: 24px; line-height: 1; }
 .playstore-badge .ps-ic { color: #34a853; transform: scaleX(0.9); }
+.ios-badge .ios-ic { width: 26px; height: 26px; flex-shrink: 0; }
+
+/* iOS install explanation note */
+.ios-note { background: rgba(139,90,43,.08); border: 1px solid rgba(139,90,43,.18); border-radius: 10px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.55; color: var(--ink-soft); margin-bottom: 22px; max-width: 540px; }
+.ios-note b { color: var(--brown-dark); }
+.ios-note-ic { flex-shrink: 0; font-size: 18px; }
+@media (max-width: 900px) { .ios-note { margin-left: auto; margin-right: auto; } }
 .ps-text, .ios-text { display: flex; flex-direction: column; text-align: left; line-height: 1.15; }
 .ps-small, .ios-small { font-size: 10px; opacity: .8; letter-spacing: 0.5px; }
 .ps-big, .ios-big { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
@@ -358,12 +365,18 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
           </span>
         </a>
         <a href="app.html" class="ios-badge" id="hero-ios-badge" onclick="if(window.gtag)gtag('event','hero_ios_install');" aria-label="Install di iPhone">
-          <span class="ios-ic">🍎</span>
+          <svg class="ios-ic" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+          </svg>
           <span class="ios-text">
-            <span class="ios-small">INSTALL DI</span>
-            <span class="ios-big">iPhone / iPad</span>
+            <span class="ios-small">DOWNLOAD ON THE</span>
+            <span class="ios-big">App Store</span>
           </span>
         </a>
+      </div>
+      <div class="ios-note">
+        <span class="ios-note-ic">💡</span>
+        <span><b>iOS:</b> belum di App Store, tapi bisa install langsung dari Safari (Add to Home Screen) — kayak app native, gratis. <b>Tap badge App Store</b> buat panduan 30 detik.</span>
       </div>
       <div class="hero-trust">
         <span><span class="ic">✓</span> Gratis selamanya untuk basic</span>
@@ -574,52 +587,6 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
   </div>
 </section>
 
-<!-- ============ SOCIAL PROOF (DARK) ============ -->
-<section class="section social-proof">
-  <div class="container">
-    <h2>Sudah <span class="grad">Diuji Pengguna Asli</span></h2>
-    <p class="subtitle">14+ hari closed beta test, 12 tester aktif pakai dengan data keuangan beneran.</p>
-
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="num">12</div>
-        <div class="label">Beta tester aktif Indonesia</div>
-      </div>
-      <div class="stat-card">
-        <div class="num">14+</div>
-        <div class="label">Hari closed test berjalan</div>
-      </div>
-      <div class="stat-card">
-        <div class="num">Rp 50jt</div>
-        <div class="label">Income terbesar yang di-track tester</div>
-      </div>
-    </div>
-
-    <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <p class="quote">"Akhirnya ada app keuangan Indonesia yang gak ribet. Tinggal chat 'bakso 25rb' langsung kecatat. Foto struk juga jalan. Worth banget."</p>
-        <div class="author">
-          <div class="av">R</div>
-          <div>
-            <div class="name">R · Beta Tester</div>
-            <div class="role">UMKM owner, Jakarta</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card">
-        <p class="quote">"Dashboard-nya enak diliat, gak kayak Excel yang bikin pusing. Fitur hutang piutang juga clear. Bahasa Indonesia full, jadi gak ribet."</p>
-        <div class="author">
-          <div class="av">B</div>
-          <div>
-            <div class="name">B · Beta Tester</div>
-            <div class="role">Karyawan, Surabaya</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ PRICING ============ -->
 <section class="section pricing-section">
   <div class="container">
@@ -716,10 +683,12 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
         </span>
       </a>
       <a href="app.html" class="ios-badge" id="final-ios-badge" style="background:#fff;color:var(--ink);" onclick="if(window.gtag)gtag('event','final_cta_ios');" aria-label="Install di iPhone">
-        <span class="ios-ic">🍎</span>
+        <svg class="ios-ic" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+        </svg>
         <span class="ios-text">
-          <span class="ios-small">INSTALL DI</span>
-          <span class="ios-big">iPhone / iPad</span>
+          <span class="ios-small">DOWNLOAD ON THE</span>
+          <span class="ios-big">App Store</span>
         </span>
       </a>
     </div>
