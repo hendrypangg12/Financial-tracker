@@ -37,8 +37,9 @@
   "applicationCategory": "FinanceApplication",
   "offers": [
     {"@type": "Offer", "price": "0", "priceCurrency": "IDR", "name": "Free"},
-    {"@type": "Offer", "price": "35000", "priceCurrency": "IDR", "name": "Pro Monthly"},
-    {"@type": "Offer", "price": "125000", "priceCurrency": "IDR", "name": "Pro Lifetime"}
+    {"@type": "Offer", "price": "10000", "priceCurrency": "IDR", "name": "Coba 7 Hari"},
+    {"@type": "Offer", "price": "50000", "priceCurrency": "IDR", "name": "Pro Monthly"},
+    {"@type": "Offer", "price": "299000", "priceCurrency": "IDR", "name": "Pro Annual"}
   ],
   "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "12"},
   "author": {"@type": "Person", "name": "Hendry Phang"}
@@ -235,7 +236,13 @@ nav .nav-cta:hover { background: var(--brown-dark); }
 .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; max-width: 1000px; margin: 0 auto; }
 .price-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 32px 24px; position: relative; transition: transform .2s; }
 .price-card.featured { background: linear-gradient(180deg, #fff 0%, var(--bg) 100%); border: 2px solid var(--gold); transform: scale(1.03); box-shadow: 0 20px 50px rgba(201,163,82,.2); }
-.price-card.featured::before { content: '💎 Paling Worth It'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--brown), var(--gold)); color: #fff; padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.price-card.featured::before { content: '🔥 Hemat 50%'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--brown), var(--gold)); color: #fff; padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+
+/* Pricing transparency note */
+.pricing-note { margin: 30px auto 0; max-width: 700px; background: rgba(139,90,43,.08); border: 1px solid rgba(139,90,43,.2); border-radius: 12px; padding: 16px 20px; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.pricing-note b { color: var(--brown-dark); }
+.pricing-note-ic { flex-shrink: 0; font-size: 20px; }
+@media (max-width: 640px) { .pricing-note { font-size: 13px; padding: 14px; } }
 .price-card h3 { font-size: 16px; font-weight: 700; color: var(--ink-soft); margin-bottom: 10px; }
 .price-card .price { font-size: 36px; font-weight: 900; color: var(--ink); margin-bottom: 4px; line-height: 1; }
 .price-card .price .unit { font-size: 14px; color: var(--ink-soft); font-weight: 600; }
@@ -389,9 +396,9 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
         <span><b>iOS:</b> belum di App Store, tapi bisa install langsung dari Safari (Add to Home Screen) — <b>kayak install APK</b>, gratis. <b>Tap badge App Store</b> buat panduan 30 detik.</span>
       </div>
       <div class="hero-trust">
-        <span><span class="ic">✓</span> Gratis selamanya untuk basic</span>
+        <span><span class="ic">✓</span> Coba 7 hari cuma Rp 10rb</span>
+        <span><span class="ic">✓</span> Cancel kapan aja</span>
         <span><span class="ic">✓</span> Offline-first</span>
-        <span><span class="ic">✓</span> 12 beta tester aktif</span>
       </div>
     </div>
     <div class="hero-phone">
@@ -600,54 +607,58 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 <!-- ============ PRICING ============ -->
 <section class="section pricing-section">
   <div class="container">
-    <h2>Pakai Gratis, <span class="grad">Upgrade Kalau Suka</span></h2>
-    <p class="subtitle">Mulai dari nol biaya. Pro buat yang butuh OCR foto struk + sync multi-device.</p>
+    <h2>Pricing yang <span class="grad">Fair & Transparent</span></h2>
+    <p class="subtitle">Coba dulu Rp 10rb selama 7 hari — kalo cocok lanjut bulanan atau hemat lebih dengan tahunan.</p>
     <div class="pricing-grid">
 
       <div class="price-card">
-        <h3>Free</h3>
-        <div class="price"><span class="free">Rp 0</span></div>
-        <div class="period">Selamanya. Gak ada batasan waktu.</div>
+        <h3>Coba 7 Hari</h3>
+        <div class="price">Rp 10rb<span class="unit"> / 7 hari</span></div>
+        <div class="period">Akses penuh semua fitur Pro selama 1 minggu.</div>
         <ul>
-          <li>Catat transaksi unlimited</li>
-          <li>Dashboard + grafik</li>
-          <li>Hutang & Piutang</li>
-          <li>Tagihan rutin</li>
-          <li>Backup lokal</li>
-          <li class="muted">Cloud sync (Pro)</li>
-          <li class="muted">OCR struk (Pro)</li>
+          <li>Akuntan AI unlimited</li>
+          <li>Bot Telegram + reminder tagihan</li>
+          <li>Foto struk AI Vision</li>
+          <li>Cloud sync multi-device</li>
+          <li>Hutang & Piutang tracking</li>
+          <li>Dashboard + insight bulanan</li>
         </ul>
-        <a href="app.html" class="btn-secondary">Mulai Gratis</a>
+        <a href="app.html" class="btn-secondary" onclick="if(window.gtag)gtag('event','pricing_trial_cta');">Coba 7 Hari →</a>
       </div>
 
       <div class="price-card featured">
-        <h3>Pro · Lifetime</h3>
-        <div class="price">Rp 125rb<span class="unit"> / sekali bayar</span></div>
-        <div class="period">Bayar sekali, akses selamanya. Termasuk update.</div>
+        <h3>Pro Tahunan</h3>
+        <div class="price">Rp 299rb<span class="unit"> / tahun</span></div>
+        <div class="period">Hemat <strong style="color:var(--green);">Rp 301rb/tahun</strong> dibanding bulanan.</div>
         <ul>
-          <li>Semua fitur Free</li>
-          <li>OCR foto struk AI vision</li>
-          <li>Cloud sync multi-device</li>
-          <li>Reminder Telegram</li>
-          <li>Export ke Excel/CSV</li>
-          <li>Tanya AI tentang keuangan</li>
+          <li>Semua fitur Pro</li>
+          <li>Akuntan AI unlimited setahun penuh</li>
+          <li>Hemat 50% vs bulanan</li>
+          <li>Auto-renew tiap tahun</li>
+          <li>Cancel kapan aja</li>
           <li>Support prioritas WA</li>
         </ul>
-        <a href="https://lynk.id/hendrypangg" target="_blank" rel="noopener" class="btn-primary" onclick="if(window.gtag)gtag('event','pricing_lifetime_cta');">Beli Lifetime →</a>
+        <a href="https://lynk.id/hendrypangg" target="_blank" rel="noopener" class="btn-primary" onclick="if(window.gtag)gtag('event','pricing_annual_cta');">Pilih Tahunan →</a>
       </div>
 
       <div class="price-card">
-        <h3>Pro · Bulanan</h3>
-        <div class="price">Rp 35rb<span class="unit"> / bulan</span></div>
-        <div class="period">Coba dulu sebelum commit lifetime.</div>
+        <h3>Pro Bulanan</h3>
+        <div class="price">Rp 50rb<span class="unit"> / bulan</span></div>
+        <div class="period">Setara 2x Janji Jiwa — buat keuangan setahun.</div>
         <ul>
-          <li>Semua fitur Pro Lifetime</li>
-          <li>Cancel kapan aja</li>
-          <li>Auto-renew via QRIS / BCA</li>
+          <li>Semua fitur Pro</li>
+          <li>Akuntan AI unlimited</li>
+          <li>Auto-renew tiap bulan</li>
+          <li>Cancel kapan aja, no pinalti</li>
         </ul>
-        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20coba%20BerUang%20Pro%20Bulanan%20%F0%9F%90%BB" class="btn-secondary" onclick="if(window.gtag)gtag('event','pricing_monthly_cta');">Coba Bulanan</a>
+        <a href="https://lynk.id/hendrypangg" target="_blank" rel="noopener" class="btn-secondary" onclick="if(window.gtag)gtag('event','pricing_monthly_cta');">Pilih Bulanan →</a>
       </div>
 
+    </div>
+
+    <div class="pricing-note">
+      <span class="pricing-note-ic">💡</span>
+      <span><b>Cara kerja:</b> Daftar → bayar Rp 10rb → akses semua fitur Pro 7 hari penuh. Kalo cocok, lanjut auto-renewal <b>Rp 50rb/bulan</b> atau upgrade ke <b>Rp 299rb/tahun (hemat 50%)</b>. Cancel kapan aja.</span>
     </div>
   </div>
 </section>
@@ -664,7 +675,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
           Halo, gue <strong>Hendry</strong> — solo developer di Indonesia. BerUang gue bangun karena lelah liat aplikasi keuangan yang ribet, full Bahasa Inggris, atau dipenuhin ads.
         </p>
         <p>
-          BerUang dirancang dari nol untuk <strong>orang Indonesia</strong>: input pakai bahasa sehari-hari, harga terjangkau (lifetime cuma Rp 125rb), gak nyimpen data sensitif di server pihak ke-3.
+          BerUang dirancang dari nol untuk <strong>orang Indonesia</strong>: input pakai bahasa sehari-hari, harga fair (coba dulu Rp 10rb, lanjut bulanan/tahunan kalo cocok), gak nyimpen data sensitif di server pihak ke-3.
         </p>
         <p>
           Setiap input feedback tester gue baca personal. Setiap bug gue fix sendiri (sw v42 dan terus bumping). Setiap fitur baru — termasuk reminder tagihan via Telegram yang baru kemarin di-launch — datang dari obrolan langsung sama user.
