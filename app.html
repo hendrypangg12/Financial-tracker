@@ -124,9 +124,9 @@
 
       <!-- QRIS Panel -->
       <div class="payment-panel active" id="panel-qris">
-        <p class="payment-panel-hint">Scan dari DANA, OVO, GoPay, ShopeePay, atau m-Banking apapun</p>
+        <p class="payment-panel-hint">Scan dari DANA, OVO, GoPay, ShopeePay, atau m-Banking apapun. <b>Nominal sudah terkunci di QR</b> — tinggal scan & bayar.</p>
         <div class="qris-container" id="qris-container">
-          <img src="assets/qris-beruang.png?v=1" alt="QRIS BerUang" class="qris-image" id="qris-image"
+          <img src="" alt="QRIS BerUang" class="qris-image" id="qris-image"
                onerror="this.style.display='none';document.getElementById('qris-fallback').style.display='block';" />
           <div id="qris-fallback" class="qris-fallback" style="display:none;">
             <div style="font-size:42px;margin-bottom:8px;">📱</div>
@@ -135,8 +135,8 @@
           </div>
         </div>
         <p class="payment-panel-foot">
-          Total bayar: <b id="qris-amount-foot">Rp 50.000</b><br>
-          <small>Atas Nama: HENDRY · BerUang by Berstock.id</small>
+          Total: <b id="qris-amount-foot">Rp 50.000</b><br>
+          <small>NMID: ID1026527182327 · Atas Nama: HENDRY · BerUang by Berstock.id</small>
         </p>
       </div>
 
@@ -928,6 +928,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=6"></script>
-  <script src="js/app.js?v=42"></script>
+  <script src="js/app.js?v=43"></script>
 </body>
 </html>

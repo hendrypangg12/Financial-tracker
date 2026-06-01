@@ -715,7 +715,14 @@ function getPackageLabel(paket) {
   return ({ trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' })[paket] || paket;
 }
 
-// Open payment modal — tampilkan QRIS + BCA dengan nominal sesuai paket
+// Mapping QRIS image per paket (file di assets/, nominal sudah terkunci di QR)
+const QRIS_IMAGE_BY_PAKET = {
+  trial:   'assets/qris-beruang-trial.png?v=1',
+  monthly: 'assets/qris-beruang-monthly.png?v=1',
+  annual:  'assets/qris-beruang-annual.png?v=1',
+};
+
+// Open payment modal — tampilkan QRIS sesuai paket + BCA dengan nominal pas
 function openPaymentModal(paket) {
   const cfg = typeof getPackageConfig === 'function' ? getPackageConfig(paket) : null;
   if (!cfg) {
@@ -733,6 +740,21 @@ function openPaymentModal(paket) {
   document.getElementById('payment-amount').textContent = amountFormatted;
   document.getElementById('qris-amount-foot').textContent = amountFormatted;
   document.getElementById('bca-amount').textContent = amountFormatted;
+
+  // Set QRIS image sesuai paket (reset state + reload kalau ada)
+  const qrisImg = document.getElementById('qris-image');
+  const qrisFallback = document.getElementById('qris-fallback');
+  if (qrisImg && qrisFallback) {
+    qrisFallback.style.display = 'none';
+    qrisImg.style.display = 'block';
+    const src = QRIS_IMAGE_BY_PAKET[paket];
+    if (src) {
+      qrisImg.src = src;
+    } else {
+      qrisImg.style.display = 'none';
+      qrisFallback.style.display = 'block';
+    }
+  }
 
   // Wire WA button dengan template paket
   const waBtn = document.getElementById('payment-wa-btn');
