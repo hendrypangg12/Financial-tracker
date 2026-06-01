@@ -17,9 +17,11 @@ const ADMIN_CONTACT = {
   instagram: 'hendrypangg',   // IG Admin BerUang
 };
 
-// Harga paket (Rupiah)
-const PRICE_MONTHLY = 35000;
-const PRICE_LIFETIME = 125000;
+// Harga paket (Rupiah) — pricing model per 1 Juni 2026
+const PRICE_TRIAL = 10000;     // 7 hari paid entry
+const PRICE_MONTHLY = 50000;   // 30 hari auto-renewal
+const PRICE_ANNUAL = 299000;   // 365 hari (hemat 50%)
+const PRICE_LIFETIME = 125000; // LEGACY only — existing buyer dihormati
 
 // Info pembayaran (EDIT sesuai rekening/e-wallet Anda)
 const PAYMENT_INFO = {

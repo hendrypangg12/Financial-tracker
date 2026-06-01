@@ -45,6 +45,10 @@ function getUserStatus(profile) {
   if (profile.plan === 'lifetime' && exp > now) {
     return { label: '⭐ Lifetime', color: '#fff', bg: 'linear-gradient(135deg,#8b5a2b,#c89468)' };
   }
+  if (profile.plan === 'annual' && exp > now) {
+    const days = Math.ceil((exp - now) / (24 * 60 * 60 * 1000));
+    return { label: `🔥 Annual (${days}h)`, color: '#fff', bg: 'linear-gradient(135deg,#c9a352,#d4af37)' };
+  }
   if (profile.plan === 'monthly' && exp > now) {
     const days = Math.ceil((exp - now) / (24 * 60 * 60 * 1000));
     return { label: `📅 Monthly (${days}h)`, color: '#fff', bg: '#10b981' };
@@ -57,31 +61,38 @@ function getUserStatus(profile) {
 }
 
 // Aktivasi user dengan paket tertentu
+// paket: 'trial' (7h Rp10rb) | 'monthly' (30h Rp50rb) | 'annual' (365h Rp299rb) | 'lifetime' (legacy)
 async function activateUser(uid, paket) {
   if (!fbDb || !isAdmin()) return;
   const ref = fbDb.collection('users').doc(uid).collection('meta').doc('profile');
-  let plan, expiresAt;
   const now = new Date();
-  if (paket === 'monthly') {
-    plan = 'monthly';
-    // Kalau masih aktif, tambahkan 30 hari ke expiresAt yang ada (perpanjangan)
+  let plan, expiresAt;
+
+  // Lifetime = legacy, akses selamanya
+  if (paket === 'lifetime') {
+    plan = 'lifetime';
+    expiresAt = '2099-12-31T23:59:59.000Z';
+  }
+  // Trial / Monthly / Annual — extend dari expiry sekarang kalau masih aktif (renewal)
+  else if (['trial', 'monthly', 'annual'].includes(paket)) {
+    const days = { trial: 7, monthly: 30, annual: 365 }[paket];
     const existing = allUsersCache.find(u => u.uid === uid);
     let base = now;
     if (existing && existing.expiresAt && new Date(existing.expiresAt) > now) {
       base = new Date(existing.expiresAt);
     }
-    expiresAt = new Date(base.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
-  } else if (paket === 'lifetime') {
-    plan = 'lifetime';
-    expiresAt = '2099-12-31T23:59:59.000Z';
+    plan = paket;
+    expiresAt = new Date(base.getTime() + days * 24 * 60 * 60 * 1000).toISOString();
   } else {
-    throw new Error('Paket tidak dikenal');
+    throw new Error(`Paket tidak dikenal: ${paket}`);
   }
+
   await ref.update({
     plan,
     expiresAt,
     activatedBy: currentUser.email,
     activatedAt: now.toISOString(),
+    lastPaymentPaket: paket,
   });
 }
 
@@ -130,16 +141,19 @@ function renderAdminUsers(users) {
   const active = users.filter(u => isUserActive(u)).length;
   const pending = users.filter(u => !isUserActive(u)).length;
   const lifetime = users.filter(u => u.plan === 'lifetime' && isUserActive(u)).length;
+  const annual = users.filter(u => u.plan === 'annual' && isUserActive(u)).length;
   const monthly = users.filter(u => u.plan === 'monthly' && isUserActive(u)).length;
-  const revenue = lifetime * PRICE_LIFETIME + monthly * PRICE_MONTHLY;
+  const trial = users.filter(u => u.plan === 'trial' && isUserActive(u)).length;
+  const revenue = lifetime * PRICE_LIFETIME + annual * PRICE_ANNUAL + monthly * PRICE_MONTHLY + trial * PRICE_TRIAL;
 
   root.innerHTML = `
     <div class="admin-stats">
       <div class="admin-stat"><b>${total}</b><small>Total User</small></div>
       <div class="admin-stat ok"><b>${active}</b><small>Aktif</small></div>
       <div class="admin-stat warn"><b>${pending}</b><small>Pending/Expired</small></div>
-      <div class="admin-stat star"><b>${lifetime}</b><small>Lifetime</small></div>
+      <div class="admin-stat star"><b>${annual}</b><small>Tahunan</small></div>
       <div class="admin-stat blue"><b>${monthly}</b><small>Bulanan</small></div>
+      <div class="admin-stat blue"><b>${trial}</b><small>Trial 7H</small></div>
       <div class="admin-stat money"><b>${formatRupiah(revenue)}</b><small>Revenue Total</small></div>
     </div>
 
@@ -196,9 +210,10 @@ function renderAdminCard(u) {
         <div class="admin-status" style="background:${status.bg};color:${status.color}">${status.label}</div>
       </div>
       <div class="admin-actions">
-        <button class="btn btn-primary btn-small" data-act="monthly" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">📅 Aktivasi Bulanan</button>
-        <button class="btn btn-life btn-small" data-act="lifetime" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">⭐ Aktivasi Lifetime</button>
-        <button class="btn btn-ghost btn-small" data-act="deactivate" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">⏸️ Nonaktifkan</button>
+        <button class="btn btn-ghost btn-small" data-act="trial" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">🎁 +7 Hari</button>
+        <button class="btn btn-primary btn-small" data-act="monthly" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">📅 +Bulanan</button>
+        <button class="btn btn-life btn-small" data-act="annual" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">🔥 +Tahunan</button>
+        <button class="btn btn-ghost btn-small" data-act="deactivate" data-uid="${u.uid}" data-email="${escapeHtml(u.email||'')}">⏸️ Off</button>
       </div>
     </div>
   `;
@@ -206,13 +221,21 @@ function renderAdminCard(u) {
 
 async function handleAdminAction(action, uid, email) {
   let title = '', msg = '', okText = 'Aktivasi';
-  if (action === 'monthly') {
+  if (action === 'trial') {
+    title = '🎁 Aktivasi Coba 7 Hari';
+    msg = `Aktifkan paket COBA 7 HARI (Rp ${PRICE_TRIAL.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nMasa berlaku: 7 hari (akan ditambahkan ke sisa langganan jika masih aktif).`;
+    okText = '✅ Aktivasi 7 Hari';
+  } else if (action === 'monthly') {
     title = '📅 Aktivasi Bulanan';
     msg = `Aktifkan paket BULANAN (Rp ${PRICE_MONTHLY.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nMasa berlaku: 30 hari (akan ditambahkan ke sisa langganan jika masih aktif).`;
     okText = '✅ Aktivasi Bulanan';
+  } else if (action === 'annual') {
+    title = '🔥 Aktivasi Tahunan';
+    msg = `Aktifkan paket TAHUNAN (Rp ${PRICE_ANNUAL.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nMasa berlaku: 365 hari (akan ditambahkan ke sisa langganan jika masih aktif).`;
+    okText = '✅ Aktivasi Tahunan';
   } else if (action === 'lifetime') {
-    title = '⭐ Aktivasi Lifetime';
-    msg = `Aktifkan paket LIFETIME (Rp ${PRICE_LIFETIME.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nAkun akan AKTIF SELAMANYA.`;
+    title = '⭐ Aktivasi Lifetime (Legacy)';
+    msg = `Aktifkan paket LIFETIME LEGACY untuk:\n\n${email}\n\nAkun akan AKTIF SELAMANYA. ⚠️ Lifetime sudah dihapus dari UI per 1 Jun 2026 — hanya untuk existing buyer.`;
     okText = '✅ Aktivasi Lifetime';
   } else if (action === 'deactivate') {
     title = '⏸️ Nonaktifkan Akun';
