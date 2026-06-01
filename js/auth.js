@@ -46,16 +46,20 @@ function isSubscriptionActive(profile) {
 }
 
 // ============ FREEMIUM: Cek user punya akses Pro ============
-// Free user: bisa pakai app dengan fitur basic (catat, dashboard, kategori, hutang)
-// Pro user: dapet cloud sync, OCR foto struk, export, unlimited history
+// Pricing model:
+//   trial    : 7 hari paid entry (Rp 10rb)
+//   monthly  : Rp 50rb/bulan auto-renewal
+//   annual   : Rp 299rb/tahun (hemat 50%)
+//   lifetime : LEGACY only — existing buyer sebelum pricing change masih dihormati
+//   pro      : LEGACY admin/test
 function isPro(profile) {
   if (!profile) return false;
-  // Lifetime = akses selamanya
+  // Legacy lifetime = akses selamanya (honor existing buyers)
   if (profile.plan === 'lifetime') return true;
-  // Legacy 'pro' plan (existing test/admin accounts)
+  // Legacy 'pro' plan (admin/test accounts)
   if (profile.plan === 'pro') return true;
-  // Monthly/trial/starter — harus belum expired
-  if (['monthly', 'trial', 'starter'].includes(profile.plan)) {
+  // Trial / Monthly / Annual — harus belum expired
+  if (['trial', 'monthly', 'annual', 'starter'].includes(profile.plan)) {
     return profile.expiresAt && new Date(profile.expiresAt).getTime() > Date.now();
   }
   return false;
@@ -124,11 +128,13 @@ function authErrorMessage(err) {
 // Build link WhatsApp untuk hubungi admin
 function adminWhatsAppLink(paket = '') {
   const email = currentUser?.email || '(email)';
-  const text = paket === 'monthly'
-    ? `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *BULANAN Rp 35.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`
-    : paket === 'lifetime'
-    ? `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *LIFETIME Rp 125.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`
-    : `Halo Admin BerUang 🐻\n\nSaya ${email} ingin tanya/aktivasi langganan.`;
+  const templates = {
+    trial:   `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *COBA 7 HARI Rp 10.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`,
+    monthly: `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *BULANAN Rp 50.000*\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`,
+    annual:  `Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *TAHUNAN Rp 299.000* (hemat 50%)\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`,
+    lifetime:`Halo Admin BerUang 🐻\n\nSaya mau aktivasi paket *LIFETIME* (legacy)\nEmail akun: ${email}\n\nBerikut bukti transfer:\n[lampirkan foto transfer/QRIS]`,
+  };
+  const text = templates[paket] || `Halo Admin BerUang 🐻\n\nSaya ${email} ingin tanya/aktivasi langganan.`;
   return `https://wa.me/${ADMIN_CONTACT.whatsapp}?text=${encodeURIComponent(text)}`;
 }
 

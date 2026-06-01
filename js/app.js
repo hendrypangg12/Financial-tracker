@@ -654,7 +654,8 @@ function showScreen(which) {
         // Highlight paket terpilih
         document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
         btn.closest('.price-card')?.classList.add('selected');
-        showToast(`Paket ${paket === 'monthly' ? 'Bulanan' : 'Lifetime'} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
+        const paketLabel = { trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' }[paket] || paket;
+        showToast(`Paket ${paketLabel} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
       };
     });
     // Copy rekening
@@ -855,7 +856,10 @@ function updateUserMenu(user, profile) {
   if (plan && profile) {
     const days = daysRemaining(profile);
     const planLabel = profile.plan === 'lifetime' ? 'Lifetime ∞'
-      : profile.plan === 'monthly' ? `Bulanan (${days} hari lagi)`
+      : profile.plan === 'pro'      ? 'Pro ∞'
+      : profile.plan === 'annual'   ? `Tahunan (${days} hari lagi)`
+      : profile.plan === 'monthly'  ? `Bulanan (${days} hari lagi)`
+      : profile.plan === 'trial'    ? `Trial 7 Hari (${days} hari lagi)`
       : `Trial (${days} hari lagi)`;
     plan.innerHTML = `📅 ${planLabel}`;
   }
@@ -948,12 +952,15 @@ function showProGate(featureName, description) {
         <div class="pro-benefit">📅 Unlimited history</div>
       </div>
       <div class="pro-gate-prices">
-        <button class="btn btn-ghost btn-block" data-paket="monthly">
-          <b>Bulanan</b> — Rp 35.000<small>/bulan</small>
+        <button class="btn btn-ghost btn-block" data-paket="trial">
+          <b>Coba 7 Hari</b> — Rp 10.000<small>/ 7 hari</small>
         </button>
-        <button class="btn btn-primary btn-block" data-paket="lifetime">
-          <span class="badge">HEMAT 70%</span>
-          <b>Lifetime</b> — Rp 125.000<small>sekali bayar</small>
+        <button class="btn btn-primary btn-block" data-paket="annual">
+          <span class="badge">HEMAT 50%</span>
+          <b>Tahunan</b> — Rp 299.000<small>/ tahun</small>
+        </button>
+        <button class="btn btn-ghost btn-block" data-paket="monthly">
+          <b>Bulanan</b> — Rp 50.000<small>/ bulan</small>
         </button>
       </div>
       <button class="btn btn-text" id="pro-gate-close">Nanti aja</button>

@@ -51,7 +51,7 @@
         <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
         <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
         <button class="btn btn-primary btn-block" type="submit">Buat Akun</button>
-        <small style="color:var(--ink-soft)">Setelah daftar, pilih paket bulanan Rp 35rb / lifetime Rp 125rb.</small>
+        <small style="color:var(--ink-soft)">Setelah daftar, coba 7 hari Rp 10rb · lanjut Rp 50rb/bulan atau Rp 299rb/tahun (hemat 50%).</small>
       </form>
 
       <div class="auth-divider"><span>atau</span></div>
@@ -81,16 +81,21 @@
       <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
 
       <div class="paywall-prices">
+        <div class="price-card" data-paket="trial">
+          <b>Coba 7 Hari</b>
+          <div class="price">Rp 10.000<small>/ 7 hari</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="trial">Coba 7 Hari</button>
+        </div>
+        <div class="price-card highlight" data-paket="annual">
+          <span class="badge">HEMAT 50%</span>
+          <b>Tahunan</b>
+          <div class="price">Rp 299.000<small>/ tahun</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="annual">Pilih Tahunan</button>
+        </div>
         <div class="price-card" data-paket="monthly">
           <b>Bulanan</b>
-          <div class="price">Rp 35.000<small>/bulan</small></div>
+          <div class="price">Rp 50.000<small>/ bulan</small></div>
           <button class="btn btn-primary btn-block btn-buy" data-paket="monthly">Pilih Bulanan</button>
-        </div>
-        <div class="price-card highlight" data-paket="lifetime">
-          <span class="badge">HEMAT 70%</span>
-          <b>Lifetime</b>
-          <div class="price">Rp 125.000<small>sekali bayar</small></div>
-          <button class="btn btn-primary btn-block btn-buy" data-paket="lifetime">Pilih Lifetime</button>
         </div>
       </div>
 
@@ -748,9 +753,9 @@ TOTAL            86.500"></textarea>
         <div class="ai-paywall-feat">💬 Chat 24/7, kapan aja</div>
       </div>
       <button class="btn btn-primary btn-block" id="ai-paywall-upgrade">
-        💎 Upgrade ke Pro — Rp 35rb/bulan
+        💎 Coba Pro 7 Hari — Rp 10rb
       </button>
-      <small class="ai-paywall-note">Lifetime Rp 125rb sekali bayar — hemat 70%</small>
+      <small class="ai-paywall-note">Lanjut Rp 50rb/bulan · atau Rp 299rb/tahun (hemat 50%)</small>
     </div>
   </div>
 
