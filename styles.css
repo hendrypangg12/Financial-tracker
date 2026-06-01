@@ -602,6 +602,58 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   margin: 14px 0; line-height: 1.6;
 }
 
+/* ===================================================================
+   PAYMENT MODAL (QRIS / BCA dual option)
+   =================================================================== */
+.payment-modal { position: fixed; inset: 0; z-index: 9999; background: rgba(62,45,33,0.7); display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+.payment-modal[hidden] { display: none !important; }
+.payment-modal-card { background: #fff; border-radius: 18px; max-width: 440px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 24px 22px 20px; position: relative; box-shadow: 0 30px 80px rgba(62,45,33,.35); }
+.payment-close { position: absolute; top: 12px; right: 12px; border: none; background: #f1ece2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; color: var(--ink); line-height: 1; }
+.payment-close:hover { background: var(--brown); color: #fff; }
+
+.payment-header { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.payment-paket-name { font-size: 14px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.payment-amount { font-size: 34px; font-weight: 900; color: var(--brown); margin-top: 4px; letter-spacing: -1px; }
+
+.payment-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; background: var(--bg); padding: 4px; border-radius: 12px; }
+.payment-tab { padding: 10px 8px; border: none; background: transparent; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer; transition: all .2s; font-family: inherit; }
+.payment-tab.active { background: #fff; color: var(--brown); box-shadow: 0 2px 6px rgba(62,45,33,.08); }
+
+.payment-panel { animation: fadeIn .2s ease-out; }
+.payment-panel[hidden] { display: none !important; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.payment-panel-hint { font-size: 12px; color: var(--ink-soft); text-align: center; margin-bottom: 14px; line-height: 1.55; }
+.payment-panel-foot { font-size: 13px; color: var(--ink); text-align: center; margin-top: 14px; line-height: 1.55; }
+.payment-panel-foot small { color: var(--ink-soft); font-size: 11px; }
+.payment-panel-foot b { color: var(--brown); font-weight: 800; }
+
+/* QRIS */
+.qris-container { background: var(--bg); border: 2px dashed var(--brown); border-radius: 14px; padding: 18px; text-align: center; min-height: 260px; display: flex; align-items: center; justify-content: center; }
+.qris-image { max-width: 100%; width: 100%; max-height: 320px; object-fit: contain; border-radius: 8px; }
+.qris-fallback { text-align: center; padding: 20px 10px; color: var(--ink-soft); }
+.qris-fallback b { color: var(--brown); font-size: 15px; }
+.qris-fallback p { font-size: 13px; margin-top: 6px; line-height: 1.5; }
+
+/* BCA Info */
+.bca-info { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.bca-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bca-row:last-child { border-bottom: none; }
+.bca-row.highlight { background: linear-gradient(90deg, transparent, rgba(201,163,82,.15), transparent); margin: 6px -10px 0; padding: 10px 10px; border-radius: 8px; border-bottom: none; }
+.bca-label { font-size: 13px; color: var(--ink-soft); }
+.bca-value { font-size: 14px; color: var(--ink); font-weight: 700; }
+.bca-value.bca-acc { font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.5px; }
+.bca-value.bca-amount { font-size: 18px; color: var(--brown); }
+.bca-acc-copy { display: flex; align-items: center; gap: 8px; }
+
+.payment-cta { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.payment-cta-note { font-size: 11px; color: var(--ink-soft); text-align: center; margin-top: 10px; line-height: 1.5; }
+
+@media (max-width: 480px) {
+  .payment-modal-card { padding: 20px 16px 16px; max-height: 95vh; }
+  .payment-amount { font-size: 28px; }
+  .qris-container { min-height: 220px; padding: 12px; }
+}
+
 /* ============ USER MENU ============ */
 .user-menu { position: relative; margin-left: 6px; }
 .user-menu-btn {

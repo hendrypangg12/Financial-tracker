@@ -711,6 +711,89 @@ async function handlePostPaymentRedirect() {
   }
 }
 
+function getPackageLabel(paket) {
+  return ({ trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' })[paket] || paket;
+}
+
+// Open payment modal — tampilkan QRIS + BCA dengan nominal sesuai paket
+function openPaymentModal(paket) {
+  const cfg = typeof getPackageConfig === 'function' ? getPackageConfig(paket) : null;
+  if (!cfg) {
+    showToast('Paket tidak valid', 'error');
+    return;
+  }
+  const modal = document.getElementById('payment-modal');
+  if (!modal) return;
+
+  const amount = cfg.priceIdr;
+  const amountFormatted = `Rp ${amount.toLocaleString('id-ID')}`;
+  const paketLabel = getPackageLabel(paket);
+
+  document.getElementById('payment-paket-name').textContent = paketLabel;
+  document.getElementById('payment-amount').textContent = amountFormatted;
+  document.getElementById('qris-amount-foot').textContent = amountFormatted;
+  document.getElementById('bca-amount').textContent = amountFormatted;
+
+  // Wire WA button dengan template paket
+  const waBtn = document.getElementById('payment-wa-btn');
+  if (waBtn && typeof adminWhatsAppLink === 'function') {
+    waBtn.href = adminWhatsAppLink(paket);
+  }
+
+  // Reset to QRIS tab (default)
+  document.querySelectorAll('.payment-tab').forEach(t => t.classList.toggle('active', t.dataset.method === 'qris'));
+  document.getElementById('panel-qris').hidden = false;
+  document.getElementById('panel-bca').hidden = true;
+
+  modal.hidden = false;
+  if (window.gtag) gtag('event', 'payment_modal_open', { paket });
+}
+
+function closePaymentModal() {
+  const modal = document.getElementById('payment-modal');
+  if (modal) modal.hidden = true;
+}
+
+// Setup event listener untuk modal (idempotent — bisa dipanggil multiple times)
+function setupPaymentModalEvents() {
+  if (window.__paymentModalBound) return;
+  window.__paymentModalBound = true;
+
+  const modal = document.getElementById('payment-modal');
+  if (!modal) return;
+
+  // Close handlers
+  document.getElementById('payment-modal-close')?.addEventListener('click', closePaymentModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closePaymentModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) closePaymentModal();
+  });
+
+  // Tab switcher
+  document.querySelectorAll('.payment-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const method = tab.dataset.method;
+      document.querySelectorAll('.payment-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.getElementById('panel-qris').hidden = method !== 'qris';
+      document.getElementById('panel-bca').hidden = method !== 'bca';
+      if (window.gtag) gtag('event', 'payment_tab_switch', { method });
+    });
+  });
+
+  // Copy BCA account
+  document.getElementById('btn-copy-bca')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('7130902183');
+      const btn = document.getElementById('btn-copy-bca');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Tersalin';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    } catch (e) {
+      showToast('Gagal menyalin, salin manual: 7130902183', 'error');
+    }
+  });
+}
+
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
   document.getElementById('login-screen').hidden = which !== 'login';
@@ -727,53 +810,38 @@ function showScreen(which) {
     const igBtn = document.getElementById('btn-ig-admin');
     if (waBtn && typeof adminWhatsAppLink === 'function') waBtn.href = adminWhatsAppLink();
     if (igBtn && typeof adminInstagramLink === 'function') igBtn.href = adminInstagramLink();
-    // Tombol pilih paket -> redirect ke Xendit (kalau wired) atau fallback WA manual
+    // Tombol pilih paket -> buka payment modal (QRIS + BCA dual option)
     document.querySelectorAll('.btn-buy').forEach(btn => {
       btn.onclick = async () => {
         const paket = btn.dataset.paket;
-        const paketLabel = { trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' }[paket] || paket;
         // Highlight paket terpilih
         document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
         btn.closest('.price-card')?.classList.add('selected');
 
-        // Update link WA template sesuai paket (fallback manual)
-        if (waBtn) waBtn.href = adminWhatsAppLink(paket);
-
-        // Coba Xendit checkout flow dulu (auto-payment)
+        // Try Xendit checkout flow dulu (auto-payment kalau gateway aktif)
         const originalText = btn.textContent;
         btn.disabled = true;
-        btn.textContent = 'Menyiapkan pembayaran...';
+        btn.textContent = 'Menyiapkan...';
         try {
           const url = await createPaymentInvoice(paket);
           if (url) {
+            const paketLabel = getPackageLabel(paket);
             showToast(`Mengarahkan ke pembayaran ${paketLabel}...`, 'success');
             window.location.href = url;
             return;
           }
         } catch (err) {
-          console.warn('[payment] gateway belum aktif, fallback WA manual:', err.message);
+          console.warn('[payment] gateway belum aktif, buka modal QRIS+BCA manual:', err.message);
         } finally {
           btn.disabled = false;
           btn.textContent = originalText;
         }
 
-        // Fallback: scroll ke payment info + tampilin WA template manual
-        document.querySelector('.payment-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        showToast(`Paket ${paketLabel} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
+        // Fallback: buka payment modal (QRIS + BCA)
+        openPaymentModal(paket);
       };
     });
-    // Copy rekening
-    const btnCopy = document.getElementById('btn-copy-acc');
-    if (btnCopy) {
-      btnCopy.onclick = async () => {
-        const acc = document.getElementById('bank-account')?.textContent || '';
-        try {
-          await navigator.clipboard.writeText(acc);
-          btnCopy.textContent = '✓ Tersalin';
-          setTimeout(() => { btnCopy.textContent = 'Copy'; }, 2000);
-        } catch (e) { showToast('Gagal menyalin, salin manual ya', 'error'); }
-      };
-    }
+    setupPaymentModalEvents();
   }
 }
 

@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=41" />
+  <link rel="stylesheet" href="styles.css?v=42" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -99,30 +99,82 @@
         </div>
       </div>
 
-      <div class="payment-info">
-        <div class="payment-title">💰 Cara Pembayaran</div>
-        <div class="payment-row">
-          <span>Bank BCA</span>
-          <div class="payment-copy">
-            <code id="bank-account">7130902183</code>
-            <button class="btn btn-small" id="btn-copy-acc">Copy</button>
-          </div>
-        </div>
-        <div class="payment-row"><span>Atas Nama</span><b>HENDRY</b></div>
-        <div class="payment-row"><span>QRIS</span><b>Minta ke Admin via WA</b></div>
-      </div>
-
-      <div class="paywall-actions">
-        <a class="btn btn-wa btn-block" id="btn-wa-admin" target="_blank" rel="noopener">💬 Kirim Bukti via WhatsApp</a>
-        <a class="btn btn-ig btn-block" id="btn-ig-admin" target="_blank" rel="noopener">📷 DM Instagram @hendrypangg</a>
-      </div>
-
-      <p class="paywall-note">
-        ⏱️ Akun aktif 5 menit setelah bukti transfer diterima.<br>
-        🔒 Data Anda aman tersimpan — tidak akan hilang.
+      <p class="paywall-note" style="margin-top:18px;">
+        💡 Klik paket di atas → pilih bayar via <b>QRIS</b> atau <b>Transfer BCA</b> → bos aktivasi dalam 5 menit setelah bukti diterima.
       </p>
 
-      <button class="btn btn-ghost btn-block" id="btn-paywall-logout">Logout</button>
+      <button class="btn btn-ghost btn-block" id="btn-paywall-logout" style="margin-top:14px;">Logout</button>
+    </div>
+  </div>
+
+  <!-- ============ PAYMENT MODAL (muncul saat klik paket) ============ -->
+  <div id="payment-modal" class="payment-modal" hidden>
+    <div class="payment-modal-card">
+      <button class="payment-close" id="payment-modal-close" aria-label="Tutup">×</button>
+
+      <div class="payment-header">
+        <div class="payment-paket-name" id="payment-paket-name">Bulanan</div>
+        <div class="payment-amount" id="payment-amount">Rp 50.000</div>
+      </div>
+
+      <div class="payment-tabs">
+        <button class="payment-tab active" data-method="qris" id="tab-qris">📱 Scan QRIS</button>
+        <button class="payment-tab" data-method="bca" id="tab-bca">🏦 Transfer BCA</button>
+      </div>
+
+      <!-- QRIS Panel -->
+      <div class="payment-panel active" id="panel-qris">
+        <p class="payment-panel-hint">Scan dari DANA, OVO, GoPay, ShopeePay, atau m-Banking apapun</p>
+        <div class="qris-container" id="qris-container">
+          <img src="assets/qris-beruang.png?v=1" alt="QRIS BerUang" class="qris-image" id="qris-image"
+               onerror="this.style.display='none';document.getElementById('qris-fallback').style.display='block';" />
+          <div id="qris-fallback" class="qris-fallback" style="display:none;">
+            <div style="font-size:42px;margin-bottom:8px;">📱</div>
+            <b>QRIS Coming Soon</b>
+            <p>Bos belum upload QRIS. Pakai Transfer BCA dulu ya — tab di atas.</p>
+          </div>
+        </div>
+        <p class="payment-panel-foot">
+          Total bayar: <b id="qris-amount-foot">Rp 50.000</b><br>
+          <small>Atas Nama: HENDRY · BerUang by Berstock.id</small>
+        </p>
+      </div>
+
+      <!-- BCA Panel -->
+      <div class="payment-panel" id="panel-bca" hidden>
+        <p class="payment-panel-hint">Transfer ke rekening berikut sesuai nominal pas</p>
+        <div class="bca-info">
+          <div class="bca-row">
+            <span class="bca-label">Bank</span>
+            <b class="bca-value">BCA</b>
+          </div>
+          <div class="bca-row">
+            <span class="bca-label">Nomor Rekening</span>
+            <div class="bca-acc-copy">
+              <code class="bca-value bca-acc">7130902183</code>
+              <button class="btn btn-small" id="btn-copy-bca">Copy</button>
+            </div>
+          </div>
+          <div class="bca-row">
+            <span class="bca-label">Atas Nama</span>
+            <b class="bca-value">HENDRY</b>
+          </div>
+          <div class="bca-row highlight">
+            <span class="bca-label">Nominal</span>
+            <b class="bca-value bca-amount" id="bca-amount">Rp 50.000</b>
+          </div>
+        </div>
+        <p class="payment-panel-foot">
+          <small>⚠️ Transfer nominal <b>persis</b> (gak boleh dibulatkan). Memudahkan verifikasi.</small>
+        </p>
+      </div>
+
+      <div class="payment-cta">
+        <a class="btn btn-wa btn-block" id="payment-wa-btn" target="_blank" rel="noopener">
+          💬 Sudah bayar → Kirim Bukti via WhatsApp
+        </a>
+        <p class="payment-cta-note">⏱️ Bos aktivasi akunmu manual dalam 5 menit setelah bukti diterima.</p>
+      </div>
     </div>
   </div>
 
@@ -872,6 +924,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=6"></script>
-  <script src="js/app.js?v=41"></script>
+  <script src="js/app.js?v=42"></script>
 </body>
 </html>
