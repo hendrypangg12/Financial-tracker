@@ -1105,6 +1105,33 @@ body.is-free-user .pro-lock { display: inline; }
    📱 MOBILE NATIVE FEEL — Bottom Nav, FAB, Compact Layout
    ============================================================ */
 
+/* === AI ANOMALY ALERT BANNER === */
+#anomaly-banner:empty { display: none; }
+.anomaly-wrap { background: linear-gradient(135deg, #fff7e6 0%, #fef3c7 100%); border: 1px solid #f0d488; border-radius: 14px; padding: 12px 14px; margin: 14px 0 18px; }
+.anomaly-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed rgba(139,90,43,.2); }
+.anomaly-label { font-size: 12px; font-weight: 700; color: var(--brown-dark, #6f4518); letter-spacing: 0.3px; }
+
+.anomaly-card { display: flex; align-items: flex-start; gap: 12px; background: #fff; border-radius: 10px; padding: 12px 38px 12px 14px; margin-bottom: 8px; position: relative; box-shadow: 0 2px 6px rgba(62,45,33,.06); border-left: 3px solid; overflow: hidden; }
+.anomaly-card:last-child { margin-bottom: 0; }
+.anomaly-card.anomaly-high { border-left-color: #ef4444; background: linear-gradient(90deg, rgba(239,68,68,.04), #fff 30%); }
+.anomaly-card.anomaly-medium { border-left-color: #f59e0b; background: linear-gradient(90deg, rgba(245,158,11,.04), #fff 30%); }
+.anomaly-card.anomaly-low { border-left-color: #3b82f6; background: linear-gradient(90deg, rgba(59,130,246,.04), #fff 30%); }
+
+.anomaly-icon { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.anomaly-content { flex: 1; min-width: 0; }
+.anomaly-title { font-size: 13px; font-weight: 700; color: var(--ink, #3e2d21); margin-bottom: 4px; line-height: 1.3; }
+.anomaly-body { font-size: 12px; line-height: 1.5; color: var(--ink-soft, #8b7355); }
+.anomaly-body b { color: var(--brown, #8b5a2b); font-weight: 700; }
+
+.anomaly-dismiss { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border: none; background: rgba(62,45,33,.06); color: var(--ink-soft, #8b7355); border-radius: 50%; cursor: pointer; font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0; transition: background .15s, color .15s; }
+.anomaly-dismiss:hover { background: rgba(62,45,33,.15); color: var(--brown-dark, #6f4518); }
+
+@media (max-width: 480px) {
+  .anomaly-wrap { padding: 10px 12px; margin: 10px 0 14px; }
+  .anomaly-title { font-size: 12px; }
+  .anomaly-body { font-size: 11px; }
+}
+
 /* === BOTTOM NAVIGATION === */
 .bottom-nav {
   display: none; /* Hidden on desktop */

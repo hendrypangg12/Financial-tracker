@@ -103,6 +103,7 @@ function renderDashboard() {
   renderGreeting();
   renderAssets();
   renderHutangSummary();
+  if (typeof renderAnomalyBanner === 'function') renderAnomalyBanner();
   if (typeof renderReminder === 'function') renderReminder();
   if (typeof renderAIPromo === 'function') renderAIPromo();
   if (typeof renderTgBillPromo === 'function') renderTgBillPromo();
