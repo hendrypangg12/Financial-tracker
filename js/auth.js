@@ -18,25 +18,73 @@ function onAuthStateChanged(callback) {
   });
 }
 
+// Durasi & harga per paket (single source of truth)
+const PACKAGE_CONFIG = {
+  trial:   { days: 7,   priceIdr: 10000,  label: 'Coba 7 Hari',  description: 'Akses penuh Pro 7 hari' },
+  monthly: { days: 30,  priceIdr: 50000,  label: 'Bulanan',      description: 'Pro auto-renewal tiap bulan' },
+  annual:  { days: 365, priceIdr: 299000, label: 'Tahunan',      description: 'Pro setahun, hemat 50%' },
+};
+
+function getPackageConfig(paket) {
+  return PACKAGE_CONFIG[paket] || null;
+}
+
+function computeExpiry(paket, fromDate = new Date()) {
+  const cfg = PACKAGE_CONFIG[paket];
+  if (!cfg) return null;
+  return new Date(fromDate.getTime() + cfg.days * 24 * 60 * 60 * 1000);
+}
+
 // Pastikan profile user ada di Firestore (buat saat pertama login)
-// Karena TRIAL_DAYS=0, user baru langsung masuk paywall (expiresAt = sekarang)
+// User baru: plan='pending' (belum bayar) → langsung diarahkan ke paywall pilih paket
 async function ensureUserProfile(user) {
   if (!fbDb) return null;
   const ref = fbDb.collection('users').doc(user.uid).collection('meta').doc('profile');
   const snap = await ref.get();
   if (snap.exists) return snap.data();
   const now = new Date();
-  const expires = new Date(now.getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
   const profile = {
     email: user.email || '',
     displayName: user.displayName || user.email?.split('@')[0] || 'User',
     photoURL: user.photoURL || '',
     createdAt: now.toISOString(),
-    plan: TRIAL_DAYS > 0 ? 'trial' : 'pending',
-    expiresAt: expires.toISOString(),
+    plan: 'pending',           // belum bayar → tampil paywall
+    expiresAt: now.toISOString(), // expired sejak detik pertama
   };
   await ref.set(profile);
   return profile;
+}
+
+// Activate subscription: panggil setelah payment success
+// Argumen: profile (current), paket ('trial'|'monthly'|'annual'), opts={extendFromNow:true,paymentRef:''}
+async function activateSubscription(uid, paket, opts = {}) {
+  if (!fbDb || !uid) throw new Error('Firebase belum siap atau uid kosong');
+  const cfg = PACKAGE_CONFIG[paket];
+  if (!cfg) throw new Error(`Paket tidak dikenal: ${paket}`);
+
+  const ref = fbDb.collection('users').doc(uid).collection('meta').doc('profile');
+  const snap = await ref.get();
+  const profile = snap.exists ? snap.data() : {};
+
+  // Extend dari expiry sekarang kalau masih aktif (avoid kehilangan sisa hari saat renewal)
+  const now = new Date();
+  const currentExpiry = profile.expiresAt ? new Date(profile.expiresAt) : now;
+  const fromDate = (currentExpiry.getTime() > now.getTime() && opts.extendFromNow !== true)
+    ? currentExpiry
+    : now;
+  const newExpiry = computeExpiry(paket, fromDate);
+
+  const update = {
+    plan: paket,
+    expiresAt: newExpiry.toISOString(),
+    lastPaymentAt: now.toISOString(),
+    lastPaymentPaket: paket,
+    lastPaymentAmount: cfg.priceIdr,
+  };
+  if (opts.paymentRef) update.lastPaymentRef = opts.paymentRef;
+
+  await ref.set(update, { merge: true });
+  return { ...profile, ...update };
 }
 
 // Cek apakah langganan masih aktif

@@ -10,6 +10,7 @@ import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
 import { askClaude } from "./claude.js";
 import { handleAdvise } from "./advise.js";
 import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, handleBeruangSetupWebhook, handleBeruangDebug, sendBillReminders } from "./beruang.js";
+import { handleCreateInvoice, handleVerifyPayment, handleXenditWebhook } from "./payment.js";
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -56,6 +57,10 @@ export default {
         case "/api/beruang-bills-test": return await handleBeruangBillsTest(request, env);
         case "/api/beruang-setup-webhook": return await handleBeruangSetupWebhook(request, env);
         case "/api/beruang-debug": return await handleBeruangDebug(request, env);
+        // Payment (Xendit) — siap diisi credentials setelah approved
+        case "/api/create-invoice":  return await handleCreateInvoice(request, env);
+        case "/api/verify-payment":  return await handleVerifyPayment(request, env);
+        case "/api/xendit-webhook":  return await handleXenditWebhook(request, env);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

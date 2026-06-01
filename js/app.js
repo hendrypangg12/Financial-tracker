@@ -548,6 +548,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('login');
         return;
       }
+      // Cek payment redirect dari Xendit (?payment=success&ref=xxx) — activate subscription
+      if (typeof handlePostPaymentRedirect === 'function') {
+        try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
+      }
       // FREEMIUM: user bisa pakai app meski belum bayar
       // Pro features (cloud sync, OCR, export) di-gate dengan isPro()
       showScreen('app');
@@ -628,6 +632,85 @@ function detectAuthEnvAndShowTip() {
   else tipPwa.style.display = 'block';
 }
 
+// ============ PAYMENT FLOW (Xendit / payment gateway) ============
+// Endpoint backend Cloudflare Worker (siap diisi setelah Xendit approved)
+const PAYMENT_API_BASE = 'https://berstock-bot.hendrypangg12.workers.dev';
+
+// Create payment invoice — return checkout URL atau throw kalau gateway belum aktif
+async function createPaymentInvoice(paket) {
+  if (!currentUser || !currentUser.uid) throw new Error('User belum login');
+  const cfg = typeof getPackageConfig === 'function' ? getPackageConfig(paket) : null;
+  if (!cfg) throw new Error(`Paket tidak dikenal: ${paket}`);
+
+  const externalId = `beruang_${currentUser.uid}_${paket}_${Date.now()}`;
+  const successUrl = `${window.location.origin}${window.location.pathname}?payment=success&ref=${externalId}`;
+  const failureUrl = `${window.location.origin}${window.location.pathname}?payment=failed&ref=${externalId}`;
+
+  const res = await fetch(`${PAYMENT_API_BASE}/api/create-invoice`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      product: 'beruang',
+      uid: currentUser.uid,
+      email: currentUser.email,
+      paket,
+      amount: cfg.priceIdr,
+      externalId,
+      successUrl,
+      failureUrl,
+    }),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Gateway belum aktif (HTTP ${res.status}): ${txt.slice(0, 100)}`);
+  }
+  const data = await res.json();
+  if (!data.checkoutUrl) throw new Error('Response gateway tanpa checkoutUrl');
+  return data.checkoutUrl;
+}
+
+// Cek query param ?payment=success&ref=xxx setelah Xendit redirect
+async function handlePostPaymentRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('payment');
+  const ref = params.get('ref');
+  if (!status || !ref) return;
+
+  // Clean URL biar refresh gak re-trigger
+  const cleanUrl = window.location.pathname + window.location.hash;
+  window.history.replaceState({}, document.title, cleanUrl);
+
+  if (status === 'failed') {
+    showToast('Pembayaran dibatalkan / gagal. Coba lagi atau kontak admin via WA.', 'error');
+    return;
+  }
+  if (status !== 'success') return;
+
+  // Verify ke backend — backend cek Xendit invoice status sudah PAID
+  showToast('Memverifikasi pembayaran...', 'info');
+  try {
+    const res = await fetch(`${PAYMENT_API_BASE}/api/verify-payment?ref=${encodeURIComponent(ref)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.status !== 'paid') {
+      showToast(`Pembayaran status: ${data.status}. Refresh sebentar lagi.`, 'warning');
+      return;
+    }
+    // Activate subscription di Firestore
+    const paket = data.paket || ref.split('_')[2]; // fallback parse dari ref
+    if (typeof activateSubscription === 'function' && currentUser) {
+      await activateSubscription(currentUser.uid, paket, { paymentRef: ref });
+      showToast(`🎉 Pembayaran sukses! Paket ${paket} aktif. Selamat datang!`, 'success');
+      // Reload supaya auth state refresh & buka app
+      setTimeout(() => window.location.reload(), 1500);
+    }
+  } catch (err) {
+    console.error('[verify-payment]', err);
+    showToast('Gagal verifikasi otomatis. Kontak admin via WA untuk aktivasi manual.', 'error');
+  }
+}
+
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
   document.getElementById('login-screen').hidden = which !== 'login';
@@ -644,17 +727,38 @@ function showScreen(which) {
     const igBtn = document.getElementById('btn-ig-admin');
     if (waBtn && typeof adminWhatsAppLink === 'function') waBtn.href = adminWhatsAppLink();
     if (igBtn && typeof adminInstagramLink === 'function') igBtn.href = adminInstagramLink();
-    // Tombol pilih paket -> isi pesan WA sesuai paket
+    // Tombol pilih paket -> redirect ke Xendit (kalau wired) atau fallback WA manual
     document.querySelectorAll('.btn-buy').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = async () => {
         const paket = btn.dataset.paket;
-        if (waBtn) waBtn.href = adminWhatsAppLink(paket);
-        // Scroll ke bagian pembayaran
-        document.querySelector('.payment-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const paketLabel = { trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' }[paket] || paket;
         // Highlight paket terpilih
         document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
         btn.closest('.price-card')?.classList.add('selected');
-        const paketLabel = { trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' }[paket] || paket;
+
+        // Update link WA template sesuai paket (fallback manual)
+        if (waBtn) waBtn.href = adminWhatsAppLink(paket);
+
+        // Coba Xendit checkout flow dulu (auto-payment)
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Menyiapkan pembayaran...';
+        try {
+          const url = await createPaymentInvoice(paket);
+          if (url) {
+            showToast(`Mengarahkan ke pembayaran ${paketLabel}...`, 'success');
+            window.location.href = url;
+            return;
+          }
+        } catch (err) {
+          console.warn('[payment] gateway belum aktif, fallback WA manual:', err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+
+        // Fallback: scroll ke payment info + tampilin WA template manual
+        document.querySelector('.payment-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         showToast(`Paket ${paketLabel} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
       };
     });
