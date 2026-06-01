@@ -4,7 +4,96 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 31 Mei 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 1 Juni 2026)
+
+### 💰 DAY 18 (1 Juni 2026) — Pricing Pivot + Homepage Rebuild + Backend Siap Xendit
+
+**Big shifts hari ini:**
+
+#### 1. **Pricing model BARU** (replace 35rb monthly + 125rb lifetime)
+| Paket | Harga | Durasi | Status |
+|---|---|---|---|
+| **Coba 7 Hari** | Rp 10.000 | 7 hari paid entry | ✅ NEW |
+| **Bulanan** | Rp 50.000 | 30 hari auto-renewal | ✅ Updated (was 35rb) |
+| **Tahunan** | Rp 299.000 | 365 hari (hemat 50%) | ✅ NEW |
+| ~~Lifetime~~ | ~~Rp 125rb~~ | Dihapus dari UI | 🗑️ Legacy still honored di backend untuk existing buyer |
+
+**Rationale:** Cost AI Claude Sonnet ~Rp 12rb/user/bulan kalau heavy → lifetime Rp 125rb rugi setelah tahun 1. Subscription Rp 50rb/bulan = margin 74% sustainable.
+
+#### 2. **Homepage berstock.id rebuild → BerUang-focused**
+- File lama (`index.html` = BerSatu Suite landing) di-rename ke `bersatu.html` sebagai backup
+- New `index.html` = BerUang-first landing dengan struktur:
+  - Hero: "Punya Akuntan AI Pribadi yang Ngatur Duit Lu" + Play Store badge + iOS install (modal tutorial)
+  - AI Akuntan section (dark): 4 capability (auto-kategori, vision struk, insight bulanan, tanya AI)
+  - Fitur lengkap (6 cards)
+  - Pricing 3-tier (Trial / Annual featured / Monthly)
+  - Founder story (dark)
+  - Final CTA dual badge
+- Logo: ganti dari `mascot-beruang.png` (gemoy) → `logo-berbisnis.png` (berdasi BerSatu Suite professional)
+- Play Store badge: SVG 4-warna gradient resmi (biru/kuning/hijau/merah)
+- iOS badge: SVG Apple logo + "Download on the App Store" — kalau user iOS klik → modal tutorial Add to Home Screen ("kayak install APK")
+
+#### 3. **Backend logic siap Xendit** (frontend done, tinggal credentials)
+
+**Frontend (js/auth.js + js/app.js):**
+- `PACKAGE_CONFIG`: single source of truth `{trial:7d/10k, monthly:30d/50k, annual:365d/299k}`
+- `computeExpiry(paket, fromDate)`: hitung expiresAt dinamis
+- `activateSubscription(uid, paket, opts)`: update Firestore plan + expiresAt + lastPaymentRef. Extend-from-current-expiry kalau renewal sebelum habis.
+- `ensureUserProfile`: user baru default `plan='pending'` (langsung paywall, no implicit free trial)
+- `createPaymentInvoice(paket)`: POST ke Worker, return Xendit checkout URL
+- `handlePostPaymentRedirect()`: detect `?payment=success&ref=xxx` → verify ke Worker → activate Firestore → reload. Triggered di `onAuthStateChanged`.
+
+**Backend (bot/src/payment.js — file baru):**
+- `handleCreateInvoice`: validate amount server-side, call Xendit API `v2/invoices`, simpan record di KV BOT_DATA (TTL 7 hari)
+- `handleVerifyPayment`: GET status by ref, double-check ke Xendit API kalau pending
+- `handleXenditWebhook`: terima `PAID`/`EXPIRED`, validate `x-callback-token`, update KV
+- `PACKAGE_AMOUNTS` mirror frontend untuk server-side validation anti-tamper
+
+**Routes baru di Worker:** `POST /api/create-invoice` · `GET /api/verify-payment` · `POST /api/xendit-webhook`
+
+**Safety net:** kalau `XENDIT_SECRET_KEY` belum di-set, frontend fallback ke flow manual WhatsApp (kirim bukti transfer). Aplikasi tetap usable hari ini.
+
+#### 4. **Bug fixes hari ini**
+- Modal install iOS gak bisa di-close → IIFE lama early-return karena banner element udah dihapus. Rewrite handler standalone, listener X / klik backdrop / ESC selalu attach.
+- Banner sticky iOS install di atas berstock.id (intrusive) → dihapus permanent
+- Phone mockup hero pakai screenshot fake banyak whitespace coklat → ganti CSS pure mockup (greeting + balance card + chat bubble)
+- Section gallery 4-screenshot fake → dihapus
+- Section social proof (12 tester / 14+ hari / Rp 50jt) → dihapus per feedback "ga perlu"
+- Copy "kayak app native" → "kayak install APK" (3 tempat, lebih familiar)
+
+#### 5. **Pending action bos (untuk full payment auto-confirm)**
+| # | Task | Effort |
+|---|---|---|
+| 1 | Daftar Xendit di `dashboard.xendit.co/register` pakai **paspor** (KTP bos hilang, sedang urus E-KTP di Dukcapil) | 30 menit |
+| 2 | Tunggu approval Xendit | 1-3 hari kerja |
+| 3 | Set wrangler secrets: `XENDIT_SECRET_KEY` + `XENDIT_WEBHOOK_TOKEN` | 5 menit |
+| 4 | Deploy bot: `cd bot && wrangler deploy` | 30 detik |
+| 5 | Set webhook URL di Xendit dashboard: `https://berstock-bot.hendrypangg12.workers.dev/api/xendit-webhook` | 2 menit |
+| 6 | Aktifkan payment methods di Xendit (QRIS, VA, e-wallet) | 5 menit |
+| 7 | Test transaksi nyata Rp 10rb dengan email lain | 5 menit |
+
+#### 6. **Riset kompetitor (dilakukan hari ini)**
+- 80% kompetitor finance app kasih FREE trial (rata-rata 14 hari)
+- Kompetitor langsung Indonesia **Finansialku Rp 35rb/bulan + 30 hari free trial** — BerUang sekarang paid trial Rp 10rb/7 hari = beda strategi (filter user serius vs volume akuisisi)
+- USP unik BerUang: **AI Akuntan + Bot Telegram + Bahasa Indonesia** (kompetitor Indonesia gak ada AI, Cleo AI English-only)
+- Pricing competitive: Rp 50rb/bulan match Spendee Premium ($2.99), Rp 299rb/tahun masih jauh lebih murah dari Money Lover Annual (Rp 720rb)
+
+#### 7. **Files yang di-update hari ini (12 files)**
+- `index.html` (rebuild full — BerUang-focused homepage)
+- `bersatu.html` (renamed from old index.html + BerUang card pricing update)
+- `app.html` (paywall 3-tier + register hint + AI paywall CTA)
+- `js/auth.js` (PACKAGE_CONFIG + activateSubscription + WhatsApp templates)
+- `js/app.js` (createPaymentInvoice + handlePostPaymentRedirect + paket label)
+- `bot/src/payment.js` (NEW — Xendit handlers)
+- `bot/src/index.js` (routes payment)
+- `landing.html` (pricing section + FAQ + chat widget)
+- `linktree.html` (BerUang description)
+- `beruang-behind-scenes.html`, `beruang-carousel.html` (marketing pricing)
+- `berbisnis-pro.html`, `company-profile-berstock.html` (cross-sell + B2B)
+
+Cache bump: `auth.js v22→23` · `app.js v40→41`
+
+---
 
 ### 📱 BerUang Android — 🚀 PRODUCTION APPLIED! Tinggal Tunggu Review
 
@@ -83,7 +172,7 @@ Visi: ekosistem AI assistant untuk UMKM Indonesia dengan branding beruang coklat
 ### 1. **BerUang** — Personal Finance App (root `/`)
 - **Tagline:** "Catet dulu, biar beneran ber-uang"
 - **Target:** Personal & UMKM kecil
-- **Pricing:** Rp 35rb/bulan atau Rp 125rb lifetime
+- **Pricing (per 1 Juni 2026):** Coba 7 Hari Rp 10rb · Bulanan Rp 50rb · Tahunan Rp 299rb (hemat 50%) · Lifetime Rp 125rb = LEGACY honored di backend tapi gak ada di UI lagi
 - **Fitur:** Input via form/chat/struk OCR, dashboard, kategorisasi otomatis (incl. utang/piutang)
 - **File utama:** `app.html`, `landing.html`, `linktree.html` (link-in-bio, sebelumnya index.html)
 - **Storage:** localStorage + Firebase Firestore sync (cloud)
@@ -301,6 +390,44 @@ state = {
 - 4 flag awal contoh: `multi_gudang`, `kredit_limit`, `menu_modifier`, `custom_bot_prompt`
 - **Belum:** Admin UI toggle (Step 3), conditional render (Step 4), bot per-tenant (Step 5), testing (Step 6)
 
+### K. Payment Gateway Architecture (Xendit) — Day 18
+**Pattern: client → Worker proxy → Xendit → webhook + post-redirect activation**
+
+**Frontend flow (js/app.js):**
+1. User klik paket di paywall → `createPaymentInvoice(paket)` POST ke `${WORKER}/api/create-invoice` dengan `{uid, email, paket, amount, externalId, successUrl, failureUrl}`
+2. Worker call Xendit `/v2/invoices` API → return `checkoutUrl` + simpan record di KV `payment:<externalId>` (TTL 7 hari)
+3. Frontend redirect `window.location.href = checkoutUrl`
+4. User bayar di Xendit (QRIS / VA / e-wallet)
+5. Xendit webhook hit Worker `/api/xendit-webhook` (background) — update KV `status='paid'`
+6. Xendit redirect user ke `successUrl` = `${origin}/app.html?payment=success&ref=externalId`
+7. `handlePostPaymentRedirect()` triggered di `onAuthStateChanged`:
+   - Parse query params, clean URL via `history.replaceState`
+   - GET `${WORKER}/api/verify-payment?ref=xxx` → return `{status, paket, uid}`
+   - Call `activateSubscription(uid, paket, {paymentRef})` → Firestore update `plan + expiresAt + lastPayment*`
+   - Reload page → user masuk app dengan Pro aktif
+
+**Key lessons:**
+- **Server-side validate amount** vs `PACKAGE_AMOUNTS` (anti-tamper — user gak bisa edit harga di JSON request)
+- **KV record per invoice** untuk verify nanti (Xendit webhook async, jangan trust frontend langsung)
+- **Double-check ke Xendit API** kalau KV status masih `pending` saat verify (defensive — webhook bisa delayed)
+- **Webhook validation:** Xendit kirim header `x-callback-token` = `env.XENDIT_WEBHOOK_TOKEN` (set di dashboard)
+- **Extend-from-current-expiry** kalau renewal sebelum expired (user gak kehilangan sisa hari)
+- **Safety fallback**: kalau `XENDIT_SECRET_KEY` belum di-set, return 503 — frontend auto-fallback ke WhatsApp manual flow
+
+**KYC catatan:** Xendit terima paspor sebagai pengganti KTP (untuk Individual). Cocok kalau bos KTP hilang.
+
+### L. Pricing Model Decisions (Day 18 — 1 Juni 2026)
+**Pertimbangan utama:** Lifetime Rp 125rb tidak sustainable kalau user heavy pakai AI (cost ~Rp 12rb/bulan/user untuk Claude Sonnet → setelah 11 bulan udah break-even, tahun 2 onwards pure loss).
+
+**Final structure (replace lifetime):**
+- **Coba 7 Hari Rp 10rb** — paid entry (BUKAN free trial). Filter user serius + cash flow dari hari 1 + anti-fraud (no email burner free-trial farming).
+- **Bulanan Rp 50rb** — auto-renewal. Margin 74% kalau heavy AI user, 96% kalau light.
+- **Tahunan Rp 299rb** — hemat 50% vs bulanan. Best value, capture user yang udah convinced.
+- **NO Lifetime** — di UI baru. Legacy buyers tetap dihormati (backend `isPro()` return true untuk `plan==='lifetime'`).
+- **NO Free tier** — daftar = harus bayar Rp 10rb. Beda dari 80% kompetitor industri (yang kasih free trial 7-30 hari) — gamble strategi.
+
+**Trade-off:** lower top funnel (gak ada free user volume) vs higher conversion quality + sustainable margin.
+
 ---
 
 ## 🚦 RULES OF ENGAGEMENT
@@ -392,7 +519,7 @@ state = {
 - Starter: ~~Rp 99rb~~ → **Rp 149.999/bulan**
 - Pro+AI: Rp 500rb/bulan (Early Bird, 50 klien pertama)
 - Enterprise: Rp 1.5jt+/bulan
-- BerUang Monthly: Rp 35rb/bulan
+- BerUang: Coba 7 Hari Rp 10rb · Bulanan Rp 50rb · Tahunan Rp 299rb (per 1 Juni 2026)
 - BerUang Lifetime: Rp 125rb (sekali bayar)
 
 **Lynk.id Setup:**
@@ -881,7 +1008,7 @@ curl -X POST "https://api.telegram.org/bot${TOKEN}/setWebhook" \
 
 ### 💰 Lynk.id Setup
 - URL: lynk.id/hendrypangg
-- 3 produk: E-Book Rp 49.999 / BerBisnis Pro Rp 500rb/bln / BerUang Rp 125rb lifetime
+- 3 produk: E-Book Rp 49.999 / BerBisnis Pro Rp 500rb/bln / BerUang (UPDATE NEEDED — pricing 1 Juni: Rp 10rb/7hari, Rp 50rb/bln, Rp 299rb/tahun)
 - **TODO bos:** Aktifkan **Affiliate Program** built-in di Lynk (Marketing Tools → Affiliates)
 - Komisi rekomendasi: E-Book 30%, BerUang 25%, BerBisnis 15% recurring
 
