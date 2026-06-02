@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=43" />
+  <link rel="stylesheet" href="styles.css?v=44" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -76,6 +76,7 @@
   <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
   <div id="paywall-screen" class="login-screen" hidden>
     <div class="login-card paywall-card">
+      <button id="btn-paywall-back" class="paywall-back" aria-label="Kembali ke Dashboard" title="Lihat Dashboard Dulu">←</button>
       <img class="login-logo" src="assets/logo-berbisnis.png?v=3" alt="BerUang" />
       <h2 id="paywall-title">Pilih Paket Langganan</h2>
       <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
@@ -229,6 +230,17 @@
   </header>
 
   <main>
+    <!-- PWA Install Banner — fullscreen mode hint untuk Chrome/Safari user -->
+    <div id="pwa-install-banner" class="pwa-banner" hidden>
+      <span class="pwa-banner-ic">📱</span>
+      <div class="pwa-banner-body">
+        <b id="pwa-banner-title">Install ke Home Screen</b>
+        <span id="pwa-banner-desc">Buat fullscreen mode + login persistent</span>
+      </div>
+      <button class="pwa-banner-cta" id="pwa-banner-cta">Install</button>
+      <button class="pwa-banner-x" id="pwa-banner-x" aria-label="Tutup">×</button>
+    </div>
+
     <!-- ================= DASHBOARD ================= -->
     <section id="tab-dashboard" class="tab-panel active">
       <div id="welcome-banner" class="welcome-banner" hidden>
@@ -928,6 +940,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=6"></script>
-  <script src="js/app.js?v=43"></script>
+  <script src="js/app.js?v=44"></script>
 </body>
 </html>

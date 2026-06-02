@@ -20,6 +20,7 @@ function init() {
   fillSubCategoriSelects();
   fillTrxFilters();
   setupAffiliateTracking();
+  setupPWAInstallBanner();
   attachEvents();
   if (typeof setupHutangForm === 'function') setupHutangForm();
   renderAll();
@@ -945,6 +946,15 @@ function setupAuthUI() {
   const btnPayLogout = document.getElementById('btn-paywall-logout');
   if (btnPayLogout) btnPayLogout.onclick = () => logout();
 
+  // Paywall back — balik ke dashboard (mode preview, fitur Pro tetap di-gate)
+  const btnPayBack = document.getElementById('btn-paywall-back');
+  if (btnPayBack) btnPayBack.onclick = () => {
+    showScreen('app');
+    if (typeof showToast === 'function') {
+      showToast('💡 Mode preview — fitur Pro (AI, Telegram, sync) tetap di-gate. Tap "Upgrade Pro" kapan aja untuk aktifkan.', 'info');
+    }
+  };
+
   // User menu dropdown
   const btnMenu = document.getElementById('user-menu-btn');
   const dropdown = document.getElementById('user-dropdown');
@@ -1187,6 +1197,70 @@ function showProGate(featureName, description) {
   // Close button + click outside
   modal.querySelector('#pro-gate-close').onclick = () => modal.remove();
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+}
+
+// ========== PWA INSTALL BANNER ==========
+// Auto-tampil di Chrome Android (beforeinstallprompt) + iOS Safari (manual hint)
+let __pwaDeferredPrompt = null;
+
+function setupPWAInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  const cta = document.getElementById('pwa-banner-cta');
+  const xBtn = document.getElementById('pwa-banner-x');
+  const title = document.getElementById('pwa-banner-title');
+  const desc = document.getElementById('pwa-banner-desc');
+  if (!banner) return;
+
+  // Cek apakah udah di-dismiss (7 hari)
+  const DISMISS_KEY = 'pwa-install-dismiss';
+  try {
+    const ts = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
+    if (ts && (Date.now() - ts) < 7 * 24 * 3600 * 1000) return;
+  } catch {}
+
+  // Cek apakah udah di PWA mode (standalone)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+  if (isStandalone) return;
+
+  const ua = navigator.userAgent || '';
+  const isIos = /iPhone|iPad|iPod/.test(ua) && !window.MSStream;
+  const isAndroidChrome = /Android/.test(ua) && /Chrome/.test(ua);
+
+  function dismiss() {
+    banner.hidden = true;
+    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch {}
+  }
+  xBtn.addEventListener('click', dismiss);
+
+  if (isAndroidChrome) {
+    // Chrome Android — listen beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      __pwaDeferredPrompt = e;
+      banner.hidden = false;
+      title.textContent = 'Install BerUang';
+      desc.textContent = 'Fullscreen mode + login persistent';
+      cta.textContent = 'Install';
+    });
+    cta.addEventListener('click', async () => {
+      if (!__pwaDeferredPrompt) return;
+      __pwaDeferredPrompt.prompt();
+      const choice = await __pwaDeferredPrompt.userChoice;
+      __pwaDeferredPrompt = null;
+      banner.hidden = true;
+      if (window.gtag) gtag('event', 'pwa_install_result', { outcome: choice.outcome });
+    });
+  } else if (isIos) {
+    // iOS Safari — manual instruction via tap
+    banner.hidden = false;
+    title.textContent = 'Install ke iPhone';
+    desc.textContent = 'Tap Share ⎙ → "Add to Home Screen"';
+    cta.textContent = 'Cara';
+    cta.addEventListener('click', () => {
+      alert('Cara install ke iPhone:\n\n1. Tap ikon Share ⎙ di bawah Safari\n2. Scroll → Tap "Add to Home Screen"\n3. Tap "Add" — selesai!\n\nBuka dari home screen → fullscreen mode + login gak hilang.');
+    });
+  }
 }
 
 // ========== AFFILIATE TRACKING ==========

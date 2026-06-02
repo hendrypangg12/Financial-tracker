@@ -1105,6 +1105,22 @@ body.is-free-user .pro-lock { display: inline; }
    📱 MOBILE NATIVE FEEL — Bottom Nav, FAB, Compact Layout
    ============================================================ */
 
+/* === PWA INSTALL BANNER === */
+.pwa-banner { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #fff7e6 0%, #fef3c7 100%); border: 1px solid #f0d488; border-radius: 12px; padding: 10px 12px; margin: 10px 14px 0; box-shadow: 0 2px 8px rgba(201,163,82,.12); position: relative; }
+.pwa-banner[hidden] { display: none !important; }
+.pwa-banner-ic { font-size: 22px; flex-shrink: 0; }
+.pwa-banner-body { flex: 1; display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.pwa-banner-body b { font-size: 13px; color: var(--brown-dark, #6f4518); }
+.pwa-banner-body span { font-size: 11px; color: var(--ink-soft, #8b7355); }
+.pwa-banner-cta { flex-shrink: 0; background: var(--brown, #8b5a2b); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
+.pwa-banner-cta:hover { background: var(--brown-dark, #6f4518); }
+.pwa-banner-x { flex-shrink: 0; width: 24px; height: 24px; border: none; background: rgba(62,45,33,.08); color: var(--ink-soft, #8b7355); border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+
+/* === PAYWALL BACK BUTTON === */
+.paywall-back { position: absolute; top: 14px; left: 14px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(62,45,33,.08); z-index: 5; transition: transform .15s, background .15s; }
+.paywall-back:hover, .paywall-back:active { background: var(--brown); color: #fff; transform: scale(0.95); }
+.paywall-card { position: relative; }
+
 /* === AI ANOMALY ALERT BANNER === */
 #anomaly-banner:empty { display: none; }
 .anomaly-wrap { background: linear-gradient(135deg, #fff7e6 0%, #fef3c7 100%); border: 1px solid #f0d488; border-radius: 14px; padding: 12px 14px; margin: 14px 0 18px; }
