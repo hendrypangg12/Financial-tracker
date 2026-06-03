@@ -2384,3 +2384,191 @@ html { scroll-behavior: smooth; }
 .ai-promo-cta { background: #fff; color: var(--brown); border: none; font-weight: 800; font-size: 13px; padding: 9px 16px; border-radius: 999px; cursor: pointer; }
 .ai-promo-cta:active { transform: scale(.96); }
 .ai-promo-x { position: absolute; top: 8px; right: 10px; background: rgba(255, 255, 255, .22); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; font-size: 16px; line-height: 1; cursor: pointer; }
+
+/* ============================================================ */
+/* PHASE 1 OVERHAUL — Native APK Feel (ala RASA, 3 Jun 2026)    */
+/* ============================================================ */
+
+/* Import serif font untuk premium feel di page titles */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap');
+
+/* === MOBILE: STRIP TOPBAR CLUTTER === */
+@media (max-width: 768px) {
+  .topbar {
+    padding: 14px 18px;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(237, 226, 204, 0.5);
+  }
+  /* Brand: kompak, no subtitle di mobile */
+  .brand { min-width: 0; gap: 10px; flex: 1; }
+  .brand-icon-img { width: 38px; height: 38px; border-radius: 11px; box-shadow: 0 2px 6px rgba(139, 90, 43, .15); }
+  .brand-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .brand-sub { display: none; }
+
+  /* Hide tabs di topbar di mobile (bottom-nav take over) */
+  .topbar .tabs { display: none; }
+
+  /* Topbar actions: cuma keep avatar + sync, hide upgrade/export/import/reset */
+  .topbar-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  #trial-badge,
+  #btn-upgrade-pro,
+  #btn-export,
+  #btn-import,
+  #btn-reset,
+  #file-import { display: none !important; }
+}
+
+/* === MOBILE: PAGE TITLES SERIF + GENEROUS SPACING === */
+@media (max-width: 768px) {
+  main {
+    padding: 0 18px 100px;
+    max-width: 100vw;
+  }
+  .page-title h1,
+  .page-title span.emoji + h1,
+  #dash-month-label {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin: 6px 0 4px;
+  }
+  .page-title {
+    padding: 22px 0 4px;
+  }
+  .page-title .emoji {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .page-filters {
+    margin-bottom: 18px;
+  }
+}
+
+/* === MOBILE: CARDS FLATTEN + BIGGER RADIUS === */
+@media (max-width: 768px) {
+  .cards { gap: 10px; margin-bottom: 16px; grid-template-columns: 1fr 1fr; }
+  .card,
+  .kpi-card,
+  .panel-card,
+  .info-card {
+    border-radius: 20px;
+    border: none;
+    background: #ffffff;
+    box-shadow: none;
+    padding: 18px 16px;
+  }
+  /* Saldo hero card — bigger, dark, premium */
+  .kpi-card.kpi-balance,
+  .card.kpi-balance,
+  #kpi-balance-card,
+  .hero-balance {
+    grid-column: 1 / -1;
+    background: #2a1d14;
+    color: #fff;
+    border-radius: 22px;
+    padding: 22px 20px;
+  }
+}
+
+/* === MOBILE: BOTTOM NAV FLOATING PILL === */
+@media (max-width: 768px) {
+  .bottom-nav {
+    position: fixed;
+    bottom: 14px;
+    left: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(62, 45, 33, .15), 0 0 0 1px rgba(237, 226, 204, .6);
+    padding: 8px 4px;
+    border: none;
+    height: auto;
+  }
+  .bnav-item {
+    padding: 6px 4px;
+    border-radius: 999px;
+  }
+  .bnav-item .bnav-icon { font-size: 20px; }
+  .bnav-item .bnav-label { font-size: 10px; font-weight: 500; }
+  .bnav-item.active {
+    color: var(--brown);
+  }
+  .bnav-item.active .bnav-icon {
+    transform: scale(1.05);
+  }
+  /* Push content up so bottom nav doesn't cover */
+  main { padding-bottom: 100px !important; }
+}
+
+/* === MOBILE: WELCOME GREETING UPGRADE === */
+@media (max-width: 768px) {
+  .welcome-banner {
+    border-radius: 22px;
+    padding: 22px 20px;
+    background: linear-gradient(135deg, #fdf6e8 0%, #f5e9cf 100%);
+    border: none;
+    box-shadow: 0 2px 12px rgba(201, 163, 82, .1);
+    margin: 14px 0 18px;
+  }
+  .welcome-content h2,
+  .welcome-greeting {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+  }
+}
+
+/* === MOBILE: BUTTONS LARGER TAP TARGETS === */
+@media (max-width: 768px) {
+  .btn { min-height: 44px; padding: 11px 18px; border-radius: 12px; font-size: 14px; }
+  .btn-primary { box-shadow: 0 2px 8px rgba(139, 90, 43, .2); }
+  .btn-small { min-height: 32px; padding: 6px 12px; font-size: 12px; }
+}
+
+/* === MOBILE: AI PROMO LESS INTRUSIVE === */
+@media (max-width: 768px) {
+  .ai-promo-card {
+    border-radius: 18px;
+    padding: 14px;
+    margin: 10px 0 14px;
+  }
+}
+
+/* === MOBILE: KPI VALUES BIGGER & CLEANER === */
+@media (max-width: 768px) {
+  .kpi-value,
+  .card .price,
+  .card .amount {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+  .kpi-label,
+  .card-label,
+  .card-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+}

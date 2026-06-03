@@ -4,9 +4,25 @@
 
 ---
 
-## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 1 Juni 2026)
+## 🔥 TOP PRIORITY — STATUS SAAT INI (Last Updated: 3 Juni 2026 pagi)
 
-### 💰 DAY 18 (1 Juni 2026) — Pricing Pivot + Homepage Rebuild + Backend Siap Xendit
+### 🎨 DAY 19 (3 Juni 2026 pagi) — Sprint Iteration Post-Reject (Native APK Feel + Critical Fixes)
+
+**Konteks:** Setelah Google reject production access (Day 18, 1 Juni pagi), Day 18 (1-2 Juni) fokus iterate berdasarkan tester feedback:
+- 12 bug fixes (paywall back, PWA install, data hilang, overflow, copy iterations)
+- 1 NEW feature: AI Anomaly Alert
+- Comprehensive iteration log dokumented untuk reapply
+
+**Day 19 (3 Juni pagi):** Native APK feel overhaul (ala RASA app) — Phase 1 CSS polish:
+- Strip topbar clutter (Trial badge + Upgrade Pro move ke greeting card)
+- Serif font untuk page titles (premium feel)
+- Bottom nav floating pill + backdrop blur
+- Increase mobile padding (1.5x current)
+- Card style flatten (no shadow, bigger radius)
+
+---
+
+### 💰 DAY 18 (1-2 Juni 2026) — Pricing Pivot + Homepage Rebuild + Backend Siap Xendit + Iteration Post-Reject
 
 **Big shifts hari ini:**
 
