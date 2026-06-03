@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topeng · Cuit Bebas, Muka Tertutup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg-deep: #0d0119;
+    --bg-card: #1a0a2e;
+    --bg-card-2: #2a1545;
+    --purple: #6d28d9;
+    --purple-bright: #a855f7;
+    --pink: #ec4899;
+    --pink-bright: #f472b6;
+    --cyan: #06b6d4;
+    --ink: #f3f0ff;
+    --gray: #9ca3af;
+    --gray-2: #6b7280;
+    --line: #2d1d4a;
+    --like: #f43f5e;
+    --green: #10b981;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at top, #2a1545 0%, #0d0119 60%, #000 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    padding: 30px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .frame-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 100%;
+    max-width: 430px;
+    background: var(--bg-deep);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(168,85,247,0.3), 0 0 0 8px #1a0a2e;
+    position: relative;
+    border: 1px solid var(--purple);
+  }
+  .status-bar {
+    background: var(--bg-deep);
+    padding: 8px 24px 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg-deep);
+    padding: 10px 16px 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 14px;
+  }
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 16px rgba(168,85,247,0.4);
+    position: relative;
+  }
+  .logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple-bright), var(--pink-bright));
+    z-index: -1;
+    filter: blur(8px);
+    opacity: 0.6;
+  }
+  .logo-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    background: linear-gradient(135deg, var(--purple-bright), var(--pink-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .header-icons {
+    display: flex;
+    gap: 6px;
+  }
+  .h-btn {
+    width: 38px; height: 38px;
+    background: var(--bg-card);
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    cursor: pointer;
+    position: relative;
+  }
+  .h-btn-dot {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 8px; height: 8px;
+    background: var(--pink);
+    border-radius: 50%;
+    border: 2px solid var(--bg-deep);
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 -16px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--pink);
+  }
+
+  /* MY MASK BANNER */
+  .my-mask-banner {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, var(--bg-card-2), var(--bg-card));
+    border: 1px solid var(--purple);
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mask-img {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    border: 2px solid var(--purple-bright);
+    flex-shrink: 0;
+  }
+  .mask-info {
+    flex: 1;
+  }
+  .mask-label {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .mask-name {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 2px;
+  }
+  .shuffle {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(236,72,153,0.4);
+  }
+
+  /* TRENDING WIDGET */
+  .trending {
+    margin: 0 16px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px 14px;
+  }
+  .trending-title {
+    font-size: 11px;
+    color: var(--purple-bright);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .trend-item:last-child { border-bottom: 0; }
+  .trend-tag {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .trend-count {
+    font-size: 11px;
+    color: var(--gray);
+  }
+  .trend-spark {
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* FEED */
+  .feed {
+    padding-bottom: 90px;
+  }
+
+  /* CUITAN CARD */
+  .cuit {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+  }
+  .ava-mask {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .m1 { background: linear-gradient(135deg, #f43f5e, #ec4899); }
+  .m2 { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+  .m3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .m4 { background: linear-gradient(135deg, #10b981, #06b6d4); }
+  .m5 { background: linear-gradient(135deg, #a855f7, #ec4899); }
+  .m6 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+  .m7 { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+
+  .cuit-body { flex: 1; min-width: 0; }
+  .cuit-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .author {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .anon-badge {
+    background: rgba(168,85,247,0.15);
+    color: var(--purple-bright);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .meta-dot { color: var(--gray-2); }
+  .time {
+    color: var(--gray);
+    font-size: 13px;
+  }
+  .more-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .cuit-text {
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 2px 0 10px;
+    word-wrap: break-word;
+  }
+  .cuit-text a, .hashtag, .mention {
+    color: var(--purple-bright);
+    font-weight: 600;
+  }
+  .cuit-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, var(--bg-card-2), var(--bg-card));
+    border-radius: 14px;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: 32px;
+  }
+  .poll {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px;
+    margin-top: 8px;
+  }
+  .poll-opt {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .poll-opt::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3));
+  }
+  .poll-opt span { position: relative; z-index: 1; }
+  .poll-opt.win::before { background: linear-gradient(90deg, rgba(16,185,129,0.4), rgba(6,182,212,0.4)); }
+  .poll-meta {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  /* ACTIONS */
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: var(--gray);
+    font-size: 13px;
+    max-width: 380px;
+  }
+  .action {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 8px 4px 0;
+    transition: color 0.15s;
+  }
+  .action:hover .icon { transform: scale(1.1); }
+  .action.liked { color: var(--like); }
+  .action.repost { color: var(--green); }
+  .action .icon {
+    font-size: 16px;
+    transition: transform 0.15s;
+  }
+
+  /* QUOTE / EMBEDDED REPOST */
+  .embed {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.02);
+  }
+  .embed-head {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 4px;
+  }
+  .mini-ava {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .embed-author {
+    font-weight: 700; font-size: 12px;
+    color: var(--ink);
+  }
+  .embed-time { font-size: 11px; color: var(--gray); }
+  .embed-text { font-size: 13px; color: var(--ink); line-height: 1.4; }
+
+  /* COMPOSE BAR (placeholder bottom) */
+  .compose-bar {
+    position: sticky;
+    bottom: 60px;
+    background: linear-gradient(180deg, transparent, var(--bg-deep) 30%);
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    pointer-events: none;
+  }
+  .fab {
+    margin-left: auto;
+    width: 54px; height: 54px;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(236,72,153,0.5);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    pointer-events: auto;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    background: rgba(13,1,25,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 22px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--gray);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 14px;
+    cursor: pointer;
+  }
+  .nav-item.active {
+    color: var(--pink-bright);
+  }
+  .nav-icon { font-size: 20px; }
+
+  /* Caption */
+  .caption {
+    max-width: 430px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+    margin-top: 24px;
+  }
+  .caption strong { color: var(--pink-bright); }
+  .name-pool {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-family: 'Fredoka';
+    font-size: 12px;
+    color: var(--purple-bright);
+    line-height: 1.8;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+
+<div class="frame-label">★ MOCKUP STATIS — "Topeng" Twitter Anonim ★</div>
+
+<div class="phone">
+
+  <div class="status-bar">
+    <span>22.25</span>
+    <span>📶 🔋</span>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <div class="logo-wrap">
+        <div class="logo-icon">🎭</div>
+        <div>
+          <div class="logo-text">Topeng</div>
+        </div>
+      </div>
+      <div class="header-icons">
+        <button class="h-btn">🔍</button>
+        <button class="h-btn">🔔<span class="h-btn-dot"></span></button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active">Linimasa</div>
+      <div class="tab">Ngikutin</div>
+      <div class="tab">🔥 Trending</div>
+    </div>
+  </header>
+
+  <div class="my-mask-banner">
+    <div class="mask-img">🎭</div>
+    <div class="mask-info">
+      <div class="mask-label">Topeng Kamu</div>
+      <div class="mask-name">Bakwan Krispi 🥢</div>
+    </div>
+    <button class="shuffle">🎲 Ganti</button>
+  </div>
+
+  <div class="trending">
+    <div class="trending-title">🔥 Lagi Rame</div>
+    <div class="trend-item">
+      <div>
+        <div class="trend-tag">#KaburAjaDulu</div>
+        <div class="trend-count">14.2K cuit · <span class="trend-spark">↑ 320%</span></div>
+      </div>
+    </div>
+    <div class="trend-item">
+      <div>
+        <div class="trend-tag">#GajiUMR</div>
+        <div class="trend-count">8.9K cuit · <span class="trend-spark">↑ 124%</span></div>
+      </div>
+    </div>
+    <div class="trend-item">
+      <div>
+        <div class="trend-tag">#MantanTokSik</div>
+        <div class="trend-count">5.4K cuit · <span class="trend-spark">↑ 89%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feed">
+
+    <!-- 1: Hot take controversial -->
+    <div class="cuit">
+      <div class="ava-mask m1">👻</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Pocong Gendut</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">2 menit</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">Sebenernya susu kental manis BUKAN susu. Cuma gula + minyak nabati. Berapa generasi Indonesia dibohongi iklan? 🥲</div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 247</div>
+          <div class="action repost"><span class="icon">🔁</span> 1.2K</div>
+          <div class="action liked"><span class="icon">❤️</span> 4.8K</div>
+          <div class="action"><span class="icon">📊</span> 89K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2: Wholesome win -->
+    <div class="cuit">
+      <div class="ava-mask m4">🐸</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Kerupuk Bantet</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">12 menit</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">AKHIRNYA DITERIMA KERJA 🥹🎉 setelah 50 lamaran ditolak, 3 interview gagal, 8 bulan nganggur. Hari ini akhirnya nangis bahagia di parkiran mall. Hidup susah tapi kita kuat semua. Doa-doa kalian terima kasih 🙏</div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 524</div>
+          <div class="action repost"><span class="icon">🔁</span> 892</div>
+          <div class="action liked"><span class="icon">❤️</span> 12.4K</div>
+          <div class="action"><span class="icon">📊</span> 234K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3: Vent / curhat ringan -->
+    <div class="cuit">
+      <div class="ava-mask m2">🧊</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Es Kopi Hambar</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">25 menit</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">Stress banget di kantor 😭 Bos toxic, gaji UMR, tapi gak bisa resign karena cicilan motor. Pengen teriak tapi gak ada yg dengerin. Disini doang gw bisa ngomong jujur tanpa takut viral di-tracking HR.</div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 1.4K</div>
+          <div class="action repost"><span class="icon">🔁</span> 256</div>
+          <div class="action"><span class="icon">🤍</span> 3.8K</div>
+          <div class="action"><span class="icon">📊</span> 67K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4: Question -->
+    <div class="cuit">
+      <div class="ava-mask m5">🍡</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Klepon Pecah</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">1 jam</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">Anyone pernah ngalamin mantan ngehubungin lagi setelah 3 tahun ghosting? Dia bilang mau ketemu. Should I or not? 🥲 anonim guys, jujur aja jawabnya</div>
+        <div class="poll">
+          <div class="poll-opt win"><span>JANGAN, jebakan batman 🚨</span></div>
+          <div class="poll-opt"><span>Ketemu sekali, biar closure ✨</span></div>
+          <div class="poll-opt"><span>Coba dulu siapa tau cocok lagi 🎲</span></div>
+          <div class="poll-opt"><span>Tergantung dia udah married belum 👀</span></div>
+          <div class="poll-meta">28.9K votes · sisa 6 jam</div>
+        </div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 892</div>
+          <div class="action"><span class="icon">🔁</span> 142</div>
+          <div class="action liked"><span class="icon">❤️</span> 2.3K</div>
+          <div class="action"><span class="icon">📊</span> 124K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5: Quote retweet style -->
+    <div class="cuit">
+      <div class="ava-mask m7">🦉</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Burung Hantu Mandi</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">2 jam</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">Lol valid banget ini 👇</div>
+        <div class="embed">
+          <div class="embed-head">
+            <div class="mini-ava">🥯</div>
+            <span class="embed-author">Cireng Manyun</span>
+            <span class="embed-time">· 5 jam</span>
+          </div>
+          <div class="embed-text">Sebenernya hutang gw ke temen 500rb dari 5 tahun lalu masih ada. Terlalu malu nanya, terlalu malu bayar duluan. Sekarang dia udah lupa kayanya. Dilema moral abad ini 💀</div>
+        </div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 412</div>
+          <div class="action"><span class="icon">🔁</span> 678</div>
+          <div class="action liked"><span class="icon">❤️</span> 5.6K</div>
+          <div class="action"><span class="icon">📊</span> 198K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6: Funny meme -->
+    <div class="cuit">
+      <div class="ava-mask m6">🍌</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Pisang Goreng Sad</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">3 jam</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">Yang ke gym minggu ini cuma 1× terus seminggu scroll TikTok di sofa, ngaku gak 🙋 <br><br>Konversi langganan gym = 2 ribu/menit gw pake. WORTH BANGET KAN GAES</div>
+        <div class="cuit-img">😂</div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 1.8K</div>
+          <div class="action repost"><span class="icon">🔁</span> 2.4K</div>
+          <div class="action liked"><span class="icon">❤️</span> 18.9K</div>
+          <div class="action"><span class="icon">📊</span> 412K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7: Life hack pro tip -->
+    <div class="cuit">
+      <div class="ava-mask m3">🧦</div>
+      <div class="cuit-body">
+        <div class="cuit-header">
+          <span class="author">Sandal Jepit Kanan</span>
+          <span class="anon-badge">ANON</span>
+          <span class="meta-dot">·</span>
+          <span class="time">5 jam</span>
+          <button class="more-btn">⋯</button>
+        </div>
+        <div class="cuit-text">📌 Pro tip dewasa: <br><br>1. Beli rice cooker 1jt, awet 10 tahun ✅<br>2. Beli rice cooker 200rb, ganti tiap 1.5 tahun ❌<br><br>"Kemiskinan itu mahal" — kenapa orang tua dulu suka beli barang bagus walaupun mahal. <a class="hashtag">#TipsDewasa</a></div>
+        <div class="actions">
+          <div class="action"><span class="icon">💬</span> 678</div>
+          <div class="action repost"><span class="icon">🔁</span> 5.2K</div>
+          <div class="action liked"><span class="icon">❤️</span> 24.6K</div>
+          <div class="action"><span class="icon">📊</span> 589K</div>
+          <div class="action"><span class="icon">📤</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="compose-bar">
+    <button class="fab">✏️</button>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span>Cari</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">🔔</span>
+      <span>Notif</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">🎭</span>
+      <span>Topeng</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="caption">
+  <strong>Topeng</strong> — Twitter-style microblog 100% anonim. Setiap user dapet topeng (nama samaran lucu auto-generated), bebas cuit tanpa takut identitas dilacak. <br>
+  USP vs Twitter/X: <strong>identitas tertutup default</strong> + <strong>no real name policy</strong> + <strong>shuffle topeng kapan saja</strong>. <br>
+  Pool nama samaran (formula: <em>[makanan/hantu/benda] + [adjective]</em>):
+  <div class="name-pool">
+    👻 Pocong Gendut · 🍡 Klepon Pecah · 🥢 Bakwan Krispi · 🧦 Sandal Jepit Kanan · 🥯 Cireng Manyun · 🍌 Pisang Goreng Sad · 🍢 Kerupuk Bantet · 🦉 Burung Hantu Mandi · 🧊 Es Kopi Hambar · 🐸 Kodok Berdasi · 🍔 Burger Bingung · 🌮 Tahu Galau · 🦀 Kepiting Lapar · 🥥 Klepon Lompat
+  </div>
+  <br>
+  Tagline: <em>"Cuit bebas, muka tertutup"</em>
+</div>
+
+</body>
+</html>
