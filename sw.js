@@ -1,5 +1,5 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v42';
+const CACHE_VERSION = 'beruang-v43';
 const CORE = [
   './',
   './index.html',
