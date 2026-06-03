@@ -95,14 +95,73 @@ Cache bump: `auth.js v22→23` · `app.js v40→41`
 
 ---
 
-### 📱 BerUang Android — 🚀 PRODUCTION APPLIED! Tinggal Tunggu Review
+### 📱 BerUang Android — ⚠️ PRODUCTION REJECTED (1 Jun 2026) — Reapply Setelah 14 Hari Testing Ekstra
 
-**Status saat ini (Sabtu 31 Mei 2026, 6:10 PM):**
+**Status terbaru (Senin 1 Juni 2026, ~09:00 WIB):**
+- 🚨 **Production access REJECTED** by Google
+- Alasan: "Testers were not engaged with your app during your closed test" + "didn't follow testing best practices"
+- 📋 Required: 14 hari testing ekstra dengan engagement nyata + bukti iteration (push updates)
+- 🎯 **Estimasi launch baru: ~22-25 Juni 2026** (kalau reapply lancar)
+
+**Application timeline (updated):**
+| Tanggal | Day | Milestone |
+|---|---|---|
+| Sab 16 Mei | — | 12 tester reached |
+| Sen 18 Mei | Day 1 | Google count start |
+| Sab 31 Mei | Day 14 | "Apply for production" UNLOCKED |
+| Sab 31 Mei 18:10 | — | Application SUBMITTED |
+| **Sen 1 Jun ~09:00** | — | 🚨 **REJECTED — More testing required** |
+| 1-15 Jun | Re-test | Closed testing dengan engagement REAL + iteration |
+| ~15 Jun | — | Reapply Production |
+| ~22-25 Juni 2026 | — | 🚀 **REAL LAUNCH** (estimate) |
+
+---
+
+### 🔁 ITERATION LOG — Untuk Jawab Questionnaire Reapply Production
+
+> Catatan: Google explicitly meminta bukti "gathering and acting on user feedback through updates." Semua bug fix + iteration di bawah ini bisa dipakai sebagai jawaban saat reapply. Pakai per-tester credit untuk demonstrate "real user engagement."
+
+**📅 1-2 Juni 2026 — Iteration sprint setelah Production reject:**
+
+| # | Tester | Bug / Feedback | Root Cause | Fix | Severity |
+|---|---|---|---|---|---|
+| 1 | Edwin Abraham | "Setelah masuk menu Upgrade Pro, gak bisa back ke home — user stuck di paywall" | Paywall tidak punya tombol back/close. User klik Upgrade Pro → masuk paywall → tidak ada exit | Tambah tombol ← (back) di kiri atas paywall card. Tap back → showScreen('app') dengan toast info "Mode preview, fitur Pro tetap di-gate". User bisa explore dashboard read-only sambil consider paket. (app.html L77, js/app.js L946) | HIGH |
+| 2 | Edwin Abraham | "Gak full screen di HP, ada address bar Chrome ngepotong layout" | User buka via Chrome browser, bukan PWA standalone mode. Viewport ke-potong address bar + bottom system nav | Tambah PWA install banner top app screen. Chrome Android: listen `beforeinstallprompt` → trigger native install dialog. iOS Safari: tampil instruksi manual "Share → Add to Home Screen" via alert. Banner auto-hide kalau udah standalone. Dismiss 7 hari via localStorage. (app.html L233-240, js/app.js setupPWAInstallBanner) | HIGH |
+| 3 | Tester [anonymous] | "Tampilan kepotong di sisi kiri, header 'BerUang' + Sisa Saldo card sebagian hilang" | Amount Rupiah besar (Rp 100.000.000) bikin card melebar → push grid layout overflow horizontal di mobile. Browser scroll horizontal muncul → sebagian content terpotong | CSS fix: `html, body { overflow-x: hidden; max-width: 100vw }` (hard cap). Grid items: `.cards > .card { min-width: 0 }` (shrink proper). Long Rp: `word-break: break-word` (wrap). (styles.css L28-32) | HIGH |
+| 4 | Tester [anonymous] | "Data yang aku isi harian menghilang" | **Critical bug**: cloud sync (loadFromCloud + startCloudListener + startAutoSync) HANYA aktif untuk Pro user. Tester free/pending/trial → data 100% di localStorage. Chrome Android low storage → auto-clear localStorage → DATA HILANG PERMANENT tanpa backup | Enable cloud sync untuk **SEMUA logged-in user** (free, trial, monthly, annual, lifetime). Data integrity = basic right, bukan Pro feature. Pro tetap di-gate dengan AI Akuntan + Telegram bot + OCR struk + export. Firestore doc cost negligible. (js/app.js onAuthStateChanged L556-583) | CRITICAL |
+| 5 | Bos (dogfood) | "Modal install iOS gak bisa di-close" | IIFE script lama early-return karena banner element udah dihapus sebelumnya — listener X button tidak ke-attach | Rewrite handler standalone — listener X / klik backdrop / ESC selalu attach terlepas dari status banner element (index.html script bottom) | MEDIUM |
+| 6 | Bos (dogfood) | "Section social proof '12 tester / 14+ hari / Rp 50jt' ga perlu, intrusive" | UX feedback subjective — section terlalu prominent, gak match brand voice | Hapus section Social Proof + 2 testimonial card dari homepage (index.html) | LOW |
+| 7 | Bos (dogfood) | "Phone mockup hero pakai screenshot fake banyak whitespace coklat" | Image asset `screen-1-dashboard.png` punya banyak ruang kosong background coklat tua dominan di mockup | Replace dengan CSS pure mockup (greeting + balance card + chat bubbles user/AI) — content-rich tanpa image dummy (index.html hero phone-screen) | MEDIUM |
+| 8 | Bos (dogfood) | "Section gallery 4-screenshot fake jelek" | Sama dengan #7 — image mockup tidak representatif app real | Hapus section gallery 4-card (index.html) | LOW |
+| 9 | Bos (dogfood) | "Logo beruang gemoy gak match brand profesional" | Branding decision — BerUang positioning sebagai "Akuntan AI Pribadi" butuh tone profesional, bukan gemoy mascot | Ganti logo `mascot-beruang.png` (akuntan gemoy) → `logo-berbisnis.png` (beruang berdasi BerSatu Suite professional). Apply ke nav/footer/favicon/OG image/JSON-LD (index.html, app.html) | MEDIUM |
+| 10 | Bos (dogfood) | "Kata 'kayak app native' orang banyak kurang familiar" | Bahasa technical jargon yang Indonesia user kurang aware | Ganti ke "kayak install APK" di 3 tempat (modal install benefit list, ios-note hero, final CTA copy) — istilah lebih familiar | LOW |
+| 11 | Bos (dogfood) | "Logo Apple emoji 🍎 di iOS badge aneh" | Emoji unicode tidak match Apple App Store badge standard | Ganti ke SVG Apple logo proper (Download on the App Store style) di hero + final CTA. Tambah ios-note penjelasan "iOS belum di App Store, install via Safari" (index.html) | LOW |
+| 12 | Bos (dogfood) | "Logo Google Play unicode triangle hijau plain aneh" | Unicode ▶ tidak match Google Play brand identity | Ganti ke SVG 4-warna gradient resmi (biru/kuning/hijau/merah). Diterapkan hero + final CTA, sizing 26x26px (index.html) | LOW |
+| 13 | Bos (proactive feature) | "Bikin fitur AI Anomaly Alert proactive notify pola spending abnormal" | Feature gap — kompetitor reactive logger, BerUang butuh USP AI-first | Bikin `js/anomaly.js`: detectSpendingAnomalies() compare 7 hari last vs avg 4 minggu sebelum, severity HIGH/MEDIUM/LOW, dismiss per kategori per minggu, max 3 banner, emoji per kategori. Render di dashboard atas (sebelum cards). | NEW FEATURE |
+
+**📊 Stats iteration sprint Day 18:**
+- **Total bug fix**: 12 dari tester + dogfood feedback
+- **NEW feature**: 1 (AI Anomaly Alert)
+- **Cache version bumps**: app.js v40→45, styles.css v41→45, auth.js v22→23, firebase-config v23→24, admin v20→21, dashboard v27→28, anomaly v1
+- **Files touched**: 15+
+- **Commits**: 12+
+
+**Tester feedback channels documented:**
+- WhatsApp direct chat (bos @hendrypangg12)
+- IG DM @berstock.ai (chat widget di landing)
+- In-person observation (Edwin Abraham screenshots via WA)
+- Cross-device sync test (multi-device data integrity validation)
+
+---
+
+### 📱 BerUang Android — Original Status (untuk arsip)
+
+**Status sebelum reject (Sabtu 31 Mei 2026, 6:10 PM):**
 - ✅ Closed test ran **14+ days continuously** with 12 testers (unlock confirmed pagi 31 Mei)
 - ✅ **Production application SUBMITTED** ke Google (18:10 WIB)
 - ✅ Semua 8 questionnaire question terjawab dalam Bahasa Inggris, di bawah 300 char/field
 - ⏳ Google review estimasi **≤7 hari** ("usually 7 days or less, but may occasionally take longer")
-- 🎯 **Estimasi LIVE PUBLIC: 1-7 Juni 2026**
+- 🎯 **Estimasi LIVE PUBLIC: 1-7 Juni 2026** (TIDAK TERCAPAI — di-reject 1 Jun)
 - 📧 Update via email ke account owner (hendrypangg12@gmail.com)
 
 **Application timeline (final):**
