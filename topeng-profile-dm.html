@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1100, initial-scale=1">
+<title>Topeng · Profile + DM Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg-deep: #0d0119;
+    --bg-card: #1a0a2e;
+    --bg-card-2: #2a1545;
+    --purple: #6d28d9;
+    --purple-bright: #a855f7;
+    --pink: #ec4899;
+    --pink-bright: #f472b6;
+    --cyan: #06b6d4;
+    --green: #10b981;
+    --ink: #f3f0ff;
+    --gray: #9ca3af;
+    --gray-2: #6b7280;
+    --line: #2d1d4a;
+    --like: #f43f5e;
+    --warn: #fbbf24;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at top, #2a1545 0%, #0d0119 60%, #000 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    padding: 30px 20px;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .frame-label {
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .screen-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    color: var(--pink-bright);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .phone {
+    width: 100%;
+    max-width: 430px;
+    background: var(--bg-deep);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(168,85,247,0.3), 0 0 0 8px #1a0a2e;
+    border: 1px solid var(--purple);
+  }
+  .status-bar {
+    padding: 8px 24px 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ===== PROFILE PAGE ===== */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-deep);
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .profile-header-info {
+    flex: 1;
+    margin-left: 4px;
+  }
+  .profile-header-name {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .profile-header-meta {
+    font-size: 11px;
+    color: var(--gray);
+  }
+  .profile-cover {
+    height: 80px;
+    background: linear-gradient(135deg, #6d28d9 0%, #ec4899 50%, #f59e0b 100%);
+    position: relative;
+  }
+  .profile-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff10' d='M0 50 Q25 30 50 50 T100 50'/%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+  .profile-info {
+    padding: 0 16px 16px;
+    margin-top: -40px;
+    position: relative;
+  }
+  .profile-ava {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    border: 4px solid var(--bg-deep);
+    margin-bottom: 12px;
+  }
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .profile-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+  .anon-badge {
+    background: rgba(168,85,247,0.15);
+    color: var(--purple-bright);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(168,85,247,0.3);
+  }
+  .verified-age {
+    background: rgba(16,185,129,0.15);
+    color: var(--green);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .joined {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .bio {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 8px 0 12px;
+  }
+  .interests {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .interest {
+    padding: 4px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .interest.match {
+    background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(236,72,153,0.2));
+    border-color: var(--purple-bright);
+    color: var(--pink-bright);
+  }
+  .stats {
+    display: flex;
+    gap: 18px;
+    margin: 14px 0;
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .stat-num {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .cta-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .cta-primary {
+    flex: 1;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(236,72,153,0.4);
+    font-family: 'Inter';
+  }
+  .cta-secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 12px 18px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Inter';
+  }
+  .vibe-match {
+    margin: 14px 0 0;
+    background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1));
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .vibe-icon {
+    font-size: 22px;
+  }
+  .vibe-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .vibe-text strong {
+    color: var(--green);
+  }
+  .recent-tab {
+    border-top: 1px solid var(--line);
+    margin-top: 16px;
+    padding: 14px 16px 8px;
+    font-size: 11px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+  .mini-cuit {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mini-cuit-meta {
+    font-size: 11px;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+  .mini-cuit-text {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .mini-cuit-actions {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--gray);
+    display: flex;
+    gap: 14px;
+  }
+
+  /* ===== DM PAGE ===== */
+  .dm-header {
+    padding: 12px 16px;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dm-ava {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .dm-name-wrap { flex: 1; }
+  .dm-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .dm-online {
+    font-size: 11px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dm-online::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+  }
+
+  .safety-banner {
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.05));
+    border: 1px solid rgba(251,191,36,0.3);
+    padding: 10px 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    color: var(--ink);
+  }
+  .safety-banner-icon { font-size: 16px; }
+  .safety-banner strong { color: var(--warn); }
+
+  .connection-banner {
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.1));
+    border-bottom: 1px solid rgba(16,185,129,0.2);
+    padding: 10px 16px;
+    font-size: 11px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  .chat-area {
+    padding: 14px 12px;
+    background: var(--bg-deep);
+    min-height: 380px;
+  }
+  .day-label {
+    text-align: center;
+    font-size: 10px;
+    color: var(--gray);
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+  .msg-row {
+    display: flex;
+    margin-bottom: 6px;
+  }
+  .msg-row.them {
+    justify-content: flex-start;
+  }
+  .msg-row.me {
+    justify-content: flex-end;
+  }
+  .msg-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .msg-row.them .msg-bubble {
+    background: var(--bg-card);
+    color: var(--ink);
+    border-bottom-left-radius: 4px;
+  }
+  .msg-row.me .msg-bubble {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-time {
+    font-size: 10px;
+    color: var(--gray);
+    margin: 0 12px 6px;
+  }
+  .ai-mod-note {
+    background: rgba(168,85,247,0.08);
+    border: 1px dashed rgba(168,85,247,0.3);
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin: 8px 16px;
+    font-size: 11px;
+    color: var(--purple-bright);
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .quick-reactions {
+    display: flex;
+    gap: 4px;
+    margin: 4px 12px 8px;
+  }
+  .quick-react {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .dm-input-bar {
+    padding: 10px 12px 16px;
+    background: var(--bg-deep);
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .dm-input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 10px 18px;
+    color: var(--ink);
+    font-size: 14px;
+    font-family: 'Inter';
+    outline: none;
+  }
+  .dm-input::placeholder { color: var(--gray); }
+  .dm-send {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(236,72,153,0.4);
+  }
+  .dm-icon-btn {
+    width: 38px; height: 38px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Caption */
+  .caption {
+    margin: 30px auto 0;
+    max-width: 880px;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    line-height: 1.7;
+    text-align: center;
+    padding: 0 20px;
+  }
+  .caption strong { color: var(--pink-bright); }
+  .caption ul {
+    list-style: none;
+    text-align: left;
+    margin: 16px auto;
+    max-width: 600px;
+    padding: 16px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .caption ul li {
+    padding: 4px 0;
+  }
+  .caption ul li::before {
+    content: '✓ ';
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .screens { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame-label">★ MOCKUP — Topeng: Profile Anonim & DM Kenalan ★</div>
+
+<div class="container">
+
+  <div class="screens">
+
+    <!-- ===== PROFILE SCREEN ===== -->
+    <div class="screen-wrap">
+      <div class="screen-title">📄 Profile Page Anonim</div>
+      <div class="phone">
+
+        <div class="status-bar">
+          <span>22:25</span>
+          <span>📶 🔋</span>
+        </div>
+
+        <div class="profile-header">
+          <button class="back-btn">←</button>
+          <div class="profile-header-info">
+            <div class="profile-header-name">Klepon Pecah</div>
+            <div class="profile-header-meta">142 cuit</div>
+          </div>
+          <button class="back-btn">⋯</button>
+        </div>
+
+        <div class="profile-cover"></div>
+
+        <div class="profile-info">
+          <div class="profile-ava">🍡</div>
+
+          <div class="name-row">
+            <span class="profile-name">Klepon Pecah</span>
+            <span class="anon-badge">ANON</span>
+            <span class="verified-age">✓ 17+</span>
+          </div>
+
+          <div class="joined">🎭 Bertopeng sejak Maret 2026 · 23 thn · Cewek</div>
+
+          <div class="bio">
+            Sering galau soal kerja & hubungan. Suka coffee shop sepi, bukan TikTok lambe. DM oke kalau bisa nyaman, gak butuh validasi 🥹
+          </div>
+
+          <div class="interests">
+            <div class="interest match">💼 Karir Quarter Life</div>
+            <div class="interest match">🧠 Mental Health</div>
+            <div class="interest">💔 Heartbreak</div>
+            <div class="interest">☕ Coffee Shop</div>
+            <div class="interest">📚 Self-Help</div>
+            <div class="interest match">🌙 Insomnia</div>
+          </div>
+
+          <div class="vibe-match">
+            <div class="vibe-icon">✨</div>
+            <div class="vibe-text">
+              <strong>78% Vibe Match</strong> sama kamu — 3 dari 6 interest sama. Sering aktif jam 22:00-01:00 (sama!).
+            </div>
+          </div>
+
+          <div class="stats">
+            <span><span class="stat-num">142</span> cuit</span>
+            <span><span class="stat-num">1.2K</span> follower</span>
+            <span><span class="stat-num">234</span> ngikutin</span>
+          </div>
+
+          <div class="cta-row">
+            <button class="cta-primary">🤝 Mau Kenalan</button>
+            <button class="cta-secondary">+ Follow</button>
+          </div>
+        </div>
+
+        <div class="recent-tab">CUITAN TERBARU</div>
+
+        <div class="mini-cuit">
+          <div class="mini-cuit-meta">2 jam · 🎭 Anon</div>
+          <div class="mini-cuit-text">Hari ke-30 belajar coding sambil kerja kantor 9-6. Belum jadi developer tapi merasa bangga sama diri sendiri. Slow progress is still progress 🐢💜</div>
+          <div class="mini-cuit-actions">
+            <span>💬 47</span>
+            <span>🔁 23</span>
+            <span>❤️ 312</span>
+          </div>
+        </div>
+
+        <div class="mini-cuit">
+          <div class="mini-cuit-meta">8 jam · 🎭 Anon</div>
+          <div class="mini-cuit-text">Ada yg pernah ngerasa "udah dewasa tapi kok masih kayak anak ilang"? Bukan childlike trauma, beneran bingung mau ngapain idup ini 🥲</div>
+          <div class="mini-cuit-actions">
+            <span>💬 156</span>
+            <span>🔁 89</span>
+            <span>❤️ 1.4K</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DM SCREEN ===== -->
+    <div class="screen-wrap">
+      <div class="screen-title">💬 DM Setelah "Kenalan" Diterima</div>
+      <div class="phone">
+
+        <div class="status-bar">
+          <span>22:27</span>
+          <span>📶 🔋</span>
+        </div>
+
+        <div class="dm-header">
+          <button class="back-btn">←</button>
+          <div class="dm-ava">🍡</div>
+          <div class="dm-name-wrap">
+            <div class="dm-name">Klepon Pecah</div>
+            <div class="dm-online">Online sekarang</div>
+          </div>
+          <button class="back-btn">⋮</button>
+        </div>
+
+        <div class="connection-banner">
+          <span>🤝</span>
+          <span>Kalian saling kenalan · Mulai 22 Mei 2026</span>
+        </div>
+
+        <div class="safety-banner">
+          <span class="safety-banner-icon">🛡️</span>
+          <span>
+            <strong>Lindungi diri kamu.</strong> Jangan share nama asli, alamat, foto KTP, atau nomor rekening. Identitas mereka belum tentu sesuai topeng-nya. Curiga? Tap ⋮ → Lapor.
+          </span>
+        </div>
+
+        <div class="chat-area">
+
+          <div class="day-label">Kemarin</div>
+
+          <div class="msg-row them">
+            <div class="msg-bubble">Hai! 🎭 Aku liat cuit kamu yg soal "anak ilang dewasa" — terlalu relate 🥲</div>
+          </div>
+          <div class="msg-time">23:14</div>
+
+          <div class="msg-row me">
+            <div class="msg-bubble">Eyy halo Klepon 👋 valid banget kan. Suka heran sama orang yg kayanya yakin sama hidupnya</div>
+          </div>
+          <div class="msg-time" style="text-align:right">23:18</div>
+
+          <div class="msg-row them">
+            <div class="msg-bubble">Anyway boleh tau kamu kerja apa? Cerita dong</div>
+          </div>
+          <div class="msg-time">23:22</div>
+
+          <div class="ai-mod-note">
+            <span>🤖</span>
+            <span><strong>AI Topeng note:</strong> Hindari share detail spesifik nama kantor / posisi / lokasi. Cukup bidang industri aja kalau mau jawab.</span>
+          </div>
+
+          <div class="msg-row me">
+            <div class="msg-bubble">Aman 👍 aku di bidang marketing, freelance kecil-kecilan. Kamu?</div>
+          </div>
+          <div class="msg-time" style="text-align:right">23:30</div>
+
+          <div class="day-label">Hari ini</div>
+
+          <div class="msg-row them">
+            <div class="msg-bubble">Aku akuntan, lagi kepikiran resign banget tapi takut. Boleh nanya tips freelance kapan2? 🥹</div>
+          </div>
+          <div class="msg-time">07:42</div>
+
+          <div class="msg-row me">
+            <div class="msg-bubble">Tentu! mau bahas santai aja, gak harus jadi consult formal 💜</div>
+          </div>
+          <div class="msg-time" style="text-align:right">08:15</div>
+
+          <div class="quick-reactions">
+            <div class="quick-react">😊 Senyum</div>
+            <div class="quick-react">💜 Peluk</div>
+            <div class="quick-react">🫂 Aku ngerti</div>
+            <div class="quick-react">🤝 Setuju</div>
+          </div>
+        </div>
+
+        <div class="dm-input-bar">
+          <button class="dm-icon-btn">😊</button>
+          <input type="text" class="dm-input" placeholder="Ketik pesan ke Klepon Pecah..." disabled>
+          <button class="dm-send">↑</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="caption">
+    <strong>Profile Anonim + DM Kenalan</strong> — orang bisa lihat profil seseorang (tetap anonim, full topeng), kirim request <em>"🤝 Mau Kenalan"</em> → kalau diterima, unlock DM private. <br><br>
+    <strong>Safety features yang udah di-design in:</strong>
+    <ul>
+      <li>🎂 <strong>Age gate ✓ 17+</strong> — wajib selfie+KTP saat verifikasi (anonim ke publik, tracked ke admin)</li>
+      <li>✨ <strong>Vibe Match score</strong> — interest tag overlap + jam aktif sama → reduce random matching</li>
+      <li>🛡️ <strong>Safety banner permanent</strong> di tiap DM — wanti-wanti jangan share identitas asli</li>
+      <li>🤖 <strong>AI moderation real-time</strong> — auto-detect kalau lawan bicara nanya nama kantor/alamat/no.rek → kasih warning ke user</li>
+      <li>🚨 <strong>Crisis hotline integration</strong> — auto-detect keyword "bunuh diri/nyerah hidup" → tampil hotline Kemenkes 119 ext 8</li>
+      <li>🔒 <strong>Backend KYC</strong> — admin bisa trace identitas asli kalau ada laporan polisi (anonim ke user lain, NOT anonim ke admin)</li>
+      <li>🚷 <strong>Block + Report</strong> — 1 tap, lawan langsung hilang dari semua feed/search</li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>
