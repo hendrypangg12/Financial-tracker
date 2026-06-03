@@ -554,13 +554,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
       }
       // FREEMIUM: user bisa pakai app meski belum bayar
-      // Pro features (cloud sync, OCR, export) di-gate dengan isPro()
+      // Pro features (AI, Telegram bot, OCR) di-gate dengan isPro()
+      // Cloud sync ENABLED UNTUK SEMUA user — biar data tester gak hilang kalau browser clear cache
       showScreen('app');
       const userIsPro = typeof isPro === 'function' && isPro(profile);
-      // Load data dari cloud HANYA untuk Pro user
-      if (userIsPro) {
-        await loadFromCloud();
-      }
+      // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
+      await loadFromCloud();
       init();
       setupWelcomeBanner();
       // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
@@ -576,14 +575,12 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       }
-      // Cloud listener & auto-sync HANYA untuk Pro user
-      if (userIsPro) {
-        startCloudListener(() => {
-          renderAll();
-          fillSubCategoriSelects();
-        });
-        if (typeof startAutoSync === 'function') startAutoSync();
-      }
+      // Cloud listener + auto-sync untuk SEMUA user (data backup integrity)
+      startCloudListener(() => {
+        renderAll();
+        fillSubCategoriSelects();
+      });
+      if (typeof startAutoSync === 'function') startAutoSync();
       updateUserMenu(user, profile);
       // Setup gating UI untuk free user
       setupProGating(profile);
