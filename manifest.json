@@ -52,7 +52,7 @@
       "purpose": "maskable"
     },
     {
-      "src": "assets/mascot-beruang.png",
+      "src": "assets/logo-berbisnis.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -94,14 +94,14 @@
       "short_name": "Tambah",
       "description": "Langsung ke halaman tambah",
       "url": "/app.html#tambah",
-      "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
+      "icons": [{ "src": "assets/logo-berbisnis.png", "sizes": "512x512" }]
     },
     {
       "name": "Lihat Rekap",
       "short_name": "Rekap",
       "description": "Rekap harian/mingguan/bulanan",
       "url": "/app.html#rekap",
-      "icons": [{ "src": "assets/mascot-beruang.png", "sizes": "512x512" }]
+      "icons": [{ "src": "assets/logo-berbisnis.png", "sizes": "512x512" }]
     }
   ]
 }
