@@ -21,6 +21,7 @@ async function loadFromCloud() {
       if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
       if (Array.isArray(data.assets)) state.assets = data.assets;
       if (Array.isArray(data.recurring)) state.recurring = data.recurring;
+      if (Array.isArray(data.goals)) state.goals = data.goals;
       if (typeof data.userName === 'string') state.userName = data.userName;
       if (data.categories) state.categories = data.categories;
       if (typeof data.target === 'number') state.target = data.target;
@@ -52,6 +53,7 @@ function startCloudListener(onRemoteChange) {
     if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
     if (Array.isArray(data.assets)) state.assets = data.assets;
     if (Array.isArray(data.recurring)) state.recurring = data.recurring;
+    if (Array.isArray(data.goals)) state.goals = data.goals;
     if (typeof data.userName === 'string') state.userName = data.userName;
     if (data.categories) state.categories = data.categories;
     if (typeof data.target === 'number') state.target = data.target;
@@ -60,6 +62,7 @@ function startCloudListener(onRemoteChange) {
       hutangs: state.hutangs,
       assets: state.assets,
       recurring: state.recurring,
+      goals: state.goals,
       userName: state.userName,
       categories: state.categories,
       target: state.target,
@@ -88,6 +91,7 @@ async function pushToCloudImmediate() {
     hutangs: state.hutangs || [],
     assets: state.assets || [],
     recurring: state.recurring || [],
+    goals: state.goals || [],
     userName: state.userName || '',
     categories: state.categories || {},
     target: state.target || 0,

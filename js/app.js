@@ -23,6 +23,7 @@ function init() {
   setupPWAInstallBanner();
   attachEvents();
   if (typeof setupHutangForm === 'function') setupHutangForm();
+  if (typeof setupGoalForm === 'function') setupGoalForm();
   renderAll();
 
   // Default tanggal struk & form = hari ini
@@ -36,6 +37,7 @@ function renderAll() {
   renderDashboard();
   renderTransaksi();
   if (typeof renderHutang === 'function') renderHutang();
+  if (typeof renderGoals === 'function') renderGoals();
   renderRekap();
   renderKategori();
 }
@@ -79,6 +81,7 @@ function attachEvents() {
     if (tabName === 'dashboard') renderDashboard();
     if (tabName === 'transaksi') renderTransaksi();
     if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
+    if (tabName === 'goal' && typeof renderGoals === 'function') renderGoals();
     if (tabName === 'rekap') renderRekap();
     if (tabName === 'kategori') renderKategori();
     if (tabName === 'tambah' && typeof renderRecurringManager === 'function') renderRecurringManager();

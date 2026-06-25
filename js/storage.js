@@ -4,6 +4,7 @@ const state = {
   hutangs: [], // hutang & piutang personal
   assets: [],  // aset/dana awal (rekening, investasi) — info kekayaan, TIDAK masuk cashflow
   recurring: [], // tagihan rutin bulanan (kost, cicilan, langganan) — buat reminder
+  goals: [], // 🎯 AI Goal Planner — target nabung dengan AI plan (v1.0.2)
   userName: '', // nama panggilan user (dari onboarding) — buat sapaan
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
@@ -21,6 +22,7 @@ function loadState() {
     if (data.hutangs) state.hutangs = data.hutangs;
     if (Array.isArray(data.assets)) state.assets = data.assets;
     if (Array.isArray(data.recurring)) state.recurring = data.recurring;
+    if (Array.isArray(data.goals)) state.goals = data.goals;
     if (typeof data.userName === 'string') state.userName = data.userName;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
@@ -36,6 +38,7 @@ function saveState() {
       hutangs: state.hutangs,
       assets: state.assets,
       recurring: state.recurring,
+      goals: state.goals,
       userName: state.userName,
       categories: state.categories,
       target: state.target,
@@ -101,6 +104,7 @@ function exportData() {
     hutangs: state.hutangs,
     assets: state.assets,
     recurring: state.recurring,
+    goals: state.goals,
     userName: state.userName,
     categories: state.categories,
     target: state.target,
