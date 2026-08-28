@@ -150,7 +150,10 @@ export async function handleAdvise(request, env) {
 
     // Reply message sesuai tipe error (user-friendly)
     let userReply = "Bos, Aku lagi capek nih, coba 1-2 menit lagi ya 😅";
-    if (err?.status === 401 || err?.status === 403) {
+    const msgLower = (errInfo.errBody || errInfo.message || "").toLowerCase();
+    if (msgLower.includes("credit balance") || msgLower.includes("insufficient")) {
+      userReply = "Bos, kredit AI Admin lagi habis. Lagi di-top-up, coba lagi 1 jam lagi ya 🐻";
+    } else if (err?.status === 401 || err?.status === 403) {
       userReply = "Bos, API key AI perlu di-refresh. Kontak Admin ya 🐻";
     } else if (err?.status === 404 || errInfo.type === "not_found_error") {
       userReply = "Bos, model AI lagi maintenance. Coba lagi nanti 🐻";
@@ -163,7 +166,6 @@ export async function handleAdvise(request, env) {
     return jsonResponse({
       error: "AI service error",
       reply: userReply,
-      debug: errInfo, // TEMPORARY: always exposé — remove after debug done
     }, 503);
   }
 
