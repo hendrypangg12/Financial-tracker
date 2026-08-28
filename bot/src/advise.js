@@ -163,7 +163,7 @@ export async function handleAdvise(request, env) {
     return jsonResponse({
       error: "AI service error",
       reply: userReply,
-      debug: env.DEBUG_MODE === "true" ? errInfo : undefined,
+      debug: errInfo, // TEMPORARY: always exposé — remove after debug done
     }, 503);
   }
 
