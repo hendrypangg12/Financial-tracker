@@ -211,7 +211,7 @@ Kalau foto BUKAN struk atau gak kebaca sama sekali, jawab:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
+        model: "claude-sonnet-5",
         max_tokens: 300,
         messages: [{
           role: "user",

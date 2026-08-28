@@ -3,7 +3,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5";
 const MAX_TOKENS = 1024;  // Jawaban ringkas, gak boros token
 
 // System prompt — persona Beruang Gemoy
@@ -138,10 +138,32 @@ export async function handleAdvise(request, env) {
     const textBlock = response.content.find((b) => b.type === "text");
     reply = textBlock?.text?.trim() || "Bos, ada masalah sebentar. Coba tanya lagi ya 🐻";
   } catch (err) {
-    console.error("Claude API error:", err);
+    // Detail error info supaya bisa debug via `wrangler tail`
+    const errInfo = {
+      name: err?.name || "Unknown",
+      status: err?.status,
+      message: (err?.message || String(err)).slice(0, 300),
+      type: err?.error?.type || err?.error?.error?.type,
+      errBody: err?.error?.error?.message?.slice(0, 200),
+    };
+    console.error("Claude API error:", JSON.stringify(errInfo));
+
+    // Reply message sesuai tipe error (user-friendly)
+    let userReply = "Bos, Aku lagi capek nih, coba 1-2 menit lagi ya 😅";
+    if (err?.status === 401 || err?.status === 403) {
+      userReply = "Bos, API key AI perlu di-refresh. Kontak Admin ya 🐻";
+    } else if (err?.status === 404 || errInfo.type === "not_found_error") {
+      userReply = "Bos, model AI lagi maintenance. Coba lagi nanti 🐻";
+    } else if (err?.status === 429) {
+      userReply = "Bos, banyak yang tanya sekaligus. Tunggu 1 menit ya 😅";
+    } else if (err?.status >= 500) {
+      userReply = "Bos, AI server lagi ada gangguan. Coba lagi bentar 🐻";
+    }
+
     return jsonResponse({
       error: "AI service error",
-      reply: "Bos, Aku lagi capek nih, coba 1-2 menit lagi ya 😅",
+      reply: userReply,
+      debug: env.DEBUG_MODE === "true" ? errInfo : undefined,
     }, 503);
   }
 

@@ -1,11 +1,11 @@
 // Wrapper Claude API dengan tool use loop + prompt caching.
-// Pakai Anthropic SDK official. Model: Sonnet 4.6 (chat-grade, cost-efficient).
+// Pakai Anthropic SDK official. Model: Sonnet 5 (chat-grade, cost-efficient, latest).
 
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "./prompt.js";
 import { TOOLS, executeTool } from "./tools.js";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5";
 const MAX_TOKENS = 2048;        // Telegram = pendek; 2K cukup
 const MAX_TOOL_ITERATIONS = 5;  // safety cap supaya ga infinite loop
 
