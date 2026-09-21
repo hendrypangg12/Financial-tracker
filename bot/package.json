@@ -11,7 +11,8 @@
     "set:anthropic-key": "wrangler secret put ANTHROPIC_API_KEY",
     "set:telegram-token": "wrangler secret put TELEGRAM_BOT_TOKEN",
     "set:webhook-secret": "wrangler secret put TELEGRAM_WEBHOOK_SECRET",
-    "set:admin-key": "wrangler secret put ADMIN_KEY"
+    "set:admin-key": "wrangler secret put ADMIN_KEY",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0"

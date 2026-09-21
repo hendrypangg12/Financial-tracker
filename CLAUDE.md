@@ -1,5 +1,12 @@
 # CLAUDE.md — Konteks Proyek Financial Tracker
 
+## Review BerUang — 21 September 2026
+
+Perbaikan persiapan penjualan ada di branch `codex/beruang-launch-safety`, belum produksi.
+Lihat `BERUANG-RELEASE-REVIEW.md` untuk perubahan, pengujian, dan penghambat rilis.
+Status lama di bawah adalah arsip; khususnya jangan menganggap pembayaran otomatis,
+Firestore Rules, saldo AI, atau persetujuan Play Store sudah diverifikasi.
+
 > Dokumen ini berisi konteks penting tentang proyek ini supaya Claude (saya) bisa cepat orientasi tanpa harus eksplor ulang. Update file ini setiap ada keputusan arsitektur baru.
 
 ---

@@ -13,6 +13,9 @@ binding = "BOT_AUTH"
 id = "59016f42dc314b02ba508cf5025cd09f"
 
 [vars]
+# Public Firebase identifiers, NOT admin credentials.
+FIREBASE_PROJECT_ID = "ber-uang-735b3"
+FIREBASE_WEB_API_KEY = "AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc"
 BOT_NAME = "Berstock"
 BUSINESS_NAME_DEFAULT = "Toko Anda"
 DEFAULT_TZ = "Asia/Jakarta"

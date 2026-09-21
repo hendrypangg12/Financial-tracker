@@ -63,28 +63,26 @@ async function activateSubscription(uid, paket, opts = {}) {
   if (!cfg) throw new Error(`Paket tidak dikenal: ${paket}`);
 
   const ref = fbDb.collection('users').doc(uid).collection('meta').doc('profile');
-  const snap = await ref.get();
-  const profile = snap.exists ? snap.data() : {};
-
-  // Extend dari expiry sekarang kalau masih aktif (avoid kehilangan sisa hari saat renewal)
-  const now = new Date();
-  const currentExpiry = profile.expiresAt ? new Date(profile.expiresAt) : now;
-  const fromDate = (currentExpiry.getTime() > now.getTime() && opts.extendFromNow !== true)
-    ? currentExpiry
-    : now;
-  const newExpiry = computeExpiry(paket, fromDate);
-
-  const update = {
-    plan: paket,
-    expiresAt: newExpiry.toISOString(),
-    lastPaymentAt: now.toISOString(),
-    lastPaymentPaket: paket,
-    lastPaymentAmount: cfg.priceIdr,
-  };
-  if (opts.paymentRef) update.lastPaymentRef = opts.paymentRef;
-
-  await ref.set(update, { merge: true });
-  return { ...profile, ...update };
+  if (!opts.paymentRef) throw new Error('Referensi pembayaran wajib diisi.');
+  const receipt = fbDb.collection('users').doc(uid).collection('paymentReceipts').doc(opts.paymentRef);
+  return fbDb.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const applied = await tx.get(receipt);
+    const profile = snap.exists ? snap.data() : {};
+    if (applied.exists) return profile;
+    const now = new Date();
+    const expiry = new Date(profile.expiresAt || 0);
+    const from = expiry > now && opts.extendFromNow !== true ? expiry : now;
+    const update = {
+      plan: profile.plan === 'lifetime' ? 'lifetime' : paket,
+      expiresAt: computeExpiry(paket, from).toISOString(),
+      lastPaymentAt: now.toISOString(), lastPaymentPaket: paket,
+      lastPaymentAmount: cfg.priceIdr, lastPaymentRef: opts.paymentRef,
+    };
+    tx.set(ref, update, { merge: true });
+    tx.set(receipt, { paket, appliedAt: now.toISOString() });
+    return { ...profile, ...update };
+  });
 }
 
 // Cek apakah langganan masih aktif
@@ -143,6 +141,8 @@ async function resetPassword(email) {
 
 async function logout() {
   if (!fbAuth) return;
+  // Keep account-scoped offline data on logout; never delete an unsynced transaction.
+  if (typeof pushToCloudImmediate === 'function') await pushToCloudImmediate();
   // Stop auto-sync sebelum signOut
   if (typeof stopAutoSync === 'function') stopAutoSync();
   if (typeof stopCloudListener === 'function') stopCloudListener();
@@ -150,7 +150,7 @@ async function logout() {
   currentUser = null;
   currentProfile = null;
   // Clear local state lalu reload halaman
-  localStorage.removeItem(STORAGE_KEY);
+  // Local data remains available only under this account's storage key.
   window.location.reload();
 }
 
@@ -188,4 +188,10 @@ function adminWhatsAppLink(paket = '') {
 
 function adminInstagramLink() {
   return `https://instagram.com/${ADMIN_CONTACT.instagram}`;
+}
+
+// Firebase refreshes expired tokens automatically. Never send account IDs as authentication.
+async function authenticatedHeaders() {
+  if (!currentUser) throw new Error('Silakan login kembali.');
+  return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + await currentUser.getIdToken() };
 }

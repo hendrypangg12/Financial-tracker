@@ -133,7 +133,7 @@ async function sendQuestion(question) {
   try {
     const res = await fetch(AI_ADVISOR_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await authenticatedHeaders(),
       body: JSON.stringify({ email, question, context }),
     });
 

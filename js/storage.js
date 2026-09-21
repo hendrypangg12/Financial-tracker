@@ -1,3 +1,12 @@
+// Store each account separately; retain the old unscoped cache for manual recovery.
+let activeStorageKey = STORAGE_KEY;
+function storageKey() { return activeStorageKey; }
+function selectUserStorage(uid) {
+  activeStorageKey = STORAGE_KEY + ':' + uid;
+  for (const key of ['transactions', 'hutangs', 'assets', 'recurring', 'goals']) state[key] = [];
+  state.userName = ''; state.target = 0;
+  state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+}
 // Storage & state
 const state = {
   transactions: [],
@@ -15,7 +24,7 @@ const state = {
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey());
     if (!raw) return;
     const data = JSON.parse(raw);
     if (data.transactions) state.transactions = data.transactions;
@@ -33,7 +42,7 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    localStorage.setItem(storageKey(), JSON.stringify({
       transactions: state.transactions,
       hutangs: state.hutangs,
       assets: state.assets,

@@ -1,3 +1,5 @@
+import { requireUser } from "./auth.js";
+
 // =============================================================================
 // PAYMENT GATEWAY (Xendit) — siap diisi credentials setelah Xendit approved
 // =============================================================================
@@ -45,16 +47,29 @@ function corsJson(data, status = 200) {
 export async function handleCreateInvoice(request, env) {
   if (request.method !== "POST") return corsJson({ error: "Method not allowed" }, 405);
 
+  let user;
+  try { user = await requireUser(request, env); }
+  catch (e) { return corsJson({ error: e.message }, e.status || 503); }
+
   let body;
   try { body = await request.json(); }
   catch { return corsJson({ error: "Invalid JSON" }, 400); }
 
-  const { product, uid, email, paket, amount, externalId, successUrl, failureUrl } = body;
+  const { product, paket, amount, externalId, successUrl, failureUrl } = body || {};
+  const { uid, email } = user;
 
   if (!product || product !== "beruang") return corsJson({ error: "Invalid product" }, 400);
   if (!uid || !email || !paket || !externalId) return corsJson({ error: "Missing fields" }, 400);
 
-  const cfg = PACKAGE_AMOUNTS[paket];
+  if (typeof externalId !== 'string' || !externalId.startsWith(`beruang_${uid}_`) || externalId.length > 200) return corsJson({ error: 'Invalid reference' }, 400);
+  for (const value of [successUrl, failureUrl]) {
+    try {
+      const redirect = new URL(value);
+      if (redirect.origin !== 'https://berstock.id' || redirect.pathname !== '/app.html') throw Error();
+    } catch { return corsJson({ error: 'Invalid redirect URL' }, 400); }
+  }
+  if (await env.BOT_DATA.get(PAYMENT_KV_PREFIX + externalId)) return corsJson({ error: 'Reference already used' }, 409);
+  const cfg = Object.hasOwn(PACKAGE_AMOUNTS, paket) ? PACKAGE_AMOUNTS[paket] : null;
   if (!cfg) return corsJson({ error: `Invalid paket: ${paket}` }, 400);
 
   // Server-side validate amount cocok config (anti tamper)
@@ -139,6 +154,10 @@ export async function handleCreateInvoice(request, env) {
 
 // GET /api/verify-payment?ref=externalId
 export async function handleVerifyPayment(request, env) {
+  if (request.method !== "GET") return corsJson({ error: "Method not allowed" }, 405);
+  let user;
+  try { user = await requireUser(request, env); }
+  catch (e) { return corsJson({ error: e.message }, e.status || 503); }
   const url = new URL(request.url);
   const ref = url.searchParams.get("ref");
   if (!ref) return corsJson({ error: "Missing ref" }, 400);
@@ -147,6 +166,7 @@ export async function handleVerifyPayment(request, env) {
   if (!raw) return corsJson({ error: "Invoice not found / expired", status: "not_found" }, 404);
 
   const record = JSON.parse(raw);
+  if (record.uid !== user.uid) return corsJson({ error: "Invoice bukan milik akun ini." }, 403);
 
   // Kalau status masih pending di KV, double-check ke Xendit API (defensive)
   if (record.status === "pending" && env.XENDIT_SECRET_KEY && record.invoiceId) {
@@ -155,7 +175,9 @@ export async function handleVerifyPayment(request, env) {
       const res = await fetch(`https://api.xendit.co/v2/invoices/${record.invoiceId}`, {
         headers: { "Authorization": `Basic ${auth}` },
       });
+      if (!res.ok) throw new Error("Payment provider unavailable");
       const data = await res.json();
+      if (data.id !== record.invoiceId || data.external_id !== record.externalId || Number(data.amount) !== record.amount || data.currency !== "IDR") throw new Error("Invoice mismatch");
       if (data.status === "PAID" || data.status === "SETTLED") {
         record.status = "paid";
         record.paidAt = data.paid_at || new Date().toISOString();
@@ -193,11 +215,13 @@ export async function handleVerifyPayment(request, env) {
 export async function handleXenditWebhook(request, env) {
   if (request.method !== "POST") return corsJson({ error: "Method not allowed" }, 405);
 
-  // Validate webhook token (kalau di-set)
+  if (!env.XENDIT_WEBHOOK_TOKEN) return corsJson({ error: "Webhook belum dikonfigurasi." }, 503);
+
+  // Fail closed: never accept an unverified payment notification.
   if (env.XENDIT_WEBHOOK_TOKEN) {
     const incoming = request.headers.get("x-callback-token");
     if (incoming !== env.XENDIT_WEBHOOK_TOKEN) {
-      console.warn("[xendit-webhook] invalid token:", incoming);
+      console.warn("[xendit-webhook] invalid token");
       return corsJson({ error: "Unauthorized" }, 401);
     }
   }
@@ -206,8 +230,8 @@ export async function handleXenditWebhook(request, env) {
   try { body = await request.json(); }
   catch { return corsJson({ error: "Invalid JSON" }, 400); }
 
-  const externalId = body.external_id;
-  const status = body.status; // 'PAID' | 'EXPIRED' | 'SETTLED'
+  const externalId = body?.external_id;
+  const status = body?.status; // 'PAID' | 'EXPIRED' | 'SETTLED'
   if (!externalId) return corsJson({ error: "Missing external_id" }, 400);
 
   const raw = await env.BOT_DATA.get(PAYMENT_KV_PREFIX + externalId);
@@ -218,6 +242,11 @@ export async function handleXenditWebhook(request, env) {
   }
 
   const record = JSON.parse(raw);
+  if (body.id !== record.invoiceId || Number(body.amount) !== record.amount || body.currency !== 'IDR') {
+    return corsJson({ error: 'Invoice mismatch' }, 400);
+  }
+  // Paid is terminal: duplicates and late expiry events cannot undo a payment.
+  if (record.status === 'paid') return corsJson({ ok: true, duplicate: true });
 
   if (status === "PAID" || status === "SETTLED") {
     record.status = "paid";

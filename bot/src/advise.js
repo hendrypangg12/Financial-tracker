@@ -2,6 +2,7 @@
 // Pro-only feature: user kirim pertanyaan + data spending, Claude balas insight.
 
 import Anthropic from "@anthropic-ai/sdk";
+import { requireUser, hasProAccess } from "./auth.js";
 
 const MODEL = "claude-sonnet-5";
 const MAX_TOKENS = 1024;  // Jawaban ringkas, gak boros token
@@ -84,6 +85,10 @@ export async function handleAdvise(request, env) {
     return jsonResponse({ error: "POST only" }, 405);
   }
 
+  let user;
+  try { user = await requireUser(request, env); }
+  catch (e) { return jsonResponse({ error: e.message }, e.status || 503); }
+
   // Validate request
   let body;
   try {
@@ -92,19 +97,29 @@ export async function handleAdvise(request, env) {
     return jsonResponse({ error: "Invalid JSON" }, 400);
   }
 
-  const { email, question, context } = body;
-  if (!email || !question) {
-    return jsonResponse({ error: "email & question required" }, 400);
+  const { question, context } = body || {};
+  if (typeof question !== "string" || !question.trim()) {
+    return jsonResponse({ error: "question required" }, 400);
   }
 
   // Validate question length (anti-abuse)
-  if (question.length > 500) {
-    return jsonResponse({ error: "Pertanyaan terlalu panjang (max 500 char)" }, 400);
+  const isGoal = context?.source === "goal-planner";
+  const maxLength = isGoal ? 2500 : 500;
+  if (question.length > maxLength || JSON.stringify(context || {}).length > 20000) {
+    return jsonResponse({ error: "Pertanyaan atau data pendukung terlalu panjang" }, 400);
   }
 
-  // Rate limiting: max 30 query per user per day (cost control)
+  let pro;
+  try { pro = await hasProAccess(user, env); }
+  catch (e) { return jsonResponse({ error: e.message }, e.status || 503); }
+  if (!pro && !isGoal) return jsonResponse({ error: 'Fitur ini memerlukan paket Pro aktif.' }, 403);
+  const month = new Date().toISOString().slice(0, 7);
+  const freeKey = `goal_free:${user.uid}:${month}`;
+  if (!pro && await env.BOT_DATA.get(freeKey)) return jsonResponse({ error: 'Kuota Goal gratis bulan ini sudah dipakai.' }, 429);
+
+  // UID comes from Firebase, not a user-supplied email.
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const rateKey = `advise_rate:${email}:${today}`;
+  const rateKey = `advise_rate:${user.uid}:${today}`;
   const currentCount = parseInt((await env.BOT_DATA.get(rateKey)) || "0", 10);
   const RATE_LIMIT = 30;
   if (currentCount >= RATE_LIMIT) {
@@ -113,6 +128,9 @@ export async function handleAdvise(request, env) {
       reply: "Bos, kuota Tanya Beruang hari ini udah habis (30 query/hari). Coba lagi besok ya! 🐻",
     }, 429);
   }
+
+  // Reserve before the provider call, including failed calls (cost/abuse protection).
+  await env.BOT_DATA.put(rateKey, String(currentCount + 1), { expirationTtl: 90000 });
 
   // Build user message dengan context
   const userMsg = buildUserMessage(question, context);
@@ -169,11 +187,10 @@ export async function handleAdvise(request, env) {
     }, 503);
   }
 
-  // Increment rate counter (TTL 25 jam biar reset besok)
-  await env.BOT_DATA.put(rateKey, String(currentCount + 1), { expirationTtl: 90000 });
+  if (!pro) await env.BOT_DATA.put(freeKey, "1", { expirationTtl: 32 * 86400 });
 
   // Save chat history (opsional, buat audit & improvement)
-  const historyKey = `advise_log:${email}:${Date.now()}`;
+  const historyKey = `advise_log:${user.uid}:${Date.now()}`;
   await env.BOT_DATA.put(
     historyKey,
     JSON.stringify({ question, reply, timestamp: new Date().toISOString() }),
@@ -260,7 +277,7 @@ function jsonResponse(obj, status = 200) {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   });
 }

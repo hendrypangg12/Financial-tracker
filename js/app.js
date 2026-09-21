@@ -13,8 +13,8 @@ function bindMoneyInputs() {
   });
 }
 
-function init() {
-  loadState();
+function init(loadLocal = true) {
+  if (loadLocal) loadState();
   bindMoneyInputs();
   fillMonthYearSelectors();
   fillSubCategoriSelects();
@@ -562,8 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
       showScreen('app');
       const userIsPro = typeof isPro === 'function' && isPro(profile);
       // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
+      selectUserStorage(user.uid);
+      loadState();
       await loadFromCloud();
-      init();
+      init(false);
       setupWelcomeBanner();
       // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
       if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
@@ -649,7 +651,7 @@ async function createPaymentInvoice(paket) {
 
   const res = await fetch(`${PAYMENT_API_BASE}/api/create-invoice`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authenticatedHeaders(),
     body: JSON.stringify({
       product: 'beruang',
       uid: currentUser.uid,
@@ -680,7 +682,7 @@ async function handlePostPaymentRedirect() {
 
   // Clean URL biar refresh gak re-trigger
   const cleanUrl = window.location.pathname + window.location.hash;
-  window.history.replaceState({}, document.title, cleanUrl);
+  if (status === "failed") window.history.replaceState({}, document.title, cleanUrl);
 
   if (status === 'failed') {
     showToast('Pembayaran dibatalkan / gagal. Coba lagi atau kontak admin via WA.', 'error');
@@ -691,7 +693,7 @@ async function handlePostPaymentRedirect() {
   // Verify ke backend — backend cek Xendit invoice status sudah PAID
   showToast('Memverifikasi pembayaran...', 'info');
   try {
-    const res = await fetch(`${PAYMENT_API_BASE}/api/verify-payment?ref=${encodeURIComponent(ref)}`);
+    const res = await fetch(`${PAYMENT_API_BASE}/api/verify-payment?ref=${encodeURIComponent(ref)}`, { headers: await authenticatedHeaders() });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (data.status !== 'paid') {
@@ -699,9 +701,11 @@ async function handlePostPaymentRedirect() {
       return;
     }
     // Activate subscription di Firestore
-    const paket = data.paket || ref.split('_')[2]; // fallback parse dari ref
+    if (!currentUser || data.uid !== currentUser.uid || !getPackageConfig(data.paket)) throw new Error('Invoice tidak cocok dengan akun/paket.');
+    const paket = data.paket;
     if (typeof activateSubscription === 'function' && currentUser) {
       await activateSubscription(currentUser.uid, paket, { paymentRef: ref });
+      window.history.replaceState({}, document.title, cleanUrl);
       showToast(`🎉 Pembayaran sukses! Paket ${paket} aktif. Selamat datang!`, 'success');
       // Reload supaya auth state refresh & buka app
       setTimeout(() => window.location.reload(), 1500);

@@ -1,0 +1,27 @@
+name: BerUang safety checks
+on:
+  pull_request:
+    paths:
+      - 'bot/**'
+      - 'js/**'
+      - 'app.html'
+      - 'sw.js'
+      - '.github/workflows/beruang-checks.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: bot/package-lock.json
+      - run: npm ci
+        working-directory: bot
+      - run: npm test
+        working-directory: bot
+      - name: Check browser JavaScript syntax
+        run: for file in js/*.js sw.js; do node --check "$file" || exit 1; done

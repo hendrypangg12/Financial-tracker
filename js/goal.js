@@ -154,7 +154,7 @@ Format: bahasa casual Indonesia, max 150 kata, pakai emoji.`;
   try {
     const res = await fetch(GOAL_AI_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await authenticatedHeaders(),
       body: JSON.stringify({ email, question, context: { source: 'goal-planner' } }),
     });
     if (!res.ok) throw new Error(`Gateway HTTP ${res.status}`);
