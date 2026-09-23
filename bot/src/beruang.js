@@ -4,6 +4,7 @@
 // Token bot: env.BERUANG_TG_TOKEN (secret, di-trim otomatis). KV: env.BOT_DATA.
 
 import { sendMessage } from "./telegram.js";
+import { requireUser } from './auth.js';
 
 const TTL_CODE = 900;            // kode pairing 15 menit
 const TTL_INBOX = 60 * 60 * 24 * 14; // inbox 14 hari
@@ -17,7 +18,7 @@ function jres(obj, status = 200) {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   });
 }
@@ -89,6 +90,10 @@ function genCode() { return String(Math.floor(100000 + Math.random() * 900000));
 export async function handleBeruangWebhook(request, env, ctx) {
   const token = (env.BERUANG_TG_TOKEN || "").trim(); // trim whitespace/newline (sering ke-copy)
   if (!token) return jres({ error: "BERUANG_TG_TOKEN not set" }, 500);
+  if (!env.TELEGRAM_WEBHOOK_SECRET) return jres({ error: 'Webhook secret not configured' }, 503);
+  if (request.headers.get('x-telegram-bot-api-secret-token') !== env.TELEGRAM_WEBHOOK_SECRET) {
+    return jres({ error: 'Unauthorized' }, 401);
+  }
   let update;
   try { update = await request.json(); } catch { return jres({ ok: true }); }
 
@@ -274,9 +279,11 @@ Kalau foto BUKAN struk atau gak kebaca sama sekali, jawab:
 // ====== PAIR: app kirim {code, email, pullToken} ======
 export async function handleBeruangPair(request, env) {
   if (request.method === "OPTIONS") return jres({ ok: true });
+  let user; try { user = await requireUser(request, env); } catch (e) { return jres({ error: e.message }, e.status || 401); }
   let body; try { body = await request.json(); } catch { return jres({ error: "bad json" }, 400); }
-  const { code, email, pullToken } = body || {};
-  if (!code || !email || !pullToken) return jres({ error: "code, email, pullToken wajib" }, 400);
+  const { code, pullToken } = body || {};
+  const email = user.email;
+  if (!code || !email || !pullToken) return jres({ error: "code dan pullToken wajib" }, 400);
   const rec = await env.BOT_DATA.get("btg_code:" + String(code).trim(), "json");
   if (!rec || !rec.chatId) return jres({ ok: false, error: "Kode salah / kadaluarsa. Minta kode baru via /mulai di bot." }, 404);
   // simpan mapping 2 arah
@@ -291,9 +298,11 @@ export async function handleBeruangPair(request, env) {
 // ====== PULL: app tarik inbox {email, pullToken} ======
 export async function handleBeruangPull(request, env) {
   if (request.method === "OPTIONS") return jres({ ok: true });
+  let user; try { user = await requireUser(request, env); } catch (e) { return jres({ error: e.message }, e.status || 401); }
   let body; try { body = await request.json(); } catch { return jres({ error: "bad json" }, 400); }
-  const { email, pullToken } = body || {};
-  if (!email || !pullToken) return jres({ error: "email, pullToken wajib" }, 400);
+  const { pullToken } = body || {};
+  const email = user.email;
+  if (!email || !pullToken) return jres({ error: "pullToken wajib" }, 400);
   const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
   if (!map || map.pullToken !== pullToken) return jres({ ok: false, linked: false, items: [] });
   const key = "btg_inbox:" + email;
@@ -306,9 +315,11 @@ export async function handleBeruangPull(request, env) {
 // Body: { email, pullToken, bills: [{id,nama,jumlah,hariTagih,kategori,subKategori,alokasi}], posted: [{recurringId,recurringMonth}] }
 export async function handleBeruangBillsPush(request, env) {
   if (request.method === "OPTIONS") return jres({ ok: true });
+  let user; try { user = await requireUser(request, env); } catch (e) { return jres({ error: e.message }, e.status || 401); }
   let body; try { body = await request.json(); } catch { return jres({ error: "bad json" }, 400); }
-  const { email, pullToken, bills, posted } = body || {};
-  if (!email || !pullToken) return jres({ error: "email, pullToken wajib" }, 400);
+  const { pullToken, bills, posted } = body || {};
+  const email = user.email;
+  if (!email || !pullToken) return jres({ error: "pullToken wajib" }, 400);
   const map = await env.BOT_DATA.get("btg_mail:" + email, "json");
   if (!map || map.pullToken !== pullToken) return jres({ ok: false, linked: false }, 401);
   // Sanitize: cap sizes & required fields

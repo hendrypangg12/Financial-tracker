@@ -16,6 +16,10 @@ function tgState() { try { return JSON.parse(localStorage.getItem(tgKey()) || "n
 function tgSetState(s) { try { localStorage.setItem(tgKey(), JSON.stringify(s)); } catch (_) {} }
 function tgIsLinked() { const s = tgState(); return !!(s && s.pullToken && s.linked); }
 function tgUnsetState() { try { localStorage.removeItem(tgKey()); } catch (_) {} }
+async function tgHeaders() {
+  if (typeof authenticatedHeaders !== 'function') throw new Error('Silakan login kembali.');
+  return authenticatedHeaders();
+}
 
 async function linkTelegram(code) {
   const email = tgEmail();
@@ -26,7 +30,7 @@ async function linkTelegram(code) {
   const pullToken = (prev && prev.pullToken) || ("pt_" + Math.random().toString(36).slice(2) + Date.now().toString(36));
   try {
     const res = await fetch(TG_PAIR_ENDPOINT, {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: await tgHeaders(),
       body: JSON.stringify({ code, email, pullToken }),
     });
     const data = await res.json();
@@ -51,7 +55,7 @@ async function pullTelegramInbox() {
   const email = tgEmail();
   try {
     const res = await fetch(TG_PULL_ENDPOINT, {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: await tgHeaders(),
       body: JSON.stringify({ email, pullToken: s.pullToken }),
     });
     const data = await res.json();
@@ -148,7 +152,7 @@ function renderTgModalForm(isRelink) {
   body.innerHTML = `
     <h3 style="margin-top:0">🤖 Catat via Chat Telegram</h3>
     <p style="color:var(--muted);margin:6px 0 18px;font-size:14px">
-      ${isRelink ? "Masukin kode baru buat ganti akun Telegram." : "Chat transaksi atau 📸 kirim foto struk — bot auto-catat. Sekali setup, selamanya jalan."}
+      ${isRelink ? "Masukin kode baru buat ganti akun Telegram." : "Chat transaksi atau 📸 kirim foto struk setelah akun terhubung."}
     </p>
 
     <ol style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.7">
@@ -226,7 +230,7 @@ async function pushBillsToBotNow() {
   if (payload === _billsLastPayload) return; // skip kalau gak berubah
   try {
     const res = await fetch(TG_BILLS_PUSH_ENDPOINT, {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: payload,
+      method: "POST", headers: await tgHeaders(), body: payload,
     });
     if (res.ok) _billsLastPayload = payload;
   } catch (e) { /* offline, biarin */ }

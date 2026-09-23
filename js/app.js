@@ -549,9 +549,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof onAuthStateChanged === 'function') {
     onAuthStateChanged(async (user, profile) => {
       if (!user) {
+        stopAutoSync(); stopCloudListener();
         showScreen('login');
         return;
       }
+      showScreen('loading');
       // Cek payment redirect dari Xendit (?payment=success&ref=xxx) — activate subscription
       if (typeof handlePostPaymentRedirect === 'function') {
         try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
@@ -559,13 +561,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // FREEMIUM: user bisa pakai app meski belum bayar
       // Pro features (AI, Telegram bot, OCR) di-gate dengan isPro()
       // Cloud sync ENABLED UNTUK SEMUA user — biar data tester gak hilang kalau browser clear cache
-      showScreen('app');
       const userIsPro = typeof isPro === 'function' && isPro(profile);
       // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
       selectUserStorage(user.uid);
       loadState();
       await loadFromCloud();
+      if (currentUser?.uid !== user.uid) return;
       init(false);
+      showScreen('app');
       setupWelcomeBanner();
       // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
       if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
@@ -700,16 +703,17 @@ async function handlePostPaymentRedirect() {
       showToast(`Pembayaran status: ${data.status}. Refresh sebentar lagi.`, 'warning');
       return;
     }
-    // Activate subscription di Firestore
-    if (!currentUser || data.uid !== currentUser.uid || !getPackageConfig(data.paket)) throw new Error('Invoice tidak cocok dengan akun/paket.');
-    const paket = data.paket;
-    if (typeof activateSubscription === 'function' && currentUser) {
-      await activateSubscription(currentUser.uid, paket, { paymentRef: ref });
-      window.history.replaceState({}, document.title, cleanUrl);
-      showToast(`🎉 Pembayaran sukses! Paket ${paket} aktif. Selamat datang!`, 'success');
-      // Reload supaya auth state refresh & buka app
-      setTimeout(() => window.location.reload(), 1500);
+    // Backend must atomically apply the entitlement. A paid invoice alone is
+    // not permission for this browser to write plan/expiresAt.
+    if (!currentUser || data.uid !== currentUser.uid || !getPackageConfig(data.paket) || data.entitlementApplied !== true) {
+      throw new Error('Hak akses pembayaran belum diterapkan oleh server.');
     }
+    const paket = data.paket;
+    const profile = await refreshUserProfile();
+    if (!profile || !isPro(profile)) throw new Error('Profil belum mencerminkan langganan yang dibayar.');
+    window.history.replaceState({}, document.title, cleanUrl);
+    showToast(`Pembayaran berhasil. Paket ${paket} sudah aktif.`, 'success');
+    setTimeout(() => window.location.reload(), 1500);
   } catch (err) {
     console.error('[verify-payment]', err);
     showToast('Gagal verifikasi otomatis. Kontak admin via WA untuk aktivasi manual.', 'error');
@@ -823,6 +827,9 @@ function setupPaymentModalEvents() {
 
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
+  document.body.classList.toggle('app-locked', which !== 'app');
+  const startup = document.getElementById('startup-screen');
+  if (startup) startup.hidden = which !== 'loading';
   document.getElementById('login-screen').hidden = which !== 'login';
   document.getElementById('paywall-screen').hidden = which !== 'paywall';
   if (which === 'login') detectAuthEnvAndShowTip();
@@ -955,7 +962,7 @@ function setupAuthUI() {
   if (btnPayBack) btnPayBack.onclick = () => {
     showScreen('app');
     if (typeof showToast === 'function') {
-      showToast('💡 Mode preview — fitur Pro (AI, Telegram, sync) tetap di-gate. Tap "Upgrade Pro" kapan aja untuk aktifkan.', 'info');
+      showToast('Catatan dasar dan sinkronisasi akun tetap tersedia. Fitur Pro mengikuti status langganan.', 'info');
     }
   };
 
@@ -968,6 +975,42 @@ function setupAuthUI() {
   }
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
+
+  const btnDeleteAccount = document.getElementById('btn-delete-account');
+  if (btnDeleteAccount) {
+    btnDeleteAccount.onclick = async (e) => {
+      e.stopPropagation();
+      dropdown.hidden = true;
+      const typed = prompt('Penghapusan ini menghapus profil BerUang, catatan keuangan, koneksi Telegram, dan data AI. Data transaksi pembayaran minimum dapat disimpan untuk rekonsiliasi.\n\nKetik HAPUS AKUN untuk melanjutkan.');
+      if (typed !== 'HAPUS AKUN') return;
+      btnDeleteAccount.disabled = true;
+      try {
+        const uid = currentUser?.uid;
+        const response = await fetch(`${PAYMENT_API_BASE}/api/delete-account`, {
+          method: 'POST', headers: await authenticatedHeaders(), body: JSON.stringify({ confirmation: typed }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (result.code === 'auth/requires-recent-login') throw Object.assign(new Error('Demi keamanan, logout lalu login kembali sebelum menghapus akun.'), { code: result.code });
+          throw new Error(result.error || 'Penghapusan akun belum dapat dimulai.');
+        }
+        if (uid) {
+          localStorage.removeItem(STORAGE_KEY + ':' + uid);
+          for (const key of Object.keys(localStorage)) {
+            if (key.endsWith(':' + (currentUser?.email || '')) || key.startsWith('beruang-tg:')) localStorage.removeItem(key);
+          }
+        }
+        alert(result.sharedAccountRetained
+          ? 'Penghapusan BerUang sedang diproses. Login bersama untuk produk Berstock lain tetap dipertahankan.'
+          : 'Penghapusan akun dan data BerUang sedang diproses.');
+        await fbAuth.signOut();
+        window.location.reload();
+      } catch (error) {
+        showToast(error.message || 'Penghapusan akun belum dapat dimulai.', 'error');
+        btnDeleteAccount.disabled = false;
+      }
+    };
+  }
 
   // Buka ulang onboarding "Setup Dana Awal" dari menu
   const btnSetupDana = document.getElementById('btn-setup-dana');
@@ -1068,7 +1111,7 @@ function updateUserMenu(user, profile) {
       : profile.plan === 'annual'   ? `Tahunan (${days} hari lagi)`
       : profile.plan === 'monthly'  ? `Bulanan (${days} hari lagi)`
       : profile.plan === 'trial'    ? `Trial 7 Hari (${days} hari lagi)`
-      : `Trial (${days} hari lagi)`;
+      : 'Gratis';
     plan.innerHTML = `📅 ${planLabel}`;
   }
 }

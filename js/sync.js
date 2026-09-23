@@ -2,6 +2,7 @@
 let cloudUnsubscribe = null, cloudPushTimer = null, autoSyncInterval = null;
 let cloudLoadedOnce = false, isApplyingRemote = false, cloudConflict = false;
 let cloudBase = null, cloudOwner = null, cloudWrite = null;
+let pendingCloudSnapshot = null;
 const SYNC_FIELDS = ['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target'];
 function syncData(data) {
   return Object.fromEntries(SYNC_FIELDS.map(k => [k, data[k] ?? (k === 'userName' ? '' : k === 'target' ? 0 : k === 'categories' ? {} : [])]));
@@ -12,6 +13,38 @@ function stableJSON(v) {
   return JSON.stringify(v);
 }
 function sameSyncData(a, b) { return stableJSON(syncData(a)) === stableJSON(syncData(b)); }
+// Three-way merge: independent records can sync together; competing edits to the
+// same record require the user's choice. Never guess which financial value wins.
+function mergeSyncData(base, local, remote) {
+  const b = syncData(base), l = syncData(local), r = syncData(remote);
+  const conflicts = [], data = {};
+  const equal = (a, z) => stableJSON(a) === stableJSON(z);
+  const choose = (before, ours, theirs, key) => {
+    if (equal(ours, theirs) || equal(theirs, before)) return ours;
+    if (equal(ours, before)) return theirs;
+    conflicts.push(key); return ours;
+  };
+  for (const key of SYNC_FIELDS) {
+    if (!['transactions', 'hutangs', 'assets', 'recurring', 'goals'].includes(key) ||
+        equal(l[key], r[key]) || equal(l[key], b[key]) || equal(r[key], b[key])) {
+      data[key] = choose(b[key], l[key], r[key], key); continue;
+    }
+    const arrays = [b[key], l[key], r[key]];
+    const valid = arrays.every(items => Array.isArray(items) &&
+      items.every(item => item && typeof item.id === 'string' && item.id.length > 0) &&
+      new Set(items.map(item => item.id)).size === items.length);
+    if (!valid) { conflicts.push(key); data[key] = l[key]; continue; }
+    const [bm, lm, rm] = arrays.map(items => new Map(items.map(item => [item.id, item])));
+    // Remote order is stable; new local records are appended exactly once.
+    const ids = new Set([...rm.keys(), ...lm.keys(), ...bm.keys()]);
+    data[key] = [];
+    for (const id of ids) {
+      const item = choose(bm.get(id), lm.get(id), rm.get(id), key + ':' + id);
+      if (item !== undefined) data[key].push(item);
+    }
+  }
+  return { data: JSON.parse(JSON.stringify(data)), conflicts };
+}
 function userDataRef() { return fbDb && currentUser ? fbDb.collection('users').doc(currentUser.uid).collection('data').doc('main') : null; }
 function saveSyncBase(data) {
   cloudBase = JSON.parse(JSON.stringify(syncData(data)));
@@ -31,9 +64,23 @@ function preserveConflict() {
   cloudConflict = true;
   setSyncStatus('conflict');
 }
+function acceptRemoteSnapshot(remote, onRemoteChange) {
+  if (!remote) { if (cloudBase) preserveConflict(); return false; }
+  const merged = cloudBase ? mergeSyncData(cloudBase, state, remote) : { data: remote, conflicts: [] };
+  if (merged.conflicts.length) { preserveConflict(); return false; }
+  isApplyingRemote = true;
+  try {
+    Object.assign(state, merged.data);
+    localStorage.setItem(storageKey(), JSON.stringify(syncData(state)));
+    saveSyncBase(remote);
+  } finally { isApplyingRemote = false; }
+  if (typeof onRemoteChange === 'function') onRemoteChange();
+  if (!sameSyncData(state, remote)) pushToCloud(); else setSyncStatus('ok');
+  return true;
+}
 async function loadFromCloud() {
   clearTimeout(cloudPushTimer);
-  cloudLoadedOnce = false; cloudConflict = false; cloudBase = null;
+  cloudLoadedOnce = false; cloudConflict = false; cloudBase = null; pendingCloudSnapshot = null;
   cloudOwner = currentUser?.uid || null;
   const owner = cloudOwner, ref = userDataRef();
   if (!ref) return false;
@@ -46,8 +93,7 @@ async function loadFromCloud() {
     cloudLoadedOnce = true;
     if (remote) {
       if (cloudBase && !sameSyncData(state, cloudBase)) {
-        if (!sameSyncData(remote, cloudBase) && !sameSyncData(state, remote)) { preserveConflict(); return false; }
-        saveSyncBase(remote);
+        if (!acceptRemoteSnapshot(remote)) return false;
         if (!sameSyncData(state, remote)) return await pushToCloudImmediate();
       }
       if (!cloudBase && !sameSyncData(state, remote)) localStorage.setItem('beruang-sync-legacy-backup:' + owner, JSON.stringify(syncData(state)));
@@ -62,15 +108,10 @@ function startCloudListener(onRemoteChange) {
   const ref = userDataRef(), owner = currentUser?.uid;
   if (!ref) return;
   cloudUnsubscribe = ref.onSnapshot({ includeMetadataChanges: true }, snap => {
-    if (currentUser?.uid !== owner || snap.metadata?.fromCache || snap.metadata?.hasPendingWrites || cloudConflict || cloudWrite || !cloudLoadedOnce) return;
-    if (!snap.exists) { if (cloudBase) preserveConflict(); return; }
-    const remote = syncData(snap.data());
-    if (cloudBase && !sameSyncData(state, cloudBase)) {
-      if (!sameSyncData(remote, cloudBase) && !sameSyncData(state, remote)) preserveConflict();
-      return;
-    }
-    applyCloud(remote);
-    if (typeof onRemoteChange === 'function') onRemoteChange();
+    if (currentUser?.uid !== owner || snap.metadata?.fromCache || snap.metadata?.hasPendingWrites || cloudConflict || !cloudLoadedOnce) return;
+    const remote = snap.exists ? syncData(snap.data()) : null;
+    if (cloudWrite) { pendingCloudSnapshot = { owner, ref, onRemoteChange }; return; }
+    acceptRemoteSnapshot(remote, onRemoteChange);
   }, e => { setSyncStatus('err'); console.warn('Listener error:', e); });
 }
 function stopCloudListener() { if (cloudUnsubscribe) cloudUnsubscribe(); cloudUnsubscribe = null; }
@@ -85,6 +126,7 @@ async function pushToCloudImmediate() {
   const ref = userDataRef(), owner = cloudOwner, base = cloudBase;
   if (!ref) return false;
   const payload = JSON.parse(JSON.stringify(syncData(state)));
+  let committed = payload;
   if (base && sameSyncData(payload, base)) return true;
   cloudWrite = (async () => {
     try {
@@ -92,18 +134,40 @@ async function pushToCloudImmediate() {
         const snap = await tx.get(ref);
         if (currentUser?.uid !== owner) throw new Error('Account changed');
         const remote = snap.exists ? syncData(snap.data()) : null;
-        if ((!base && remote) || (base && (!remote || !sameSyncData(remote, base)))) throw new Error('SYNC_CONFLICT');
-        tx.set(ref, { ...payload, _updatedAt: new Date().toISOString(), _updatedBy: getDeviceId() }, { merge: true });
+        if ((!base && remote && !sameSyncData(payload, remote)) || (base && !remote)) throw new Error('SYNC_CONFLICT');
+        const merged = base && remote ? mergeSyncData(base, payload, remote) : { data: payload, conflicts: [] };
+        if (merged.conflicts.length) throw new Error('SYNC_CONFLICT');
+        committed = merged.data;
+        tx.set(ref, { ...committed, _updatedAt: new Date().toISOString(), _updatedBy: getDeviceId() }, { merge: true });
       });
       if (currentUser?.uid !== owner) return false;
-      saveSyncBase(payload); setSyncStatus('ok'); return true;
+      // Preserve edits made while the transaction was in flight.
+      const latest = mergeSyncData(payload, state, committed);
+      saveSyncBase(committed);
+      if (latest.conflicts.length) { preserveConflict(); return false; }
+      Object.assign(state, latest.data);
+      localStorage.setItem(storageKey(), JSON.stringify(syncData(state)));
+      if (typeof renderAll === 'function') renderAll();
+      setSyncStatus(sameSyncData(state, committed) ? 'ok' : 'pending'); return true;
     } catch (e) {
       if (currentUser?.uid === owner) { if (e.message === 'SYNC_CONFLICT') preserveConflict(); else setSyncStatus('err'); }
       console.warn('Gagal sync:', e); return false;
-    } finally { cloudWrite = null; }
+    } finally {
+      cloudWrite = null;
+      const queued = pendingCloudSnapshot; pendingCloudSnapshot = null;
+      // A queued event may predate our commit. Read again instead of replaying a
+      // stale snapshot that could make this device appear to lose new records.
+      if (queued && queued.owner === currentUser?.uid && !cloudConflict) {
+        queued.ref.get({ source: 'server' }).then(snap => {
+          if (queued.owner !== currentUser?.uid || cloudConflict) return;
+          if (cloudWrite) { pendingCloudSnapshot = queued; return; }
+          acceptRemoteSnapshot(snap.exists ? syncData(snap.data()) : null, queued.onRemoteChange);
+        }).catch(() => setSyncStatus('err'));
+      }
+    }
   })();
   const ok = await cloudWrite;
-  if (ok && currentUser?.uid === owner && !sameSyncData(state, payload)) pushToCloud();
+  if (ok && currentUser?.uid === owner && !sameSyncData(state, cloudBase)) pushToCloud();
   return ok;
 }
 function getDeviceId() {
@@ -114,7 +178,7 @@ function getDeviceId() {
 function setSyncStatus(status) {
   const el = document.getElementById('sync-status'); if (!el) return;
   clearTimeout(setSyncStatus._t); el.className = 'sync-status ' + status;
-  el.textContent = status === 'ok' ? '☁️ Tersimpan' : status === 'conflict' ? '⚠️ Data berbeda — ketuk untuk pulihkan' : '⚠️ Belum tersimpan di cloud';
+  el.textContent = status === 'ok' ? '☁️ Tersimpan' : status === 'pending' ? '☁️ Menyimpan perubahan…' : status === 'conflict' ? '⚠️ Data berbeda — ketuk untuk pulihkan' : '⚠️ Belum tersimpan di cloud';
   el.onclick = status === 'conflict' ? recoverCloudConflict : null;
   if (status === 'ok') setSyncStatus._t = setTimeout(() => { el.className = 'sync-status'; el.textContent = ''; }, 2500);
 }

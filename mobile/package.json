@@ -1,0 +1,28 @@
+{
+  "name": "beruang-mobile-test",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-asset Android test wrapper. Not a production store release.",
+  "scripts": {
+    "stage": "node scripts/stage-web.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:rules": "node --test test/firestore-rules.test.mjs",
+    "sync": "pnpm stage && cap sync android",
+    "android": "cap open android",
+    "ios:scaffold": "cap add ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/filesystem": "8.1.3",
+    "@capacitor/ios": "8.5.2",
+    "@capacitor/share": "8.0.2",
+    "chart.js": "4.4.1",
+    "chartjs-plugin-datalabels": "2.2.0",
+    "firebase": "11.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2",
+    "@firebase/rules-unit-testing": "5.0.0"
+  }
+}

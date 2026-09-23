@@ -1,269 +1,121 @@
-import { requireUser } from "./auth.js";
+import { requireUser, HttpError } from './auth.js';
+import { firestoreAdmin, documentId, isContention } from './firebase-admin.js';
+import { PACKAGES, applyPaidInvoice, assertInvoiceMatches, markInvoiceExpired } from './entitlements.js';
 
-// =============================================================================
-// PAYMENT GATEWAY (Xendit) — siap diisi credentials setelah Xendit approved
-// =============================================================================
-//
-// Setup env vars (wrangler secret put):
-//   XENDIT_SECRET_KEY  : Secret key dari Xendit dashboard (Settings > API Keys)
-//   XENDIT_WEBHOOK_TOKEN : Token dari Xendit dashboard webhook setting
-//
-// Flow:
-//   1. Frontend POST /api/create-invoice {uid, paket, amount, externalId, successUrl, failureUrl}
-//      → Worker call Xendit API → return {checkoutUrl, invoiceId}
-//      → Worker simpan {externalId → {uid, paket, status:'pending'}} di KV
-//   2. User bayar di Xendit checkout (QRIS / VA / e-wallet)
-//   3. Xendit webhook hit /api/xendit-webhook dengan invoice paid event
-//      → Worker validate token, update KV {status:'paid', paidAt}
-//   4. User redirect kembali ke app dengan ?payment=success&ref=externalId
-//      → Frontend GET /api/verify-payment?ref=externalId
-//      → Worker baca KV → return {status, paket, uid}
-//      → Frontend update Firestore (activate subscription)
-//
-// KV namespace: BOT_DATA (existing)
-// Key prefix:   payment:<externalId>  TTL 7 hari
+const json = (data, status = 200) => new Response(JSON.stringify(data), { status,
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+const failure = error => json({ error: error instanceof HttpError ? error.message : 'Layanan pembayaran sedang tidak tersedia.' }, error.status || 503);
 
-const PAYMENT_KV_PREFIX = "payment:";
-const PAYMENT_KV_TTL = 7 * 24 * 3600; // 7 hari
-
-// Paket config untuk validasi server-side (mirror PACKAGE_CONFIG di js/auth.js)
-const PACKAGE_AMOUNTS = {
-  trial:   { amount: 10000,  days: 7,   label: "Coba 7 Hari" },
-  monthly: { amount: 50000,  days: 30,  label: "Bulanan" },
-  annual:  { amount: 299000, days: 365, label: "Tahunan" },
-};
-
-function corsJson(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+async function provider(env, path, body) {
+  if (!env.XENDIT_SECRET_KEY) throw new HttpError(503, 'Pembayaran belum tersedia.');
+  const response = await fetch('https://api.xendit.co/v2/invoices' + path, {
+    method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + btoa(env.XENDIT_SECRET_KEY + ':') },
+    ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(20000),
   });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new HttpError(502, 'Penyedia pembayaran sedang tidak tersedia.');
+  return data;
 }
 
-// POST /api/create-invoice
+// Historical KV status is untrusted. Only a provider lookup can grant access.
+async function getInvoice(env, ref) {
+  const db = firestoreAdmin(env), path = 'payments/' + documentId(ref);
+  const doc = await db.get(path);
+  if (doc) return doc;
+  const raw = await env.BOT_DATA.get('payment:' + ref);
+  if (!raw) return null;
+  let old;
+  try { old = JSON.parse(raw); } catch { return null; }
+  if (!old.uid || !old.invoiceId || old.externalId !== ref || !Object.hasOwn(PACKAGES, old.paket) || old.amount !== PACKAGES[old.paket].amount) return null;
+  const migrated = { uid: old.uid, email: old.email || '', paket: old.paket, amount: old.amount,
+    invoiceId: old.invoiceId, externalId: ref, status: 'pending', createdAt: old.createdAt || new Date().toISOString(), migratedFromKV: true };
+  try { await db.commit([db.write(path, migrated, null)]); }
+  catch (error) { if (!isContention(error)) throw error; }
+  return db.get(path);
+}
+
 export async function handleCreateInvoice(request, env) {
-  if (request.method !== "POST") return corsJson({ error: "Method not allowed" }, 405);
-
-  let user;
-  try { user = await requireUser(request, env); }
-  catch (e) { return corsJson({ error: e.message }, e.status || 503); }
-
-  let body;
-  try { body = await request.json(); }
-  catch { return corsJson({ error: "Invalid JSON" }, 400); }
-
-  const { product, paket, amount, externalId, successUrl, failureUrl } = body || {};
-  const { uid, email } = user;
-
-  if (!product || product !== "beruang") return corsJson({ error: "Invalid product" }, 400);
-  if (!uid || !email || !paket || !externalId) return corsJson({ error: "Missing fields" }, 400);
-
-  if (typeof externalId !== 'string' || !externalId.startsWith(`beruang_${uid}_`) || externalId.length > 200) return corsJson({ error: 'Invalid reference' }, 400);
-  for (const value of [successUrl, failureUrl]) {
-    try {
-      const redirect = new URL(value);
-      if (redirect.origin !== 'https://berstock.id' || redirect.pathname !== '/app.html') throw Error();
-    } catch { return corsJson({ error: 'Invalid redirect URL' }, 400); }
-  }
-  if (await env.BOT_DATA.get(PAYMENT_KV_PREFIX + externalId)) return corsJson({ error: 'Reference already used' }, 409);
-  const cfg = Object.hasOwn(PACKAGE_AMOUNTS, paket) ? PACKAGE_AMOUNTS[paket] : null;
-  if (!cfg) return corsJson({ error: `Invalid paket: ${paket}` }, 400);
-
-  // Server-side validate amount cocok config (anti tamper)
-  if (Number(amount) !== cfg.amount) {
-    return corsJson({ error: `Amount mismatch: expected ${cfg.amount}, got ${amount}` }, 400);
-  }
-
-  // Cek Xendit credentials
-  if (!env.XENDIT_SECRET_KEY) {
-    return corsJson({
-      error: "Payment gateway belum aktif (XENDIT_SECRET_KEY belum di-set). Hubungi admin via WA.",
-      fallback: "wa",
-    }, 503);
-  }
-
-  // Call Xendit Create Invoice API
-  // https://developers.xendit.co/api-reference/#create-invoice
-  const xenditPayload = {
-    external_id: externalId,
-    amount: cfg.amount,
-    payer_email: email,
-    description: `BerUang Pro — ${cfg.label}`,
-    success_redirect_url: successUrl,
-    failure_redirect_url: failureUrl,
-    invoice_duration: 86400, // 24 jam expiry
-    currency: "IDR",
-    items: [{
-      name: `BerUang Pro · ${cfg.label}`,
-      quantity: 1,
-      price: cfg.amount,
-      category: "Digital",
-    }],
-  };
-
-  const auth = btoa(`${env.XENDIT_SECRET_KEY}:`);
-  let xenditRes;
+  if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
   try {
-    xenditRes = await fetch("https://api.xendit.co/v2/invoices", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${auth}`,
-      },
-      body: JSON.stringify(xenditPayload),
-    });
-  } catch (err) {
-    console.error("[xendit] network error:", err);
-    return corsJson({ error: "Xendit unreachable" }, 502);
-  }
-
-  const xenditData = await xenditRes.json().catch(() => ({}));
-  if (!xenditRes.ok || !xenditData.invoice_url) {
-    console.error("[xendit] error response:", xenditRes.status, xenditData);
-    return corsJson({ error: xenditData.message || "Xendit error", details: xenditData }, 502);
-  }
-
-  // Simpan record di KV untuk verify nanti
-  const record = {
-    uid,
-    email,
-    paket,
-    amount: cfg.amount,
-    externalId,
-    invoiceId: xenditData.id,
-    invoiceUrl: xenditData.invoice_url,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-  };
-  await env.BOT_DATA.put(
-    PAYMENT_KV_PREFIX + externalId,
-    JSON.stringify(record),
-    { expirationTtl: PAYMENT_KV_TTL }
-  );
-
-  return corsJson({
-    ok: true,
-    checkoutUrl: xenditData.invoice_url,
-    invoiceId: xenditData.id,
-    externalId,
-  });
+    const user = await requireUser(request, env);
+    let body;
+    try { body = await request.json(); } catch { throw new HttpError(400, 'Invalid JSON'); }
+    const { product, paket, amount, externalId, successUrl, failureUrl } = body || {};
+    if (product !== 'beruang' || !user.email || !Object.hasOwn(PACKAGES, paket || '')) throw new HttpError(400, 'Paket atau akun tidak valid.');
+    const cfg = PACKAGES[paket];
+    documentId(externalId);
+    if (!externalId.startsWith(`beruang_${user.uid}_`) || Number(amount) !== cfg.amount) throw new HttpError(400, 'Referensi atau jumlah tidak valid.');
+    for (const value of [successUrl, failureUrl]) {
+      let redirect;
+      try { redirect = new URL(value); } catch {}
+      if (redirect?.origin !== 'https://berstock.id' || redirect.pathname !== '/app.html') throw new HttpError(400, 'Invalid redirect URL');
+    }
+    // Reserve durably before charging so missing storage cannot strand a buyer.
+    if (!env.XENDIT_SECRET_KEY || !env.XENDIT_WEBHOOK_TOKEN) throw new HttpError(503, 'Pembayaran belum tersedia.');
+    const db = firestoreAdmin(env), uid = documentId(user.uid);
+    if (await db.get('accountDeletions/' + uid)) throw new HttpError(409, 'Akun sedang dihapus.');
+    if (!await db.get(`users/${uid}/meta/profile`)) throw new HttpError(409, 'Profil akun belum tersedia.');
+    if (await env.BOT_DATA.get('payment:' + externalId)) throw new HttpError(409, 'Referensi sudah digunakan.');
+    const path = 'payments/' + externalId;
+    try { await db.commit([db.write(path, { uid, email: user.email, paket, amount: cfg.amount,
+      externalId, status: 'creating', createdAt: new Date().toISOString() }, null)]); }
+    catch (error) { if (isContention(error)) throw new HttpError(409, 'Referensi sudah digunakan.'); throw error; }
+    const data = await provider(env, '', { external_id: externalId, amount: cfg.amount, payer_email: user.email,
+      description: `BerUang Pro — ${cfg.label}`, success_redirect_url: successUrl, failure_redirect_url: failureUrl,
+      invoice_duration: 86400, currency: 'IDR', items: [{ name: `BerUang Pro · ${cfg.label}`, quantity: 1, price: cfg.amount, category: 'Digital' }] });
+    if (!data.id || !data.invoice_url || data.external_id !== externalId || Number(data.amount) !== cfg.amount || data.currency !== 'IDR') {
+      throw new HttpError(502, 'Respons penyedia pembayaran tidak sesuai.');
+    }
+    const reserved = await db.get(path);
+    await db.commit([db.write(path, { invoiceId: data.id, invoiceUrl: data.invoice_url, status: 'pending' }, reserved, true)]);
+    return json({ ok: true, checkoutUrl: data.invoice_url, invoiceId: data.id, externalId });
+  } catch (error) { return failure(error); }
 }
 
-// GET /api/verify-payment?ref=externalId
 export async function handleVerifyPayment(request, env) {
-  if (request.method !== "GET") return corsJson({ error: "Method not allowed" }, 405);
-  let user;
-  try { user = await requireUser(request, env); }
-  catch (e) { return corsJson({ error: e.message }, e.status || 503); }
-  const url = new URL(request.url);
-  const ref = url.searchParams.get("ref");
-  if (!ref) return corsJson({ error: "Missing ref" }, 400);
-
-  const raw = await env.BOT_DATA.get(PAYMENT_KV_PREFIX + ref);
-  if (!raw) return corsJson({ error: "Invoice not found / expired", status: "not_found" }, 404);
-
-  const record = JSON.parse(raw);
-  if (record.uid !== user.uid) return corsJson({ error: "Invoice bukan milik akun ini." }, 403);
-
-  // Kalau status masih pending di KV, double-check ke Xendit API (defensive)
-  if (record.status === "pending" && env.XENDIT_SECRET_KEY && record.invoiceId) {
-    try {
-      const auth = btoa(`${env.XENDIT_SECRET_KEY}:`);
-      const res = await fetch(`https://api.xendit.co/v2/invoices/${record.invoiceId}`, {
-        headers: { "Authorization": `Basic ${auth}` },
-      });
-      if (!res.ok) throw new Error("Payment provider unavailable");
-      const data = await res.json();
-      if (data.id !== record.invoiceId || data.external_id !== record.externalId || Number(data.amount) !== record.amount || data.currency !== "IDR") throw new Error("Invoice mismatch");
-      if (data.status === "PAID" || data.status === "SETTLED") {
-        record.status = "paid";
-        record.paidAt = data.paid_at || new Date().toISOString();
-        record.paymentMethod = data.payment_method || "unknown";
-        await env.BOT_DATA.put(
-          PAYMENT_KV_PREFIX + ref,
-          JSON.stringify(record),
-          { expirationTtl: PAYMENT_KV_TTL }
-        );
-      } else if (data.status === "EXPIRED") {
-        record.status = "expired";
-        await env.BOT_DATA.put(
-          PAYMENT_KV_PREFIX + ref,
-          JSON.stringify(record),
-          { expirationTtl: PAYMENT_KV_TTL }
-        );
-      }
-    } catch (err) {
-      console.warn("[verify-payment] xendit poll failed:", err.message);
+  if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
+  try {
+    const user = await requireUser(request, env);
+    const ref = documentId(new URL(request.url).searchParams.get('ref'));
+    const invoice = await getInvoice(env, ref);
+    if (!invoice) throw new HttpError(404, 'Invoice tidak ditemukan.');
+    const record = invoice.data;
+    if (record.uid !== user.uid) throw new HttpError(403, 'Invoice bukan milik akun ini.');
+    let applied;
+    if (record.status === 'paid' && record.entitlementApplied === true) {
+      const receipt = await firestoreAdmin(env).get(`users/${documentId(user.uid)}/verifiedPaymentReceipts/${ref}`);
+      if (receipt) applied = { entitlementApplied: true, ...receipt.data };
     }
-  }
-
-  return corsJson({
-    status: record.status,
-    paket: record.paket,
-    uid: record.uid,
-    paidAt: record.paidAt || null,
-    paymentMethod: record.paymentMethod || null,
-  });
+    // Polling recovers a missed webhook; the browser never grants entitlement.
+    if (!applied && record.invoiceId) {
+      const event = await provider(env, '/' + encodeURIComponent(record.invoiceId));
+      assertInvoiceMatches(record, event);
+      if (['PAID', 'SETTLED'].includes(event.status)) applied = await applyPaidInvoice(env, ref, event);
+      else if (event.status === 'EXPIRED') { await markInvoiceExpired(env, ref, event); record.status = 'expired'; }
+    }
+    return json({ status: applied ? 'paid' : record.status, paket: record.paket, uid: record.uid,
+      entitlementApplied: !!applied, ...(applied ? { plan: applied.plan, expiresAt: applied.expiresAt } : {}) });
+  } catch (error) { return failure(error); }
 }
 
-// POST /api/xendit-webhook — Xendit kirim notif saat invoice paid/expired
-// Set webhook URL di Xendit dashboard: https://berstock-bot.hendrypangg12.workers.dev/api/xendit-webhook
-// Verification: Xendit kirim header `x-callback-token` = XENDIT_WEBHOOK_TOKEN
 export async function handleXenditWebhook(request, env) {
-  if (request.method !== "POST") return corsJson({ error: "Method not allowed" }, 405);
-
-  if (!env.XENDIT_WEBHOOK_TOKEN) return corsJson({ error: "Webhook belum dikonfigurasi." }, 503);
-
-  // Fail closed: never accept an unverified payment notification.
-  if (env.XENDIT_WEBHOOK_TOKEN) {
-    const incoming = request.headers.get("x-callback-token");
-    if (incoming !== env.XENDIT_WEBHOOK_TOKEN) {
-      console.warn("[xendit-webhook] invalid token");
-      return corsJson({ error: "Unauthorized" }, 401);
+  if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  if (!env.XENDIT_WEBHOOK_TOKEN) return json({ error: 'Webhook belum dikonfigurasi.' }, 503);
+  if (request.headers.get('x-callback-token') !== env.XENDIT_WEBHOOK_TOKEN) return json({ error: 'Unauthorized' }, 401);
+  try {
+    let event;
+    try { event = await request.json(); } catch { throw new HttpError(400, 'Invalid JSON'); }
+    const ref = documentId(event?.external_id);
+    if (!ref.startsWith('beruang_')) return json({ ok: true, skipped: 'other_product' });
+    const invoice = await getInvoice(env, ref);
+    // Returning 503 asks the provider to retry a creation/storage failure.
+    if (!invoice || !invoice.data.invoiceId) throw new HttpError(503, 'Invoice belum dapat diproses.');
+    assertInvoiceMatches(invoice.data, event);
+    if (['PAID', 'SETTLED'].includes(event.status)) {
+      const applied = await applyPaidInvoice(env, ref, event);
+      return json({ ok: true, entitlementApplied: applied.entitlementApplied });
     }
-  }
-
-  let body;
-  try { body = await request.json(); }
-  catch { return corsJson({ error: "Invalid JSON" }, 400); }
-
-  const externalId = body?.external_id;
-  const status = body?.status; // 'PAID' | 'EXPIRED' | 'SETTLED'
-  if (!externalId) return corsJson({ error: "Missing external_id" }, 400);
-
-  const raw = await env.BOT_DATA.get(PAYMENT_KV_PREFIX + externalId);
-  if (!raw) {
-    // Bisa jadi invoice dari product lain (BerBisnis) — terima silent
-    console.log("[xendit-webhook] external_id not in KV:", externalId);
-    return corsJson({ ok: true, skipped: "not_in_kv" });
-  }
-
-  const record = JSON.parse(raw);
-  if (body.id !== record.invoiceId || Number(body.amount) !== record.amount || body.currency !== 'IDR') {
-    return corsJson({ error: 'Invoice mismatch' }, 400);
-  }
-  // Paid is terminal: duplicates and late expiry events cannot undo a payment.
-  if (record.status === 'paid') return corsJson({ ok: true, duplicate: true });
-
-  if (status === "PAID" || status === "SETTLED") {
-    record.status = "paid";
-    record.paidAt = body.paid_at || new Date().toISOString();
-    record.paymentMethod = body.payment_method || "unknown";
-    record.xenditEvent = body;
-  } else if (status === "EXPIRED") {
-    record.status = "expired";
-  } else {
-    console.log("[xendit-webhook] unknown status:", status);
-  }
-
-  await env.BOT_DATA.put(
-    PAYMENT_KV_PREFIX + externalId,
-    JSON.stringify(record),
-    { expirationTtl: PAYMENT_KV_TTL }
-  );
-
-  return corsJson({ ok: true, processed: status });
+    if (event.status === 'EXPIRED') await markInvoiceExpired(env, ref, event);
+    return json({ ok: true, processed: event.status });
+  } catch (error) { return failure(error); }
 }

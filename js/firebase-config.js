@@ -19,7 +19,7 @@ const ADMIN_CONTACT = {
 
 // Harga paket (Rupiah) — pricing model per 1 Juni 2026
 const PRICE_TRIAL = 10000;     // 7 hari paid entry
-const PRICE_MONTHLY = 50000;   // 30 hari auto-renewal
+const PRICE_MONTHLY = 50000;   // akses 30 hari; bukan auto-renewal saat ini
 const PRICE_ANNUAL = 299000;   // 365 hari (hemat 50%)
 const PRICE_LIFETIME = 125000; // LEGACY only — existing buyer dihormati
 

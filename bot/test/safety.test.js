@@ -54,21 +54,6 @@ test('webhook fails closed without configured secret and rejects wrong secret', 
   assert.equal((await handleXenditWebhook(request({}), { ...env, XENDIT_WEBHOOK_TOKEN: '' })).status, 503);
   assert.equal((await handleXenditWebhook(request({}, { 'x-callback-token': 'wrong' }), env)).status, 401);
 });
-test('webhook validates amount/id/currency and paid is terminal', async () => {
-  const env = environment();
-  env.data.set('payment:ref', JSON.stringify({ invoiceId: 'inv', amount: 10000, status: 'pending' }));
-  const body = { external_id: 'ref', id: 'inv', amount: 10000, currency: 'IDR', status: 'PAID' };
-  const send = b => handleXenditWebhook(request(b, { 'x-callback-token': 'secret' }), env);
-  for (const b of [{ ...body, amount: 1 }, { ...body, id: 'other' }, { ...body, currency: 'USD' }]) assert.equal((await send(b)).status, 400);
-  assert.equal((await send(body)).status, 200);
-  await send({ ...body, status: 'EXPIRED' });
-  assert.equal(JSON.parse(env.data.get('payment:ref')).status, 'paid');
-});
-test('payment verification refuses another account invoice without contacting Xendit', async t => {
-  const env = environment(); env.data.set('payment:ref', JSON.stringify({ uid: 'other' }));
-  mockFetch(t, async url => { assert.match(String(url), /accounts:lookup/); return json({ users: [{ localId: 'u' }] }); });
-  assert.equal((await handleVerifyPayment(new Request('https://worker.test/api/verify-payment?ref=ref', { headers: authorization }), env)).status, 403);
-});
 test('invoice creation rejects external redirect URLs', async t => {
   mockFetch(t, async () => json({ users: [{ localId: 'u', email: 'u@example.test' }] }));
   const result = await handleCreateInvoice(request({ product: 'beruang', paket: 'trial', amount: 10000, externalId: 'beruang_u_trial_123', successUrl: 'https://evil.test', failureUrl: 'https://berstock.id/app.html' }, authorization), environment());

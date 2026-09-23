@@ -4,24 +4,32 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const read = p => fs.readFileSync(new URL('../../' + p, import.meta.url), 'utf8');
 
-test('replaying a payment reference does not extend the subscription twice', async () => {
-  const docs = new Map([['users/u/meta/profile', { plan: 'pending', expiresAt: '2000-01-01' }]]);
-  const ref = path => ({ path, collection: name => ref(path + '/' + name), doc: name => ref(path + '/' + name) });
-  const db = { collection: name => ref(name), runTransaction: async fn => {
-    const updates = [];
-    const value = await fn({ get: async r => ({ exists: docs.has(r.path), data: () => docs.get(r.path) }),
-      set: (r, v, options) => updates.push([r.path, options?.merge ? { ...docs.get(r.path), ...v } : v]) });
-    for (const [path, value] of updates) docs.set(path, value);
-    return value;
-  } };
+test('browser cannot grant itself a subscription using an arbitrary payment reference', async () => {
+  let writes = 0;
+  const ctx = vm.createContext({ fbDb: { runTransaction() { writes++; } } });
+  vm.runInContext(read('js/auth.js'), ctx);
+  await assert.rejects(vm.runInContext("activateSubscription('u','monthly',{paymentRef:'invented'})", ctx), /server pembayaran/);
+  assert.equal(writes, 0);
+});
+
+test('first login on a second device cannot overwrite a profile created or upgraded concurrently', async () => {
+  const paid = { plan: 'annual', expiresAt: '2028-01-01T00:00:00Z' };
+  const ref = { get: async () => ({ exists: false }) };
+  let writes = 0;
+  const db = { collection: () => ({ doc: () => ({ collection: () => ({ doc: () => ref }) }) }),
+    runTransaction: fn => fn({ get: async () => ({ exists: true, data: () => paid }), set: () => writes++ }) };
   const ctx = vm.createContext({ fbDb: db }); vm.runInContext(read('js/auth.js'), ctx);
-  const first = await vm.runInContext("activateSubscription('u','monthly',{paymentRef:'first'})", ctx);
-  const again = await vm.runInContext("activateSubscription('u','monthly',{paymentRef:'first'})", ctx);
-  assert.equal(first.expiresAt, again.expiresAt);
-  const renewal = await vm.runInContext("activateSubscription('u','monthly',{paymentRef:'second'})", ctx);
-  const replay = await vm.runInContext("activateSubscription('u','monthly',{paymentRef:'first'})", ctx);
-  assert.equal(replay.expiresAt, renewal.expiresAt);
-  assert.equal(Date.parse(renewal.expiresAt) - Date.parse(first.expiresAt), 30 * 86400000);
+  const profile = await vm.runInContext("ensureUserProfile({uid:'u',email:'u@example.test'})",ctx);
+  assert.equal(profile.plan, 'annual');
+  assert.equal(writes, 0);
+});
+
+test('an email allowlist alone does not enable administrator actions', () => {
+  const ctx = vm.createContext({ currentUser: { email: 'owner@example.test' }, currentClaims: {}, ADMIN_EMAILS: ['owner@example.test'] });
+  vm.runInContext(read('js/admin.js'),ctx);
+  assert.equal(vm.runInContext('isAdmin()',ctx),false);
+  ctx.currentClaims.admin = true;
+  assert.equal(vm.runInContext('isAdmin()',ctx),true);
 });
 test('switching accounts cannot migrate another account local transactions', () => {
   const cache = new Map();

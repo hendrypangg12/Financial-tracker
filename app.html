@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BerUang — Catat Uangmu, Jadi Ber-uang</title>
   <meta name="description" content="BerUang — aplikasi catat keuangan pribadi. Catet dulu, biar beneran ber-uang. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20." />
-  <meta name="theme-color" content="#8b5a2b" />
-  <link rel="icon" type="image/png" href="assets/logo-berbisnis.png?v=3" />
-  <link rel="apple-touch-icon" href="assets/logo-berbisnis.png?v=3" />
+  <meta name="theme-color" content="#412b23" />
+  <link rel="icon" type="image/png" href="assets/icons/beruang-wallet-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/beruang-wallet-192.png" />
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-title" content="BerUang" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -26,11 +26,19 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 </head>
-<body>
+<body class="app-locked">
+  <div id="startup-screen" class="login-screen" role="status" aria-live="polite">
+    <div class="login-card">
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
+      <h1 class="login-brand">BerUang</h1>
+      <p>Menyiapkan akun dan catatan keuangan…</p>
+      <button class="btn btn-ghost" type="button" onclick="window.location.reload()">Muat ulang jika koneksi terputus</button>
+    </div>
+  </div>
   <!-- ============ LOGIN SCREEN (tampil saat belum login) ============ -->
   <div id="login-screen" class="login-screen" hidden>
     <div class="login-card">
-      <img class="login-logo" src="assets/logo-berbisnis.png?v=3" alt="BerUang" />
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <h1 class="login-brand">BerUang</h1>
       <p class="login-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
 
@@ -64,20 +72,20 @@
       <div id="auth-error" class="auth-error" hidden></div>
       <div id="auth-info" class="auth-info" hidden></div>
       <div id="auth-pwa-tip" style="margin-top:14px;padding:10px 12px;background:#fff7e6;border:1px solid #f0d488;border-radius:10px;font-size:12px;color:#6b4423;line-height:1.5;display:none;">
-        💡 <b>Biar gak login terus:</b> tap ikon Share <span style="font-family:monospace">⬆️</span> di Safari → <b>"Add to Home Screen"</b>. Buka dari icon homescreen — otomatis tersimpan selamanya 🐻
+        💡 <b>Biar sesi lebih mudah dibuka:</b> tap ikon Share <span style="font-family:monospace">⬆️</span> di Safari → <b>"Add to Home Screen"</b>. Sesi tetap mengikuti pengaturan browser dan dapat berakhir saat logout.
       </div>
       <div id="auth-private-warn" style="margin-top:8px;padding:10px 12px;background:#fde8e8;border:1px solid #f5a8a8;border-radius:10px;font-size:12px;color:#8b2020;line-height:1.5;display:none;">
         ⚠️ <b>Mode Private/Incognito terdeteksi.</b> Login bos gak akan ke-simpan setelah tutup tab. Pindah ke browser normal atau install ke homescreen.
       </div>
     </div>
-    <div class="login-footer">🐻 BerUang — Data aman tersinkron di semua device Anda</div>
+    <div class="login-footer">BerUang — Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat</div>
   </div>
 
   <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
   <div id="paywall-screen" class="login-screen" hidden>
     <div class="login-card paywall-card">
       <button id="btn-paywall-back" class="paywall-back" aria-label="Kembali ke Dashboard" title="Lihat Dashboard Dulu">←</button>
-      <img class="login-logo" src="assets/logo-berbisnis.png?v=3" alt="BerUang" />
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <h2 id="paywall-title">Pilih Paket Langganan</h2>
       <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
 
@@ -184,7 +192,7 @@
 
   <header class="topbar">
     <div class="brand">
-      <img class="brand-icon-img" src="assets/logo-berbisnis.png?v=3" alt="BerUang" />
+      <img class="brand-icon-img" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <div>
         <div class="brand-title">BerUang</div>
         <div class="brand-sub">Catet dulu, biar beneran ber-uang</div>
@@ -222,8 +230,9 @@
           <button class="user-item user-item-admin" id="btn-admin-panel" hidden>👨‍💼 Admin Panel</button>
           <button class="user-item" id="btn-setup-dana">💰 Setup Dana Awal</button>
           <button class="user-item" id="btn-tg-link">🤖 Hubungkan Telegram (catat via chat)</button>
-          <button class="user-item" id="btn-refresh-app" title="Paksa ambil versi terbaru (data aman)">🧹 Bersihkan Cache &amp; Muat Ulang</button>
+          <button class="user-item" id="btn-refresh-app" title="Paksa ambil versi terbaru tanpa menghapus catatan akun">🧹 Bersihkan Cache &amp; Muat Ulang</button>
           <button class="user-item user-item-danger" id="btn-reset-data" title="Hapus semua data & mulai dari awal">🔄 Reset Data &amp; Mulai Ulang</button>
+          <button class="user-item user-item-danger" id="btn-delete-account" title="Hapus akun BerUang dan data terkait">Hapus Akun BerUang</button>
           <button class="user-item" id="btn-logout">🚪 Logout</button>
         </div>
       </div>
@@ -246,7 +255,7 @@
     <section id="tab-dashboard" class="tab-panel active">
       <div id="welcome-banner" class="welcome-banner" hidden>
         <div class="welcome-content">
-          <img class="welcome-bear-img" src="assets/logo-berbisnis.png?v=3" alt="Mascot BerUang" />
+          <img class="welcome-bear-img" src="assets/icons/beruang-wallet-192.png" alt="Mascot BerUang" />
           <div>
             <h2>Halo, selamat datang di <b>BerUang</b>!</h2>
             <p class="welcome-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
@@ -704,7 +713,7 @@ TOTAL            86.500"></textarea>
         </label>
         <button type="submit" class="btn btn-primary btn-block">+ Tambah Goal</button>
         <small class="goal-form-hint">
-          💡 AI Plan: <b>1 generate gratis/bulan</b> (free) · <b>unlimited (Pro)</b>.
+          AI Plan: <b>1 pembuatan rencana/bulan</b> (gratis) · Pro mengikuti batas penggunaan harian.
           AI baca pola income & spending lu, kasih saran konkret cut budget.
         </small>
       </form>
@@ -791,7 +800,7 @@ TOTAL            86.500"></textarea>
   <!-- ============ BOTTOM NAVIGATION (Mobile/TWA Native Feel) ============ -->
   <!-- ============ AI ADVISOR — Beruang Akuntan Gemoy ============ -->
   <button class="ai-fab" id="ai-fab" aria-label="Tanya Beruang AI Advisor" hidden>
-    <img class="ai-fab-icon" src="assets/logo-berbisnis.png?v=3" alt="AI" />
+    <img class="ai-fab-icon" src="assets/icons/beruang-wallet-192.png" alt="AI" />
     <span class="ai-fab-badge">PRO</span>
   </button>
 
@@ -804,7 +813,7 @@ TOTAL            86.500"></textarea>
 
     <div class="ai-chat-head">
       <div class="ai-chat-head-info">
-        <div class="ai-chat-avatar"><img src="assets/logo-berbisnis.png?v=3" alt="" /></div>
+        <div class="ai-chat-avatar"><img src="assets/icons/beruang-wallet-192.png" alt="" /></div>
         <div>
           <div class="ai-chat-title">Beruang Akuntan</div>
           <div class="ai-chat-sub">AI Advisor · paham data lo</div>
@@ -890,7 +899,7 @@ TOTAL            86.500"></textarea>
 
   <footer class="footer">
     🐻 <b>BerUang</b> · Catet dulu, biar beneran ber-uang<br>
-    <small>Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.</small>
+    <small>Saat login, catatan disimpan untuk akun Anda dan disinkronkan ke cloud. Gunakan <b>Export</b> untuk cadangan pribadi.</small>
   </footer>
 
   <!-- Modal edit -->

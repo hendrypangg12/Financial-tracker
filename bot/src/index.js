@@ -11,6 +11,7 @@ import { askClaude } from "./claude.js";
 import { handleAdvise } from "./advise.js";
 import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, handleBeruangSetupWebhook, handleBeruangDebug, sendBillReminders } from "./beruang.js";
 import { handleCreateInvoice, handleVerifyPayment, handleXenditWebhook } from "./payment.js";
+import { handleDeleteAccount, processAccountDeletions } from './account.js';
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -22,6 +23,7 @@ import {
 export default {
   // Cron handler — jalan 1x sehari pagi WIB (00:00 UTC = 07:00 WIB)
   async scheduled(event, env, ctx) {
+    ctx.waitUntil(processAccountDeletions(env));
     ctx.waitUntil(sendDailyDigestToAllTenants(env));
     ctx.waitUntil(sendBillReminders(env)); // BerUang: notif H-3 + H-0 tagihan rutin
   },
@@ -61,6 +63,7 @@ export default {
         case "/api/create-invoice":  return await handleCreateInvoice(request, env);
         case "/api/verify-payment":  return await handleVerifyPayment(request, env);
         case "/api/xendit-webhook":  return await handleXenditWebhook(request, env);
+        case "/api/delete-account": return await handleDeleteAccount(request, env, ctx);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

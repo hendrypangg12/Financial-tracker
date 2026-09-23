@@ -4,165 +4,110 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kebijakan Privasi — BerUang</title>
-  <meta name="description" content="Kebijakan Privasi BerUang — Aplikasi catat keuangan personal. Data Anda aman dan tidak dijual." />
-  <meta name="theme-color" content="#8b5a2b" />
-  <link rel="icon" type="image/png" href="assets/icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <meta name="description" content="Informasi data akun, catatan keuangan, layanan AI, dan permintaan penghapusan data BerUang." />
+  <meta name="theme-color" content="#34251d" />
+  <link rel="icon" type="image/png" href="assets/icons/beruang-wallet-192.png" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, system-ui, 'Inter', sans-serif;
-      background: #fbf6ee;
-      color: #4a3328;
-      line-height: 1.65;
-      padding: 40px 20px 80px;
-    }
-    .container { max-width: 760px; margin: 0 auto; }
-    .header {
-      display: flex; align-items: center; gap: 16px;
-      padding-bottom: 24px;
-      border-bottom: 2px solid #ead7b8;
-      margin-bottom: 32px;
-    }
-    .header img { width: 64px; height: 64px; }
-    .header h1 { font-size: 28px; color: #8b5a2b; }
-    .header p { font-size: 14px; color: #6b5340; }
-    h2 {
-      margin-top: 32px;
-      margin-bottom: 12px;
-      color: #8b5a2b;
-      font-size: 20px;
-    }
-    h3 { margin-top: 20px; margin-bottom: 8px; font-size: 16px; color: #6b3f1f; }
-    p, li { font-size: 15px; color: #4a3328; margin-bottom: 10px; }
-    ul, ol { margin-left: 24px; margin-bottom: 16px; }
-    .meta {
-      background: #fef3c7;
-      padding: 16px 20px;
-      border-radius: 12px;
-      border-left: 4px solid #d4af37;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-    .contact {
-      background: #fff;
-      padding: 20px;
-      border-radius: 14px;
-      border: 1px solid #ead7b8;
-      margin-top: 32px;
-    }
-    a { color: #8b5a2b; font-weight: 600; }
-    a:hover { color: #6b3f1f; }
-    code { background: #fff; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-    .footer-link { text-align: center; margin-top: 40px; font-size: 13px; color: #6b5340; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 20px 64px; background: #fbf6ee; color: #34251d; font: 16px/1.7 system-ui, sans-serif; }
+    main { max-width: 780px; margin: auto; }
+    header { display: flex; align-items: center; gap: 18px; border-bottom: 1px solid #d8c7b5; padding-bottom: 24px; }
+    header img { width: 64px; height: 64px; border-radius: 16px; }
+    h1 { font-size: clamp(24px, 5vw, 32px); line-height: 1.2; margin: 0 0 8px; }
+    h2 { font-size: 22px; line-height: 1.4; margin: 32px 0 12px; }
+    h3 { font-size: 17px; margin: 22px 0 8px; }
+    p { margin: 0 0 12px; }
+    ul { padding-left: 24px; }
+    li { margin-bottom: 8px; }
+    a { color: #694328; text-underline-offset: 3px; overflow-wrap: anywhere; }
+    a:focus-visible { outline: 3px solid #694328; outline-offset: 4px; }
+    .muted { color: #6d5b4d; font-size: 14px; }
+    .summary, .request { padding: 20px; margin: 24px 0; background: #fff; border: 1px solid #d8c7b5; border-radius: 16px; }
+    .request { scroll-margin-top: 20px; }
+    .request h2 { margin-top: 0; }
+    nav, footer { margin-top: 24px; }
+    nav ul { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; padding: 0; }
+    footer { padding-top: 20px; border-top: 1px solid #d8c7b5; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="assets/icons/icon-192.png" alt="BerUang" />
-      <div>
-        <h1>Kebijakan Privasi BerUang</h1>
-        <p>Aplikasi catat keuangan personal · Berlaku per: 11 Mei 2026</p>
-      </div>
+  <main>
+    <header>
+      <img src="assets/icons/beruang-wallet-192.png" alt="Logo BerUang" />
+      <div><h1>Kebijakan Privasi BerUang</h1><p class="muted">Diperbarui: 22 September 2026</p></div>
+    </header>
+    <div class="summary">
+      <p>BerUang membantu Anda mencatat keuangan pribadi. Catatan dapat disimpan di perangkat dan disinkronkan ke akun Anda. Jika Anda menggunakan fitur AI atau integrasi Telegram, data yang diperlukan juga diproses oleh penyedia layanan tersebut.</p>
+      <p>Kebijakan ini menjelaskan aliran data pada layanan BerUang. Ketersediaan fitur dapat berbeda antara aplikasi, situs, dan integrasi Telegram.</p>
     </div>
-
-    <div class="meta">
-      <b>Ringkasan Singkat:</b> BerUang adalah aplikasi catat keuangan personal untuk Anda. Kami menyimpan data Anda secara aman, tidak menjualnya ke pihak ketiga, dan Anda bisa hapus data kapan saja.
-    </div>
-
-    <h2>1. Informasi yang Kami Kumpulkan</h2>
-
-    <h3>1.1 Data Akun</h3>
-    <p>Saat Anda mendaftar di BerUang, kami menyimpan:</p>
-    <ul>
-      <li>Alamat email (untuk autentikasi)</li>
-      <li>Nama (opsional, untuk personalisasi)</li>
-      <li>Foto profil (opsional, jika login dengan Google)</li>
-      <li>Tanggal pendaftaran</li>
-    </ul>
-
-    <h3>1.2 Data Keuangan</h3>
-    <p>Data transaksi yang Anda input:</p>
-    <ul>
-      <li>Catatan pemasukan/pengeluaran (tanggal, jumlah, kategori, deskripsi)</li>
-      <li>Foto struk (untuk fitur OCR, diproses lokal di device)</li>
-      <li>Catatan hutang & piutang</li>
-      <li>Kategori custom yang Anda buat</li>
-    </ul>
-
-    <h3>1.3 Data Otomatis</h3>
-    <p>Untuk analitik dan perbaikan layanan:</p>
-    <ul>
-      <li>Jenis perangkat & browser (anonim)</li>
-      <li>Halaman yang dikunjungi & waktu kunjungan</li>
-      <li>Crash report (otomatis, tanpa data pribadi)</li>
-    </ul>
-
-    <h2>2. Bagaimana Kami Menggunakan Data Anda</h2>
-    <ul>
-      <li><b>Personal:</b> Menampilkan dashboard, rekap, dan grafik keuangan Anda</li>
-      <li><b>Sinkronisasi:</b> Sync data antar perangkat (cloud sync — fitur Pro)</li>
-      <li><b>Notifikasi:</b> Pengingat catat transaksi (jika Anda izinkan)</li>
-      <li><b>Perbaikan:</b> Memahami fitur mana yang paling sering dipakai</li>
-    </ul>
-
-    <h2>3. Apa yang TIDAK Kami Lakukan</h2>
-    <ul>
-      <li>❌ Tidak menjual data Anda ke pihak ketiga manapun</li>
-      <li>❌ Tidak membaca/menganalisis isi transaksi pribadi Anda</li>
-      <li>❌ Tidak menampilkan iklan dari pihak ketiga (free dari pop-up ad)</li>
-      <li>❌ Tidak mengakses data Anda untuk training AI tanpa izin eksplisit</li>
-    </ul>
-
-    <h2>4. Penyimpanan & Keamanan Data</h2>
-    <p>Data Anda disimpan di:</p>
-    <ul>
-      <li><b>Local storage</b> perangkat Anda (data dasar)</li>
-      <li><b>Google Firebase Firestore</b> (untuk cloud sync, terenkripsi at-rest dan in-transit dengan TLS 1.2+)</li>
-      <li>Server berlokasi di Asia Pasifik (sesuai compliance Indonesia)</li>
-    </ul>
-    <p>Kami menggunakan Firebase Auth (Google) untuk autentikasi email/password & Google Login — standar industri keamanan.</p>
-
-    <h2>5. Hak Anda atas Data</h2>
-    <p>Anda berhak:</p>
-    <ul>
-      <li><b>Mengakses</b> seluruh data Anda kapan saja via aplikasi</li>
-      <li><b>Export</b> data dalam format JSON (fitur Pro)</li>
-      <li><b>Menghapus</b> data tertentu atau seluruh akun</li>
-      <li><b>Reset</b> password kapan saja</li>
-    </ul>
-    <p>Untuk hapus akun permanen, kontak: <a href="mailto:info@berstock.id">info@berstock.id</a></p>
-
-    <h2>6. Layanan Pihak Ketiga</h2>
-    <p>BerUang menggunakan layanan pihak ketiga berikut:</p>
-    <ul>
-      <li><b>Google Firebase</b> (autentikasi & database) — <a href="https://firebase.google.com/support/privacy" target="_blank">privacy policy</a></li>
-      <li><b>Google Analytics 4</b> (analitik anonim) — <a href="https://policies.google.com/privacy" target="_blank">privacy policy</a></li>
-      <li><b>Tesseract.js</b> (OCR struk — diproses lokal di device, tidak upload ke server)</li>
-    </ul>
-
-    <h2>7. Cookie & Local Storage</h2>
-    <p>Aplikasi menggunakan localStorage browser/perangkat untuk menyimpan data offline dan preferensi. Tidak ada tracking cookie pihak ketiga selain Google Analytics.</p>
-
-    <h2>8. Anak di Bawah Umur</h2>
-    <p>BerUang dirancang untuk pengguna usia 13 tahun ke atas. Kami tidak secara sengaja mengumpulkan data dari anak di bawah 13 tahun. Jika Anda mengetahui hal ini terjadi, kontak kami segera.</p>
-
-    <h2>9. Perubahan Kebijakan</h2>
-    <p>Kami dapat memperbarui kebijakan ini sewaktu-waktu. Perubahan signifikan akan diberitahukan via email atau notifikasi in-app minimal 7 hari sebelum berlaku.</p>
-
-    <h2>10. Kontak Kami</h2>
-    <div class="contact">
-      <p><b>BerUang</b> — Produk dari ekosistem BerSatu Suite</p>
-      <p>Pengelola: Hendry Phang</p>
-      <p>📧 Email: <a href="mailto:info@berstock.id">info@berstock.id</a></p>
-      <p>📱 WhatsApp: <a href="https://wa.me/6282124848924">+62 821-2484-8924</a></p>
-      <p>🌐 Website: <a href="https://berstock.id">berstock.id</a></p>
-    </div>
-
-    <div class="footer-link">
-      <a href="/">← Kembali ke berstock.id</a> · <a href="/app.html">Buka BerUang</a>
-    </div>
-  </div>
+    <nav aria-label="Isi kebijakan privasi"><ul>
+      <li><a href="#data">Data yang diproses</a></li><li><a href="#ai">AI dan struk</a></li><li><a href="#retention">Penyimpanan</a></li><li><a href="#delete-account">Hapus akun</a></li><li><a href="#contact">Kontak</a></li>
+    </ul></nav>
+    <section id="data" aria-labelledby="data-title">
+      <h2 id="data-title">1. Data yang diproses dan tujuannya</h2>
+      <ul>
+        <li><strong>Akun:</strong> alamat email, ID akun, nama, waktu pendaftaran, dan informasi profil yang diberikan saat login. Firebase Authentication digunakan untuk pendaftaran dan autentikasi melalui email/password atau Google.</li>
+        <li><strong>Catatan keuangan:</strong> tanggal, nominal, kategori, keterangan transaksi, utang/piutang, aset, transaksi berulang, dan target tabungan yang Anda masukkan. Data digunakan untuk pencatatan, rekap, serta sinkronisasi akun.</li>
+        <li><strong>Status akses dan pembayaran:</strong> paket, masa berlaku, referensi dan status pembayaran. Pada checkout web, penyedia pembayaran dapat memproses email, nominal, serta informasi yang Anda isikan pada halaman pembayaran.</li>
+        <li><strong>Aktivitas layanan:</strong> ID sesi, waktu penggunaan, nama aplikasi, dan kuota fitur dapat diproses untuk pengoperasian layanan. Situs utama menggunakan Google Analytics untuk analitik kunjungan; penggunaan analitik dapat berbeda pada halaman aplikasi.</li>
+        <li><strong>Permintaan bantuan:</strong> informasi yang Anda kirim saat menghubungi dukungan, termasuk permintaan terkait akun atau penghapusan data.</li>
+      </ul>
+      <p>Jangan memasukkan password, PIN bank, kode OTP, atau informasi pribadi pihak lain yang tidak diperlukan ke dalam catatan, percakapan AI, atau pesan dukungan.</p>
+    </section>
+    <section id="ai" aria-labelledby="ai-title">
+      <h2 id="ai-title">2. AI, foto struk, dan Telegram</h2>
+      <h3>Pertanyaan dan rencana keuangan AI</h3>
+      <p>Ketika Anda meminta jawaban atau rencana dari AI, pertanyaan dan data pendukung dikirim melalui Cloudflare ke Anthropic. Data pendukung dapat mencakup nama yang Anda isi, ringkasan pemasukan/pengeluaran, kategori, transaksi terbaru, aset, utang/piutang, serta target tabungan yang relevan dengan permintaan Anda.</p>
+      <p>Hasil AI bergantung pada data yang Anda masukkan dan dapat keliru. Hindari memasukkan informasi sensitif yang tidak diperlukan. Fitur AI tidak diperlukan untuk memasukkan transaksi secara manual.</p>
+      <h3>Foto struk di aplikasi</h3>
+      <p>Pembacaan foto struk melalui fitur OCR aplikasi web menggunakan Tesseract.js pada perangkat. Alur ini tidak mengunggah foto struk ke server BerUang. Teks dan transaksi yang kemudian Anda simpan dapat ikut disinkronkan sebagai catatan keuangan.</p>
+      <h3>Integrasi Telegram</h3>
+      <p>Jika Anda menghubungkan Telegram, layanan memproses pengenal chat, informasi penghubung akun, serta pesan/transaksi yang Anda kirim untuk menyediakan integrasi. Foto struk yang dikirim ke bot memiliki alur berbeda: foto diterima melalui Telegram dan dapat diteruskan melalui Cloudflare ke Anthropic untuk dibaca. Pemrosesan struk melalui bot tidak seluruhnya berlangsung pada perangkat.</p>
+    </section>
+    <section aria-labelledby="providers-title">
+      <h2 id="providers-title">3. Penyedia layanan</h2>
+      <ul>
+        <li><strong>Google Firebase:</strong> autentikasi, penyimpanan dan sinkronisasi data akun, serta aktivitas kehadiran aplikasi. <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">Privasi Firebase</a>.</li>
+        <li><strong>Cloudflare:</strong> pemrosesan permintaan, kuota, log AI, dan data terkait pembayaran/integrasi. <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Privasi Cloudflare</a>.</li>
+        <li><strong>Anthropic:</strong> pemrosesan permintaan AI dan foto struk melalui bot. <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer">Privasi Anthropic</a>.</li>
+        <li><strong>Xendit:</strong> pembayaran pada checkout web yang menggunakan layanan tersebut. <a href="https://www.xendit.co/en/privacy-policy/" target="_blank" rel="noopener noreferrer">Privasi Xendit</a>.</li>
+        <li><strong>Telegram:</strong> pesan dan berkas bila Anda menggunakan bot. <a href="https://telegram.org/privacy" target="_blank" rel="noopener noreferrer">Privasi Telegram</a>.</li>
+        <li><strong>Google Analytics:</strong> analitik pada situs yang memuat layanan ini. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privasi Google</a>.</li>
+      </ul>
+      <p>Aplikasi juga dapat memuat pustaka, font, dan berkas OCR dari penyedia hosting konten. Penyedia dapat memproses informasi koneksi untuk mengirimkan berkas tersebut. Kebijakan penyedia menjelaskan praktik mereka; pilihan fitur dan konfigurasi BerUang menentukan data yang dikirim oleh aplikasi.</p>
+    </section>
+    <section id="retention" aria-labelledby="retention-title">
+      <h2 id="retention-title">4. Penyimpanan dan retensi</h2>
+      <p>Salinan catatan disimpan pada penyimpanan lokal perangkat dan, setelah login serta sinkronisasi, pada Firebase. Sinkronisasi akun tidak dibatasi hanya untuk paket Pro. Koneksi diperlukan untuk memperbarui salinan cloud dan perangkat lain.</p>
+      <p>Keluar dari akun tidak otomatis menghapus salinan lokal; ini membantu mempertahankan catatan yang belum tersinkron. Pada perangkat bersama, jangan meninggalkan akun tetap masuk. Menghapus data aplikasi atau penyimpanan browser dapat menghapus catatan lokal yang belum diunggah.</p>
+      <p>Layanan AI BerUang saat ini memberi masa simpan 30 hari untuk log pertanyaan dan jawaban pada penyimpanan layanan BerUang. Catatan pembayaran minimum, seperti referensi invoice, status, nominal, dan waktu transaksi, dapat dipertahankan setelah penghapusan akun untuk rekonsiliasi, pencegahan penyalahgunaan, dan kewajiban pencatatan; alamat email dan kaitan langsung ke akun dihapus dari catatan tersebut. Masa simpan pihak lain, termasuk Firebase, Telegram, Anthropic, Xendit, cadangan, atau log teknis penyedia, mengikuti kebijakan dan kewajiban masing-masing.</p>
+      <p>Data akun dan catatan cloud tetap diperlukan selama akun digunakan. Saat meminta penghapusan, Anda dapat meminta penjelasan mengenai data yang dihapus dan data yang perlu dipertahankan, beserta alasannya. Menghapus catatan dari satu perangkat saja tidak sama dengan meminta penghapusan akun dan data layanan.</p>
+    </section>
+    <section id="delete-account" class="request" aria-labelledby="delete-title">
+      <h2 id="delete-title">5. Meminta penghapusan akun dan data</h2>
+      <p>Di aplikasi, buka menu akun lalu pilih <strong>Hapus Akun BerUang</strong>. Demi keamanan, Anda mungkin diminta logout dan login kembali. Setelah konfirmasi diterima, permintaan disimpan dan pemrosesan dapat berlanjut di latar belakang.</p>
+      <p>Anda juga dapat meminta penghapusan dari luar aplikasi dengan mengirim email dari alamat yang terdaftar ke <a href="mailto:info@berstock.id?subject=Permintaan%20hapus%20akun%20BerUang">info@berstock.id</a> dengan subjek <strong>Permintaan hapus akun BerUang</strong>. Jangan kirim password, kode OTP, atau foto identitas melalui permintaan awal.</p>
+      <p>Penghapusan mencakup profil BerUang, catatan keuangan cloud, data integrasi Telegram, dan log AI yang dapat dikaitkan ke akun. Bila login Firebase yang sama dipakai produk Berstock lain, identitas login bersama dan data produk lain dipertahankan; akun BerUang tetap dinonaktifkan untuk penulisan baru. Catatan pembayaran minimum dapat dipertahankan sebagaimana dijelaskan pada bagian retensi.</p>
+      <p>Anda dapat meminta bantuan dari halaman ini tanpa menginstal ulang aplikasi. Sebelum penghapusan, simpan catatan yang masih diperlukan. Salinan yang sudah Anda ekspor atau simpan sendiri berada pada perangkat atau lokasi pilihan Anda.</p>
+      <p>Permintaan penghapusan akun tidak dengan sendirinya membatalkan langganan yang ditagih penyedia pembayaran. Periksa dan kelola langganan melalui tempat Anda membelinya; hubungi dukungan bila memerlukan bantuan.</p>
+    </section>
+    <section aria-labelledby="choices-title">
+      <h2 id="choices-title">6. Pilihan Anda</h2>
+      <p>Anda dapat mengubah atau menghapus catatan melalui fitur yang tersedia, mengelola izin kamera/foto di perangkat, dan memilih untuk tidak menggunakan AI atau Telegram. Untuk mengakses, memperbaiki, atau meminta penghapusan data yang tidak dapat Anda kelola sendiri, gunakan kontak di bawah.</p>
+    </section>
+    <section aria-labelledby="children-title">
+      <h2 id="children-title">7. Pengguna anak</h2>
+      <p>BerUang tidak dirancang untuk anak di bawah 13 tahun. Jika Anda adalah orang tua atau wali dan mengetahui adanya data anak yang diberikan ke layanan, hubungi kami untuk meminta peninjauan dan penghapusan.</p>
+    </section>
+    <section aria-labelledby="changes-title">
+      <h2 id="changes-title">8. Perubahan kebijakan</h2>
+      <p>Versi terbaru tersedia pada halaman ini dengan tanggal pembaruan. Perubahan fitur atau penyedia layanan akan disertai pembaruan penjelasan pemrosesan data yang relevan.</p>
+    </section>
+    <section id="contact" aria-labelledby="contact-title">
+      <h2 id="contact-title">9. Kontak BerUang</h2>
+      <p>BerUang — Berstock.id<br />Pengelola: Hendry Phang<br />Email: <a href="mailto:info@berstock.id">info@berstock.id</a></p>
+    </section>
+    <footer><a href="app.html">Kembali ke BerUang</a></footer>
+  </main>
 </body>
 </html>

@@ -495,6 +495,16 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
   padding: 20px; overflow-y: auto;
 }
 .login-screen[hidden] { display: none; }
+/* Keep account data out of the visual and accessibility tree until the
+   authenticated account has finished loading its own scoped state. */
+body.app-locked > .topbar,
+body.app-locked > main,
+body.app-locked > .bottom-nav,
+body.app-locked > .footer,
+body.app-locked > .ai-fab,
+body.app-locked > .ai-chat-overlay,
+body.app-locked > .ai-chat-panel,
+body.app-locked > .ai-paywall-modal { display: none !important; }
 .login-card {
   background: #fff; border-radius: 22px;
   padding: 30px 26px; max-width: 400px; width: 100%;

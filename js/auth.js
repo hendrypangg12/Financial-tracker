@@ -2,26 +2,42 @@
 let currentUser = null;
 let currentProfile = null;
 let authReady = false;
+let currentClaims = {};
+let authGeneration = 0;
 
 // Listener utama: panggil saat auth state berubah
 function onAuthStateChanged(callback) {
   if (!fbAuth) { callback(null); return () => {}; }
   return fbAuth.onAuthStateChanged(async (user) => {
+    const generation = ++authGeneration;
     currentUser = user;
+    currentProfile = null;
+    currentClaims = {};
     if (user) {
-      currentProfile = await ensureUserProfile(user);
-    } else {
-      currentProfile = null;
+      try {
+        const [profile, token] = await Promise.all([ensureUserProfile(user), user.getIdTokenResult()]);
+        if (generation !== authGeneration) return;
+        currentProfile = profile;
+        currentClaims = token.claims || {};
+      } catch (error) {
+        if (generation !== authGeneration) return;
+        console.warn('Profil belum dapat diperbarui:', error.code || 'network-error');
+      }
     }
     authReady = true;
-    callback(user, currentProfile);
+    try { await callback(user, currentProfile); }
+    catch (error) {
+      console.warn('Aplikasi belum dapat dimuat:', error.code || error.message);
+      if (typeof showScreen === 'function') showScreen('login');
+      if (typeof showAuthError === 'function') showAuthError('Akun belum dapat dimuat. Periksa koneksi lalu muat ulang. Data yang tersimpan tidak dihapus.');
+    }
   });
 }
 
 // Durasi & harga per paket (single source of truth)
 const PACKAGE_CONFIG = {
   trial:   { days: 7,   priceIdr: 10000,  label: 'Coba 7 Hari',  description: 'Akses penuh Pro 7 hari' },
-  monthly: { days: 30,  priceIdr: 50000,  label: 'Bulanan',      description: 'Pro auto-renewal tiap bulan' },
+  monthly: { days: 30,  priceIdr: 50000,  label: 'Bulanan',      description: 'Akses Pro selama 30 hari' },
   annual:  { days: 365, priceIdr: 299000, label: 'Tahunan',      description: 'Pro setahun, hemat 50%' },
 };
 
@@ -51,38 +67,31 @@ async function ensureUserProfile(user) {
     plan: 'pending',           // belum bayar → tampil paywall
     expiresAt: now.toISOString(), // expired sejak detik pertama
   };
-  await ref.set(profile);
-  return profile;
+  // Re-check inside the transaction: another device may have created (or paid
+  // for) the account while this device was opening it for the first time.
+  return fbDb.runTransaction(async tx => {
+    const existing = await tx.get(ref);
+    if (existing.exists) return existing.data();
+    tx.set(ref, profile);
+    return profile;
+  });
 }
 
 // Activate subscription: panggil setelah payment success
 // Argumen: profile (current), paket ('trial'|'monthly'|'annual'), opts={extendFromNow:true,paymentRef:''}
 async function activateSubscription(uid, paket, opts = {}) {
-  if (!fbDb || !uid) throw new Error('Firebase belum siap atau uid kosong');
-  const cfg = PACKAGE_CONFIG[paket];
-  if (!cfg) throw new Error(`Paket tidak dikenal: ${paket}`);
+  // Compatibility guard for stale callers. Entitlement changes belong to the
+  // trusted payment backend; a browser may only refresh its own profile.
+  throw new Error('Aktivasi langganan hanya dapat dilakukan oleh server pembayaran.');
+}
 
-  const ref = fbDb.collection('users').doc(uid).collection('meta').doc('profile');
-  if (!opts.paymentRef) throw new Error('Referensi pembayaran wajib diisi.');
-  const receipt = fbDb.collection('users').doc(uid).collection('paymentReceipts').doc(opts.paymentRef);
-  return fbDb.runTransaction(async (tx) => {
-    const snap = await tx.get(ref);
-    const applied = await tx.get(receipt);
-    const profile = snap.exists ? snap.data() : {};
-    if (applied.exists) return profile;
-    const now = new Date();
-    const expiry = new Date(profile.expiresAt || 0);
-    const from = expiry > now && opts.extendFromNow !== true ? expiry : now;
-    const update = {
-      plan: profile.plan === 'lifetime' ? 'lifetime' : paket,
-      expiresAt: computeExpiry(paket, from).toISOString(),
-      lastPaymentAt: now.toISOString(), lastPaymentPaket: paket,
-      lastPaymentAmount: cfg.priceIdr, lastPaymentRef: opts.paymentRef,
-    };
-    tx.set(ref, update, { merge: true });
-    tx.set(receipt, { paket, appliedAt: now.toISOString() });
-    return { ...profile, ...update };
-  });
+async function refreshUserProfile() {
+  const owner = currentUser?.uid;
+  if (!fbDb || !owner) throw new Error('Silakan login kembali.');
+  const snap = await fbDb.collection('users').doc(owner).collection('meta').doc('profile').get({ source: 'server' });
+  if (currentUser?.uid !== owner) throw new Error('Akun telah berubah.');
+  currentProfile = snap.exists ? snap.data() : null;
+  return currentProfile;
 }
 
 // Cek apakah langganan masih aktif
@@ -94,7 +103,7 @@ function isSubscriptionActive(profile) {
 // ============ FREEMIUM: Cek user punya akses Pro ============
 // Pricing model:
 //   trial    : 7 hari paid entry (Rp 10rb)
-//   monthly  : Rp 50rb/bulan auto-renewal
+//   monthly  : akses 30 hari; renewal otomatis belum diimplementasikan
 //   annual   : Rp 299rb/tahun (hemat 50%)
 //   lifetime : LEGACY only — existing buyer sebelum pricing change masih dihormati
 //   pro      : LEGACY admin/test

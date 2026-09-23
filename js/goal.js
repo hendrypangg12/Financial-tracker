@@ -284,7 +284,7 @@ function renderGoals() {
       const freeUsedThisMonth = parseInt(localStorage.getItem(freeQuotaKey) || '0', 10);
       if (!userIsPro && freeUsedThisMonth >= 1) {
         if (typeof showToast === 'function') {
-          showToast('Free quota habis bulan ini (1 plan/bulan). Upgrade Pro untuk unlimited.', 'error');
+          showToast('Kuota gratis bulan ini sudah dipakai. Paket Pro tetap mengikuti batas penggunaan harian.', 'error');
         }
         if (typeof showScreen === 'function') showScreen('paywall');
         return;

@@ -189,13 +189,8 @@ export async function handleAdvise(request, env) {
 
   if (!pro) await env.BOT_DATA.put(freeKey, "1", { expirationTtl: 32 * 86400 });
 
-  // Save chat history (opsional, buat audit & improvement)
-  const historyKey = `advise_log:${user.uid}:${Date.now()}`;
-  await env.BOT_DATA.put(
-    historyKey,
-    JSON.stringify({ question, reply, timestamp: new Date().toISOString() }),
-    { expirationTtl: 2592000 } // 30 hari
-  );
+  // Financial questions and answers are not retained for optional analytics.
+  // Historical advise_log records retain their old 30-day TTL until cleanup.
 
   return jsonResponse({
     reply,

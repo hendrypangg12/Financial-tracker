@@ -4,7 +4,7 @@ let adminFilter = 'all';
 let adminSearch = '';
 
 function isAdmin() {
-  return currentUser && currentUser.email && ADMIN_EMAILS.includes(currentUser.email.toLowerCase());
+  return !!(currentUser && typeof currentClaims !== 'undefined' && currentClaims.admin === true);
 }
 
 // Ambil semua user dari Firestore (collectionGroup pada subcollection 'meta')
