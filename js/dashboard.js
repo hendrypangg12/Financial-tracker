@@ -110,10 +110,11 @@ function renderDashboard() {
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');
-  const balance = income - expense;
+  const monthlyNet = income - expense;
+  const balance = balanceThrough(m, y);
   const incomePrev = sumBy(trxPrev, 'pemasukan');
   const expensePrev = sumBy(trxPrev, 'pengeluaran');
-  const balancePrev = incomePrev - expensePrev;
+  const balancePrev = balanceThrough(prev.m, prev.y);
 
   setKPIAnimated('kpi-income', income, formatRupiah, pctDelta(income, incomePrev), 'income');
   setKPIAnimated('kpi-expense', expense, formatRupiah, pctDelta(expense, expensePrev), 'expense');
@@ -121,7 +122,7 @@ function renderDashboard() {
   setKPIAnimated('kpi-count', trx.length, (v) => String(Math.round(v)), pctDelta(trx.length, trxPrev.length), 'income');
 
   renderDailyChart(trx, m, y);
-  renderMiniReports(trx, trxPrev, income, expense, balance);
+  renderMiniReports(trx, trxPrev, income, expense, monthlyNet);
   renderTopList('top-expense', trx.filter(t => t.jenis === 'pengeluaran'));
   renderTopList('top-income', trx.filter(t => t.jenis === 'pemasukan'));
   renderCategoryPie('chart-expense-cat', 'legend-expense-cat', trx.filter(t => t.jenis === 'pengeluaran'));
@@ -135,6 +136,18 @@ function renderDashboard() {
 
 function sumBy(trx, jenis) {
   return trx.filter(t => t.jenis === jenis).reduce((s, t) => s + (+t.jumlah || 0), 0);
+}
+
+// Saldo adalah posisi kas berjalan, bukan hanya surplus/defisit bulan terpilih.
+// Semua transaksi sampai akhir bulan dipakai supaya saldo bulan lalu terbawa.
+function balanceThrough(month, year) {
+  const cutoff = new Date(year, month + 1, 1).getTime();
+  return (state.transactions || []).reduce((total, transaction) => {
+    const date = parseISO(transaction.tanggal);
+    if (!(date instanceof Date) || Number.isNaN(date.getTime()) || date.getTime() >= cutoff) return total;
+    const amount = Number(transaction.jumlah) || 0;
+    return total + (transaction.jenis === 'pemasukan' ? amount : transaction.jenis === 'pengeluaran' ? -amount : 0);
+  }, 0);
 }
 
 function setKPI(id, text, pct, goodDir) {
@@ -397,7 +410,7 @@ function renderSixMonth(m, y) {
     const trx = getTransactionsFor(mm, yy);
     const inc = sumBy(trx, 'pemasukan');
     const exp = sumBy(trx, 'pengeluaran');
-    rows.push({ label: `${MONTHS_SHORT[mm]} ${yy}`, inc, exp, bal: inc - exp, count: trx.length });
+    rows.push({ label: `${MONTHS_SHORT[mm]} ${yy}`, inc, exp, bal: balanceThrough(mm, yy), count: trx.length });
   }
   const tbody = document.getElementById('six-month-body');
   tbody.innerHTML = rows.map(r => `<tr>

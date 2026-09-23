@@ -352,11 +352,17 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .inline-edit input { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); width: 140px; }
 
 /* SIX MONTH TABLE */
-.six-month-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.six-month-layout { display: grid; grid-template-columns: 1fr; gap: 18px; min-width: 0; }
+.six-month-table-wrap { width: 100%; min-width: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.six-month-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13px; }
 .six-month-table th, .six-month-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: right; }
 .six-month-table th:first-child, .six-month-table td:first-child { text-align: left; }
 .six-month-table thead th { background: #f8fafc; font-weight: 700; font-size: 12px; color: var(--ink-soft); letter-spacing: .3px; }
 .six-month-table tfoot td { font-weight: 700; background: #f0f4ff; }
+@media (max-width: 768px) {
+  .six-month-table { min-width: 620px; }
+  .six-month-layout .chart-box-lg { height: 240px; }
+}
 
 /* TRANSAKSI */
 .trx-table, .rekap-table { width: 100%; border-collapse: collapse; font-size: 13px; }

@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=47" />
+  <link rel="stylesheet" href="styles.css?v=48" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -308,7 +308,7 @@
         <div class="card card-balance">
           <div class="card-icon">🏦</div>
           <div class="card-body">
-            <div class="card-label">SISA SALDO</div>
+            <div class="card-label">SISA SALDO AKUMULATIF</div>
             <div class="card-value" id="kpi-balance">Rp 0</div>
             <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
           </div>
@@ -446,7 +446,8 @@
 
       <div class="panel">
         <div class="panel-head"><h3>Keuangan 6 Bulan Terakhir</h3></div>
-        <div class="grid-2">
+        <div class="six-month-layout">
+          <div class="six-month-table-wrap">
           <table class="six-month-table">
             <thead>
               <tr>
@@ -456,6 +457,7 @@
             <tbody id="six-month-body"></tbody>
             <tfoot id="six-month-foot"></tfoot>
           </table>
+          </div>
           <div class="chart-box chart-box-lg"><canvas id="chart-sixmonth"></canvas></div>
         </div>
       </div>
@@ -980,7 +982,7 @@ TOTAL            86.500"></textarea>
   <script src="js/parser.js?v=20"></script>
   <script src="js/sync.js?v=25"></script>
   <script src="js/auth.js?v=24"></script>
-  <script src="js/dashboard.js?v=28"></script>
+  <script src="js/dashboard.js?v=29"></script>
   <script src="js/anomaly.js?v=1"></script>
   <script src="js/pages.js?v=21"></script>
   <script src="js/admin.js?v=21"></script>
