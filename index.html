@@ -292,6 +292,24 @@ footer a { color: rgba(255,255,255,.65); text-decoration: none; }
 footer a:hover { color: var(--gold-bright); }
 footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.1); }
 @media (max-width: 640px) { footer .foot-grid { grid-template-columns: 1fr; } }
+
+/* SUITE SHOWCASE */
+.suite-showcase{position:relative;overflow:hidden;padding:82px 0;background:linear-gradient(145deg,#fffaf2 0%,#f0e5d2 100%);border-bottom:1px solid var(--line)}
+.suite-showcase::before{content:"";position:absolute;width:420px;height:420px;right:-160px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 68%);animation:suite-glow 7s ease-in-out infinite alternate}
+.suite-showcase::after{content:"";position:absolute;width:300px;height:300px;left:-180px;bottom:-170px;border-radius:50%;border:1px solid rgba(139,90,43,.13);box-shadow:0 0 0 35px rgba(139,90,43,.04),0 0 0 70px rgba(139,90,43,.025)}
+.suite-showcase .container{position:relative;z-index:1}.suite-kicker{color:var(--brown);font-size:11px;font-weight:900;letter-spacing:1.6px;margin-bottom:12px}
+.suite-heading{display:flex;align-items:end;justify-content:space-between;gap:28px;margin-bottom:30px}.suite-heading h2{text-align:left;margin-bottom:9px}.suite-heading p{color:var(--ink-soft);max-width:680px;font-size:15px}.suite-all-link{color:var(--brown-dark);font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;padding-bottom:4px;border-bottom:1px solid rgba(111,69,24,.35)}
+.suite-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.suite-card{position:relative;min-height:300px;display:flex;flex-direction:column;align-items:flex-start;padding:24px;overflow:hidden;border:1px solid rgba(139,90,43,.14);border-radius:22px;background:rgba(255,255,255,.82);color:var(--ink);text-decoration:none;box-shadow:0 14px 35px rgba(65,43,35,.06);transition:transform .25s,border-color .25s,box-shadow .25s}.suite-card:hover{transform:translateY(-7px);border-color:rgba(201,163,82,.65);box-shadow:0 22px 50px rgba(65,43,35,.13)}
+.suite-card--featured{background:linear-gradient(155deg,#fffdf9 15%,#f5e4c5 100%)}.suite-card--neural{background:linear-gradient(155deg,#171028,#2d1950);color:#fff;border-color:rgba(168,85,247,.28)}.suite-card--neural p{color:rgba(255,255,255,.7)}
+.suite-icon{display:grid;place-items:center;width:58px;height:58px;margin-bottom:28px;border-radius:17px;background:#f3e8d8;font-size:29px;box-shadow:0 8px 20px rgba(65,43,35,.1)}.suite-icon img{width:58px;height:58px;border-radius:17px}.suite-card--neural .suite-icon{background:rgba(168,85,247,.16);color:#d8b4fe;box-shadow:0 0 30px rgba(168,85,247,.22);animation:neural-pulse 2.8s ease-in-out infinite}
+.suite-status{display:inline-flex;padding:5px 8px;margin-bottom:11px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.45px;text-transform:uppercase}.suite-status--live{color:#127149;background:#e5f7ed}.suite-status--trial{color:#8a6214;background:#fff0c6}.suite-status--info{color:#596170;background:#e9edf2}.suite-status--demo{color:#d8b4fe;background:rgba(168,85,247,.16)}
+.suite-card h3{font-size:21px;margin-bottom:8px}.suite-card p{color:var(--ink-soft);font-size:13px;line-height:1.6;margin-bottom:22px}.suite-action{margin-top:auto;font-size:12px;font-weight:800}.suite-action b{display:inline-block;margin-left:4px;transition:transform .2s}.suite-card:hover .suite-action b{transform:translateX(4px)}
+.suite-orbit{position:absolute;width:120px;height:120px;right:-45px;top:-45px;border:1px solid rgba(201,163,82,.35);border-radius:50%;animation:suite-spin 11s linear infinite}.suite-orbit::after{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold-bright);top:53px;left:-4px;box-shadow:0 0 13px rgba(212,175,55,.8)}.suite-disclaimer{margin-top:18px;color:var(--ink-soft);font-size:11px}
+@keyframes suite-spin{to{transform:rotate(360deg)}}@keyframes neural-pulse{50%{transform:scale(1.06);box-shadow:0 0 42px rgba(168,85,247,.4)}}@keyframes suite-glow{to{transform:translate(-25px,22px) scale(1.1)}}
+@media(max-width:768px){.suite-showcase{padding:58px 0}.suite-heading{display:block}.suite-all-link{display:inline-block;margin-top:14px}.suite-grid{grid-template-columns:1fr 1fr}.suite-card{min-height:270px;padding:20px}}
+@media(max-width:480px){nav .suite-all-link{display:none}.suite-grid{grid-template-columns:1fr}.suite-card{min-height:235px}.suite-icon{margin-bottom:20px}}
+@media(prefers-reduced-motion:reduce){.suite-showcase::before,.suite-orbit,.suite-card--neural .suite-icon{animation:none!important}.suite-card,.suite-action b{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -348,6 +366,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       <img src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <span>BerUang</span>
     </a>
+    <a href="#coba-aplikasi" class="suite-all-link" style="margin-left:auto;margin-right:8px">Semua aplikasi</a>
     <a href="app.html" class="nav-cta">Buka App</a>
   </div>
 </nav>
@@ -434,6 +453,36 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     </div>
   </div>
 </header>
+
+<!-- ============ COBA EKOSISTEM ============ -->
+<section class="suite-showcase" id="coba-aplikasi">
+  <div class="container">
+    <div class="suite-kicker">SATU EKOSISTEM · PILIH SESUAI KEBUTUHAN</div>
+    <div class="suite-heading">
+      <div>
+        <h2>Coba Langsung dari <span class="grad">Berstock.id</span></h2>
+        <p>Mulai dari keuangan pribadi sampai operasional bisnis. Setiap kartu menjelaskan status produknya supaya kamu tahu mana aplikasi aktif dan mana demo.</p>
+      </div>
+      <a class="suite-all-link" href="bersatu.html">Lihat ekosistem lengkap →</a>
+    </div>
+    <div class="suite-grid">
+      <a class="suite-card suite-card--featured" href="app.html">
+        <span class="suite-orbit" aria-hidden="true"></span><span class="suite-icon"><img src="assets/icons/beruang-wallet-192.png" alt="" /></span>
+        <span class="suite-status suite-status--live">Aplikasi aktif</span><h3>BerUang</h3><p>Catat pemasukan dan pengeluaran, lihat dashboard, lalu akses data yang sama saat masuk dengan akunmu.</p><span class="suite-action">Buka BerUang <b>→</b></span>
+      </a>
+      <a class="suite-card" href="tokountung/app.html">
+        <span class="suite-icon">🏪</span><span class="suite-status suite-status--trial">Trial 3 hari</span><h3>BerBisnis</h3><p>Kasir, stok, pelanggan, piutang, laporan, dan profit untuk operasional UMKM.</p><span class="suite-action">Coba BerBisnis <b>→</b></span>
+      </a>
+      <a class="suite-card" href="landing-berstock.html">
+        <span class="suite-icon">🤖</span><span class="suite-status suite-status--info">Info produk</span><h3>Berstock AI</h3><p>Kenali konsep asisten stok dan laporan bisnis melalui Telegram sebelum meminta aktivasi.</p><span class="suite-action">Lihat Berstock AI <b>→</b></span>
+      </a>
+      <a class="suite-card suite-card--neural" href="bersatu-demo.html">
+        <span class="suite-icon">✦</span><span class="suite-status suite-status--demo">Demo interaktif</span><h3>BerSatu</h3><p>Jelajahi visual command center dan peran enam agen bisnis dalam satu demo.</p><span class="suite-action">Jalankan demo <b>→</b></span>
+      </a>
+    </div>
+    <p class="suite-disclaimer">Demo interaktif menunjukkan konsep produk dan tidak menjalankan transaksi atau keputusan bisnis sungguhan.</p>
+  </div>
+</section>
 
 <!-- ============ AI HIGHLIGHT (DARK) ============ -->
 <section class="section ai-section">
@@ -674,10 +723,10 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
           Halo, gue <strong>Hendry</strong> — solo developer di Indonesia. BerUang gue bangun karena lelah liat aplikasi keuangan yang ribet, full Bahasa Inggris, atau dipenuhin ads.
         </p>
         <p>
-          BerUang dirancang dari nol untuk <strong>orang Indonesia</strong>: input pakai bahasa sehari-hari, harga fair (coba dulu Rp 10rb, lanjut bulanan/tahunan kalo cocok), gak nyimpen data sensitif di server pihak ke-3.
+          BerUang dirancang dari nol untuk <strong>orang Indonesia</strong>: input pakai bahasa sehari-hari, harga transparan, dan data akun disinkronkan melalui layanan cloud yang dijelaskan di kebijakan privasi.
         </p>
         <p>
-          Setiap input feedback tester gue baca personal. Setiap bug gue fix sendiri (sw v42 dan terus bumping). Setiap fitur baru — termasuk reminder tagihan via Telegram yang baru kemarin di-launch — datang dari obrolan langsung sama user.
+          Setiap masukan tester gue baca sendiri dan dipakai untuk menentukan perbaikan berikutnya. Fokus pengembangan saat ini adalah sinkronisasi akun, pengalaman mobile, dan kesiapan rilis Android.
         </p>
         <div class="founder-links">
           <a href="https://instagram.com/hendrypangg" target="_blank" rel="noopener">📷 IG @hendrypangg</a>
@@ -802,6 +851,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     if (finalBadge) finalBadge.addEventListener('click', trigger);
   })();
 </script>
+<script src="js/suite-launcher.js?v=1"></script>
 
 </body>
 </html>
