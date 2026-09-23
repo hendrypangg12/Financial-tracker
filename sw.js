@@ -1,5 +1,5 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v46';
+const CACHE_VERSION = 'beruang-v47';
 const CORE = [
   './',
   './index.html',
@@ -7,9 +7,8 @@ const CORE = [
   './landing.html',
   './styles.css?v=41',
   './manifest.json',
-  './assets/logo-berbisnis.png?v=3',
-  './assets/logo-beruang.png',
-  './assets/mascot-beruang.png',
+  './assets/icons/beruang-wallet-192.png',
+  './assets/icons/beruang-wallet-512.png',
   './js/data.js?v=20',
   './js/utils.js?v=21',
   './js/firebase-config.js?v=23',
@@ -24,10 +23,10 @@ const CORE = [
   './js/app.js?v=47',
   './js/goal.js?v=2',
   './js/hutang.js?v=2',
-  './js/ai-advisor.js?v=9',
+  './js/ai-advisor.js?v=10',
   './js/recurring.js?v=1',
   './js/telegram-link.js?v=5',
-  './js/onboarding.js?v=6',
+  './js/onboarding.js?v=7',
 ];
 
 self.addEventListener('install', (event) => {
