@@ -1,4 +1,3 @@
-import { createHash } from './web-crypto.js';
 import { requireUser, HttpError } from './auth.js';
 import { firestoreAdmin, documentId, isContention } from './firebase-admin.js';
 import { scopedServiceToken } from './service-token.js';
