@@ -13,7 +13,7 @@ await mkdir(out, { recursive: true });
 
 // Presence uses an anonymous Realtime Database identifier that cannot be tied
 // to an account-deletion request. It is intentionally absent from the store build.
-const scripts = ['data','utils','firebase-config','storage','parser','sync','auth','dashboard','anomaly','pages','hutang','goal','ai-advisor','recurring','telegram-link','onboarding','app'];
+const scripts = ['data','utils','firebase-config','storage','parser','sync','auth','dashboard','anomaly','pages','reports','hutang','goal','ai-advisor','recurring','telegram-link','onboarding','app'];
 const manifest = [];
 async function put(relative, data) {
   const target = path.join(out, relative);
