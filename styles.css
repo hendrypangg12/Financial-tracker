@@ -137,7 +137,9 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .card-body { min-width: 0; }
 .card-label { font-size: 10px; font-weight: 700; letter-spacing: .4px; color: var(--ink-soft); text-transform: uppercase; }
 .card-value { font-size: 17px; font-weight: 800; margin: 4px 0 2px; letter-spacing: -.3px; color: var(--ink); }
-.card-income .card-value, .card-expense .card-value, .card-count .card-value { color: var(--ink); }
+.card-income .card-value { color: var(--income); }
+.card-expense .card-value { color: var(--expense); }
+.card-count .card-value { color: var(--ink); }
 .card-delta { font-size: 10px; color: var(--ink-soft); font-weight: 600; }
 .card-delta.up { color: #1f7a4d; }
 .card-delta.down { color: #c0392b; }
@@ -152,6 +154,29 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .card-balance .card-label { color: #cdbb95; font-size: 11px; letter-spacing: 1px; }
 .card-balance .card-value { color: #fff; font-size: 30px; margin: 6px 0 2px; }
 .card-balance .card-delta { color: #b9ad97; font-size: 12px; }
+
+.money-income { color: var(--income) !important; }
+.money-expense { color: var(--expense) !important; }
+.money-negative::before { content: '\2212'; margin-right: 2px; }
+
+.rekap-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.report-modal-card { width: min(560px, calc(100vw - 28px)); }
+.report-help, .report-note { color: var(--ink-soft); line-height: 1.5; }
+.report-scope { display: grid; gap: 8px; margin: 14px 0; }
+.report-scope label { display: flex; align-items: center; gap: 8px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.report-preview { background: #f8f5ef; border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.report-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.report-preview-item { background: #fff; border-radius: 9px; padding: 10px; border: 1px solid var(--line); }
+.report-preview-item small { display: block; color: var(--ink-soft); margin-bottom: 4px; }
+.report-preview-item b { font-size: 15px; }
+.report-format-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 10px; }
+
+@media (max-width: 600px) {
+  .rekap-actions { width: 100%; justify-content: stretch; }
+  .rekap-actions .page-filters { flex: 1; }
+  #btn-share-report { width: 100%; }
+  .report-preview-grid, .report-format-actions { grid-template-columns: 1fr; }
+}
 
 /* PANELS — premium card style */
 .panel {

@@ -728,10 +728,13 @@ TOTAL            86.500"></textarea>
     <section id="tab-rekap" class="tab-panel">
       <div class="page-head">
         <h1>Rekap Keuangan</h1>
-        <div class="page-filters">
-          <button class="seg active" data-period="harian">Harian</button>
-          <button class="seg" data-period="mingguan">Mingguan</button>
-          <button class="seg" data-period="bulanan">Bulanan</button>
+        <div class="rekap-actions">
+          <div class="page-filters">
+            <button class="seg active" data-period="harian">Harian</button>
+            <button class="seg" data-period="mingguan">Mingguan</button>
+            <button class="seg" data-period="bulanan">Bulanan</button>
+          </div>
+          <button class="btn btn-primary" id="btn-share-report">Bagikan Laporan</button>
         </div>
       </div>
       <div class="panel">
@@ -971,6 +974,25 @@ TOTAL            86.500"></textarea>
     </div>
   </div>
 
+  <div class="modal" id="modal-report" hidden>
+    <div class="modal-card report-modal-card">
+      <button type="button" id="report-modal-close" class="modal-close" aria-label="Tutup">&times;</button>
+      <h3>Bagikan Laporan Keuangan</h3>
+      <p class="report-help">Pilih cakupan laporan. Nominal pengeluaran ditampilkan merah dengan tanda minus.</p>
+      <div class="report-scope">
+        <label><input type="radio" name="report-scope" value="month" checked> Bulan dipilih</label>
+        <label><input type="radio" name="report-scope" value="all"> Akumulasi semua data</label>
+      </div>
+      <div id="report-preview" class="report-preview"></div>
+      <div class="report-format-actions">
+        <button type="button" class="btn btn-primary" id="report-pdf">PDF</button>
+        <button type="button" class="btn btn-ghost" id="report-image">Gambar</button>
+        <button type="button" class="btn btn-ghost" id="report-excel">Excel</button>
+      </div>
+      <small class="report-note">PDF membuka dialog cetak. Pilih “Simpan sebagai PDF”. Gambar berisi ringkasan dan maksimal 20 transaksi; Excel dan PDF berisi seluruh detail.</small>
+    </div>
+  </div>
+
   <div id="toast" class="toast" hidden></div>
 
   <script src="js/data.js?v=20"></script>
@@ -984,7 +1006,8 @@ TOTAL            86.500"></textarea>
   <script src="js/auth.js?v=25"></script>
   <script src="js/dashboard.js?v=29"></script>
   <script src="js/anomaly.js?v=1"></script>
-  <script src="js/pages.js?v=21"></script>
+  <script src="js/pages.js?v=22"></script>
+  <script src="js/reports.js?v=1"></script>
   <script src="js/admin.js?v=21"></script>
   <script src="js/hutang.js?v=2"></script>
   <script src="js/goal.js?v=2"></script>
@@ -992,7 +1015,7 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=7"></script>
-  <script src="js/app.js?v=48"></script>
+  <script src="js/app.js?v=49"></script>
 <script src="js/suite-launcher.js?v=1"></script>
 </body>
 </html>
