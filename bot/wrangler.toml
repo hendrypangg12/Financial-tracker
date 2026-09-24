@@ -26,6 +26,7 @@ DEFAULT_TZ = "Asia/Jakarta"
 # - TELEGRAM_WEBHOOK_SECRET
 # - ADMIN_KEY  (untuk endpoint provisioning tenant baru)
 # - FIREBASE_SERVICE_ACCOUNT_JSON (Google service account JSON; never commit it)
+# - GOOGLE_PLAY_SERVICE_ACCOUNT_JSON (Android Publisher service account JSON; never commit it)
 # - XENDIT_SECRET_KEY
 # - XENDIT_WEBHOOK_TOKEN
 
