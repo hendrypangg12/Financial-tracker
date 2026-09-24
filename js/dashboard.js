@@ -21,9 +21,11 @@ function renderDashboard() {
   const balancePrev = incomePrev - expensePrev;
 
   setKPIAnimated('kpi-income', income, formatRupiah, pctDelta(income, incomePrev), 'income');
-  setKPIAnimated('kpi-expense', expense, formatRupiah, pctDelta(expense, expensePrev), 'expense');
+  setKPIAnimated('kpi-expense', expense, (v) => `\u2212${formatRupiah(v)}`, pctDelta(expense, expensePrev), 'expense');
   setKPIAnimated('kpi-balance', balance, formatRupiah, pctDelta(balance, balancePrev), 'income');
   setKPIAnimated('kpi-count', trx.length, (v) => String(Math.round(v)), pctDelta(trx.length, trxPrev.length), 'income');
+  const balanceEl = document.getElementById('kpi-balance');
+  if (balanceEl) balanceEl.style.color = balance >= 0 ? '#75d89a' : '#ff8278';
 
   renderDailyChart(trx, m, y);
   renderMiniReports(trx, trxPrev, income, expense, balance);
@@ -121,7 +123,7 @@ function renderMiniReports(trx, trxPrev, income, expense, balance) {
   const topExp = Object.entries(groupBy(trx.filter(t => t.jenis === 'pengeluaran'), 'subKategori'))
     .map(([k, v]) => [k, v.reduce((s, t) => s + +t.jumlah, 0)])
     .sort((a, b) => b[1] - a[1])[0];
-  if (topExp) items.push({ type: 'info', text: `🛒 Pengeluaran terbesar: ${topExp[0]} — ${formatRupiah(topExp[1])}.` });
+  if (topExp) items.push({ type: 'info', text: `🛒 Pengeluaran terbesar: ${topExp[0]} — −${formatRupiah(topExp[1])}.` });
 
   items.push({ type: 'info', text: `📊 Total transaksi: ${trx.length} (pemasukan ${trx.filter(t=>t.jenis==='pemasukan').length}, pengeluaran ${trx.filter(t=>t.jenis==='pengeluaran').length}).` });
 
@@ -139,8 +141,9 @@ function renderTopList(elId, trx) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
   const ol = document.getElementById(elId);
+  const expenseList = elId === 'top-expense';
   ol.innerHTML = rows.length
-    ? rows.map(([k, v]) => `<li><span class="rank-name">${k}</span><span class="rank-val">${formatRupiah(v)}</span></li>`).join('')
+    ? rows.map(([k, v]) => `<li><span class="rank-name">${k}</span><span class="rank-val ${expenseList ? 'money-expense' : 'money-income'}">${expenseList ? '−' : ''}${formatRupiah(v)}</span></li>`).join('')
     : '<li style="list-style:none;color:#94a3b8">Belum ada data</li>';
 }
 
@@ -157,7 +160,11 @@ function renderCategoryPie(canvasId, legendId, trx) {
   // Update total di tengah donut kalau ada elemen-nya
   const pieTotalId = canvasId === 'chart-expense-cat' ? 'pie-total-expense' : 'pie-total-income';
   const pieTotalEl = document.getElementById(pieTotalId);
-  if (pieTotalEl) pieTotalEl.textContent = formatShort(total);
+  if (pieTotalEl) {
+    pieTotalEl.textContent = `${canvasId === 'chart-expense-cat' ? '−' : ''}${formatShort(total)}`;
+    pieTotalEl.classList.toggle('money-expense', canvasId === 'chart-expense-cat');
+    pieTotalEl.classList.toggle('money-income', canvasId !== 'chart-expense-cat');
+  }
 
   destroyChart(canvasId);
   if (!data.length) {
@@ -197,7 +204,7 @@ function renderCategoryPie(canvasId, legendId, trx) {
           callbacks: {
             label: (ctx) => {
               const pct = total ? (ctx.parsed / total * 100).toFixed(1) : 0;
-              return ` ${formatRupiah(ctx.parsed)}  (${pct}%)`;
+              return ` ${canvasId === 'chart-expense-cat' ? '−' : ''}${formatRupiah(ctx.parsed)}  (${pct}%)`;
             },
             title: (ctx) => ctx[0].label,
           }
@@ -237,8 +244,9 @@ function renderCompare(elId, trx, trxPrev) {
     return { k, n, p, d: n - p };
   }).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 8);
   const ul = document.getElementById(elId);
+  const expenseList = elId === 'compare-expense';
   ul.innerHTML = rows.length
-    ? rows.map(r => `<li><span>${r.k}</span><span>${formatShort(r.n)}</span><span class="arr ${r.d >= 0 ? 'up' : 'down'}">${r.d >= 0 ? '▲' : '▼'}</span><span>${formatShort(Math.abs(r.d))}</span></li>`).join('')
+    ? rows.map(r => `<li><span>${r.k}</span><span class="${expenseList ? 'money-expense' : 'money-income'}">${expenseList ? '−' : ''}${formatShort(r.n)}</span><span class="arr ${r.d >= 0 ? 'up' : 'down'}">${r.d >= 0 ? '▲' : '▼'}</span><span>${formatShort(Math.abs(r.d))}</span></li>`).join('')
     : '<li style="color:#94a3b8">Belum ada data</li>';
 }
 
@@ -252,9 +260,9 @@ function renderAlokasi(trx) {
   fillAlokasi('list-kebutuhan', buckets.Kebutuhan);
   fillAlokasi('list-keinginan', buckets.Keinginan);
   fillAlokasi('list-investasi', buckets.Investasi);
-  document.getElementById('total-kebutuhan').textContent = formatRupiah(totals.Kebutuhan);
-  document.getElementById('total-keinginan').textContent = formatRupiah(totals.Keinginan);
-  document.getElementById('total-investasi').textContent = formatRupiah(totals.Investasi);
+  document.getElementById('total-kebutuhan').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Kebutuhan)}</span>`;
+  document.getElementById('total-keinginan').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Keinginan)}</span>`;
+  document.getElementById('total-investasi').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Investasi)}</span>`;
 }
 
 function fillAlokasi(id, items) {
@@ -263,7 +271,7 @@ function fillAlokasi(id, items) {
     .sort((a, b) => b[1] - a[1]);
   const ol = document.getElementById(id);
   ol.innerHTML = rows.length
-    ? rows.map(([k, v]) => `<li><span>${k}</span><b>${formatShort(v)}</b></li>`).join('')
+    ? rows.map(([k, v]) => `<li><span>${k}</span><b class="money-expense">−${formatShort(v)}</b></li>`).join('')
     : '<li style="list-style:none;color:#94a3b8">—</li>';
 }
 
@@ -307,17 +315,17 @@ function renderSixMonth(m, y) {
   const tbody = document.getElementById('six-month-body');
   tbody.innerHTML = rows.map(r => `<tr>
     <td>${r.label}</td>
-    <td>${formatRupiah(r.inc)}</td>
-    <td>${formatRupiah(r.exp)}</td>
-    <td>${formatRupiah(r.bal)}</td>
+    <td class="money-income">${formatRupiah(r.inc)}</td>
+    <td class="money-expense">−${formatRupiah(r.exp)}</td>
+    <td class="${r.bal >= 0 ? 'money-income' : 'money-expense'}">${formatRupiah(r.bal)}</td>
     <td>${r.count}</td>
   </tr>`).join('');
   const avg = (k) => rows.reduce((s, r) => s + r[k], 0) / rows.length;
   document.getElementById('six-month-foot').innerHTML = `<tr>
     <td>RATA-RATA</td>
-    <td>${formatRupiah(avg('inc'))}</td>
-    <td>${formatRupiah(avg('exp'))}</td>
-    <td>${formatRupiah(avg('bal'))}</td>
+    <td class="money-income">${formatRupiah(avg('inc'))}</td>
+    <td class="money-expense">−${formatRupiah(avg('exp'))}</td>
+    <td class="${avg('bal') >= 0 ? 'money-income' : 'money-expense'}">${formatRupiah(avg('bal'))}</td>
     <td>${avg('count').toFixed(0)}</td>
   </tr>`;
 

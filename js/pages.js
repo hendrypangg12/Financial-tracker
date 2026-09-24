@@ -28,7 +28,7 @@ function renderTransaksi() {
       <td data-label="Tanggal">${formatTanggal(t.tanggal)}</td>
       <td data-label="Deskripsi" class="trx-desc">${escapeHtml(t.deskripsi || '-')}</td>
       <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${t.jenis}</span></td>
-      <td class="num trx-amount" data-label="Jumlah"><b style="color:${t.jenis === 'pemasukan' ? '#5a8a3a' : '#c0392b'}">${formatRupiah(t.jumlah)}</b></td>
+      <td class="num trx-amount" data-label="Jumlah"><b class="${t.jenis === 'pemasukan' ? 'money-income' : 'money-expense money-negative'}">${formatRupiah(t.jumlah)}</b></td>
       <td data-label="Sub Kategori">${escapeHtml(t.subKategori || '-')}</td>
       <td data-label="Kategori">${escapeHtml(t.kategori || '-')}</td>
       <td data-label="Alokasi">${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
@@ -80,9 +80,9 @@ function renderRekap() {
   tbody.innerHTML = rows.length
     ? rows.map(r => `<tr>
         <td>${r.label}</td>
-        <td class="num" style="color:#5a8a3a">${formatRupiah(r.inc)}</td>
-        <td class="num" style="color:#c0392b">${formatRupiah(r.exp)}</td>
-        <td class="num"><b>${formatRupiah(r.bal)}</b></td>
+        <td class="num money-income">${formatRupiah(r.inc)}</td>
+        <td class="num money-expense money-negative">${formatRupiah(r.exp)}</td>
+        <td class="num"><b class="${r.bal >= 0 ? 'money-income' : 'money-expense'}">${r.bal < 0 ? '\u2212' : ''}${formatRupiah(Math.abs(r.bal))}</b></td>
         <td class="num">${r.count}</td>
       </tr>`).join('')
     : '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px">Belum ada data</td></tr>';

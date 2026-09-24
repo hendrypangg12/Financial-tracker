@@ -381,6 +381,7 @@ function attachEvents() {
     }
     exportData();
   };
+  if (typeof setupReportSharing === 'function') setupReportSharing();
   document.getElementById('btn-import').onclick = () => document.getElementById('file-import').click();
   document.getElementById('file-import').onchange = async (e) => {
     const f = e.target.files[0];
