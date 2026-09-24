@@ -30,6 +30,6 @@ export async function hasProAccess(user, env) {
   const fields = (await response.json()).fields || {};
   const plan = fields.plan?.stringValue;
   if (plan === 'lifetime' || plan === 'pro') return true;
-  return ['trial', 'monthly', 'annual', 'starter'].includes(plan)
+  return ['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(plan)
     && Date.parse(fields.expiresAt?.stringValue || '') > Date.now();
 }

@@ -36,7 +36,7 @@ function onAuthStateChanged(callback) {
 
 // Durasi & harga per paket (single source of truth)
 const PACKAGE_CONFIG = {
-  trial:   { days: 7,   priceIdr: 10000,  label: 'Coba 7 Hari',  description: 'Akses penuh Pro 7 hari' },
+  trial:   { days: 7,   priceIdr: 10000,  label: 'Akses 7 Hari', description: 'Akses penuh Pro 7 hari' },
   monthly: { days: 30,  priceIdr: 50000,  label: 'Bulanan',      description: 'Akses Pro selama 30 hari' },
   annual:  { days: 365, priceIdr: 299000, label: 'Tahunan',      description: 'Pro setahun, hemat 50%' },
 };
@@ -52,29 +52,20 @@ function computeExpiry(paket, fromDate = new Date()) {
 }
 
 // Pastikan profile user ada di Firestore (buat saat pertama login)
-// User baru: plan='pending' (belum bayar) → langsung diarahkan ke paywall pilih paket
+// Profil baru dibuat server agar trial gratis tidak dapat dimanipulasi dari browser.
 async function ensureUserProfile(user) {
   if (!fbDb) return null;
   const ref = fbDb.collection('users').doc(user.uid).collection('meta').doc('profile');
   const snap = await ref.get();
   if (snap.exists) return snap.data();
-  const now = new Date();
-  const profile = {
-    email: user.email || '',
-    displayName: user.displayName || user.email?.split('@')[0] || 'User',
-    photoURL: user.photoURL || '',
-    createdAt: now.toISOString(),
-    plan: 'pending',           // belum bayar → tampil paywall
-    expiresAt: now.toISOString(), // expired sejak detik pertama
-  };
-  // Re-check inside the transaction: another device may have created (or paid
-  // for) the account while this device was opening it for the first time.
-  return fbDb.runTransaction(async tx => {
-    const existing = await tx.get(ref);
-    if (existing.exists) return existing.data();
-    tx.set(ref, profile);
-    return profile;
+  const response = await fetch('https://berstock-bot.hendrypangg12.workers.dev/api/account/bootstrap', {
+    method: 'POST', headers: { 'Content-Type':'application/json', Authorization:'Bearer ' + await user.getIdToken() },
+    body: JSON.stringify({ displayName:user.displayName || user.email?.split('@')[0] || 'User', photoURL:user.photoURL || '' }),
   });
+  if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'Profil belum dapat dibuat.');
+  const created = await ref.get({ source:'server' });
+  if (!created.exists) throw new Error('Profil belum tersedia.');
+  return created.data();
 }
 
 // Activate subscription: panggil setelah payment success
@@ -102,7 +93,8 @@ function isSubscriptionActive(profile) {
 
 // ============ FREEMIUM: Cek user punya akses Pro ============
 // Pricing model:
-//   trial    : 7 hari paid entry (Rp 10rb)
+//   free_trial: uji coba gratis 2 hari, dibuat oleh server
+//   trial    : akses 7 hari sekali bayar (Rp 10rb)
 //   monthly  : akses 30 hari; renewal otomatis belum diimplementasikan
 //   annual   : Rp 299rb/tahun (hemat 50%)
 //   lifetime : LEGACY only — existing buyer sebelum pricing change masih dihormati
@@ -114,7 +106,7 @@ function isPro(profile) {
   // Legacy 'pro' plan (admin/test accounts)
   if (profile.plan === 'pro') return true;
   // Trial / Monthly / Annual — harus belum expired
-  if (['trial', 'monthly', 'annual', 'starter'].includes(profile.plan)) {
+  if (['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(profile.plan)) {
     return profile.expiresAt && new Date(profile.expiresAt).getTime() > Date.now();
   }
   return false;

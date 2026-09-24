@@ -12,13 +12,13 @@ function sandbox(plugins={}) {
   vm.runInNewContext(source,context);
   return {context,calls};
 }
-test('native payment block covers API and UI while normal account flow is preserved',async()=>{
+test('native build blocks website payment APIs while normal account flow is preserved',async()=>{
   const {context,calls}=sandbox();
   await assert.rejects(context.createPaymentInvoice(), /Pembelian/);
-  await assert.rejects(context.fetch('https://backend.test/api/create-invoice'), /disabled/);
-  await assert.rejects(context.fetch({url:'https://backend.test/api/verify-payment?ref=test'}), /disabled/);
+  await assert.rejects(context.fetch('https://backend.test/api/create-invoice'), /Google Play/);
+  await assert.rejects(context.fetch({url:'https://backend.test/api/verify-payment?ref=test'}), /Google Play/);
   context.showScreen('paywall'); context.showScreen('app');
-  assert.equal(calls.some(x=>x[0]==='screen'&&x[1]==='paywall'),false);
+  assert.equal(calls.some(x=>x[0]==='screen'&&x[1]==='paywall'),true);
   assert.equal(calls.some(x=>x[0]==='screen'&&x[1]==='app'),true);
   assert.equal(await context.fetch('https://firebase.test/sync'),'ok');
   await assert.rejects(context.loginGoogle(), /belum (dikonfigurasi|tersedia)/);

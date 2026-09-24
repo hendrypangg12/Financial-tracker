@@ -222,7 +222,7 @@ function renderAdminCard(u) {
 async function handleAdminAction(action, uid, email) {
   let title = '', msg = '', okText = 'Aktivasi';
   if (action === 'trial') {
-    title = '🎁 Aktivasi Coba 7 Hari';
+    title = '🎁 Aktivasi Akses 7 Hari';
     msg = `Aktifkan paket COBA 7 HARI (Rp ${PRICE_TRIAL.toLocaleString('id-ID')}) untuk:\n\n${email}\n\nMasa berlaku: 7 hari (akan ditambahkan ke sisa langganan jika masih aktif).`;
     okText = '✅ Aktivasi 7 Hari';
   } else if (action === 'monthly') {

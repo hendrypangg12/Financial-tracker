@@ -2,7 +2,7 @@ import { HttpError } from './auth.js';
 import { firestoreAdmin, documentId, isContention } from './firebase-admin.js';
 
 export const PACKAGES = Object.freeze({
-  trial: { amount: 10000, days: 7, label: 'Coba 7 Hari' },
+  trial: { amount: 10000, days: 7, label: 'Akses 7 Hari' },
   monthly: { amount: 50000, days: 30, label: 'Bulanan' },
   annual: { amount: 299000, days: 365, label: 'Tahunan' },
 });

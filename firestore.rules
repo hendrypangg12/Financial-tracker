@@ -14,12 +14,8 @@ service cloud.firestore {
     }
     match /users/{uid}/meta/profile {
       allow read: if owner(uid) || admin();
-      allow create: if owner(uid)
-        && request.resource.data.keys().hasOnly(['email', 'displayName', 'photoURL', 'createdAt', 'plan', 'expiresAt'])
-        && validProfileIdentity(request.resource.data)
-        && request.resource.data.createdAt is string
-        && request.resource.data.expiresAt == request.resource.data.createdAt
-        && request.resource.data.plan == 'pending';
+      // Profile and its free trial are created by the trusted backend.
+      allow create: if false;
       // Deny unknown future fields by default: users cannot add entitlement,
       // admin flags, activation receipts, or remove protected existing fields.
       allow update: if (owner(uid)

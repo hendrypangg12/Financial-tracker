@@ -32,7 +32,7 @@ const PAYMENT_INFO = {
 };
 
 // Trial hari (0 = tanpa trial, 7 = user dapat akses Pro penuh 1 minggu sejak daftar)
-const TRIAL_DAYS = 7;
+const TRIAL_DAYS = 2; // uji coba gratis; paket akses 7 hari tetap produk berbayar
 
 // Email admin (untuk akses tab Admin Panel)
 // Tambahkan email Anda di sini supaya bisa aktivasi customer dari aplikasi

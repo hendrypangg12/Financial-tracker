@@ -64,7 +64,7 @@ for (const [url, source] of vendors) {
   html = html.replace(url, filename);
   await copy(filename, path.join(mobile, 'node_modules', source));
 }
-// Purchase UI is never included in the native test app. The runtime also blocks its entrypoints.
+// Website QRIS/transfer is excluded. The runtime supplies the Google Play UI.
 html = html.replace(/  <!-- ============ PAYWALL[\s\S]*?(?=  <header)/, '<div id="paywall-screen" hidden></div>\n');
 if (html.includes('id="payment-modal"')) throw new Error('Native bundle still contains payment form');
 if (html.includes('id="affiliate-section"') || html.includes('js/presence.js')) throw new Error('Store bundle still contains excluded promotion or anonymous presence');

@@ -1,63 +1,18 @@
-/* Mobile-only adapter. Never grants entitlement or replaces the account synchronization flow. */
+/* Native-only adapter. Access is granted only after server verification. */
 (() => {
   'use strict';
-  const production = window.__BERUANG_STORE_BUILD__ === true;
-  const unavailable = () => showToast('Pembelian belum tersedia dalam aplikasi Android ini.', 'info');
-  const originalScreen = window.showScreen;
-  window.showScreen = function (which) {
-    if (which === 'paywall') { unavailable(); return originalScreen('app'); }
-    return originalScreen(which);
-  };
-  window.loginGoogle = async () => { throw new Error('Login Google belum tersedia di Android. Gunakan email dan password.'); };
-  window.createPaymentInvoice = async () => { throw new Error('Pembelian native belum tersedia.'); };
-  window.openPaymentModal = unavailable;
-  window.handlePostPaymentRedirect = async () => {};
-  window.showProGate = unavailable;
-  window.isAdmin = () => false;
-  window.saveNativeBackup = async (data, filename) => {
-    if (!window.Capacitor?.isNativePlatform()) throw new Error('Backup ini memerlukan APK Android.');
-    const filesystem = window.Capacitor.registerPlugin('Filesystem');
-    const share = window.Capacitor.registerPlugin('Share');
-    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const json = JSON.stringify(data, null, 2);
-    // Keep a durable app-private copy before opening the system share dialog.
-    // Do not store financial backups in a publicly accessible directory.
-    await filesystem.writeFile({ path: 'backups/' + safeName, data: json, directory: 'DATA', encoding: 'utf8', recursive: true });
-    const file = await filesystem.writeFile({ path: 'backups/' + safeName, data: json, directory: 'CACHE', encoding: 'utf8', recursive: true });
-    await share.share({ title: 'Backup BerUang', files: [file.uri], dialogTitle: 'Simpan backup BerUang' });
-  };
-  window.exportData = async () => {
-    try {
-      await window.saveNativeBackup({ ...syncData(state), exportedAt: new Date().toISOString() }, 'beruang-' + Date.now() + '.json');
-    } catch (error) { showToast('Backup belum diekspor: ' + error.message, 'error'); }
-  };
-  const originalFetch = window.fetch.bind(window);
-  window.fetch = function (input, init) {
-    const target = new URL(typeof input === 'string' ? input : input.url, location.href);
-    if (/\/api\/(create-invoice|verify-payment)/.test(target.pathname)) return Promise.reject(new Error('Payment API disabled in native build'));
-    return originalFetch(input, init);
-  };
-  document.addEventListener('DOMContentLoaded', () => {
-    if (production) return;
-    const banner = document.createElement('aside');
-    banner.className = 'mobile-test-banner';
-    banner.textContent = 'BerUang Uji · Terhubung ke server produksi · Gunakan akun khusus tes';
-    document.body.prepend(banner);
-    const notice = document.createElement('div');
-    notice.className = 'mobile-test-notice';
-    notice.innerHTML = '<strong>APK uji, belum rilis publik</strong><p>Data tersinkron ke Firebase BerUang yang aktif. Buat atau gunakan akun khusus tes. Jangan memakai akun pelanggan atau memasukkan data keuangan penting.</p><p>Masuk dengan email/password. Login Google dan pembelian dalam aplikasi belum tersedia.</p><label><input id="mobile-test-ack" type="checkbox"> Saya menggunakan akun khusus tes dan memahami bahwa data tersimpan di server produksi.</label><p><a href="privacy.html">Kebijakan privasi</a></p>';
-    document.querySelector('#login-screen .login-tabs').before(notice);
-    document.querySelector('#form-register small').textContent = 'Pendaftaran akun uji gratis. Pembelian belum tersedia di APK uji.';
-    for (const id of ['form-login', 'form-register']) document.getElementById(id).addEventListener('submit', event => {
-      if (!document.getElementById('mobile-test-ack').checked) {
-        event.preventDefault(); event.stopImmediatePropagation();
-        showAuthError('Baca pemberitahuan APK uji dan centang persetujuan akun tes terlebih dahulu.');
-      }
-    }, true);
-  });
-  document.addEventListener('click', event => {
-    if (event.target.closest('[data-paket], .btn-buy, #btn-upgrade-pro, #ai-paywall-upgrade, #payment-wa-btn, .aff-card')) {
-      event.preventDefault(); event.stopImmediatePropagation(); unavailable();
-    }
-  }, true);
+  const production=window.__BERUANG_STORE_BUILD__===true, API='https://berstock-bot.hendrypangg12.workers.dev';
+  const IDS=['beruang_access_7d','beruang_access_30d','beruang_access_365d'];
+  const LABELS={beruang_access_7d:'Akses 7 Hari',beruang_access_30d:'Akses 30 Hari',beruang_access_365d:'Akses 1 Tahun'};
+  const billing=window.Capacitor?.registerPlugin('PlayBilling');
+  async function hash(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+  async function verify(p){const r=await fetch(API+'/api/google-play/verify',{method:'POST',headers:await authenticatedHeaders(),body:JSON.stringify({productId:p.productId,purchaseToken:p.purchaseToken})});const x=await r.json().catch(()=>({}));if(!r.ok||x.entitlementApplied!==true)throw new Error(x.error||'Aktivasi paket gagal.');await refreshUserProfile();return x;}
+  async function renderPaywall(){const el=document.getElementById('paywall-screen');el.hidden=false;el.innerHTML='<main class="play-paywall"><h1>Lanjutkan dengan BerUang</h1><p>Uji coba gratis 2 hari telah berakhir. Pilih masa akses; pembayaran diproses Google Play dan tidak diperpanjang otomatis.</p><div id="play-products">Memuat paket…</div><button id="play-restore" type="button">Pulihkan pembelian</button><p><button id="play-logout" type="button">Keluar akun</button></p></main>';try{const rows=(await billing.getProducts({productIds:IDS})).products||[];document.getElementById('play-products').innerHTML=rows.map(p=>`<button class="play-plan" data-play-product="${p.productId}" type="button"><strong>${LABELS[p.productId]}</strong><span>${p.price}</span></button>`).join('')||'<p>Paket belum tersedia untuk akun penguji ini.</p>';}catch(e){document.getElementById('play-products').textContent='Paket belum dapat dimuat: '+e.message;}}
+  const originalScreen=window.showScreen;window.showScreen=function(which){if(which==='paywall'&&production){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));renderPaywall();return;}return originalScreen(which);};
+  window.loginGoogle=async()=>{throw new Error('Login Google belum tersedia di Android. Gunakan email dan password.');};window.createPaymentInvoice=async()=>{throw new Error('Pembelian menggunakan Google Play.');};window.openPaymentModal=()=>window.showScreen('paywall');window.handlePostPaymentRedirect=async()=>{};window.showProGate=()=>window.showScreen('paywall');window.isAdmin=()=>false;
+  window.saveNativeBackup=async(data,filename)=>{const fs=window.Capacitor.registerPlugin('Filesystem'),share=window.Capacitor.registerPlugin('Share'),name=filename.replace(/[^a-zA-Z0-9._-]/g,'_'),json=JSON.stringify(data,null,2);await fs.writeFile({path:'backups/'+name,data:json,directory:'DATA',encoding:'utf8',recursive:true});const file=await fs.writeFile({path:'backups/'+name,data:json,directory:'CACHE',encoding:'utf8',recursive:true});await share.share({title:'Backup BerUang',files:[file.uri],dialogTitle:'Simpan backup BerUang'});};
+  window.exportData=async()=>{try{await window.saveNativeBackup({...syncData(state),exportedAt:new Date().toISOString()},'beruang-'+Date.now()+'.json');}catch(e){showToast('Backup belum diekspor: '+e.message,'error');}};
+  const originalFetch=window.fetch.bind(window);window.fetch=function(input,init){const target=new URL(typeof input==='string'?input:input.url,location.href);if(/\/api\/(create-invoice|verify-payment)/.test(target.pathname))return Promise.reject(new Error('Gunakan Google Play.'));return originalFetch(input,init);};
+  document.addEventListener('click',async event=>{const plan=event.target.closest('[data-play-product]');if(plan){plan.disabled=true;try{const p=await billing.purchase({productId:plan.dataset.playProduct,obfuscatedAccountId:await hash(currentUser.uid)});await verify(p);showToast('Paket aktif. Terima kasih!','success');window.showScreen('app');}catch(e){showToast(e.message,'error');}finally{plan.disabled=false;}return;}if(event.target.closest('#play-restore')){try{const rows=(await billing.restorePurchases()).purchases||[];for(const p of rows)await verify(p);showToast(rows.length?'Pembelian dipulihkan.':'Tidak ada pembelian yang perlu dipulihkan.','success');}catch(e){showToast(e.message,'error');}}if(event.target.closest('#play-logout'))logout();});
+  document.addEventListener('DOMContentLoaded',()=>{if(production)return;const b=document.createElement('aside');b.className='mobile-test-banner';b.textContent='BerUang Uji · Gunakan akun khusus tes';document.body.prepend(b);});
 })();

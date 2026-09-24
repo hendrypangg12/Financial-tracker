@@ -14,14 +14,13 @@ test('browser cannot grant itself a subscription using an arbitrary payment refe
 
 test('first login on a second device cannot overwrite a profile created or upgraded concurrently', async () => {
   const paid = { plan: 'annual', expiresAt: '2028-01-01T00:00:00Z' };
-  const ref = { get: async () => ({ exists: false }) };
-  let writes = 0;
-  const db = { collection: () => ({ doc: () => ({ collection: () => ({ doc: () => ref }) }) }),
-    runTransaction: fn => fn({ get: async () => ({ exists: true, data: () => paid }), set: () => writes++ }) };
-  const ctx = vm.createContext({ fbDb: db }); vm.runInContext(read('js/auth.js'), ctx);
-  const profile = await vm.runInContext("ensureUserProfile({uid:'u',email:'u@example.test'})",ctx);
+  let reads = 0, bootstrapCalls = 0;
+  const ref = { get: async () => reads++ === 0 ? ({ exists: false }) : ({ exists: true, data: () => paid }) };
+  const db = { collection: () => ({ doc: () => ({ collection: () => ({ doc: () => ref }) }) }) };
+  const ctx = vm.createContext({ fbDb: db, fetch: async () => { bootstrapCalls++; return { ok:true }; } }); vm.runInContext(read('js/auth.js'), ctx);
+  const profile = await vm.runInContext("ensureUserProfile({uid:'u',email:'u@example.test',getIdToken:async()=> 'token'})",ctx);
   assert.equal(profile.plan, 'annual');
-  assert.equal(writes, 0);
+  assert.equal(bootstrapCalls, 1);
 });
 
 test('an email allowlist alone does not enable administrator actions', () => {

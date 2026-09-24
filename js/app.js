@@ -721,7 +721,7 @@ async function handlePostPaymentRedirect() {
 }
 
 function getPackageLabel(paket) {
-  return ({ trial: 'Coba 7 Hari', monthly: 'Bulanan', annual: 'Tahunan', lifetime: 'Lifetime' })[paket] || paket;
+  return ({ free_trial: 'Uji Coba Gratis', trial: 'Akses 7 Hari', monthly: 'Akses 30 Hari', annual: 'Akses 1 Tahun', lifetime: 'Lifetime' })[paket] || paket;
 }
 
 // Mapping QRIS image per paket (file di assets/, nominal sudah terkunci di QR)
@@ -1110,7 +1110,8 @@ function updateUserMenu(user, profile) {
       : profile.plan === 'pro'      ? 'Pro ∞'
       : profile.plan === 'annual'   ? `Tahunan (${days} hari lagi)`
       : profile.plan === 'monthly'  ? `Bulanan (${days} hari lagi)`
-      : profile.plan === 'trial'    ? `Trial 7 Hari (${days} hari lagi)`
+      : profile.plan === 'free_trial' ? `Uji Coba Gratis (${days} hari lagi)`
+      : profile.plan === 'trial'    ? `Akses 7 Hari (${days} hari lagi)`
       : 'Gratis';
     plan.innerHTML = `📅 ${planLabel}`;
   }
@@ -1204,7 +1205,7 @@ function showProGate(featureName, description) {
       </div>
       <div class="pro-gate-prices">
         <button class="btn btn-ghost btn-block" data-paket="trial">
-          <b>Coba 7 Hari</b> — Rp 10.000<small>/ 7 hari</small>
+          <b>Akses 7 Hari</b> — Rp 10.000<small>/ 7 hari</small>
         </button>
         <button class="btn btn-primary btn-block" data-paket="annual">
           <span class="badge">HEMAT 50%</span>
