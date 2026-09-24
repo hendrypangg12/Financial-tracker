@@ -57,7 +57,7 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
     BillingFlowParams.ProductDetailsParams item = BillingFlowParams.ProductDetailsParams.newBuilder().setProductDetails(product).build();
     BillingFlowParams params = BillingFlowParams.newBuilder().setProductDetailsParamsList(Collections.singletonList(item))
       .setObfuscatedAccountId(account).build();
-    purchaseCall = call; saveCall(call);
+    purchaseCall = call; getBridge().saveCall(call);
     BillingResult result = client.launchBillingFlow(getActivity(), params);
     if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) finishError(result.getDebugMessage());
   }
@@ -74,11 +74,11 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
     if (result.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) { finishError("Pembelian dibatalkan."); return; }
     if (result.getResponseCode() != BillingClient.BillingResponseCode.OK || list == null || list.isEmpty()) { finishError(result.getDebugMessage()); return; }
     Purchase p = list.get(0); if (p.getPurchaseState() != Purchase.PurchaseState.PURCHASED) { finishError("Pembayaran masih tertunda."); return; }
-    PluginCall call = purchaseCall; purchaseCall = null; releaseCall(call); call.resolve(purchaseJson(p));
+    PluginCall call = purchaseCall; purchaseCall = null; getBridge().releaseCall(call); call.resolve(purchaseJson(p));
   }
 
   private JSObject purchaseJson(Purchase p) { JSObject value = new JSObject(); value.put("purchaseToken", p.getPurchaseToken());
     value.put("productId", p.getProducts().isEmpty() ? "" : p.getProducts().get(0)); value.put("orderId", p.getOrderId()); return value; }
-  private void finishError(String message) { PluginCall call = purchaseCall; purchaseCall = null; if (call != null) { releaseCall(call); call.reject(message); } }
+  private void finishError(String message) { PluginCall call = purchaseCall; purchaseCall = null; if (call != null) { getBridge().releaseCall(call); call.reject(message); } }
   @Override protected void handleOnDestroy() { if (client != null) client.endConnection(); }
 }
