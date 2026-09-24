@@ -1143,31 +1143,40 @@ function setAuthBusy(busy) {
 // Setup UI gating untuk free user — tampilkan badge 🔒 + tombol Upgrade
 function setupProGating(profile) {
   const userIsPro = typeof isPro === 'function' && isPro(profile);
-  const isTrialActive = profile?.plan === 'trial' && userIsPro;
+  const timedPlanActive = ['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(profile?.plan) && userIsPro;
   document.body.classList.toggle('is-free-user', !userIsPro);
   document.body.classList.toggle('is-pro-user', userIsPro);
 
-  // Tombol Upgrade Pro di topbar — tampil untuk free user ATAU trial user (dorong upgrade)
+  // Pengguna aktif tetap bisa memperpanjang, tetapi jangan terlihat seperti belum berlangganan.
   const btnUpgrade = document.getElementById('btn-upgrade-pro');
   if (btnUpgrade) {
     btnUpgrade.hidden = profile?.plan === 'lifetime' || profile?.plan === 'pro';
+    btnUpgrade.innerHTML = userIsPro ? '↻ Perpanjang Paket' : '✨ Upgrade Pro';
+    btnUpgrade.title = userIsPro ? 'Tambah masa aktif paket' : 'Upgrade ke Pro untuk membuka fitur premium';
     btnUpgrade.onclick = () => showScreen('paywall');
   }
 
-  // Trial countdown badge — hanya tampil untuk user yang lagi trial
+  // Tampilkan status paket aktif dan masa berlakunya di header.
   const trialBadge = document.getElementById('trial-badge');
   if (trialBadge) {
-    if (isTrialActive) {
+    if (timedPlanActive) {
       const days = daysRemaining(profile);
       trialBadge.hidden = false;
+      const labels = {
+        free_trial: '🎁 Uji coba',
+        trial: '⭐ Paket 7 Hari',
+        starter: '⭐ Paket 7 Hari',
+        monthly: '⭐ Pro 30 Hari',
+        annual: '👑 Pro Tahunan',
+      };
       trialBadge.innerHTML = days > 1
-        ? `🎁 Trial Pro: ${days} hari lagi`
-        : `⏰ Trial Pro: <b>hari terakhir!</b>`;
+        ? `${labels[profile.plan]} · ${days} hari tersisa`
+        : `${labels[profile.plan]} · <b>hari terakhir</b>`;
       trialBadge.classList.toggle('trial-urgent', days <= 2);
-      // Update upgrade button text
-      if (btnUpgrade && days <= 2) {
-        btnUpgrade.innerHTML = '🔥 Lanjut Pro Sekarang';
-      }
+    } else if (userIsPro) {
+      trialBadge.hidden = false;
+      trialBadge.innerHTML = '👑 Pro Aktif';
+      trialBadge.classList.remove('trial-urgent');
     } else {
       trialBadge.hidden = true;
     }
@@ -1178,8 +1187,8 @@ function setupProGating(profile) {
     gtag('event', 'user_tier', {
       tier: userIsPro ? 'pro' : 'free',
       plan: profile?.plan || 'none',
-      trial_active: isTrialActive ? 'yes' : 'no',
-      days_remaining: isTrialActive ? daysRemaining(profile) : 0,
+      trial_active: profile?.plan === 'free_trial' && userIsPro ? 'yes' : 'no',
+      days_remaining: timedPlanActive ? daysRemaining(profile) : 0,
     });
   }
 }
