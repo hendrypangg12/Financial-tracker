@@ -413,7 +413,15 @@ function drawRing(id, used, budget, color, pctId) {
 
 function renderSixMonth(m, y) {
   const rows = [];
-  for (let i = 0; i < 6; i++) {
+  const selectedIndex = y * 12 + m;
+  const transactionIndexes = (state.transactions || [])
+    .map(t => parseISO(t.tanggal))
+    .filter(d => d instanceof Date && !Number.isNaN(d.getTime()))
+    .map(d => d.getFullYear() * 12 + d.getMonth())
+    .filter(index => index <= selectedIndex);
+  const firstIndex = transactionIndexes.length ? Math.min(...transactionIndexes) : selectedIndex;
+  const monthCount = selectedIndex - firstIndex + 1;
+  for (let i = 0; i < monthCount; i++) {
     const { m: mm, y: yy } = addMonths(m, y, -i);
     const trx = getTransactionsFor(mm, yy);
     const inc = sumBy(trx, 'pemasukan');
