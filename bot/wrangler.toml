@@ -6,11 +6,11 @@ compatibility_flags = ["nodejs_compat"]
 # KV Namespaces — sudah dibuat 28 Apr 2026
 [[kv_namespaces]]
 binding = "BOT_DATA"
-id = "9ca47054eecf4b25b9714b1555b80d6b"
+id = "cd51e87a46fa4593b1193d8320a44d0c"
 
 [[kv_namespaces]]
 binding = "BOT_AUTH"
-id = "59016f42dc314b02ba508cf5025cd09f"
+id = "62028bdcc6c945caa77be301a169c31a"
 
 [vars]
 # Public Firebase identifiers, NOT admin credentials.
