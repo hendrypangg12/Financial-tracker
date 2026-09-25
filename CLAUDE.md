@@ -14,7 +14,7 @@ Update 25 Sep malam:
   menyembunyikan tombol Google (`mobile/src/mobile.css` + `mobile/src/runtime.js`). Solusi permanen:
   native Google Sign-In + SHA-1 App signing key di Firebase → versionCode 6 SETELAH review v1.3.0 selesai.
   Sementara: user daftar email+password pakai Gmail yang sama (akun sama nanti saat Google jalan).
-- Teks ASO siap: `store-assets/play-listing-aso.md` (judul "BerUang: Catat Keuangan Harian"). Tempel setelah review selesai.
+- Teks ASO siap: `store-assets/play-listing-aso.md` (judul "BerUang: Catat Keuangan & AI", fokus AI). Tempel setelah review selesai.
 - Cek: Firestore Rules (`firestore.rules`) sudah di-deploy di Console? Admin sekarang butuh custom claim `admin`
   (bukan allowlist email) — pastikan claim sudah diset, kalau tidak admin panel gak bisa aktivasi manual.
 
