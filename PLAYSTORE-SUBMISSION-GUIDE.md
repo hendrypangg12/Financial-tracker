@@ -124,67 +124,59 @@ BerUang — Catat Keuangan Pribadi
 
 **Short description:** (max 80 char)
 ```
-Aplikasi catat keuangan pribadi via chat, foto struk, & dashboard otomatis 🐻
+Catat keuangan via chat, foto struk, dan laporan. Coba Pro gratis 2 hari.
 ```
 
 **Full description:** (max 4000 char)
 ```
-🐻 BerUang — Catat dulu, biar beneran ber-uang!
+🐻 BerUang — catat uang, pahami kebiasaan, dan rencanakan tujuan.
 
-Bingung tiap akhir bulan, "Uang gw kemana ya?" 🤔
+BerUang membantu kamu mengelola keuangan pribadi dengan alur yang cepat dan jelas. Catat transaksi lewat formulir singkat, chat, atau foto struk; laporan akan diperbarui dari data akunmu.
 
-BerUang bantu kamu rapih-in keuangan pribadi dengan cara paling gampang: tinggal CHAT, FOTO struk, atau ISI form simple. Dashboard otomatis update real-time.
+📝 PENCATATAN CEPAT
+• Masukkan jumlah lebih dulu lalu pilih kategori
+• Catat pemasukan dan pengeluaran lewat chat
+• Baca foto struk untuk membantu mengisi transaksi
+• Simpan transaksi rutin dan tagihan
 
-✨ FITUR UTAMA:
+📊 RINGKASAN YANG MUDAH DIBACA
+• Saldo akumulatif serta total pemasukan dan pengeluaran
+• Pemasukan berwarna hijau; pengeluaran merah dengan tanda minus
+• Grafik, kategori terbesar, dan insight berdasarkan data sendiri
+• Riwayat keuangan sejak pertama menggunakan aplikasi
 
-📝 INPUT GAMPANG
-• Chat seperti ngobrol dengan beruang AI
-• Foto struk → otomatis terbaca (OCR Tesseract)
-• Form quick-add untuk transaksi rutin
-• Voice-friendly: ketik atau dictate aja
+📄 LAPORAN LENGKAP
+• Rekap bulanan dan akumulasi seluruh periode
+• Detail transaksi pemasukan dan pengeluaran
+• Bagikan laporan sebagai PDF, gambar, atau Excel
 
-📊 DASHBOARD CERDAS
-• Total pemasukan & pengeluaran real-time
-• Grafik harian, mingguan, bulanan
-• Rekap 50/30/20 (kebutuhan, keinginan, tabungan)
-• Top kategori pengeluaran
-• Tren bocor halus
+🎯 RENCANA KEUANGAN
+• Catat hutang dan piutang beserta jatuh tempo
+• Buat target keuangan dan pantau progresnya
+• Kelola pengingat tagihan rutin
 
-💸 HUTANG & PIUTANG
-• Catat siapa hutang sama kamu, siapa kamu hutangi
-• Reminder otomatis untuk yang overdue
-• Status lunas / aktif dengan 1 tap
-• Filter dan history lengkap
+☁️ AKUN DAN SINKRONISASI
+• Masuk dengan Google atau email
+• Gunakan akun yang sama di HP, tablet, dan laptop
+• Data akun tersinkron dan dapat dicadangkan
 
-🏷️ KATEGORI FLEXIBLE
-• 30+ kategori default (makan, transport, gaji, dll)
-• Sub-kategori custom unlimited (Pro)
-• Tag warna untuk visual yang clear
+🎁 COBA PRO GRATIS 2 HARI
 
-☁️ SYNC ANTAR DEVICE (Pro)
-• Login Google atau email
-• Data aman tersinkron HP, tablet, laptop
-• Backup otomatis ke cloud
+Setelah masa uji coba, pilih akses 7 hari, 30 hari, atau 1 tahun melalui Google Play. Pembelian tidak diperpanjang otomatis; harga dan masa akses selalu ditampilkan sebelum pembayaran.
 
-🎁 TRIAL PRO 7 HARI GRATIS
-
-Coba semua fitur Pro selama 1 minggu — tanpa kartu kredit, tanpa komitmen. Setelah trial:
-• 🆓 Tetap pakai versi Free (basic, gratis selamanya)
-• 💎 Upgrade ke Pro: Rp 35.000/bulan atau Rp 125.000 LIFETIME
-
-KENAPA BerUang?
-✅ Bahasa Indonesia native, bukan terjemahan
-✅ Cocok untuk personal & UMKM kecil
-✅ Offline-first, gak perlu internet 24/7
-✅ Privacy: data tidak dijual, no iklan pop-up
-✅ Tim Indonesia, support via WhatsApp
+KENAPA BERUANG?
+✅ Dibuat untuk pengguna Indonesia
+✅ Tampilan ringkas dan mudah digunakan
+✅ Dapat dipakai offline untuk fungsi utama
+✅ Tanpa iklan pop-up
+✅ Data pengguna tidak dijual
 
 📞 BUTUH BANTUAN?
 WhatsApp: wa.me/6282124848924
 Email: info@berstock.id
 Website: berstock.id
 
-Buat hidup keuangan kamu lebih sehat, satu transaksi setiap hari. Download sekarang, trial Pro gratis 7 hari! 🚀
+Mulai dari satu transaksi hari ini dan lihat arus uangmu dengan lebih jelas.
 ```
 
 ### **B. Graphics**
@@ -226,8 +218,9 @@ Jawab honestly:
 - **Data collected:**
   - ✅ Email address (for account)
   - ✅ Personal info (Name) — optional
+  - ✅ User IDs — for account and cross-device sync
   - ✅ Financial info (your own transactions) — for app functionality
-  - ✅ App activity (analytics) — anonymous
+- **Not collected by the current build:** analytics/app activity and receipt photos (receipt OCR runs locally)
 - **Data sharing:** ❌ NO data shared with third parties
 - **Data security:** ✅ Encrypted in transit (TLS), ✅ User can request deletion
 - **Data deletion:** User can delete account via app or email request
@@ -250,7 +243,7 @@ Jawab honestly:
 - ❌ NO
 
 ### **H. Data Safety Section** (sertakan):
-- Collected: Personal info, Financial info, App activity
+- Collected: Personal info, User IDs, Financial info
 - Shared: No
 - Security practices: Encryption in transit + at rest
 
@@ -303,23 +296,16 @@ Google akan review:
 
 ## 💰 STEP 9 (NEXT): Setup In-App Subscription
 
-⚠️ **JANGAN setup IAP di submission pertama.** Submit dulu sebagai free app, biar review lebih cepat.
+Paket Android saat ini memakai **one-time products**, bukan langganan otomatis:
 
-Setelah app approved:
-1. Di Play Console → **Monetize** → **Products** → **Subscriptions**
-2. Buat 2 produk:
-   - `beruang_pro_monthly` — Subscription, base price Rp 35.000/month, **7-day free trial** auto-handled
-   - `beruang_pro_lifetime` — One-time product, Rp 125.000
-3. Setup tax info (negara untuk Indonesia: PPN 11%)
-4. Integration: pakai `@capacitor-community/in-app-purchases` plugin
-5. Update app code untuk handle purchase flow
-6. Submit update version 1.1.0 dengan IAP support
-
-**Catatan revenue:**
-- Google potong 15% (year 1, <$1M revenue) atau 30% (year 2+)
-- Bos terima Rp 29.750 dari Rp 35rb monthly (15% cut)
-- Bos terima Rp 106.250 dari Rp 125rb lifetime (15% cut)
-- **TIPS:** Tetap promote web checkout via berstock.id untuk lifetime → bos terima full
+1. Di Play Console → **Monetize** → **Products** → **One-time products**
+2. Pastikan tiga produk berikut aktif untuk Indonesia:
+   - `beruang_access_7d` — akses 7 hari, Rp 10.000
+   - `beruang_access_30d` — akses 30 hari, Rp 50.000
+   - `beruang_access_365d` — akses 1 tahun, Rp 299.000
+3. Pembelian harus diverifikasi server, diterapkan ke akun yang sedang login, lalu dikonsumsi agar produk dapat dibeli kembali.
+4. Uji satu pembelian nyata dari closed testing hingga status paket aktif di perangkat kedua.
+5. Jangan menjanjikan auto-renewal atau paket lifetime pada listing. Paket lifetime hanya dihormati untuk pembeli lama.
 
 ---
 
