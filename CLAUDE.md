@@ -18,6 +18,17 @@ Update 25 Sep malam:
 - Cek: Firestore Rules (`firestore.rules`) sudah di-deploy di Console? Admin sekarang butuh custom claim `admin`
   (bukan allowlist email) — pastikan claim sudah diset, kalau tidak admin panel gak bisa aktivasi manual.
 
+Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus):
+- ✅ Firestore Rules produksi AKTIF: user tidak bisa ubah `plan` sendiri (PATCH → 403), baca tanpa login → 403.
+- 🔧 Deploy bot gagal 3x sejak 24 Sep (Codex ganti ID KV ke namespace yang tidak ada, error 10041).
+  DIPERBAIKI commit acd3db9 (ID lama 9ca470…/59016f…). Worker ter-deploy, /api/account/bootstrap & /api/google-play/verify live.
+- 🚨 `/api/account/bootstrap` → 503 "Layanan akun belum dikonfigurasi": secret Cloudflare
+  `FIREBASE_SERVICE_ACCOUNT_JSON` BELUM di-set → USER BARU GAGAL DAFTAR (profil tidak bisa dibuat, rules melarang
+  create dari client). Akun lama aman. Bos harus: Firebase Console → Project settings → Service accounts →
+  Generate new private key → Cloudflare Worker berstock-bot → Settings → Variables and Secrets → Secret
+  `FIREBASE_SERVICE_ACCOUNT_JSON` (paste isi JSON). Aktivasi Google Play juga butuh secret ini (tulis Firestore).
+- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` tampaknya sudah ada (verify ke Google jalan, token palsu → 400).
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
