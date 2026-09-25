@@ -180,7 +180,23 @@ function setSyncStatus(status) {
   clearTimeout(setSyncStatus._t); el.className = 'sync-status ' + status;
   el.textContent = status === 'ok' ? '☁️ Tersimpan' : status === 'pending' ? '☁️ Menyimpan perubahan…' : status === 'conflict' ? '⚠️ Data berbeda — ketuk untuk pulihkan' : '⚠️ Belum tersimpan di cloud';
   el.onclick = status === 'conflict' ? recoverCloudConflict : null;
+  updateAccountSyncState(status);
   if (status === 'ok') setSyncStatus._t = setTimeout(() => { el.className = 'sync-status'; el.textContent = ''; }, 2500);
+}
+
+function updateAccountSyncState(status) {
+  const detail = document.getElementById('user-sync-state');
+  if (!detail) return;
+  const key = 'beruang-last-sync:' + (currentUser?.uid || 'local');
+  if (status === 'ok') localStorage.setItem(key, new Date().toISOString());
+  const last = localStorage.getItem(key);
+  const time = last ? new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(last)) : '';
+  detail.className = 'user-sync-state ' + status;
+  detail.textContent = status === 'ok'
+    ? `Data tersinkron${time ? ` · ${time}` : ''}`
+    : status === 'pending' ? 'Menyimpan perubahan…'
+    : status === 'conflict' ? 'Perlu memilih versi data'
+    : 'Belum tersimpan di cloud';
 }
 async function recoverCloudConflict() {
   if (!cloudConflict || !currentUser) return;

@@ -69,12 +69,27 @@ function fillTrxFilters() {
 function attachEvents() {
   // Tabs — handle both top tabs and bottom-nav (mobile/TWA)
   function switchToTab(tabName) {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    const target = document.getElementById('tab-' + tabName);
+    if (!target) return;
+    const navName = ['hutang', 'goal'].includes(tabName) ? 'rencana' : tabName;
+    document.querySelectorAll('.tab').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.bnav-item').forEach(b => {
+      b.classList.remove('active');
+      b.removeAttribute('aria-current');
+    });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll(`.tab[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
-    document.querySelectorAll(`.bnav-item[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
-    document.getElementById('tab-' + tabName).classList.add('active');
+    document.querySelectorAll(`.tab[data-tab="${navName}"]`).forEach(b => {
+      b.classList.add('active');
+      b.setAttribute('aria-selected', 'true');
+    });
+    document.querySelectorAll(`.bnav-item[data-tab="${navName}"]`).forEach(b => {
+      b.classList.add('active');
+      b.setAttribute('aria-current', 'page');
+    });
+    target.classList.add('active');
     // Haptic feedback (Android only)
     if (typeof haptic === 'function') haptic(8);
     // Re-render based on tab
@@ -89,12 +104,30 @@ function attachEvents() {
     // Scroll to top for native-feel
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  window.switchBeruangTab = switchToTab;
   document.querySelectorAll('.tab').forEach(btn => {
     btn.onclick = () => switchToTab(btn.dataset.tab);
   });
   document.querySelectorAll('.bnav-item').forEach(btn => {
     btn.onclick = () => switchToTab(btn.dataset.tab);
   });
+  document.querySelectorAll('[data-open-tab]').forEach(btn => {
+    btn.onclick = () => switchToTab(btn.dataset.openTab);
+  });
+  document.querySelectorAll('.tab.active').forEach(b => b.setAttribute('aria-selected', 'true'));
+  document.querySelectorAll('.bnav-item.active').forEach(b => b.setAttribute('aria-current', 'page'));
+
+  const dashboardDetailsButton = document.getElementById('btn-dashboard-details');
+  if (dashboardDetailsButton) {
+    dashboardDetailsButton.onclick = () => {
+      const sections = [...document.querySelectorAll('.dashboard-advanced')];
+      const willOpen = sections.some(section => section.hidden);
+      sections.forEach(section => { section.hidden = !willOpen; });
+      dashboardDetailsButton.setAttribute('aria-expanded', String(willOpen));
+      dashboardDetailsButton.textContent = willOpen ? 'Sembunyikan analisis lengkap' : 'Lihat analisis lengkap';
+      if (willOpen) requestAnimationFrame(() => Object.values(charts || {}).forEach(chart => chart?.resize?.()));
+    };
+  }
 
   // Dashboard filter
   document.getElementById('dash-month').onchange = e => { state.selectedMonth = +e.target.value; renderDashboard(); renderRekap(); };
@@ -109,6 +142,24 @@ function attachEvents() {
 
   // Form tambah
   const form = document.getElementById('form-transaksi');
+  const quickEntryButtons = [...document.querySelectorAll('.quick-entry')];
+  const chooseQuickEntry = (kind, focus = true) => {
+    quickEntryButtons.forEach(button => button.classList.toggle('active', button.dataset.quickKind === kind));
+    if (kind === 'struk') {
+      document.getElementById('receipt-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const jenis = form.querySelector('[name="jenis"]');
+    if (jenis) {
+      jenis.value = kind;
+      fillSubCategoriSelects();
+    }
+    document.getElementById('quick-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (focus) setTimeout(() => form.querySelector('[name="jumlah"]')?.focus(), 300);
+  };
+  quickEntryButtons.forEach(button => {
+    button.onclick = () => chooseQuickEntry(button.dataset.quickKind);
+  });
   form.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
   form.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-transaksi');
   // Toggle field "Jatuh tempo tiap tanggal" saat checkbox "Jadikan tagihan rutin" di-centang
@@ -152,6 +203,7 @@ function attachEvents() {
     addTransaction(t);
     showToast(jadikanRutin ? 'Transaksi + tagihan rutin disimpan 🔁' : 'Transaksi ditambahkan', 'success');
     form.reset();
+    chooseQuickEntry('pengeluaran', false);
     form.querySelector('[name="tanggal"]').value = todayISO();
     if (fieldHariTagih) fieldHariTagih.style.display = 'none'; // hide kembali setelah reset
     fillSubCategoriSelects();
@@ -969,6 +1021,15 @@ function setupAuthUI() {
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
 
+  const btnOpenKategori = document.getElementById('btn-open-kategori');
+  if (btnOpenKategori) {
+    btnOpenKategori.onclick = (e) => {
+      e.stopPropagation();
+      if (dropdown) dropdown.hidden = true;
+      switchToTab('kategori');
+    };
+  }
+
   const btnDeleteAccount = document.getElementById('btn-delete-account');
   if (btnDeleteAccount) {
     btnDeleteAccount.onclick = async (e) => {
@@ -1143,9 +1204,10 @@ function setupProGating(profile) {
   // Pengguna aktif tetap bisa memperpanjang, tetapi jangan terlihat seperti belum berlangganan.
   const btnUpgrade = document.getElementById('btn-upgrade-pro');
   if (btnUpgrade) {
-    btnUpgrade.hidden = profile?.plan === 'lifetime' || profile?.plan === 'pro';
-    btnUpgrade.innerHTML = userIsPro ? 'Perpanjang Paket' : 'Paket Pro';
-    btnUpgrade.title = userIsPro ? 'Tambah masa aktif paket' : 'Upgrade ke Pro untuk membuka fitur premium';
+    const paidPlanActive = ['trial', 'monthly', 'annual', 'starter'].includes(profile?.plan) && userIsPro;
+    btnUpgrade.hidden = paidPlanActive || profile?.plan === 'lifetime' || profile?.plan === 'pro';
+    btnUpgrade.innerHTML = 'Paket Pro';
+    btnUpgrade.title = 'Lihat pilihan paket Pro';
     btnUpgrade.onclick = () => showScreen('paywall');
   }
 
@@ -1166,12 +1228,19 @@ function setupProGating(profile) {
         ? `${labels[profile.plan]} · ${days} hari tersisa`
         : `${labels[profile.plan]} · <b>hari terakhir</b>`;
       trialBadge.classList.toggle('trial-urgent', days <= 2);
+      trialBadge.title = profile?.plan === 'free_trial' ? 'Masa uji coba aktif' : 'Ketuk untuk memperpanjang paket';
+      trialBadge.onclick = profile?.plan === 'free_trial' ? null : () => showScreen('paywall');
+      trialBadge.classList.toggle('is-actionable', profile?.plan !== 'free_trial');
     } else if (userIsPro) {
       trialBadge.hidden = false;
       trialBadge.innerHTML = '👑 Pro Aktif';
       trialBadge.classList.remove('trial-urgent');
+      trialBadge.classList.remove('is-actionable');
+      trialBadge.onclick = null;
     } else {
       trialBadge.hidden = true;
+      trialBadge.classList.remove('is-actionable');
+      trialBadge.onclick = null;
     }
   }
 

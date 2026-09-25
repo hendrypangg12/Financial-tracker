@@ -1,11 +1,11 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v50';
+const CACHE_VERSION = 'beruang-v52';
 const CORE = [
   './',
   './index.html',
   './app.html',
   './landing.html',
-  './styles.css?v=50',
+  './styles.css?v=52',
   './manifest.json',
   './assets/icons/beruang-wallet-192.png',
   './assets/icons/beruang-wallet-512.png',
@@ -15,16 +15,16 @@ const CORE = [
   './js/presence.js?v=2',
   './js/storage.js?v=24',
   './js/parser.js?v=20',
-  './js/sync.js?v=25',
+  './js/sync.js?v=26',
   './js/auth.js?v=25',
   './js/admin.js?v=20',
-  './js/dashboard.js?v=31',
+  './js/dashboard.js?v=32',
   './js/pages.js?v=21',
-  './js/app.js?v=50',
+  './js/app.js?v=52',
   './js/goal.js?v=2',
   './js/hutang.js?v=2',
   './js/ai-advisor.js?v=10',
-  './js/recurring.js?v=1',
+  './js/recurring.js?v=2',
   './js/telegram-link.js?v=5',
   './js/onboarding.js?v=7',
 ];

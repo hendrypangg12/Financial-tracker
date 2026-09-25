@@ -78,8 +78,7 @@ function renderReminder() {
   el.querySelectorAll('.rec-post').forEach(b => { b.onclick = () => postRecurring(b.dataset.id); });
   el.querySelectorAll('.rec-gohutang').forEach(b => {
     b.onclick = () => {
-      const tab = document.querySelector('.tab[data-tab="hutang"], .bnav-item[data-tab="hutang"]');
-      if (tab) tab.click();
+      if (typeof window.switchBeruangTab === 'function') window.switchBeruangTab('hutang');
     };
   });
 }

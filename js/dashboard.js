@@ -88,8 +88,7 @@ function renderHutangSummary() {
     </div>`;
   const link = el.querySelector('.dash-hutang-link');
   if (link) link.onclick = () => {
-    const tab = document.querySelector('.tab[data-tab="hutang"], .bnav-item[data-tab="hutang"]');
-    if (tab) tab.click();
+    if (typeof window.switchBeruangTab === 'function') window.switchBeruangTab('hutang');
   };
 }
 
@@ -98,6 +97,24 @@ function renderDashboard() {
   const trx = getTransactionsFor(m, y);
   const prev = addMonths(m, y, -1);
   const trxPrev = getTransactionsFor(prev.m, prev.y);
+
+  const hasTransactions = Array.isArray(state.transactions) && state.transactions.length > 0;
+  const emptyState = document.getElementById('dashboard-empty-state');
+  const overview = document.getElementById('dashboard-overview');
+  const moreAction = document.getElementById('dashboard-more-action');
+  const dashboardPanel = document.getElementById('tab-dashboard');
+  if (emptyState) emptyState.hidden = hasTransactions;
+  if (overview) overview.hidden = !hasTransactions;
+  if (moreAction) moreAction.hidden = !hasTransactions;
+  if (dashboardPanel) dashboardPanel.classList.toggle('is-empty', !hasTransactions);
+  if (!hasTransactions) {
+    document.querySelectorAll('.dashboard-advanced').forEach(section => { section.hidden = true; });
+    const detailsButton = document.getElementById('btn-dashboard-details');
+    if (detailsButton) {
+      detailsButton.textContent = 'Lihat analisis lengkap';
+      detailsButton.setAttribute('aria-expanded', 'false');
+    }
+  }
 
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
   renderGreeting();
