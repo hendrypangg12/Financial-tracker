@@ -70,4 +70,3 @@ export async function markInvoiceExpired(env, externalId, event) {
   }
   throw new HttpError(503, 'Status pembayaran sedang diperbarui.');
 }
-
