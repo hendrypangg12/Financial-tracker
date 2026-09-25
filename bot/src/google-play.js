@@ -26,7 +26,10 @@ export async function handleGooglePlayVerify(request, env) {
     const expectedAccount = await digest(user.uid);
     if (purchase.obfuscatedExternalAccountId !== expectedAccount) throw new HttpError(409, 'Pembelian tidak cocok dengan akun BerUang ini.');
     const result = await applyPlayEntitlement(env, user.uid, productId, token, purchase, cfg);
-    if (!result.alreadyApplied && purchase.consumptionState !== 1) {
+    // A transient consume failure must be recoverable. Even when entitlement was
+    // already applied, a later verification retries consumption so the customer
+    // can buy the same duration again after the current access ends.
+    if (purchase.consumptionState !== 1) {
       const consumed = await fetch(base + ':consume', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, signal: AbortSignal.timeout(15000) });
       if (!consumed.ok) console.error('Play purchase granted but consume failed', consumed.status, result.receiptId);
     }
