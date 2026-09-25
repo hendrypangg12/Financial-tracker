@@ -38,6 +38,13 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
 - ⏳ GOOGLE_PLAY_SERVICE_ACCOUNT_JSON belum ada di worker live (akun icloud) → wajib sebelum billing v1.3.0 dipakai.
 - Saran: invite hendryphang12@gmail.com sebagai Super Administrator di akun Cloudflare icloud (Members).
 
+- 🔒 26 Sep: HARD PAYWALL (keputusan bos): trial 2 hari / paket habis & belum bayar = app TERKUNCI TOTAL
+  (langsung layar paywall, tombol back disembunyikan, tombol "Sudah diaktifkan Admin? Muat ulang").
+  Data tetap aman di cloud. Admin (custom claim) tidak terkunci. `isAccessLocked()` + `watchAccessExpiry()` di js/app.js
+  (cek tiap 1 menit + saat app dibuka lagi). app.js v53, styles v53, SW beruang-v54.
+  Build Android Capacitor ikut terkunci setelah re-stage + build berikutnya (runtime.js override showScreen('paywall') -> paywall Google Play).
+  Catatan: bot Telegram BerUang belum cek status paket.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

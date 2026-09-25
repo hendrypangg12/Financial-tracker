@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=52" />
+  <link rel="stylesheet" href="styles.css?v=53" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -87,7 +87,7 @@
       <button id="btn-paywall-back" class="paywall-back" aria-label="Kembali ke Dashboard" title="Lihat Dashboard Dulu">←</button>
       <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <h2 id="paywall-title">Pilih Paket Langganan</h2>
-      <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
+      <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Data kamu tetap aman tersimpan — pilih paket untuk lanjut memakai BerUang.</p>
 
       <div class="paywall-prices">
         <div class="price-card" data-paket="trial">
@@ -112,6 +112,7 @@
         💡 Klik paket di atas → pilih bayar via <b>QRIS</b> atau <b>Transfer BCA</b> → bos aktivasi dalam 5 menit setelah bukti diterima.
       </p>
 
+      <button class="btn btn-primary btn-block" id="btn-paywall-reload" style="margin-top:14px;" hidden>🔄 Sudah diaktifkan Admin? Muat ulang</button>
       <button class="btn btn-ghost btn-block" id="btn-paywall-logout" style="margin-top:14px;">Logout</button>
     </div>
   </div>
@@ -1073,6 +1074,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=2"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=7"></script>
-  <script src="js/app.js?v=52"></script>
+  <script src="js/app.js?v=53"></script>
 </body>
 </html>

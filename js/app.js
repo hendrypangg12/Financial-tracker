@@ -603,10 +603,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof handlePostPaymentRedirect === 'function') {
         try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
       }
-      // FREEMIUM: user bisa pakai app meski belum bayar
-      // Pro features (AI, Telegram bot, OCR) di-gate dengan isPro()
-      // Cloud sync ENABLED UNTUK SEMUA user — biar data tester gak hilang kalau browser clear cache
+      // HARD PAYWALL (26 Sep 2026, keputusan bos): trial habis & belum bayar = aplikasi terkunci total.
+      // Data tetap aman di cloud; terbuka lagi setelah paket aktif. Admin tidak ikut terkunci.
       const userIsPro = typeof isPro === 'function' && isPro(profile);
+      if (isAccessLocked(profile)) {
+        stopAutoSync(); stopCloudListener();
+        showScreen('paywall');
+        return;
+      }
       // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
       selectUserStorage(user.uid);
       loadState();
@@ -634,6 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fillSubCategoriSelects();
       });
       if (typeof startAutoSync === 'function') startAutoSync();
+      watchAccessExpiry();
       updateUserMenu(user, profile);
       // Setup gating UI untuk free user
       setupProGating(profile);
@@ -870,8 +875,31 @@ function setupPaymentModalEvents() {
   });
 }
 
+// Akses terkunci = login, bukan admin, dan tidak punya paket aktif (trial/berbayar habis).
+function isAccessLocked(profile = currentProfile) {
+  if (typeof isPro !== 'function') return false;
+  const admin = typeof isAdmin === 'function' && isAdmin();
+  return !!currentUser && !admin && !isPro(profile);
+}
+
+// Kalau masa aktif habis saat aplikasi sedang terbuka, kunci tanpa menunggu dibuka ulang.
+function watchAccessExpiry() {
+  if (window.__accessWatchBound) return;
+  window.__accessWatchBound = true;
+  const check = () => {
+    if (!isAccessLocked()) return;
+    if (typeof pushToCloudImmediate === 'function') pushToCloudImmediate().catch(() => {});
+    stopAutoSync(); stopCloudListener();
+    showScreen('paywall');
+  };
+  setInterval(check, 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+}
+
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
+  // Pengguna yang terkunci tidak boleh kembali ke dashboard lewat jalur mana pun.
+  if (which === 'app' && isAccessLocked()) which = 'paywall';
   document.body.classList.toggle('app-locked', which !== 'app');
   const startup = document.getElementById('startup-screen');
   if (startup) startup.hidden = which !== 'loading';
@@ -884,6 +912,13 @@ function showScreen(which) {
     // Isi email user di paywall
     const emailEl = document.getElementById('paywall-email');
     if (emailEl && currentUser) emailEl.textContent = currentUser.email || '—';
+    const locked = isAccessLocked();
+    const backBtn = document.getElementById('btn-paywall-back');
+    if (backBtn) backBtn.hidden = locked;
+    const reloadBtn = document.getElementById('btn-paywall-reload');
+    if (reloadBtn) reloadBtn.hidden = !locked;
+    const title = document.getElementById('paywall-title');
+    if (title) title.textContent = locked ? 'Masa aktif habis' : 'Pilih Paket Langganan';
     // Set link WhatsApp umum & Instagram
     const waBtn = document.getElementById('btn-wa-admin');
     const igBtn = document.getElementById('btn-ig-admin');
@@ -1003,8 +1038,12 @@ function setupAuthUI() {
   if (btnPayLogout) btnPayLogout.onclick = () => logout();
 
   // Paywall back — balik ke dashboard (mode preview, fitur Pro tetap di-gate)
+  const btnPayReload = document.getElementById('btn-paywall-reload');
+  if (btnPayReload) btnPayReload.onclick = () => window.location.reload();
+
   const btnPayBack = document.getElementById('btn-paywall-back');
   if (btnPayBack) btnPayBack.onclick = () => {
+    if (isAccessLocked()) return;
     showScreen('app');
     if (typeof showToast === 'function') {
       showToast('Catatan dasar dan sinkronisasi akun tetap tersedia. Fitur Pro mengikuti status langganan.', 'info');
