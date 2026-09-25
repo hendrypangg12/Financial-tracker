@@ -704,7 +704,7 @@ function setupProGating(profile) {
   const btnUpgrade = document.getElementById('btn-upgrade-pro');
   if (btnUpgrade) {
     btnUpgrade.hidden = profile?.plan === 'lifetime' || profile?.plan === 'pro';
-    btnUpgrade.innerHTML = userIsPro ? '↻ Perpanjang Paket' : '✨ Upgrade Pro';
+    btnUpgrade.innerHTML = userIsPro ? 'Perpanjang Paket' : 'Paket Pro';
     btnUpgrade.title = userIsPro ? 'Tambah masa aktif paket' : 'Upgrade ke Pro untuk membuka fitur premium';
     btnUpgrade.onclick = () => showScreen('paywall');
   }
