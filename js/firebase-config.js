@@ -3,6 +3,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc",
   authDomain: "ber-uang-735b3.firebaseapp.com",
+  databaseURL: "https://ber-uang-735b3-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "ber-uang-735b3",
   storageBucket: "ber-uang-735b3.firebasestorage.app",
   messagingSenderId: "746768296778",
@@ -16,9 +17,11 @@ const ADMIN_CONTACT = {
   instagram: 'hendrypangg',   // IG Admin BerUang
 };
 
-// Harga paket (Rupiah)
-const PRICE_MONTHLY = 35000;
-const PRICE_LIFETIME = 125000;
+// Harga paket (Rupiah) — pricing model per 1 Juni 2026
+const PRICE_TRIAL = 10000;     // 7 hari paid entry
+const PRICE_MONTHLY = 50000;   // akses 30 hari; bukan auto-renewal saat ini
+const PRICE_ANNUAL = 299000;   // 365 hari (hemat 50%)
+const PRICE_LIFETIME = 125000; // LEGACY only — existing buyer dihormati
 
 // Info pembayaran (EDIT sesuai rekening/e-wallet Anda)
 const PAYMENT_INFO = {
@@ -29,12 +32,14 @@ const PAYMENT_INFO = {
 };
 
 // Trial hari (0 = tanpa trial, 7 = user dapat akses Pro penuh 1 minggu sejak daftar)
-const TRIAL_DAYS = 7;
+const TRIAL_DAYS = 2; // uji coba gratis; paket akses 7 hari tetap produk berbayar
 
 // Email admin (untuk akses tab Admin Panel)
 // Tambahkan email Anda di sini supaya bisa aktivasi customer dari aplikasi
 const ADMIN_EMAILS = [
-  'hendryphang12@gmail.com',  // Email utama admin
+  'hendryphang12@gmail.com',   // Email admin utama (typo "phang")
+  'hendrypangg12@gmail.com',   // Email primary owner
+  'hendrypangg12@icloud.com',  // Email Apple/Anthropic owner
   // Tambah email lain di sini jika perlu (misal partner)
 ];
 
@@ -44,6 +49,14 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 }
 const fbAuth = typeof firebase !== 'undefined' ? firebase.auth() : null;
 const fbDb = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+
+// Auto-login: paksa persistence LOCAL (survive browser close, gak expire kecuali user logout manual)
+// LOCAL = localStorage (default di web), SESSION = sessionStorage (hilang tutup tab), NONE = memori only
+if (fbAuth && firebase.auth && firebase.auth.Auth && firebase.auth.Auth.Persistence) {
+  fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((e) => {
+    console.warn('Auth persistence LOCAL fail:', e.message);
+  });
+}
 
 // Aktifkan offline persistence supaya data tetap bisa diakses tanpa internet
 if (fbDb) {

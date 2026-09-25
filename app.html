@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BerUang — Catat Uangmu, Jadi Ber-uang</title>
   <meta name="description" content="BerUang — aplikasi catat keuangan pribadi. Catet dulu, biar beneran ber-uang. Dashboard harian, mingguan, bulanan dengan input via chat, foto struk, dan rekap 50/30/20." />
-  <meta name="theme-color" content="#8b5a2b" />
-  <link rel="icon" type="image/png" href="assets/mascot-beruang.png?v=2" />
-  <link rel="apple-touch-icon" href="assets/mascot-beruang.png?v=2" />
+  <meta name="theme-color" content="#412b23" />
+  <link rel="icon" type="image/png" href="assets/icons/beruang-wallet-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/beruang-wallet-192.png" />
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-title" content="BerUang" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=29" />
+  <link rel="stylesheet" href="styles.css?v=52" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -24,12 +24,21 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 </head>
-<body>
+<body class="app-locked">
+  <div id="startup-screen" class="login-screen" role="status" aria-live="polite">
+    <div class="login-card">
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
+      <h1 class="login-brand">BerUang</h1>
+      <p>Menyiapkan akun dan catatan keuangan…</p>
+      <button class="btn btn-ghost" type="button" onclick="window.location.reload()">Muat ulang jika koneksi terputus</button>
+    </div>
+  </div>
   <!-- ============ LOGIN SCREEN (tampil saat belum login) ============ -->
   <div id="login-screen" class="login-screen" hidden>
     <div class="login-card">
-      <img class="login-logo" src="assets/mascot-beruang.png?v=2" alt="BerUang" />
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <h1 class="login-brand">BerUang</h1>
       <p class="login-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
 
@@ -50,7 +59,7 @@
         <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
         <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
         <button class="btn btn-primary btn-block" type="submit">Buat Akun</button>
-        <small style="color:var(--ink-soft)">Setelah daftar, pilih paket bulanan Rp 35rb / lifetime Rp 125rb.</small>
+        <small style="color:var(--ink-soft)">Uji coba gratis 2 hari · lalu Rp 10rb/7 hari, Rp 50rb/30 hari, atau Rp 299rb/1 tahun.</small>
       </form>
 
       <div class="auth-divider"><span>atau</span></div>
@@ -62,61 +71,128 @@
 
       <div id="auth-error" class="auth-error" hidden></div>
       <div id="auth-info" class="auth-info" hidden></div>
+      <div id="auth-pwa-tip" style="margin-top:14px;padding:10px 12px;background:#fff7e6;border:1px solid #f0d488;border-radius:10px;font-size:12px;color:#6b4423;line-height:1.5;display:none;">
+        💡 <b>Biar sesi lebih mudah dibuka:</b> tap ikon Share <span style="font-family:monospace">⬆️</span> di Safari → <b>"Add to Home Screen"</b>. Sesi tetap mengikuti pengaturan browser dan dapat berakhir saat logout.
+      </div>
+      <div id="auth-private-warn" style="margin-top:8px;padding:10px 12px;background:#fde8e8;border:1px solid #f5a8a8;border-radius:10px;font-size:12px;color:#8b2020;line-height:1.5;display:none;">
+        ⚠️ <b>Mode Private/Incognito terdeteksi.</b> Login bos gak akan ke-simpan setelah tutup tab. Pindah ke browser normal atau install ke homescreen.
+      </div>
     </div>
-    <div class="login-footer">🐻 BerUang — Data aman tersinkron di semua device Anda</div>
+    <div class="login-footer">BerUang — Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat</div>
   </div>
 
   <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
   <div id="paywall-screen" class="login-screen" hidden>
     <div class="login-card paywall-card">
-      <img class="login-logo" src="assets/mascot-beruang.png?v=2" alt="BerUang" />
+      <button id="btn-paywall-back" class="paywall-back" aria-label="Kembali ke Dashboard" title="Lihat Dashboard Dulu">←</button>
+      <img class="login-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <h2 id="paywall-title">Pilih Paket Langganan</h2>
       <p style="color:var(--ink-soft); margin: 0 0 16px">Akun <b id="paywall-email">—</b> belum aktif. Pilih paket, transfer, lalu kirim bukti ke Admin.</p>
 
       <div class="paywall-prices">
+        <div class="price-card" data-paket="trial">
+          <b>Akses 7 Hari</b>
+          <div class="price">Rp 10.000<small>/ 7 hari</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="trial">Pilih 7 Hari</button>
+        </div>
+        <div class="price-card highlight" data-paket="annual">
+          <span class="badge">HEMAT 50%</span>
+          <b>Tahunan</b>
+          <div class="price">Rp 299.000<small>/ tahun</small></div>
+          <button class="btn btn-primary btn-block btn-buy" data-paket="annual">Pilih Tahunan</button>
+        </div>
         <div class="price-card" data-paket="monthly">
           <b>Bulanan</b>
-          <div class="price">Rp 35.000<small>/bulan</small></div>
+          <div class="price">Rp 50.000<small>/ bulan</small></div>
           <button class="btn btn-primary btn-block btn-buy" data-paket="monthly">Pilih Bulanan</button>
         </div>
-        <div class="price-card highlight" data-paket="lifetime">
-          <span class="badge">HEMAT 70%</span>
-          <b>Lifetime</b>
-          <div class="price">Rp 125.000<small>sekali bayar</small></div>
-          <button class="btn btn-primary btn-block btn-buy" data-paket="lifetime">Pilih Lifetime</button>
-        </div>
       </div>
 
-      <div class="payment-info">
-        <div class="payment-title">💰 Cara Pembayaran</div>
-        <div class="payment-row">
-          <span>Bank BCA</span>
-          <div class="payment-copy">
-            <code id="bank-account">7130902183</code>
-            <button class="btn btn-small" id="btn-copy-acc">Copy</button>
-          </div>
-        </div>
-        <div class="payment-row"><span>Atas Nama</span><b>HENDRY</b></div>
-        <div class="payment-row"><span>QRIS</span><b>Minta ke Admin via WA</b></div>
-      </div>
-
-      <div class="paywall-actions">
-        <a class="btn btn-wa btn-block" id="btn-wa-admin" target="_blank" rel="noopener">💬 Kirim Bukti via WhatsApp</a>
-        <a class="btn btn-ig btn-block" id="btn-ig-admin" target="_blank" rel="noopener">📷 DM Instagram @hendrypangg</a>
-      </div>
-
-      <p class="paywall-note">
-        ⏱️ Akun aktif 5 menit setelah bukti transfer diterima.<br>
-        🔒 Data Anda aman tersimpan — tidak akan hilang.
+      <p class="paywall-note" style="margin-top:18px;">
+        💡 Klik paket di atas → pilih bayar via <b>QRIS</b> atau <b>Transfer BCA</b> → bos aktivasi dalam 5 menit setelah bukti diterima.
       </p>
 
-      <button class="btn btn-ghost btn-block" id="btn-paywall-logout">Logout</button>
+      <button class="btn btn-ghost btn-block" id="btn-paywall-logout" style="margin-top:14px;">Logout</button>
     </div>
   </div>
 
+  <!-- ============ PAYMENT MODAL (muncul saat klik paket) ============ -->
+  <div id="payment-modal" class="payment-modal" hidden>
+    <div class="payment-modal-card">
+      <button class="payment-close" id="payment-modal-close" aria-label="Tutup">×</button>
+
+      <div class="payment-header">
+        <div class="payment-paket-name" id="payment-paket-name">Bulanan</div>
+        <div class="payment-amount" id="payment-amount">Rp 50.000</div>
+      </div>
+
+      <div class="payment-tabs">
+        <button class="payment-tab active" data-method="qris" id="tab-qris">📱 Scan QRIS</button>
+        <button class="payment-tab" data-method="bca" id="tab-bca">🏦 Transfer BCA</button>
+      </div>
+
+      <!-- QRIS Panel -->
+      <div class="payment-panel active" id="panel-qris">
+        <p class="payment-panel-hint">Scan dari DANA, OVO, GoPay, ShopeePay, atau m-Banking apapun. <b>Nominal sudah terkunci di QR</b> — tinggal scan & bayar.</p>
+        <div class="qris-container" id="qris-container">
+          <img src="" alt="QRIS BerUang" class="qris-image" id="qris-image"
+               onerror="this.style.display='none';document.getElementById('qris-fallback').style.display='block';" />
+          <div id="qris-fallback" class="qris-fallback" style="display:none;">
+            <div style="font-size:42px;margin-bottom:8px;">📱</div>
+            <b>QRIS Coming Soon</b>
+            <p>Bos belum upload QRIS. Pakai Transfer BCA dulu ya — tab di atas.</p>
+          </div>
+        </div>
+        <p class="payment-panel-foot">
+          Total: <b id="qris-amount-foot">Rp 50.000</b><br>
+          <small>NMID: ID1026527182327 · Atas Nama: HENDRY · BerUang by Berstock.id</small>
+        </p>
+      </div>
+
+      <!-- BCA Panel -->
+      <div class="payment-panel" id="panel-bca" hidden>
+        <p class="payment-panel-hint">Transfer ke rekening berikut sesuai nominal pas</p>
+        <div class="bca-info">
+          <div class="bca-row">
+            <span class="bca-label">Bank</span>
+            <b class="bca-value">BCA</b>
+          </div>
+          <div class="bca-row">
+            <span class="bca-label">Nomor Rekening</span>
+            <div class="bca-acc-copy">
+              <code class="bca-value bca-acc">7130902183</code>
+              <button class="btn btn-small" id="btn-copy-bca">Copy</button>
+            </div>
+          </div>
+          <div class="bca-row">
+            <span class="bca-label">Atas Nama</span>
+            <b class="bca-value">HENDRY</b>
+          </div>
+          <div class="bca-row highlight">
+            <span class="bca-label">Nominal</span>
+            <b class="bca-value bca-amount" id="bca-amount">Rp 50.000</b>
+          </div>
+        </div>
+        <p class="payment-panel-foot">
+          <small>Transfer sesuai nominal yang tertera agar pembayaran mudah diverifikasi.</small>
+        </p>
+      </div>
+
+      <div class="payment-cta">
+        <a class="btn btn-wa btn-block" id="payment-wa-btn" target="_blank" rel="noopener">
+          💬 Sudah bayar → Kirim Bukti via WhatsApp
+        </a>
+        <p class="payment-cta-note">Bukti pembayaran akan diperiksa admin. Status paket tampil di menu akun setelah aktivasi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ONBOARDING "SETUP DANA AWAL" (user baru) ============ -->
+  <div id="onboarding-screen" hidden></div>
+
   <header class="topbar">
     <div class="brand">
-      <img class="brand-icon-img" src="assets/mascot-beruang.png?v=2" alt="BerUang" />
+      <img class="brand-icon-img" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
       <div>
         <div class="brand-title">BerUang</div>
         <div class="brand-sub">Catet dulu, biar beneran ber-uang</div>
@@ -126,9 +202,8 @@
       <button class="tab active" data-tab="dashboard">Ringkasan</button>
       <button class="tab" data-tab="transaksi">Transaksi</button>
       <button class="tab" data-tab="tambah">Tambah</button>
-      <button class="tab" data-tab="hutang">Hutang</button>
-      <button class="tab" data-tab="rekap">Rekap</button>
-      <button class="tab" data-tab="kategori">Kategori</button>
+      <button class="tab" data-tab="rencana">Rencana</button>
+      <button class="tab" data-tab="rekap">Laporan</button>
       <button class="tab tab-admin" data-tab="admin" hidden>👨‍💼 Admin</button>
     </nav>
     <div class="topbar-actions">
@@ -144,12 +219,20 @@
             <div class="user-name" id="user-name">—</div>
             <div class="user-email" id="user-email">—</div>
             <div class="user-plan" id="user-plan">—</div>
+            <div class="user-sync-state" id="user-sync-state">Memeriksa sinkronisasi…</div>
           </div>
           <hr>
+          <button class="user-item user-item-admin" id="btn-admin-panel" hidden>👨‍💼 Admin Panel</button>
+          <button class="user-item" id="btn-setup-dana">💰 Setup Dana Awal</button>
+          <button class="user-item" id="btn-tg-link">🤖 Hubungkan Telegram (catat via chat)</button>
+          <button class="user-item" id="btn-open-kategori">⚙️ Atur Kategori</button>
           <button class="user-item" id="btn-export">⬇️ Unduh Cadangan <span class="pro-lock">🔒</span></button>
           <button class="user-item" id="btn-import">⬆️ Pulihkan Cadangan</button>
           <input type="file" id="file-import" accept="application/json" hidden />
-          <button class="user-item user-item-danger" id="btn-reset" title="Hapus semua data">🔄 Reset Data</button>
+          <a class="user-item user-item-link" href="privacy.html" target="_blank" rel="noopener">🛡️ Privasi &amp; Bantuan</a>
+          <button class="user-item" id="btn-refresh-app" title="Paksa ambil versi terbaru tanpa menghapus catatan akun">🧹 Bersihkan Cache &amp; Muat Ulang</button>
+          <button class="user-item user-item-danger" id="btn-reset-data" title="Hapus semua data & mulai dari awal">🔄 Reset Data &amp; Mulai Ulang</button>
+          <button class="user-item user-item-danger" id="btn-delete-account" title="Hapus akun BerUang dan data terkait">Hapus Akun BerUang</button>
           <button class="user-item" id="btn-logout">🚪 Logout</button>
         </div>
       </div>
@@ -157,11 +240,22 @@
   </header>
 
   <main>
+    <!-- PWA Install Banner — fullscreen mode hint untuk Chrome/Safari user -->
+    <div id="pwa-install-banner" class="pwa-banner" hidden>
+      <span class="pwa-banner-ic">📱</span>
+      <div class="pwa-banner-body">
+        <b id="pwa-banner-title">Install ke Home Screen</b>
+        <span id="pwa-banner-desc">Buat fullscreen mode + login persistent</span>
+      </div>
+      <button class="pwa-banner-cta" id="pwa-banner-cta">Install</button>
+      <button class="pwa-banner-x" id="pwa-banner-x" aria-label="Tutup">×</button>
+    </div>
+
     <!-- ================= DASHBOARD ================= -->
     <section id="tab-dashboard" class="tab-panel active">
       <div id="welcome-banner" class="welcome-banner" hidden>
         <div class="welcome-content">
-          <img class="welcome-bear-img" src="assets/mascot-beruang.png?v=2" alt="Mascot BerUang" />
+          <img class="welcome-bear-img" src="assets/icons/beruang-wallet-192.png" alt="Mascot BerUang" />
           <div>
             <h2>Halo, selamat datang di <b>BerUang</b>!</h2>
             <p class="welcome-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
@@ -175,6 +269,7 @@
           </div>
         </div>
       </div>
+      <div id="dash-greeting" class="dash-greeting" hidden></div>
       <div class="page-head">
         <div class="page-title">
           <span class="emoji">📅</span>
@@ -189,6 +284,20 @@
           </label>
         </div>
       </div>
+
+      <div id="dashboard-empty-state" class="dashboard-empty-state" hidden>
+        <div class="empty-state-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg>
+        </div>
+        <div>
+          <h2>Mulai dari satu transaksi</h2>
+          <p>Catat pemasukan atau pengeluaran pertama agar ringkasan keuanganmu mulai terbentuk.</p>
+        </div>
+        <button class="btn btn-primary" type="button" data-open-tab="tambah">Catat transaksi pertama</button>
+      </div>
+
+      <!-- AI Anomaly Alert Banner — diisi oleh js/anomaly.js -->
+      <div id="anomaly-banner"></div>
 
       <div class="cards">
         <div class="card card-income">
@@ -210,7 +319,7 @@
         <div class="card card-balance">
           <div class="card-icon">🏦</div>
           <div class="card-body">
-            <div class="card-label">SISA SALDO</div>
+            <div class="card-label">SISA SALDO AKUMULATIF</div>
             <div class="card-value" id="kpi-balance">Rp 0</div>
             <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
           </div>
@@ -225,46 +334,13 @@
         </div>
       </div>
 
-      <!-- ========== CROSS-SELL SECTION (BerSatu Suite) ========== -->
-      <div id="affiliate-section" class="affiliate-section">
-        <div class="aff-head">
-          <h3>🚀 Naik Level dengan BerSatu Suite</h3>
-          <p class="aff-sub">Tools tambahan dari ekosistem yang sama — buat usaha & finansial makin teratur</p>
-        </div>
-        <div class="aff-grid">
-          <a href="berbisnis-pro.html" data-aff="berbisnis" class="aff-card" target="_blank" rel="noopener">
-            <div class="aff-icon" style="background:linear-gradient(135deg,#1e3a5f,#0a1628)">🏪</div>
-            <div class="aff-body">
-              <div class="aff-title">Punya Toko/Usaha?</div>
-              <div class="aff-desc">BerBisnis Pro — POS, manajemen stok dengan foto, laporan untung-rugi. Cocok untuk UMKM 50-200 SKU.</div>
-              <div class="aff-cta">Cek Demo →</div>
-            </div>
-          </a>
+      <div id="ai-promo" class="ai-promo" hidden></div>
+      <div id="tg-bill-promo" class="tg-bill-promo" hidden></div>
+      <div id="dash-reminder" class="dash-reminder" hidden></div>
+      <div id="dash-assets" class="dash-assets" hidden></div>
+      <div id="dash-hutang" class="dash-hutang" hidden></div>
 
-          <a href="landing-berstock.html" data-aff="berstock" class="aff-card" target="_blank" rel="noopener">
-            <div class="aff-icon" style="background:linear-gradient(135deg,#d4af37,#c9a352)">🤖</div>
-            <div class="aff-body">
-              <div class="aff-title">AI Bot Stok via Telegram</div>
-              <div class="aff-desc">Berstock — tanya sales, stok, profit langsung di chat HP. Owner gak perlu buka laptop.</div>
-              <div class="aff-cta">Pelajari →</div>
-            </div>
-          </a>
-
-          <a href="https://lynk.id/hendrypangg" data-aff="ebook" class="aff-card" target="_blank" rel="noopener">
-            <div class="aff-icon" style="background:linear-gradient(135deg,#8b5a2b,#c9a352)">📚</div>
-            <div class="aff-body">
-              <div class="aff-title">E-Book Keuangan Cerdas 2026</div>
-              <div class="aff-desc">Panduan praktis kelola gaji & cash flow UMKM. Rp 49.999 sekali bayar — investasi ilmu yang stay forever.</div>
-              <div class="aff-cta">Beli Sekarang →</div>
-            </div>
-          </a>
-        </div>
-        <p class="aff-disclaimer">
-          ⓘ Semua produk di atas dari ekosistem BerSatu Suite (berstock.id) — beli di sini = dukung developer Indonesia.
-        </p>
-      </div>
-
-      <div class="grid-2">
+      <div class="grid-2" id="dashboard-overview">
         <div class="panel">
           <div class="panel-head">
             <h3>Grafik Pengeluaran Harian</h3>
@@ -282,7 +358,11 @@
         </div>
       </div>
 
-      <div class="grid-3">
+      <div class="dashboard-more-action" id="dashboard-more-action">
+        <button class="btn btn-ghost" type="button" id="btn-dashboard-details" aria-expanded="false">Lihat analisis lengkap</button>
+      </div>
+
+      <div class="grid-3 dashboard-advanced" hidden>
         <div class="panel">
           <div class="panel-head"><h3>Top Pengeluaran</h3></div>
           <ol id="top-expense" class="ranked"></ol>
@@ -306,7 +386,7 @@
         </div>
       </div>
 
-      <div class="grid-3">
+      <div class="grid-3 dashboard-advanced" hidden>
         <div class="panel">
           <div class="panel-head"><h3>Top Pemasukan</h3></div>
           <ol id="top-income" class="ranked"></ol>
@@ -330,7 +410,7 @@
         </div>
       </div>
 
-      <div class="grid-2">
+      <div class="grid-2 dashboard-advanced" hidden>
         <div class="panel alokasi">
           <div class="panel-head"><h3>Alokasi 50 / 30 / 20</h3></div>
           <div class="alokasi-grid">
@@ -372,16 +452,17 @@
             Target pengeluaran bulan ini: <b id="target-bulan">Rp 0</b>
             <label class="inline-edit">
               Ubah target:
-              <input type="number" id="input-target" min="0" step="100000" />
+              <input type="text" inputmode="numeric" id="input-target" class="money-input" placeholder="0" />
               <button class="btn btn-small" id="btn-save-target">Simpan</button>
             </label>
           </div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel dashboard-advanced" hidden>
         <div class="panel-head"><h3>Riwayat Keuangan Sejak Awal</h3></div>
-        <div class="grid-2">
+        <div class="six-month-layout">
+          <div class="six-month-table-wrap">
           <table class="six-month-table">
             <thead>
               <tr>
@@ -391,8 +472,48 @@
             <tbody id="six-month-body"></tbody>
             <tfoot id="six-month-foot"></tfoot>
           </table>
+          </div>
           <div class="chart-box chart-box-lg"><canvas id="chart-sixmonth"></canvas></div>
         </div>
+      </div>
+
+      <!-- ========== CROSS-SELL SECTION (BerSatu Suite) — di bawah biar gak nutupin fitur utama ========== -->
+      <div id="affiliate-section" class="affiliate-section" hidden>
+        <div class="aff-head">
+          <h3>🚀 Naik Level dengan BerSatu Suite</h3>
+          <p class="aff-sub">Tools tambahan dari ekosistem yang sama — buat usaha & finansial makin teratur</p>
+        </div>
+        <div class="aff-grid">
+          <a href="berbisnis-pro.html" data-aff="berbisnis" class="aff-card" target="_blank" rel="noopener">
+            <div class="aff-icon" style="background:linear-gradient(135deg,#1e3a5f,#0a1628)">🏪</div>
+            <div class="aff-body">
+              <div class="aff-title">Punya Toko/Usaha?</div>
+              <div class="aff-desc">BerBisnis Pro — POS, manajemen stok dengan foto, laporan untung-rugi. Cocok untuk UMKM 50-200 SKU.</div>
+              <div class="aff-cta">Cek Demo →</div>
+            </div>
+          </a>
+
+          <a href="landing-berstock.html" data-aff="berstock" class="aff-card" target="_blank" rel="noopener">
+            <div class="aff-icon" style="background:linear-gradient(135deg,#d4af37,#c9a352)">🤖</div>
+            <div class="aff-body">
+              <div class="aff-title">AI Bot Stok via Telegram</div>
+              <div class="aff-desc">Berstock — tanya sales, stok, profit langsung di chat HP. Owner gak perlu buka laptop.</div>
+              <div class="aff-cta">Pelajari →</div>
+            </div>
+          </a>
+
+          <a href="https://lynk.id/hendrypangg" data-aff="ebook" class="aff-card" target="_blank" rel="noopener">
+            <div class="aff-icon" style="background:linear-gradient(135deg,#8b5a2b,#c9a352)">📚</div>
+            <div class="aff-body">
+              <div class="aff-title">E-Book Keuangan Cerdas 2026</div>
+              <div class="aff-desc">Panduan praktis kelola gaji & cash flow UMKM. Rp 49.999 sekali bayar — investasi ilmu yang stay forever.</div>
+              <div class="aff-cta">Beli Sekarang →</div>
+            </div>
+          </a>
+        </div>
+        <p class="aff-disclaimer">
+          ⓘ Semua produk di atas dari ekosistem BerSatu Suite (berstock.id) — beli di sini = dukung developer Indonesia.
+        </p>
       </div>
     </section>
 
@@ -434,22 +555,29 @@
     <!-- ================= TAMBAH ================= -->
     <section id="tab-tambah" class="tab-panel">
       <div class="page-head"><h1>Tambah Transaksi</h1></div>
+      <div class="quick-entry-chooser" aria-label="Pilih cara mencatat transaksi">
+        <button type="button" class="quick-entry active" data-quick-kind="pengeluaran">
+          <span class="quick-entry-icon expense" aria-hidden="true">−</span>
+          <span><b>Pengeluaran</b><small>Catat uang keluar</small></span>
+        </button>
+        <button type="button" class="quick-entry" data-quick-kind="pemasukan">
+          <span class="quick-entry-icon income" aria-hidden="true">+</span>
+          <span><b>Pemasukan</b><small>Catat uang masuk</small></span>
+        </button>
+        <button type="button" class="quick-entry" data-quick-kind="struk">
+          <span class="quick-entry-icon receipt" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Zm3 5h6m-6 4h6"/></svg>
+          </span>
+          <span><b>Foto struk</b><small>Baca transaksi otomatis</small></span>
+        </button>
+      </div>
       <div class="grid-3">
         <!-- FORM -->
-        <div class="panel">
-          <div class="panel-head"><h3>📝 Form Input</h3></div>
+        <div class="panel" id="quick-form-panel">
+          <div class="panel-head"><h3>Detail Transaksi</h3></div>
           <form id="form-transaksi" class="form">
-            <label>Tanggal
-              <input type="date" name="tanggal" required />
-            </label>
-            <label>Jenis
-              <select name="jenis" required>
-                <option value="pengeluaran">Pengeluaran</option>
-                <option value="pemasukan">Pemasukan</option>
-              </select>
-            </label>
             <label>Jumlah (Rp)
-              <input type="number" name="jumlah" min="0" step="500" required />
+              <input type="text" inputmode="numeric" name="jumlah" class="money-input" placeholder="0" required />
             </label>
             <label>Deskripsi
               <input type="text" name="deskripsi" placeholder="mis. Bensin Pertamax" required />
@@ -460,16 +588,45 @@
             <label>Kategori
               <input type="text" name="kategori" readonly />
             </label>
-            <label>Alokasi
-              <select name="alokasi">
-                <option value="">—</option>
-                <option>Kebutuhan</option>
-                <option>Keinginan</option>
-                <option>Investasi</option>
-              </select>
-            </label>
+            <details class="advanced-fields">
+              <summary>Opsi lanjutan</summary>
+              <div class="advanced-fields-body">
+                <label>Tanggal
+                  <input type="date" name="tanggal" required />
+                </label>
+                <label>Jenis
+                  <select name="jenis" required>
+                    <option value="pengeluaran">Pengeluaran</option>
+                    <option value="pemasukan">Pemasukan</option>
+                  </select>
+                </label>
+                <label>Alokasi
+                  <select name="alokasi">
+                    <option value="">—</option>
+                    <option>Kebutuhan</option>
+                    <option>Keinginan</option>
+                    <option>Investasi</option>
+                  </select>
+                </label>
+                <label class="recurring-toggle" style="display:flex;align-items:center;gap:8px;flex-direction:row;cursor:pointer;font-size:13px;color:var(--ink-soft);">
+                  <input type="checkbox" name="jadikanRutin" id="chk-jadikan-rutin" style="width:18px;height:18px;flex:0 0 auto;" />
+                  Jadikan tagihan rutin
+                </label>
+                <label id="field-hari-tagih" style="display:none;background:#fff7e6;border:1px solid #f0d488;border-radius:10px;padding:10px 12px;">
+                  <span style="display:block;font-size:13px;color:#6b4423;font-weight:600;margin-bottom:6px;">Jatuh tempo tiap tanggal</span>
+                  <input type="number" name="hariTagih" min="1" max="31" placeholder="1-31" style="width:100%;padding:8px;font-size:16px;text-align:center;border:1px solid #f0d488;border-radius:8px;background:#fff;" />
+                  <span style="display:block;font-size:11px;color:#8b5a2b;margin-top:6px;">Tanggal 31 otomatis memakai hari terakhir pada bulan yang lebih pendek.</span>
+                </label>
+              </div>
+            </details>
             <button class="btn btn-primary" type="submit">Simpan Transaksi</button>
           </form>
+        </div>
+
+        <!-- TAGIHAN RUTIN -->
+        <div class="panel">
+          <div class="panel-head"><h3>🔁 Tagihan Rutin</h3></div>
+          <div id="recurring-list"></div>
         </div>
 
         <!-- CHAT -->
@@ -494,7 +651,7 @@
         </div>
 
         <!-- STRUK -->
-        <div class="panel">
+        <div class="panel" id="receipt-panel">
           <div class="panel-head">
             <h3>🧾 Input via Struk</h3>
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
@@ -523,6 +680,32 @@ TOTAL            86.500"></textarea>
       </div>
     </section>
 
+    <!-- ================= RENCANA ================= -->
+    <section id="tab-rencana" class="tab-panel">
+      <div class="page-head">
+        <div>
+          <h1>Rencana Keuangan</h1>
+          <small class="page-subtitle">Atur kewajiban dan tujuan keuangan dalam satu tempat.</small>
+        </div>
+      </div>
+      <div class="plan-hub-grid">
+        <button type="button" class="plan-hub-card" data-open-tab="hutang">
+          <span class="plan-hub-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16v12H4zM7 7V5h10v2m-8 6h6"/></svg>
+          </span>
+          <span><b>Hutang &amp; Piutang</b><small>Pantau kewajiban, pinjaman, dan jatuh tempo.</small></span>
+          <span class="plan-hub-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="plan-hub-card" data-open-tab="goal">
+          <span class="plan-hub-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="m14 10 6-6"/></svg>
+          </span>
+          <span><b>Target Keuangan</b><small>Susun target menabung dan lihat progresnya.</small></span>
+          <span class="plan-hub-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
     <!-- ================= HUTANG & PIUTANG ================= -->
     <section id="tab-hutang" class="tab-panel">
       <div class="page-head">
@@ -542,7 +725,7 @@ TOTAL            86.500"></textarea>
           <div class="hsum-meta" id="hsum-hutang-count">0 orang saya berhutang</div>
         </div>
         <div class="hsum-card hsum-net">
-          <div class="hsum-label">💰 Net Position</div>
+          <div class="hsum-label">Posisi Bersih</div>
           <div class="hsum-value" id="hsum-net">Rp 0</div>
           <div class="hsum-meta">Selisih piutang & hutang</div>
         </div>
@@ -566,6 +749,41 @@ TOTAL            86.500"></textarea>
         <div id="hutang-list" class="hutang-list"></div>
         <div id="hutang-empty" class="empty" hidden>Belum ada catatan hutang/piutang.</div>
       </div>
+    </section>
+
+    <!-- ================= GOAL PLANNER (AI) ================= -->
+    <section id="tab-goal" class="tab-panel">
+      <div class="page-head">
+        <h1>Target Keuangan</h1>
+        <small class="page-subtitle">Susun rencana yang realistis untuk mencapai targetmu.</small>
+      </div>
+
+      <!-- Form add goal -->
+      <form id="form-goal" class="goal-form">
+        <h3 class="goal-form-title">+ Target Baru</h3>
+        <label>Nama target
+          <input type="text" name="nama" required placeholder="Misal: Beli iPhone, DP Rumah, Dana Darurat" maxlength="60" />
+        </label>
+        <div class="goal-form-row">
+          <label>Target (Rp)
+            <input type="text" name="targetAmount" required placeholder="18000000" class="money-input" inputmode="numeric" />
+          </label>
+          <label>Tabungan saat ini (Rp)
+            <input type="text" name="currentSaving" placeholder="0" class="money-input" inputmode="numeric" />
+          </label>
+        </div>
+        <label>Tenggat
+          <input type="date" name="deadline" required />
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">+ Tambah Target</button>
+        <small class="goal-form-hint">
+          AI Plan: <b>1 pembuatan rencana/bulan</b> (gratis) · Pro mengikuti batas penggunaan harian.
+          AI baca pola income & spending lu, kasih saran konkret cut budget.
+        </small>
+      </form>
+
+      <!-- List goals -->
+      <div id="goal-list" class="goal-list"></div>
     </section>
 
     <!-- ================= REKAP ================= -->
@@ -647,31 +865,104 @@ TOTAL            86.500"></textarea>
   </main>
 
   <!-- ============ BOTTOM NAVIGATION (Mobile/TWA Native Feel) ============ -->
+  <!-- ============ AI ADVISOR — Beruang Akuntan Gemoy ============ -->
+  <button class="ai-fab" id="ai-fab" aria-label="Tanya Beruang AI Advisor" hidden>
+    <img class="ai-fab-icon" src="assets/icons/beruang-wallet-192.png" alt="AI" />
+    <span class="ai-fab-badge">PRO</span>
+  </button>
+
+  <div class="ai-chat-overlay" id="ai-chat-overlay" hidden></div>
+
+  <div class="ai-chat-panel" id="ai-chat-panel" hidden>
+    <button class="ai-chat-back" id="ai-chat-back" aria-label="Kembali ke Ringkasan">
+      <span>←</span> Kembali ke Ringkasan
+    </button>
+
+    <div class="ai-chat-head">
+      <div class="ai-chat-head-info">
+        <div class="ai-chat-avatar"><img src="assets/icons/beruang-wallet-192.png" alt="" /></div>
+        <div>
+          <div class="ai-chat-title">Beruang Akuntan</div>
+          <div class="ai-chat-sub">Asisten AI · memahami data keuanganmu</div>
+        </div>
+      </div>
+      <button class="ai-chat-close" id="ai-chat-close" aria-label="Tutup">✕</button>
+    </div>
+
+    <div class="ai-chat-body" id="ai-chat-body">
+      <!-- Greeting awal -->
+      <div class="ai-bubble ai-bubble-bot">
+        <div class="ai-bubble-meta">🐻 Beruang Akuntan</div>
+        Halo! Saya Beruang Akuntan, asisten yang membantu membaca data keuanganmu.
+        Tanyakan pengeluaran, target menabung, atau cara mengatur anggaran.
+      </div>
+      <!-- Suggestion chips -->
+      <div class="ai-chips" id="ai-chips">
+        <button class="ai-chip" data-q="Pengeluaran aku bulan ini gimana?">📊 Cek pengeluaran bulan ini</button>
+        <button class="ai-chip" data-q="Saran hemat buat aku apa?">💡 Saran hemat</button>
+        <button class="ai-chip" data-q="Bandingkan bulan ini sama bulan lalu">🔄 Bandingkan bulan lalu</button>
+        <button class="ai-chip" data-q="Kategori pengeluaran terbesarku apa?">🎯 Kategori terbesar</button>
+      </div>
+    </div>
+
+    <form class="ai-chat-form" id="ai-chat-form">
+      <input type="text" class="ai-chat-input" id="ai-chat-input"
+             placeholder="Tanyakan kondisi keuanganmu…" maxlength="500" autocomplete="off" />
+      <button type="submit" class="ai-chat-send" id="ai-chat-send" aria-label="Kirim">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </form>
+
+    <div class="ai-chat-foot">
+      <span id="ai-quota-info">💎 Pro • 30 query/hari</span>
+    </div>
+  </div>
+
+  <!-- Paywall preview untuk free user -->
+  <div class="ai-paywall-modal" id="ai-paywall-modal" hidden>
+    <div class="ai-paywall-card">
+      <button class="ai-paywall-close" id="ai-paywall-close" aria-label="Tutup">✕</button>
+      <div class="ai-paywall-mascot">🐻💎</div>
+      <h2>Tanya Beruang Akuntan</h2>
+      <p class="ai-paywall-sub">AI Advisor 24/7 yang paham data kamu — eksklusif untuk Pro</p>
+      <div class="ai-paywall-features">
+        <div class="ai-paywall-feat">✨ Saran spending personal</div>
+        <div class="ai-paywall-feat">🎯 Prediksi target nabung</div>
+        <div class="ai-paywall-feat">📊 Analisa kategori otomatis</div>
+        <div class="ai-paywall-feat">💬 Chat 24/7, kapan aja</div>
+      </div>
+      <button class="btn btn-primary btn-block" id="ai-paywall-upgrade">
+        💎 Akses Pro 7 Hari — Rp 10rb
+      </button>
+      <small class="ai-paywall-note">Lanjut Rp 50rb/bulan · atau Rp 299rb/tahun (hemat 50%)</small>
+    </div>
+  </div>
+
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bnav-item active" data-tab="dashboard">
-      <span class="bnav-icon">🏠</span>
-      <span class="bnav-label">Home</span>
+      <span class="bnav-icon"><svg viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4z"/></svg></span>
+      <span class="bnav-label">Ringkasan</span>
     </button>
     <button class="bnav-item" data-tab="transaksi">
-      <span class="bnav-icon">📋</span>
+      <span class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6zM9 8h6m-6 4h6m-6 4h4"/></svg></span>
       <span class="bnav-label">Transaksi</span>
     </button>
     <button class="bnav-item bnav-fab" data-tab="tambah" aria-label="Tambah Transaksi">
       <span class="bnav-fab-icon">+</span>
     </button>
-    <button class="bnav-item" data-tab="hutang">
-      <span class="bnav-icon">💸</span>
-      <span class="bnav-label">Hutang</span>
+    <button class="bnav-item" data-tab="rencana">
+      <span class="bnav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="m14 10 6-6"/></svg></span>
+      <span class="bnav-label">Rencana</span>
     </button>
     <button class="bnav-item" data-tab="rekap">
-      <span class="bnav-icon">📊</span>
-      <span class="bnav-label">Rekap</span>
+      <span class="bnav-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9h4v10m2 0V5h4v14m2 0v-7h4v7"/></svg></span>
+      <span class="bnav-label">Laporan</span>
     </button>
   </nav>
 
   <footer class="footer">
     🐻 <b>BerUang</b> · Catet dulu, biar beneran ber-uang<br>
-    <small>Data disimpan lokal di browser Anda (localStorage). Gunakan <b>Export</b> untuk backup.</small>
+    <small>Saat login, catatan disimpan untuk akun Anda dan disinkronkan ke cloud. Gunakan <b>Unduh Cadangan</b> untuk cadangan pribadi.</small>
   </footer>
 
   <!-- Modal edit -->
@@ -688,7 +979,7 @@ TOTAL            86.500"></textarea>
             <option value="pemasukan">Pemasukan</option>
           </select>
         </label>
-        <label>Jumlah <input type="number" name="jumlah" min="0" step="500" required /></label>
+        <label>Jumlah <input type="text" inputmode="numeric" name="jumlah" class="money-input" placeholder="0" required /></label>
         <label>Deskripsi <input type="text" name="deskripsi" required /></label>
         <label>Sub Kategori <select name="subKategori" required></select></label>
         <label>Kategori <input type="text" name="kategori" readonly /></label>
@@ -722,7 +1013,7 @@ TOTAL            86.500"></textarea>
           </select>
         </label>
         <label>Nama Orang<input name="nama" required placeholder="Andi / Mama / Pak Budi" /></label>
-        <label>Nominal (Rp)<input name="nominal" type="number" min="0" required placeholder="200000" /></label>
+        <label>Nominal (Rp)<input name="nominal" type="text" inputmode="numeric" class="money-input" required placeholder="200.000" /></label>
         <label>Jatuh Tempo (opsional)<input name="jatuhTempo" type="date" /></label>
         <label>Catatan (opsional)<textarea name="catatan" rows="2" placeholder="Pinjam buat bensin, dll"></textarea></label>
         <div class="modal-actions">
@@ -730,6 +1021,14 @@ TOTAL            86.500"></textarea>
           <button type="submit" class="btn btn-primary">💾 Simpan</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Hubungkan Telegram -->
+  <div class="modal" id="modal-tg-link" hidden style="display:none">
+    <div class="modal-card">
+      <button type="button" id="tg-modal-close" class="modal-close" aria-label="Tutup">&times;</button>
+      <div id="tg-modal-body"></div>
     </div>
   </div>
 
@@ -756,16 +1055,24 @@ TOTAL            86.500"></textarea>
 
   <script src="js/data.js?v=20"></script>
   <script src="js/utils.js?v=21"></script>
-  <script src="js/firebase-config.js?v=20"></script>
-  <script src="js/storage.js?v=21"></script>
+  <script src="js/firebase-config.js?v=25"></script>
+  <script>window.PRESENCE_APP = 'beruang';</script>
+  <script src="js/presence.js?v=2"></script>
+  <script src="js/storage.js?v=24"></script>
   <script src="js/parser.js?v=20"></script>
-  <script src="js/sync.js?v=22"></script>
-  <script src="js/auth.js?v=22"></script>
-  <script src="js/dashboard.js?v=23"></script>
+  <script src="js/sync.js?v=26"></script>
+  <script src="js/auth.js?v=25"></script>
+  <script src="js/dashboard.js?v=32"></script>
+  <script src="js/anomaly.js?v=1"></script>
   <script src="js/pages.js?v=22"></script>
   <script src="js/reports.js?v=1"></script>
-  <script src="js/admin.js?v=20"></script>
-  <script src="js/hutang.js?v=1"></script>
-  <script src="js/app.js?v=28"></script>
+  <script src="js/admin.js?v=21"></script>
+  <script src="js/hutang.js?v=2"></script>
+  <script src="js/goal.js?v=2"></script>
+  <script src="js/ai-advisor.js?v=10"></script>
+  <script src="js/recurring.js?v=2"></script>
+  <script src="js/telegram-link.js?v=5"></script>
+  <script src="js/onboarding.js?v=7"></script>
+  <script src="js/app.js?v=52"></script>
 </body>
 </html>

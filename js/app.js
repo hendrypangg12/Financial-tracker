@@ -1,12 +1,29 @@
 // Bootstrap & event handlers
-function init() {
-  loadState();
+
+// Helper format ribuan utk SEMUA input uang (class .money-input)
+function parseMoney(v) { return Number(String(v == null ? '' : v).replace(/[^\d]/g, '')) || 0; }
+function fmtThousands(v) { const d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? Number(d).toLocaleString('id-ID') : ''; }
+let moneyInputBound = false;
+function bindMoneyInputs() {
+  if (moneyInputBound) return;
+  moneyInputBound = true;
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t && t.classList && t.classList.contains('money-input')) t.value = fmtThousands(t.value);
+  });
+}
+
+function init(loadLocal = true) {
+  if (loadLocal) loadState();
+  bindMoneyInputs();
   fillMonthYearSelectors();
   fillSubCategoriSelects();
   fillTrxFilters();
   setupAffiliateTracking();
+  setupPWAInstallBanner();
   attachEvents();
   if (typeof setupHutangForm === 'function') setupHutangForm();
+  if (typeof setupGoalForm === 'function') setupGoalForm();
   renderAll();
 
   // Default tanggal struk & form = hari ini
@@ -20,6 +37,7 @@ function renderAll() {
   renderDashboard();
   renderTransaksi();
   if (typeof renderHutang === 'function') renderHutang();
+  if (typeof renderGoals === 'function') renderGoals();
   renderRekap();
   renderKategori();
 }
@@ -51,30 +69,65 @@ function fillTrxFilters() {
 function attachEvents() {
   // Tabs — handle both top tabs and bottom-nav (mobile/TWA)
   function switchToTab(tabName) {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    const target = document.getElementById('tab-' + tabName);
+    if (!target) return;
+    const navName = ['hutang', 'goal'].includes(tabName) ? 'rencana' : tabName;
+    document.querySelectorAll('.tab').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.bnav-item').forEach(b => {
+      b.classList.remove('active');
+      b.removeAttribute('aria-current');
+    });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll(`.tab[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
-    document.querySelectorAll(`.bnav-item[data-tab="${tabName}"]`).forEach(b => b.classList.add('active'));
-    document.getElementById('tab-' + tabName).classList.add('active');
+    document.querySelectorAll(`.tab[data-tab="${navName}"]`).forEach(b => {
+      b.classList.add('active');
+      b.setAttribute('aria-selected', 'true');
+    });
+    document.querySelectorAll(`.bnav-item[data-tab="${navName}"]`).forEach(b => {
+      b.classList.add('active');
+      b.setAttribute('aria-current', 'page');
+    });
+    target.classList.add('active');
     // Haptic feedback (Android only)
     if (typeof haptic === 'function') haptic(8);
     // Re-render based on tab
     if (tabName === 'dashboard') renderDashboard();
     if (tabName === 'transaksi') renderTransaksi();
     if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
+    if (tabName === 'goal' && typeof renderGoals === 'function') renderGoals();
     if (tabName === 'rekap') renderRekap();
     if (tabName === 'kategori') renderKategori();
+    if (tabName === 'tambah' && typeof renderRecurringManager === 'function') renderRecurringManager();
     if (tabName === 'admin' && typeof renderAdmin === 'function') renderAdmin();
     // Scroll to top for native-feel
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  window.switchBeruangTab = switchToTab;
   document.querySelectorAll('.tab').forEach(btn => {
     btn.onclick = () => switchToTab(btn.dataset.tab);
   });
   document.querySelectorAll('.bnav-item').forEach(btn => {
     btn.onclick = () => switchToTab(btn.dataset.tab);
   });
+  document.querySelectorAll('[data-open-tab]').forEach(btn => {
+    btn.onclick = () => switchToTab(btn.dataset.openTab);
+  });
+  document.querySelectorAll('.tab.active').forEach(b => b.setAttribute('aria-selected', 'true'));
+  document.querySelectorAll('.bnav-item.active').forEach(b => b.setAttribute('aria-current', 'page'));
+
+  const dashboardDetailsButton = document.getElementById('btn-dashboard-details');
+  if (dashboardDetailsButton) {
+    dashboardDetailsButton.onclick = () => {
+      const sections = [...document.querySelectorAll('.dashboard-advanced')];
+      const willOpen = sections.some(section => section.hidden);
+      sections.forEach(section => { section.hidden = !willOpen; });
+      dashboardDetailsButton.setAttribute('aria-expanded', String(willOpen));
+      dashboardDetailsButton.textContent = willOpen ? 'Sembunyikan analisis lengkap' : 'Lihat analisis lengkap';
+      if (willOpen) requestAnimationFrame(() => Object.values(charts || {}).forEach(chart => chart?.resize?.()));
+    };
+  }
 
   // Dashboard filter
   document.getElementById('dash-month').onchange = e => { state.selectedMonth = +e.target.value; renderDashboard(); renderRekap(); };
@@ -82,29 +135,79 @@ function attachEvents() {
 
   // Target
   document.getElementById('btn-save-target').onclick = () => {
-    const v = +document.getElementById('input-target').value || 0;
+    const v = parseMoney(document.getElementById('input-target').value);
     state.target = v; saveState(); renderDashboard();
     showToast('Target disimpan', 'success');
   };
 
   // Form tambah
   const form = document.getElementById('form-transaksi');
+  const quickEntryButtons = [...document.querySelectorAll('.quick-entry')];
+  const chooseQuickEntry = (kind, focus = true) => {
+    quickEntryButtons.forEach(button => button.classList.toggle('active', button.dataset.quickKind === kind));
+    if (kind === 'struk') {
+      document.getElementById('receipt-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const jenis = form.querySelector('[name="jenis"]');
+    if (jenis) {
+      jenis.value = kind;
+      fillSubCategoriSelects();
+    }
+    document.getElementById('quick-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (focus) setTimeout(() => form.querySelector('[name="jumlah"]')?.focus(), 300);
+  };
+  quickEntryButtons.forEach(button => {
+    button.onclick = () => chooseQuickEntry(button.dataset.quickKind);
+  });
   form.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
   form.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-transaksi');
+  // Toggle field "Jatuh tempo tiap tanggal" saat checkbox "Jadikan tagihan rutin" di-centang
+  const chkRutin = document.getElementById('chk-jadikan-rutin');
+  const fieldHariTagih = document.getElementById('field-hari-tagih');
+  if (chkRutin && fieldHariTagih) {
+    chkRutin.addEventListener('change', () => {
+      fieldHariTagih.style.display = chkRutin.checked ? 'block' : 'none';
+      if (chkRutin.checked) {
+        const inp = fieldHariTagih.querySelector('input[name="hariTagih"]');
+        const tgl = form.querySelector('[name="tanggal"]').value;
+        if (inp && !inp.value) inp.value = parseInt(String(tgl || todayISO()).slice(8, 10), 10) || 1;
+      }
+    });
+  }
   form.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(form);
     const t = Object.fromEntries(fd.entries());
-    t.jumlah = +t.jumlah;
+    const jadikanRutin = t.jadikanRutin === 'on';
+    delete t.jadikanRutin;
+    const hariTagihInput = t.hariTagih;
+    delete t.hariTagih;
+    t.jumlah = parseMoney(t.jumlah);
     if (!t.jumlah || t.jumlah <= 0) { showToast('Jumlah harus > 0', 'error'); return; }
     const info = findCategoryForSub(t.subKategori, t.jenis);
     t.kategori = info.kategori;
     if (!t.alokasi && info.alokasi) t.alokasi = info.alokasi;
+    // Tagihan rutin (cuma pengeluaran) — buat template + tag transaksi ini sbg posting bln ini
+    if (jadikanRutin && t.jenis === 'pengeluaran' && typeof addRecurring === 'function') {
+      // Hari tagih: utamakan input eksplisit dari user, fallback ke tanggal transaksi
+      let hari = parseInt(hariTagihInput, 10);
+      if (!hari || hari < 1 || hari > 31) {
+        hari = parseInt(String(t.tanggal || todayISO()).slice(8, 10), 10) || 1;
+      }
+      const rec = { nama: t.deskripsi || t.subKategori || 'Tagihan', jumlah: t.jumlah, hariTagih: hari, kategori: t.kategori, subKategori: t.subKategori, alokasi: t.alokasi || 'Kebutuhan' };
+      addRecurring(rec);
+      t.recurringId = rec.id;
+      t.recurringMonth = (new Date()).toISOString().slice(0, 7);
+    }
     addTransaction(t);
-    showToast('Transaksi ditambahkan', 'success');
+    showToast(jadikanRutin ? 'Transaksi + tagihan rutin disimpan 🔁' : 'Transaksi ditambahkan', 'success');
     form.reset();
+    chooseQuickEntry('pengeluaran', false);
     form.querySelector('[name="tanggal"]').value = todayISO();
+    if (fieldHariTagih) fieldHariTagih.style.display = 'none'; // hide kembali setelah reset
     fillSubCategoriSelects();
+    if (typeof renderRecurringManager === 'function') renderRecurringManager();
     renderAll();
   };
 
@@ -333,7 +436,7 @@ function attachEvents() {
     e.preventDefault();
     const fd = new FormData(editForm);
     const t = Object.fromEntries(fd.entries());
-    t.jumlah = +t.jumlah;
+    t.jumlah = parseMoney(t.jumlah);
     updateTransaction(t.id, t);
     hideEditModal();
     renderAll();
@@ -396,14 +499,6 @@ function attachEvents() {
     }
     e.target.value = '';
   };
-  document.getElementById('btn-reset').onclick = () => {
-    if (confirm('Yakin hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')) {
-      resetAll();
-      fillSubCategoriSelects();
-      renderAll();
-      showToast('Semua data dihapus');
-    }
-  };
 }
 
 function openEditModal(id) {
@@ -413,7 +508,7 @@ function openEditModal(id) {
   form.querySelector('[name="id"]').value = t.id;
   form.querySelector('[name="tanggal"]').value = t.tanggal;
   form.querySelector('[name="jenis"]').value = t.jenis;
-  form.querySelector('[name="jumlah"]').value = t.jumlah;
+  form.querySelector('[name="jumlah"]').value = fmtThousands(t.jumlah);
   form.querySelector('[name="deskripsi"]').value = t.deskripsi || '';
   fillSubCategoriSelects();
   form.querySelector('[name="subKategori"]').value = t.subKategori || '';
@@ -470,9 +565,28 @@ function setupWelcomeBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Daftarkan service worker (PWA: supaya aplikasi bisa offline & diinstall)
+  // Daftarkan service worker (PWA: offline + auto-update versi terbaru)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    // Auto-reload pas service worker baru ambil alih (versi baru aktif).
+    // Guard: cuma reload kalau halaman EMANG udah dikontrol SW (bukan install pertama),
+    // biar gak reload sia-sia pas kunjungan pertama.
+    let refreshing = false;
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      const checkUpdate = () => { try { reg.update(); } catch (e) {} };
+      // Cek versi baru tiap app dibuka lagi (penting buat user homescreen/PWA standalone)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkUpdate();
+      });
+      // + cek berkala buat sesi yang kebuka lama
+      setInterval(checkUpdate, 30 * 60 * 1000);
+    }).catch(() => {});
   }
   // Setup event login/register/paywall
   setupAuthUI();
@@ -480,42 +594,290 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof onAuthStateChanged === 'function') {
     onAuthStateChanged(async (user, profile) => {
       if (!user) {
+        stopAutoSync(); stopCloudListener();
         showScreen('login');
         return;
       }
+      showScreen('loading');
+      // Cek payment redirect dari Xendit (?payment=success&ref=xxx) — activate subscription
+      if (typeof handlePostPaymentRedirect === 'function') {
+        try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
+      }
       // FREEMIUM: user bisa pakai app meski belum bayar
-      // Pro features (cloud sync, OCR, export) di-gate dengan isPro()
-      showScreen('app');
+      // Pro features (AI, Telegram bot, OCR) di-gate dengan isPro()
+      // Cloud sync ENABLED UNTUK SEMUA user — biar data tester gak hilang kalau browser clear cache
       const userIsPro = typeof isPro === 'function' && isPro(profile);
-      // Load data dari cloud HANYA untuk Pro user
-      if (userIsPro) {
-        await loadFromCloud();
-      }
-      init();
+      // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
+      selectUserStorage(user.uid);
+      loadState();
+      await loadFromCloud();
+      if (currentUser?.uid !== user.uid) return;
+      init(false);
+      showScreen('app');
       setupWelcomeBanner();
-      // Cloud listener & auto-sync HANYA untuk Pro user
-      if (userIsPro) {
-        startCloudListener(() => {
-          renderAll();
-          fillSubCategoriSelects();
-        });
-        if (typeof startAutoSync === 'function') startAutoSync();
+      // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
+      if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
+      // Tarik transaksi dari bot Telegram (kalau tersambung) + auto tiap buka/berkala
+      if (typeof pullTelegramInbox === 'function') {
+        pullTelegramInbox();
+        if (!window.__tgPullBound) {
+          window.__tgPullBound = true;
+          setInterval(() => { if (typeof pullTelegramInbox === 'function') pullTelegramInbox(); }, 60000);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && typeof pullTelegramInbox === 'function') pullTelegramInbox();
+          });
+        }
       }
+      // Cloud listener + auto-sync untuk SEMUA user (data backup integrity)
+      startCloudListener(() => {
+        renderAll();
+        fillSubCategoriSelects();
+      });
+      if (typeof startAutoSync === 'function') startAutoSync();
       updateUserMenu(user, profile);
       // Setup gating UI untuk free user
       setupProGating(profile);
+      // Init AI Advisor (FAB Beruang Akuntan) — backend /api/advise LIVE (28 Mei 2026)
+      if (typeof initAIAdvisor === 'function') {
+        initAIAdvisor();
+        if (typeof showAIFab === 'function') showAIFab();
+      }
     });
   } else {
     // Fallback: Firebase gagal load, jalankan standalone (localStorage only)
     init();
     setupWelcomeBanner();
+    if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
   }
 });
 
+// Deteksi mode browser & tampilkan tip persistent login sesuai situasi
+function detectAuthEnvAndShowTip() {
+  const tipPwa = document.getElementById('auth-pwa-tip');
+  const tipPrivate = document.getElementById('auth-private-warn');
+  if (!tipPwa || !tipPrivate) return;
+  // Standalone PWA = udah install homescreen → tip-nya gak perlu
+  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  const isIosStandalone = window.navigator && window.navigator.standalone === true;
+  if (isStandalone || isIosStandalone) {
+    tipPwa.style.display = 'none';
+    tipPrivate.style.display = 'none';
+    return;
+  }
+  // Test private/incognito: coba write localStorage. Di iOS Safari Private, write throws atau quota 0.
+  let isPrivate = false;
+  try {
+    const k = '__priv_test_' + Date.now();
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+  } catch (e) { isPrivate = true; }
+  // Tambah cek estimate quota (Chrome incognito = quota kecil)
+  if (!isPrivate && navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then((q) => {
+      if (q.quota && q.quota < 120 * 1024 * 1024) { // < 120MB = kemungkinan private
+        tipPrivate.style.display = 'block';
+      }
+    }).catch(() => {});
+  }
+  if (isPrivate) tipPrivate.style.display = 'block';
+  else tipPwa.style.display = 'block';
+}
+
+// ============ PAYMENT FLOW (Xendit / payment gateway) ============
+// Endpoint backend Cloudflare Worker (siap diisi setelah Xendit approved)
+const PAYMENT_API_BASE = 'https://berstock-bot.hendrypangg12.workers.dev';
+
+// Create payment invoice — return checkout URL atau throw kalau gateway belum aktif
+async function createPaymentInvoice(paket) {
+  if (!currentUser || !currentUser.uid) throw new Error('User belum login');
+  const cfg = typeof getPackageConfig === 'function' ? getPackageConfig(paket) : null;
+  if (!cfg) throw new Error(`Paket tidak dikenal: ${paket}`);
+
+  const externalId = `beruang_${currentUser.uid}_${paket}_${Date.now()}`;
+  const successUrl = `${window.location.origin}${window.location.pathname}?payment=success&ref=${externalId}`;
+  const failureUrl = `${window.location.origin}${window.location.pathname}?payment=failed&ref=${externalId}`;
+
+  const res = await fetch(`${PAYMENT_API_BASE}/api/create-invoice`, {
+    method: 'POST',
+    headers: await authenticatedHeaders(),
+    body: JSON.stringify({
+      product: 'beruang',
+      uid: currentUser.uid,
+      email: currentUser.email,
+      paket,
+      amount: cfg.priceIdr,
+      externalId,
+      successUrl,
+      failureUrl,
+    }),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Gateway belum aktif (HTTP ${res.status}): ${txt.slice(0, 100)}`);
+  }
+  const data = await res.json();
+  if (!data.checkoutUrl) throw new Error('Response gateway tanpa checkoutUrl');
+  return data.checkoutUrl;
+}
+
+// Cek query param ?payment=success&ref=xxx setelah Xendit redirect
+async function handlePostPaymentRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('payment');
+  const ref = params.get('ref');
+  if (!status || !ref) return;
+
+  // Clean URL biar refresh gak re-trigger
+  const cleanUrl = window.location.pathname + window.location.hash;
+  if (status === "failed") window.history.replaceState({}, document.title, cleanUrl);
+
+  if (status === 'failed') {
+    showToast('Pembayaran dibatalkan / gagal. Coba lagi atau kontak admin via WA.', 'error');
+    return;
+  }
+  if (status !== 'success') return;
+
+  // Verify ke backend — backend cek Xendit invoice status sudah PAID
+  showToast('Memverifikasi pembayaran...', 'info');
+  try {
+    const res = await fetch(`${PAYMENT_API_BASE}/api/verify-payment?ref=${encodeURIComponent(ref)}`, { headers: await authenticatedHeaders() });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.status !== 'paid') {
+      showToast(`Pembayaran status: ${data.status}. Refresh sebentar lagi.`, 'warning');
+      return;
+    }
+    // Backend must atomically apply the entitlement. A paid invoice alone is
+    // not permission for this browser to write plan/expiresAt.
+    if (!currentUser || data.uid !== currentUser.uid || !getPackageConfig(data.paket) || data.entitlementApplied !== true) {
+      throw new Error('Hak akses pembayaran belum diterapkan oleh server.');
+    }
+    const paket = data.paket;
+    const profile = await refreshUserProfile();
+    if (!profile || !isPro(profile)) throw new Error('Profil belum mencerminkan langganan yang dibayar.');
+    window.history.replaceState({}, document.title, cleanUrl);
+    showToast(`Pembayaran berhasil. Paket ${paket} sudah aktif.`, 'success');
+    setTimeout(() => window.location.reload(), 1500);
+  } catch (err) {
+    console.error('[verify-payment]', err);
+    showToast('Gagal verifikasi otomatis. Kontak admin via WA untuk aktivasi manual.', 'error');
+  }
+}
+
+function getPackageLabel(paket) {
+  return ({ free_trial: 'Uji Coba Gratis', trial: 'Akses 7 Hari', monthly: 'Akses 30 Hari', annual: 'Akses 1 Tahun', lifetime: 'Lifetime' })[paket] || paket;
+}
+
+// Mapping QRIS image per paket (file di assets/, nominal sudah terkunci di QR)
+const QRIS_IMAGE_BY_PAKET = {
+  trial:   'assets/qris-beruang-trial.png?v=1',
+  monthly: 'assets/qris-beruang-monthly.png?v=1',
+  annual:  'assets/qris-beruang-annual.png?v=1',
+};
+
+// Open payment modal — tampilkan QRIS sesuai paket + BCA dengan nominal pas
+function openPaymentModal(paket) {
+  const cfg = typeof getPackageConfig === 'function' ? getPackageConfig(paket) : null;
+  if (!cfg) {
+    showToast('Paket tidak valid', 'error');
+    return;
+  }
+  const modal = document.getElementById('payment-modal');
+  if (!modal) return;
+
+  const amount = cfg.priceIdr;
+  const amountFormatted = `Rp ${amount.toLocaleString('id-ID')}`;
+  const paketLabel = getPackageLabel(paket);
+
+  document.getElementById('payment-paket-name').textContent = paketLabel;
+  document.getElementById('payment-amount').textContent = amountFormatted;
+  document.getElementById('qris-amount-foot').textContent = amountFormatted;
+  document.getElementById('bca-amount').textContent = amountFormatted;
+
+  // Set QRIS image sesuai paket (reset state + reload kalau ada)
+  const qrisImg = document.getElementById('qris-image');
+  const qrisFallback = document.getElementById('qris-fallback');
+  if (qrisImg && qrisFallback) {
+    qrisFallback.style.display = 'none';
+    qrisImg.style.display = 'block';
+    const src = QRIS_IMAGE_BY_PAKET[paket];
+    if (src) {
+      qrisImg.src = src;
+    } else {
+      qrisImg.style.display = 'none';
+      qrisFallback.style.display = 'block';
+    }
+  }
+
+  // Wire WA button dengan template paket
+  const waBtn = document.getElementById('payment-wa-btn');
+  if (waBtn && typeof adminWhatsAppLink === 'function') {
+    waBtn.href = adminWhatsAppLink(paket);
+  }
+
+  // Reset to QRIS tab (default)
+  document.querySelectorAll('.payment-tab').forEach(t => t.classList.toggle('active', t.dataset.method === 'qris'));
+  document.getElementById('panel-qris').hidden = false;
+  document.getElementById('panel-bca').hidden = true;
+
+  modal.hidden = false;
+  if (window.gtag) gtag('event', 'payment_modal_open', { paket });
+}
+
+function closePaymentModal() {
+  const modal = document.getElementById('payment-modal');
+  if (modal) modal.hidden = true;
+}
+
+// Setup event listener untuk modal (idempotent — bisa dipanggil multiple times)
+function setupPaymentModalEvents() {
+  if (window.__paymentModalBound) return;
+  window.__paymentModalBound = true;
+
+  const modal = document.getElementById('payment-modal');
+  if (!modal) return;
+
+  // Close handlers
+  document.getElementById('payment-modal-close')?.addEventListener('click', closePaymentModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closePaymentModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) closePaymentModal();
+  });
+
+  // Tab switcher
+  document.querySelectorAll('.payment-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const method = tab.dataset.method;
+      document.querySelectorAll('.payment-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.getElementById('panel-qris').hidden = method !== 'qris';
+      document.getElementById('panel-bca').hidden = method !== 'bca';
+      if (window.gtag) gtag('event', 'payment_tab_switch', { method });
+    });
+  });
+
+  // Copy BCA account
+  document.getElementById('btn-copy-bca')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('7130902183');
+      const btn = document.getElementById('btn-copy-bca');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Tersalin';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    } catch (e) {
+      showToast('Gagal menyalin, salin manual: 7130902183', 'error');
+    }
+  });
+}
+
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
+  document.body.classList.toggle('app-locked', which !== 'app');
+  const startup = document.getElementById('startup-screen');
+  if (startup) startup.hidden = which !== 'loading';
   document.getElementById('login-screen').hidden = which !== 'login';
   document.getElementById('paywall-screen').hidden = which !== 'paywall';
+  if (which === 'login') detectAuthEnvAndShowTip();
   const menu = document.getElementById('user-menu');
   if (menu) menu.hidden = which !== 'app';
   if (which === 'paywall') {
@@ -527,31 +889,38 @@ function showScreen(which) {
     const igBtn = document.getElementById('btn-ig-admin');
     if (waBtn && typeof adminWhatsAppLink === 'function') waBtn.href = adminWhatsAppLink();
     if (igBtn && typeof adminInstagramLink === 'function') igBtn.href = adminInstagramLink();
-    // Tombol pilih paket -> isi pesan WA sesuai paket
+    // Tombol pilih paket -> buka payment modal (QRIS + BCA dual option)
     document.querySelectorAll('.btn-buy').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = async () => {
         const paket = btn.dataset.paket;
-        if (waBtn) waBtn.href = adminWhatsAppLink(paket);
-        // Scroll ke bagian pembayaran
-        document.querySelector('.payment-info')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         // Highlight paket terpilih
         document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
         btn.closest('.price-card')?.classList.add('selected');
-        showToast(`Paket ${paket === 'monthly' ? 'Bulanan' : 'Lifetime'} dipilih. Transfer ke BCA, lalu kirim bukti via WA.`, 'success');
+
+        // Try Xendit checkout flow dulu (auto-payment kalau gateway aktif)
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Menyiapkan...';
+        try {
+          const url = await createPaymentInvoice(paket);
+          if (url) {
+            const paketLabel = getPackageLabel(paket);
+            showToast(`Mengarahkan ke pembayaran ${paketLabel}...`, 'success');
+            window.location.href = url;
+            return;
+          }
+        } catch (err) {
+          console.warn('[payment] gateway belum aktif, buka modal QRIS+BCA manual:', err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+
+        // Fallback: buka payment modal (QRIS + BCA)
+        openPaymentModal(paket);
       };
     });
-    // Copy rekening
-    const btnCopy = document.getElementById('btn-copy-acc');
-    if (btnCopy) {
-      btnCopy.onclick = async () => {
-        const acc = document.getElementById('bank-account')?.textContent || '';
-        try {
-          await navigator.clipboard.writeText(acc);
-          btnCopy.textContent = '✓ Tersalin';
-          setTimeout(() => { btnCopy.textContent = 'Copy'; }, 2000);
-        } catch (e) { showToast('Gagal menyalin, salin manual ya', 'error'); }
-      };
-    }
+    setupPaymentModalEvents();
   }
 }
 
@@ -633,6 +1002,15 @@ function setupAuthUI() {
   const btnPayLogout = document.getElementById('btn-paywall-logout');
   if (btnPayLogout) btnPayLogout.onclick = () => logout();
 
+  // Paywall back — balik ke dashboard (mode preview, fitur Pro tetap di-gate)
+  const btnPayBack = document.getElementById('btn-paywall-back');
+  if (btnPayBack) btnPayBack.onclick = () => {
+    showScreen('app');
+    if (typeof showToast === 'function') {
+      showToast('Catatan dasar dan sinkronisasi akun tetap tersedia. Fitur Pro mengikuti status langganan.', 'info');
+    }
+  };
+
   // User menu dropdown
   const btnMenu = document.getElementById('user-menu-btn');
   const dropdown = document.getElementById('user-dropdown');
@@ -642,13 +1020,132 @@ function setupAuthUI() {
   }
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.onclick = () => logout();
+
+  const btnOpenKategori = document.getElementById('btn-open-kategori');
+  if (btnOpenKategori) {
+    btnOpenKategori.onclick = (e) => {
+      e.stopPropagation();
+      if (dropdown) dropdown.hidden = true;
+      switchToTab('kategori');
+    };
+  }
+
+  const btnDeleteAccount = document.getElementById('btn-delete-account');
+  if (btnDeleteAccount) {
+    btnDeleteAccount.onclick = async (e) => {
+      e.stopPropagation();
+      dropdown.hidden = true;
+      const typed = prompt('Penghapusan ini menghapus profil BerUang, catatan keuangan, koneksi Telegram, dan data AI. Data transaksi pembayaran minimum dapat disimpan untuk rekonsiliasi.\n\nKetik HAPUS AKUN untuk melanjutkan.');
+      if (typed !== 'HAPUS AKUN') return;
+      btnDeleteAccount.disabled = true;
+      try {
+        const uid = currentUser?.uid;
+        const response = await fetch(`${PAYMENT_API_BASE}/api/delete-account`, {
+          method: 'POST', headers: await authenticatedHeaders(), body: JSON.stringify({ confirmation: typed }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (result.code === 'auth/requires-recent-login') throw Object.assign(new Error('Demi keamanan, logout lalu login kembali sebelum menghapus akun.'), { code: result.code });
+          throw new Error(result.error || 'Penghapusan akun belum dapat dimulai.');
+        }
+        if (uid) {
+          localStorage.removeItem(STORAGE_KEY + ':' + uid);
+          for (const key of Object.keys(localStorage)) {
+            if (key.endsWith(':' + (currentUser?.email || '')) || key.startsWith('beruang-tg:')) localStorage.removeItem(key);
+          }
+        }
+        alert(result.sharedAccountRetained
+          ? 'Penghapusan BerUang sedang diproses. Login bersama untuk produk Berstock lain tetap dipertahankan.'
+          : 'Penghapusan akun dan data BerUang sedang diproses.');
+        await fbAuth.signOut();
+        window.location.reload();
+      } catch (error) {
+        showToast(error.message || 'Penghapusan akun belum dapat dimulai.', 'error');
+        btnDeleteAccount.disabled = false;
+      }
+    };
+  }
+
+  // Buka ulang onboarding "Setup Dana Awal" dari menu
+  const btnSetupDana = document.getElementById('btn-setup-dana');
+  if (btnSetupDana) {
+    btnSetupDana.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
+
+  // Hubungkan Telegram (catat via chat bot)
+  const btnTgLink = document.getElementById('btn-tg-link');
+  if (btnTgLink) {
+    btnTgLink.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (typeof openTelegramLink === 'function') openTelegramLink();
+    };
+  }
+
+  // Reset Data & Mulai Ulang — buat user yang abis coba-coba, mau mulai serius
+  const btnResetData = document.getElementById('btn-reset-data');
+  if (btnResetData) {
+    btnResetData.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      if (!confirm('Reset semua data & mulai dari awal?\n\nSemua transaksi, hutang/piutang, aset, & nama bakal DIHAPUS (gak bisa dibatalin). Cocok kalau tadi cuma coba-coba.')) return;
+      resetAll();
+      if (typeof clearOnboardingDone === 'function') clearOnboardingDone();
+      if (typeof fillSubCategoriSelects === 'function') fillSubCategoriSelects();
+      renderAll();
+      if (typeof showToast === 'function') showToast('Data direset. Yuk setup dari awal 🐻', 'success');
+      if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
+
+  // Tombol "Bersihkan Cache & Muat Ulang" — escape hatch buat user yang nyangkut
+  // di versi lama (PWA homescreen). Unregister SW + hapus Cache API + reload.
+  // CATATAN: localStorage (data transaksi) & sesi login TIDAK dihapus.
+  const btnRefreshApp = document.getElementById('btn-refresh-app');
+  if (btnRefreshApp) {
+    btnRefreshApp.onclick = async (e) => {
+      e.stopPropagation();
+      btnRefreshApp.disabled = true;
+      btnRefreshApp.textContent = '⏳ Memperbarui…';
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister()));
+        }
+        if (window.caches) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch (err) { /* abaikan, tetap reload */ }
+      window.location.reload();
+    };
+  }
+
+  // Tombol Admin Panel di user dropdown (buat mobile yang gak ada topbar nav)
+  const btnAdminPanel = document.getElementById('btn-admin-panel');
+  if (btnAdminPanel) {
+    btnAdminPanel.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('user-dropdown').hidden = true;
+      const adminTab = document.querySelector('.tab[data-tab="admin"], .bnav-item[data-tab="admin"]');
+      if (adminTab) adminTab.click(); // reuse handler tab (switchToTab + renderAdmin)
+    };
+  }
 }
 
 function updateUserMenu(user, profile) {
-  // Show/hide tab Admin berdasarkan email user
+  // Show/hide tab Admin + tombol Admin di dropdown berdasarkan email user
+  const userIsAdmin = typeof isAdmin === 'function' && isAdmin();
   document.querySelectorAll('.tab-admin').forEach(t => {
-    t.hidden = !(typeof isAdmin === 'function' && isAdmin());
+    t.hidden = !userIsAdmin;
   });
+  // Tombol Admin Panel di user dropdown
+  const btnAdminPanel = document.getElementById('btn-admin-panel');
+  if (btnAdminPanel) btnAdminPanel.hidden = !userIsAdmin;
   const avatar = document.getElementById('user-avatar');
   const name = document.getElementById('user-name');
   const email = document.getElementById('user-email');
@@ -664,8 +1161,12 @@ function updateUserMenu(user, profile) {
   if (plan && profile) {
     const days = daysRemaining(profile);
     const planLabel = profile.plan === 'lifetime' ? 'Lifetime ∞'
-      : profile.plan === 'monthly' ? `Bulanan (${days} hari lagi)`
-      : `Trial (${days} hari lagi)`;
+      : profile.plan === 'pro'      ? 'Pro ∞'
+      : profile.plan === 'annual'   ? `Tahunan (${days} hari lagi)`
+      : profile.plan === 'monthly'  ? `Bulanan (${days} hari lagi)`
+      : profile.plan === 'free_trial' ? `Uji Coba Gratis (${days} hari lagi)`
+      : profile.plan === 'trial'    ? `Akses 7 Hari (${days} hari lagi)`
+      : 'Gratis';
     plan.innerHTML = `📅 ${planLabel}`;
   }
 }
@@ -703,9 +1204,10 @@ function setupProGating(profile) {
   // Pengguna aktif tetap bisa memperpanjang, tetapi jangan terlihat seperti belum berlangganan.
   const btnUpgrade = document.getElementById('btn-upgrade-pro');
   if (btnUpgrade) {
-    btnUpgrade.hidden = profile?.plan === 'lifetime' || profile?.plan === 'pro';
-    btnUpgrade.innerHTML = userIsPro ? 'Perpanjang Paket' : 'Paket Pro';
-    btnUpgrade.title = userIsPro ? 'Tambah masa aktif paket' : 'Upgrade ke Pro untuk membuka fitur premium';
+    const paidPlanActive = ['trial', 'monthly', 'annual', 'starter'].includes(profile?.plan) && userIsPro;
+    btnUpgrade.hidden = paidPlanActive || profile?.plan === 'lifetime' || profile?.plan === 'pro';
+    btnUpgrade.innerHTML = 'Paket Pro';
+    btnUpgrade.title = 'Lihat pilihan paket Pro';
     btnUpgrade.onclick = () => showScreen('paywall');
   }
 
@@ -726,12 +1228,19 @@ function setupProGating(profile) {
         ? `${labels[profile.plan]} · ${days} hari tersisa`
         : `${labels[profile.plan]} · <b>hari terakhir</b>`;
       trialBadge.classList.toggle('trial-urgent', days <= 2);
+      trialBadge.title = profile?.plan === 'free_trial' ? 'Masa uji coba aktif' : 'Ketuk untuk memperpanjang paket';
+      trialBadge.onclick = profile?.plan === 'free_trial' ? null : () => showScreen('paywall');
+      trialBadge.classList.toggle('is-actionable', profile?.plan !== 'free_trial');
     } else if (userIsPro) {
       trialBadge.hidden = false;
       trialBadge.innerHTML = '👑 Pro Aktif';
       trialBadge.classList.remove('trial-urgent');
+      trialBadge.classList.remove('is-actionable');
+      trialBadge.onclick = null;
     } else {
       trialBadge.hidden = true;
+      trialBadge.classList.remove('is-actionable');
+      trialBadge.onclick = null;
     }
   }
 
@@ -766,12 +1275,15 @@ function showProGate(featureName, description) {
         <div class="pro-benefit">📅 Unlimited history</div>
       </div>
       <div class="pro-gate-prices">
-        <button class="btn btn-ghost btn-block" data-paket="monthly">
-          <b>Bulanan</b> — Rp 35.000<small>/bulan</small>
+        <button class="btn btn-ghost btn-block" data-paket="trial">
+          <b>Akses 7 Hari</b> — Rp 10.000<small>/ 7 hari</small>
         </button>
-        <button class="btn btn-primary btn-block" data-paket="lifetime">
-          <span class="badge">HEMAT 70%</span>
-          <b>Lifetime</b> — Rp 125.000<small>sekali bayar</small>
+        <button class="btn btn-primary btn-block" data-paket="annual">
+          <span class="badge">HEMAT 50%</span>
+          <b>Tahunan</b> — Rp 299.000<small>/ tahun</small>
+        </button>
+        <button class="btn btn-ghost btn-block" data-paket="monthly">
+          <b>Bulanan</b> — Rp 50.000<small>/ bulan</small>
         </button>
       </div>
       <button class="btn btn-text" id="pro-gate-close">Nanti aja</button>
@@ -804,6 +1316,70 @@ function showProGate(featureName, description) {
   // Close button + click outside
   modal.querySelector('#pro-gate-close').onclick = () => modal.remove();
   modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+}
+
+// ========== PWA INSTALL BANNER ==========
+// Auto-tampil di Chrome Android (beforeinstallprompt) + iOS Safari (manual hint)
+let __pwaDeferredPrompt = null;
+
+function setupPWAInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  const cta = document.getElementById('pwa-banner-cta');
+  const xBtn = document.getElementById('pwa-banner-x');
+  const title = document.getElementById('pwa-banner-title');
+  const desc = document.getElementById('pwa-banner-desc');
+  if (!banner) return;
+
+  // Cek apakah udah di-dismiss (7 hari)
+  const DISMISS_KEY = 'pwa-install-dismiss';
+  try {
+    const ts = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
+    if (ts && (Date.now() - ts) < 7 * 24 * 3600 * 1000) return;
+  } catch {}
+
+  // Cek apakah udah di PWA mode (standalone)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+  if (isStandalone) return;
+
+  const ua = navigator.userAgent || '';
+  const isIos = /iPhone|iPad|iPod/.test(ua) && !window.MSStream;
+  const isAndroidChrome = /Android/.test(ua) && /Chrome/.test(ua);
+
+  function dismiss() {
+    banner.hidden = true;
+    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch {}
+  }
+  xBtn.addEventListener('click', dismiss);
+
+  if (isAndroidChrome) {
+    // Chrome Android — listen beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      __pwaDeferredPrompt = e;
+      banner.hidden = false;
+      title.textContent = 'Install BerUang';
+      desc.textContent = 'Fullscreen mode + login persistent';
+      cta.textContent = 'Install';
+    });
+    cta.addEventListener('click', async () => {
+      if (!__pwaDeferredPrompt) return;
+      __pwaDeferredPrompt.prompt();
+      const choice = await __pwaDeferredPrompt.userChoice;
+      __pwaDeferredPrompt = null;
+      banner.hidden = true;
+      if (window.gtag) gtag('event', 'pwa_install_result', { outcome: choice.outcome });
+    });
+  } else if (isIos) {
+    // iOS Safari — manual instruction via tap
+    banner.hidden = false;
+    title.textContent = 'Install ke iPhone';
+    desc.textContent = 'Tap Share ⎙ → "Add to Home Screen"';
+    cta.textContent = 'Cara';
+    cta.addEventListener('click', () => {
+      alert('Cara install ke iPhone:\n\n1. Tap ikon Share ⎙ di bawah Safari\n2. Scroll → Tap "Add to Home Screen"\n3. Tap "Add" — selesai!\n\nBuka dari home screen → fullscreen mode + login gak hilang.');
+    });
+  }
 }
 
 // ========== AFFILIATE TRACKING ==========

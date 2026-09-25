@@ -1,0 +1,9 @@
+{
+  "appId": "id.berstock.beruang.dev",
+  "appName": "BerUang Uji",
+  "webDir": "www",
+  "backgroundColor": "#fbf6ee",
+  "server": { "androidScheme": "https", "hostname": "localhost" },
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "automatic" }
+}

@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function admin() { return signedIn() && request.auth.token.get('admin', false) == true; }
+    function activeAccount(uid) {
+      return !exists(/databases/$(database)/documents/accountDeletions/$(uid));
+    }
+    function owner(uid) { return signedIn() && request.auth.uid == uid && activeAccount(uid); }
+    function validProfileIdentity(data) {
+      return data.email is string && data.email == request.auth.token.get('email', '')
+        && data.displayName is string && data.displayName.size() <= 200
+        && data.photoURL is string && data.photoURL.size() <= 2048;
+    }
+    match /users/{uid}/meta/profile {
+      allow read: if owner(uid) || admin();
+      // Profile and its free trial are created by the trusted backend.
+      allow create: if false;
+      // Deny unknown future fields by default: users cannot add entitlement,
+      // admin flags, activation receipts, or remove protected existing fields.
+      allow update: if (owner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'displayName', 'photoURL'])
+        && validProfileIdentity(request.resource.data))
+        || (admin() && activeAccount(uid));
+      allow delete: if false;
+    }
+    // Admin UI uses a meta collection-group query. A client email allowlist is
+    // not authority; only a server-issued custom claim can read this query.
+    match /{path=**}/meta/{document} { allow read: if admin(); }
+    match /users/{uid}/data/main {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasOnly(['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'updatedAt', '_updatedAt', '_updatedBy'])
+        && request.resource.data.transactions is list
+        && request.resource.data.hutangs is list
+        && request.resource.data.assets is list
+        && request.resource.data.recurring is list
+        && request.resource.data.goals is list
+        && request.resource.data.userName is string
+        && request.resource.data.categories is map
+        && request.resource.data.target is number;
+      allow delete: if false;
+    }
+    match /users/{uid}/verifiedPaymentReceipts/{receipt} {
+      allow read: if owner(uid) || admin();
+      allow write: if false;
+    }
+    // Historical browser receipts are readable for support, never trusted by
+    // the backend and never writable by a client after this migration.
+    match /users/{uid}/paymentReceipts/{receipt} {
+      allow read: if owner(uid) || admin();
+      allow write: if false;
+    }
+    // BerBisnis shares this Firebase project. Keep its existing owner access
+    // on explicitly named documents; it does not grant BerUang entitlement.
+    // Migrating its trial/feature flags is a separate coordinated release.
+    match /users/{uid}/meta/{document} {
+      allow read, write: if document in ['berbisnis-profile', 'berbisnis-data', 'berbisnis-cloud-config']
+        && (admin() || (signedIn() && request.auth.uid == uid));
+    }
+    match /payments/{invoice} { allow read, write: if false; }
+    match /accountDeletions/{uid} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

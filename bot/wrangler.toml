@@ -6,13 +6,16 @@ compatibility_flags = ["nodejs_compat"]
 # KV Namespaces — sudah dibuat 28 Apr 2026
 [[kv_namespaces]]
 binding = "BOT_DATA"
-id = "9ca47054eecf4b25b9714b1555b80d6b"
+id = "cd51e87a46fa4593b1193d8320a44d0c"
 
 [[kv_namespaces]]
 binding = "BOT_AUTH"
-id = "59016f42dc314b02ba508cf5025cd09f"
+id = "62028bdcc6c945caa77be301a169c31a"
 
 [vars]
+# Public Firebase identifiers, NOT admin credentials.
+FIREBASE_PROJECT_ID = "ber-uang-735b3"
+FIREBASE_WEB_API_KEY = "AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc"
 BOT_NAME = "Berstock"
 BUSINESS_NAME_DEFAULT = "Toko Anda"
 DEFAULT_TZ = "Asia/Jakarta"
@@ -22,6 +25,10 @@ DEFAULT_TZ = "Asia/Jakarta"
 # - TELEGRAM_BOT_TOKEN
 # - TELEGRAM_WEBHOOK_SECRET
 # - ADMIN_KEY  (untuk endpoint provisioning tenant baru)
+# - FIREBASE_SERVICE_ACCOUNT_JSON (Google service account JSON; never commit it)
+# - GOOGLE_PLAY_SERVICE_ACCOUNT_JSON (Android Publisher service account JSON; never commit it)
+# - XENDIT_SECRET_KEY
+# - XENDIT_WEBHOOK_TOKEN
 
 [observability]
 enabled = true

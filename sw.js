@@ -1,25 +1,32 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v16';
+const CACHE_VERSION = 'beruang-v52';
 const CORE = [
   './',
   './index.html',
   './app.html',
   './landing.html',
-  './styles.css?v=29',
+  './styles.css?v=52',
   './manifest.json',
-  './assets/logo-beruang.png',
-  './assets/mascot-beruang.png',
+  './assets/icons/beruang-wallet-192.png',
+  './assets/icons/beruang-wallet-512.png',
   './js/data.js?v=20',
-  './js/utils.js?v=20',
-  './js/firebase-config.js?v=20',
-  './js/storage.js?v=20',
+  './js/utils.js?v=21',
+  './js/firebase-config.js?v=25',
+  './js/presence.js?v=2',
+  './js/storage.js?v=24',
   './js/parser.js?v=20',
-  './js/sync.js?v=20',
-  './js/auth.js?v=20',
+  './js/sync.js?v=26',
+  './js/auth.js?v=25',
   './js/admin.js?v=20',
-  './js/dashboard.js?v=23',
-  './js/pages.js?v=20',
-  './js/app.js?v=28',
+  './js/dashboard.js?v=32',
+  './js/pages.js?v=21',
+  './js/app.js?v=52',
+  './js/goal.js?v=2',
+  './js/hutang.js?v=2',
+  './js/ai-advisor.js?v=10',
+  './js/recurring.js?v=2',
+  './js/telegram-link.js?v=5',
+  './js/onboarding.js?v=7',
 ];
 
 self.addEventListener('install', (event) => {
@@ -42,7 +49,28 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (/firebaseio|googleapis|firebase\.com/.test(url.host)) return;
+  if (/firebaseio|firebasedatabase|googleapis|firebase\.com|workers\.dev/.test(url.host)) return;
+
+  // NETWORK-FIRST untuk HTML (app.html, index.html, landing.html)
+  // Biar update CSS/JS langsung ke-pickup tester tanpa harus uninstall.
+  // Fallback ke cache kalau offline.
+  const isHTML = req.destination === 'document' || /\.html(\?|$)/.test(url.pathname);
+  if (isHTML) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok && url.origin === self.location.origin) {
+            const clone = res.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put(req, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then((c) => c || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
+
+  // CACHE-FIRST untuk asset (CSS/JS/img) — pakai cache buster ?v= di URL
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;

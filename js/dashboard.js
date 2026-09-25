@@ -5,20 +5,133 @@ function destroyChart(key) {
   if (charts[key]) { charts[key].destroy(); charts[key] = null; }
 }
 
+// Sapaan nama user (dari onboarding "Setup Dana Awal")
+function renderGreeting() {
+  const el = document.getElementById('dash-greeting');
+  if (!el) return;
+  const nama = (state.userName || '').trim();
+  if (!nama) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px;">
+    <span style="font-size:20px;font-weight:800;color:#5d3a1a;">Halo, ${escapeHtmlDash(nama)} 👋</span>
+    <span style="font-size:13px;color:#8a7766;">ini ringkasan keuanganmu</span></div>`;
+}
+
+// Kartu Aset / Kekayaan (info terpisah, gak ngaruh ke Sisa Saldo cashflow)
+function renderAssets() {
+  const el = document.getElementById('dash-assets');
+  if (!el) return;
+  const assets = state.assets || [];
+  if (!assets.length) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const total = (typeof assetsTotal === 'function') ? assetsTotal() : assets.reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
+  const icon = (j) => j === 'investasi' ? '📈' : (j === 'rekening' ? '💳' : '💼');
+  const rows = assets.map(a => `
+    <li style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #f0e9d8;">
+      <span style="font-size:17px;">${icon(a.jenis)}</span>
+      <span style="flex:1;min-width:0;color:#4a3328;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtmlDash(a.nama || a.jenis || 'Aset')}</span>
+      <span style="font-weight:700;color:#4a3328;">${formatRupiah(Number(a.jumlah) || 0)}</span>
+      <button data-id="${a.id}" title="Hapus" style="flex:0 0 auto;border:none;background:#f7ede0;color:#b91c1c;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:16px;">×</button>
+    </li>`).join('');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>💎 Aset / Kekayaan</h3>
+        <span style="font-size:11px;color:#8a7766;">di luar cashflow bulanan</span>
+      </div>
+      <div style="font-size:24px;font-weight:900;color:#8b5a2b;margin:2px 0 4px;">${formatRupiah(total)}</div>
+      <ul style="list-style:none;padding:0;margin:6px 0 0;">${rows}</ul>
+    </div>`;
+  el.querySelectorAll('button[data-id]').forEach(btn => {
+    btn.onclick = () => {
+      if (typeof deleteAsset === 'function') deleteAsset(btn.dataset.id);
+      renderAssets();
+    };
+  });
+}
+
+function escapeHtmlDash(s) {
+  const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML;
+}
+
+// Ringkasan Hutang & Piutang di dashboard (biar gak perlu pindah tab)
+function renderHutangSummary() {
+  const el = document.getElementById('dash-hutang');
+  if (!el) return;
+  const all = state.hutangs || [];
+  const piutang = all.filter(h => h.jenis === 'piutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
+  const hutang = all.filter(h => h.jenis === 'hutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
+  if (piutang === 0 && hutang === 0) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const net = piutang - hutang;
+  const netColor = net >= 0 ? 'var(--income)' : 'var(--expense)';
+  const netStr = (net < 0 ? '-' : '') + formatRupiah(Math.abs(net)).replace(/^Rp\s*/, 'Rp ');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>💸 Hutang &amp; Piutang</h3>
+        <span class="dash-hutang-link" style="font-size:12px;color:#b08a3c;font-weight:600;cursor:pointer;">Lihat detail →</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--ink-soft);text-transform:uppercase;">🟢 Piutang</div>
+          <div style="font-size:16px;font-weight:800;color:var(--income);margin-top:3px;">${formatRupiah(piutang)}</div>
+          <div style="font-size:10px;color:var(--ink-soft);">orang utang ke kamu</div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--ink-soft);text-transform:uppercase;">🔴 Hutang</div>
+          <div style="font-size:16px;font-weight:800;color:var(--expense);margin-top:3px;">${formatRupiah(hutang)}</div>
+          <div style="font-size:10px;color:var(--ink-soft);">kamu utang ke orang</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:var(--ink-soft);">Posisi bersih: <b style="color:${netColor};">${netStr}</b></div>
+    </div>`;
+  const link = el.querySelector('.dash-hutang-link');
+  if (link) link.onclick = () => {
+    if (typeof window.switchBeruangTab === 'function') window.switchBeruangTab('hutang');
+  };
+}
+
 function renderDashboard() {
   const m = state.selectedMonth, y = state.selectedYear;
   const trx = getTransactionsFor(m, y);
   const prev = addMonths(m, y, -1);
   const trxPrev = getTransactionsFor(prev.m, prev.y);
 
+  const hasTransactions = Array.isArray(state.transactions) && state.transactions.length > 0;
+  const emptyState = document.getElementById('dashboard-empty-state');
+  const overview = document.getElementById('dashboard-overview');
+  const moreAction = document.getElementById('dashboard-more-action');
+  const dashboardPanel = document.getElementById('tab-dashboard');
+  if (emptyState) emptyState.hidden = hasTransactions;
+  if (overview) overview.hidden = !hasTransactions;
+  if (moreAction) moreAction.hidden = !hasTransactions;
+  if (dashboardPanel) dashboardPanel.classList.toggle('is-empty', !hasTransactions);
+  if (!hasTransactions) {
+    document.querySelectorAll('.dashboard-advanced').forEach(section => { section.hidden = true; });
+    const detailsButton = document.getElementById('btn-dashboard-details');
+    if (detailsButton) {
+      detailsButton.textContent = 'Lihat analisis lengkap';
+      detailsButton.setAttribute('aria-expanded', 'false');
+    }
+  }
+
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
+  renderGreeting();
+  renderAssets();
+  renderHutangSummary();
+  if (typeof renderAnomalyBanner === 'function') renderAnomalyBanner();
+  if (typeof renderReminder === 'function') renderReminder();
+  // AI tetap tersedia melalui tombol asisten; ringkasan keuangan menjadi fokus dashboard.
+  if (typeof renderTgBillPromo === 'function') renderTgBillPromo();
 
   const income = sumBy(trx, 'pemasukan');
   const expense = sumBy(trx, 'pengeluaran');
-  const balance = income - expense;
+  const monthlyNet = income - expense;
+  const balance = balanceThrough(m, y);
   const incomePrev = sumBy(trxPrev, 'pemasukan');
   const expensePrev = sumBy(trxPrev, 'pengeluaran');
-  const balancePrev = incomePrev - expensePrev;
+  const balancePrev = balanceThrough(prev.m, prev.y);
 
   setKPIAnimated('kpi-income', income, formatRupiah, pctDelta(income, incomePrev), 'income');
   setKPIAnimated('kpi-expense', expense, (v) => `\u2212${formatRupiah(v)}`, pctDelta(expense, expensePrev), 'expense');
@@ -28,7 +141,7 @@ function renderDashboard() {
   if (balanceEl) balanceEl.style.color = balance >= 0 ? '#75d89a' : '#ff8278';
 
   renderDailyChart(trx, m, y);
-  renderMiniReports(trx, trxPrev, income, expense, balance);
+  renderMiniReports(trx, trxPrev, income, expense, monthlyNet);
   renderTopList('top-expense', trx.filter(t => t.jenis === 'pengeluaran'));
   renderTopList('top-income', trx.filter(t => t.jenis === 'pemasukan'));
   renderCategoryPie('chart-expense-cat', 'legend-expense-cat', trx.filter(t => t.jenis === 'pengeluaran'));
@@ -42,6 +155,18 @@ function renderDashboard() {
 
 function sumBy(trx, jenis) {
   return trx.filter(t => t.jenis === jenis).reduce((s, t) => s + (+t.jumlah || 0), 0);
+}
+
+// Saldo adalah posisi kas berjalan, bukan hanya surplus/defisit bulan terpilih.
+// Semua transaksi sampai akhir bulan dipakai supaya saldo bulan lalu terbawa.
+function balanceThrough(month, year) {
+  const cutoff = new Date(year, month + 1, 1).getTime();
+  return (state.transactions || []).reduce((total, transaction) => {
+    const date = parseISO(transaction.tanggal);
+    if (!(date instanceof Date) || Number.isNaN(date.getTime()) || date.getTime() >= cutoff) return total;
+    const amount = Number(transaction.jumlah) || 0;
+    return total + (transaction.jenis === 'pemasukan' ? amount : transaction.jenis === 'pengeluaran' ? -amount : 0);
+  }, 0);
 }
 
 function setKPI(id, text, pct, goodDir) {
@@ -283,7 +408,7 @@ function renderBudgetRings(trx) {
   }
   const target = state.target || 0;
   document.getElementById('target-bulan').textContent = formatRupiah(target);
-  document.getElementById('input-target').value = target || '';
+  document.getElementById('input-target').value = (typeof fmtThousands === 'function') ? fmtThousands(target) : (target || '');
 
   drawRing('ring-keb', totals.Kebutuhan, target * 0.5, '#c17c3e', 'pct-keb');
   drawRing('ring-kei', totals.Keinginan, target * 0.3, '#c0392b', 'pct-kei');
@@ -318,7 +443,7 @@ function renderSixMonth(m, y) {
     const trx = getTransactionsFor(mm, yy);
     const inc = sumBy(trx, 'pemasukan');
     const exp = sumBy(trx, 'pengeluaran');
-    rows.push({ label: `${MONTHS_SHORT[mm]} ${yy}`, inc, exp, bal: inc - exp, count: trx.length });
+    rows.push({ label: `${MONTHS_SHORT[mm]} ${yy}`, inc, exp, bal: balanceThrough(mm, yy), count: trx.length });
   }
   const tbody = document.getElementById('six-month-body');
   tbody.innerHTML = rows.map(r => `<tr>

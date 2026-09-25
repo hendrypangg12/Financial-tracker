@@ -8,6 +8,12 @@
 
 import { sendMessage, sendTyping, parseUpdate } from "./telegram.js";
 import { askClaude } from "./claude.js";
+import { handleAdvise } from "./advise.js";
+import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, handleBeruangSetupWebhook, handleBeruangDebug, sendBillReminders } from "./beruang.js";
+import { handleCreateInvoice, handleVerifyPayment, handleXenditWebhook } from "./payment.js";
+import { handleDeleteAccount, processAccountDeletions } from './account.js';
+import { handleGooglePlayVerify } from './google-play.js';
+import { handleAccountBootstrap } from './bootstrap.js';
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
   getTenantIdByChat, bindChatToTenant, unbindChat,
@@ -17,9 +23,11 @@ import {
 } from "./storage.js";
 
 export default {
-  // Cron handler — Daily Digest jam 7 pagi WIB (00:00 UTC)
+  // Cron handler — jalan 1x sehari pagi WIB (00:00 UTC = 07:00 WIB)
   async scheduled(event, env, ctx) {
+    ctx.waitUntil(processAccountDeletions(env));
     ctx.waitUntil(sendDailyDigestToAllTenants(env));
+    ctx.waitUntil(sendBillReminders(env)); // BerUang: notif H-3 + H-0 tagihan rutin
   },
 
   async fetch(request, env, ctx) {
@@ -45,6 +53,21 @@ export default {
         case "/api/pull":  return await handlePull(request, env);
         case "/api/provision": return await handleProvision(request, env);
         case "/api/lead":  return await handleLead(request, env);
+        case "/api/advise": return await handleAdvise(request, env);
+        case "/beruang-webhook":   return await handleBeruangWebhook(request, env, ctx);
+        case "/api/beruang-pair":  return await handleBeruangPair(request, env);
+        case "/api/beruang-pull":  return await handleBeruangPull(request, env);
+        case "/api/beruang-bills-push": return await handleBeruangBillsPush(request, env);
+        case "/api/beruang-bills-test": return await handleBeruangBillsTest(request, env);
+        case "/api/beruang-setup-webhook": return await handleBeruangSetupWebhook(request, env);
+        case "/api/beruang-debug": return await handleBeruangDebug(request, env);
+        // Payment (Xendit) — siap diisi credentials setelah approved
+        case "/api/create-invoice":  return await handleCreateInvoice(request, env);
+        case "/api/verify-payment":  return await handleVerifyPayment(request, env);
+        case "/api/xendit-webhook":  return await handleXenditWebhook(request, env);
+        case "/api/google-play/verify": return await handleGooglePlayVerify(request, env);
+        case "/api/account/bootstrap": return await handleAccountBootstrap(request, env);
+        case "/api/delete-account": return await handleDeleteAccount(request, env, ctx);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });
         case "/":          return htmlResponse(landingPage(env));
         default:           return new Response("Not Found", { status: 404 });

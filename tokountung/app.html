@@ -16,6 +16,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="styles.css?v=24" />
 </head>
 <body>
@@ -545,6 +546,11 @@
       <h1>Pengaturan</h1>
     </div>
     <div class="panel">
+      <div class="panel-head"><h3>🔄 Versi Aplikasi</h3></div>
+      <p style="margin:0 0 12px; color:var(--ink-soft, #667); font-size:13px">Kalau tampilan masih versi lama / ada fitur baru belum muncul, tap tombol ini buat ambil versi terbaru. Data &amp; login kamu TIDAK terhapus.</p>
+      <button type="button" class="btn btn-gold btn-block" id="btn-refresh-app" title="Paksa ambil versi terbaru (data aman)">🧹 Bersihkan Cache &amp; Muat Ulang</button>
+    </div>
+    <div class="panel">
       <div class="panel-head"><h3>🏪 Info Toko</h3></div>
       <form id="form-toko" class="form">
         <label>Nama Toko<input name="namaToko" required /></label>
@@ -937,7 +943,9 @@
 
 <div id="toast" class="toast" hidden></div>
 
-<script src="js/firebase-config.js?v=3"></script>
+<script src="js/firebase-config.js?v=4"></script>
+<script>window.PRESENCE_APP = 'berbisnis';</script>
+<script src="../js/presence.js?v=2"></script>
 <script src="js/auth.js?v=7"></script>
 <script src="js/admin.js?v=2"></script>
 <script src="js/firestore-sync.js?v=1"></script>
@@ -954,6 +962,7 @@
 <script src="js/edit-sale.js?v=2"></script>
 <script src="js/onboarding.js?v=1"></script>
 <script src="js/cloud-sync.js?v=4"></script>
-<script src="js/app.js?v=20"></script>
+<script src="js/app.js?v=22"></script>
+<script src="../js/suite-launcher.js?v=1"></script>
 </body>
 </html>
