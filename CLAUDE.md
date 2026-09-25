@@ -9,6 +9,15 @@ Link publik: https://play.google.com/store/apps/details?id=id.berstock.beruang
 ⚠️ Cek link dari server Claude (lokasi US) SELALU 404 karena app hanya rilis di Indonesia (region-locked).
 Itu BUKAN bukti app belum live. Verifikasi status via screenshot Play Console dari bos.
 
+Update 25 Sep malam:
+- Login Google GAGAL di versi Play yang live (TWA lama, signInWithPopup). Build Capacitor baru sengaja
+  menyembunyikan tombol Google (`mobile/src/mobile.css` + `mobile/src/runtime.js`). Solusi permanen:
+  native Google Sign-In + SHA-1 App signing key di Firebase → versionCode 6 SETELAH review v1.3.0 selesai.
+  Sementara: user daftar email+password pakai Gmail yang sama (akun sama nanti saat Google jalan).
+- Teks ASO siap: `store-assets/play-listing-aso.md` (judul "BerUang: Catat Keuangan Harian"). Tempel setelah review selesai.
+- Cek: Firestore Rules (`firestore.rules`) sudah di-deploy di Console? Admin sekarang butuh custom claim `admin`
+  (bukan allowlist email) — pastikan claim sudah diset, kalau tidak admin panel gak bisa aktivasi manual.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
