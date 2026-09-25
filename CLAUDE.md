@@ -45,6 +45,9 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Build Android Capacitor ikut terkunci setelah re-stage + build berikutnya (runtime.js override showScreen('paywall') -> paywall Google Play).
   Catatan: bot Telegram BerUang belum cek status paket.
 
+- 💬 26 Sep: bos sempat mau ganti Tahunan → Lifetime, lalu BATAL (ingat biaya AI). Paket tetap: 7 hari Rp10rb /
+  Bulanan Rp50rb / Tahunan Rp299rb. JANGAN tawarkan lifetime lagi kecuali tanpa AI.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
