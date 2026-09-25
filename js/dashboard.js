@@ -105,7 +105,7 @@ function renderDashboard() {
   renderHutangSummary();
   if (typeof renderAnomalyBanner === 'function') renderAnomalyBanner();
   if (typeof renderReminder === 'function') renderReminder();
-  if (typeof renderAIPromo === 'function') renderAIPromo();
+  // AI tetap tersedia melalui tombol asisten; ringkasan keuangan menjadi fokus dashboard.
   if (typeof renderTgBillPromo === 'function') renderTgBillPromo();
 
   const income = sumBy(trx, 'pemasukan');

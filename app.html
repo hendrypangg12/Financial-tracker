@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=49" />
+  <link rel="stylesheet" href="styles.css?v=50" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -199,11 +199,11 @@
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab active" data-tab="dashboard">Ringkasan</button>
       <button class="tab" data-tab="transaksi">Transaksi</button>
       <button class="tab" data-tab="tambah">Tambah</button>
-      <button class="tab" data-tab="hutang">💸 Hutang</button>
-      <button class="tab" data-tab="goal">🎯 Goal</button>
+      <button class="tab" data-tab="hutang">Hutang</button>
+      <button class="tab" data-tab="goal">Target</button>
       <button class="tab" data-tab="rekap">Rekap</button>
       <button class="tab" data-tab="kategori">Kategori</button>
       <button class="tab tab-admin" data-tab="admin" hidden>👨‍💼 Admin</button>
@@ -211,11 +211,7 @@
     <div class="topbar-actions">
       <span id="sync-status" class="sync-status"></span>
       <span id="trial-badge" class="trial-badge" hidden title="Trial Pro aktif"></span>
-      <button class="btn btn-upgrade-pro" id="btn-upgrade-pro" hidden title="Upgrade ke Pro untuk unlock fitur premium">✨ Upgrade Pro</button>
-      <button class="btn btn-ghost" id="btn-export">Export <span class="pro-lock">🔒</span></button>
-      <button class="btn btn-ghost" id="btn-import">Import</button>
-      <input type="file" id="file-import" accept="application/json" hidden />
-      <button class="btn btn-danger" id="btn-reset" title="Hapus semua data">Reset</button>
+      <button class="btn btn-upgrade-pro" id="btn-upgrade-pro" hidden title="Buka fitur paket Pro">Paket Pro</button>
       <div class="user-menu" id="user-menu" hidden>
         <button class="user-menu-btn" id="user-menu-btn" title="Akun">
           <span class="user-avatar" id="user-avatar">🙂</span>
@@ -230,6 +226,9 @@
           <button class="user-item user-item-admin" id="btn-admin-panel" hidden>👨‍💼 Admin Panel</button>
           <button class="user-item" id="btn-setup-dana">💰 Setup Dana Awal</button>
           <button class="user-item" id="btn-tg-link">🤖 Hubungkan Telegram (catat via chat)</button>
+          <button class="user-item" id="btn-export">⬇️ Unduh Cadangan <span class="pro-lock">🔒</span></button>
+          <button class="user-item" id="btn-import">⬆️ Pulihkan Cadangan</button>
+          <input type="file" id="file-import" accept="application/json" hidden />
           <button class="user-item" id="btn-refresh-app" title="Paksa ambil versi terbaru tanpa menghapus catatan akun">🧹 Bersihkan Cache &amp; Muat Ulang</button>
           <button class="user-item user-item-danger" id="btn-reset-data" title="Hapus semua data & mulai dari awal">🔄 Reset Data &amp; Mulai Ulang</button>
           <button class="user-item user-item-danger" id="btn-delete-account" title="Hapus akun BerUang dan data terkait">Hapus Akun BerUang</button>
@@ -342,7 +341,7 @@
         </div>
 
         <div class="panel">
-          <div class="panel-head"><h3>Mini Reports</h3></div>
+          <div class="panel-head"><h3>Ringkasan Bulan Ini</h3></div>
           <ul id="mini-reports" class="mini-reports"></ul>
         </div>
       </div>
@@ -1004,7 +1003,7 @@ TOTAL            86.500"></textarea>
   <script src="js/parser.js?v=20"></script>
   <script src="js/sync.js?v=25"></script>
   <script src="js/auth.js?v=25"></script>
-  <script src="js/dashboard.js?v=30"></script>
+  <script src="js/dashboard.js?v=31"></script>
   <script src="js/anomaly.js?v=1"></script>
   <script src="js/pages.js?v=22"></script>
   <script src="js/reports.js?v=1"></script>
@@ -1015,7 +1014,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=1"></script>
   <script src="js/telegram-link.js?v=5"></script>
   <script src="js/onboarding.js?v=7"></script>
-  <script src="js/app.js?v=49"></script>
-<script src="js/suite-launcher.js?v=1"></script>
+  <script src="js/app.js?v=50"></script>
 </body>
 </html>
