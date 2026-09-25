@@ -35,6 +35,7 @@ PERTANYAAN GOAL ("kapan bisa beli X" / "cara nabung buat X"):
 - Hitung dari data: (Aset/tabungan sekarang) + (yang bisa ditabung per bulan = pemasukan - pengeluaran)
 - Estimasi: (harga barang - aset sekarang) / tabungan per bulan = berapa bulan lagi
 - Kasih angka konkret + 1-2 saran biar lebih cepat (pos pengeluaran mana yang bisa dipangkas)
+- Kalau ada "Riwayat bulanan", pakai rata-rata sisa beberapa bulan (bukan cuma bulan ini yang belum selesai) biar estimasi realistis
 - Kalau tabungan bulanan negatif/nol: jujur bilang "belum bisa nabung, harus benerin pengeluaran dulu" + tunjuk kategori boros
 
 PRINSIP:
@@ -43,6 +44,7 @@ PRINSIP:
 3. EMPATIK — kalau spending tinggi, jangan judge. Kasih opsi yang masuk akal
 4. INDONESIAN CONTEXT — paham GoFood, Tokopedia, BCA, OVO, GoPay, dll
 5. JANGAN claim sebagai financial advisor profesional — kasih insight aja
+6. TREN — kalau ada riwayat bulanan, sebut pola nyata (mis. "3 bulan terakhir makan naik terus") dan bandingkan dengan bulan-bulan sebelumnya
 
 YANG TIDAK DILAKUKAN:
 - Jangan kasih advice pajak / hukum (out of scope)
@@ -237,6 +239,18 @@ function buildUserMessage(question, ctx) {
   if (typeof ctx.compareExpense === "number") {
     const arrow = ctx.compareExpense >= 0 ? "▲" : "▼";
     lines.push(`📊 Pengeluaran: ${arrow} ${Math.abs(ctx.compareExpense)}% vs bulan lalu`);
+  }
+
+  // Riwayat per bulan (maks 6) — dipakai buat baca tren/kebiasaan jangka panjang
+  if (Array.isArray(ctx.monthlyHistory) && ctx.monthlyHistory.length > 1) {
+    lines.push("", "📅 Riwayat bulanan (lama → baru):");
+    ctx.monthlyHistory.slice(-6).forEach((m) => {
+      if (!m || typeof m !== "object") return;
+      const cats = Array.isArray(m.topKategori)
+        ? m.topKategori.slice(0, 3).map((c) => `${String(c?.name || "Lain").slice(0, 40)} Rp ${formatRupiah(c?.total)}`).join(", ")
+        : "";
+      lines.push(`  - ${String(m.bulan || "").slice(0, 20)}: masuk Rp ${formatRupiah(m.pemasukan)}, keluar Rp ${formatRupiah(m.pengeluaran)}, sisa Rp ${formatRupiah(m.sisa)}, ${Number(m.jumlahTransaksi) || 0} transaksi${cats ? ` | terbesar: ${cats}` : ""}`);
+    });
   }
 
   // Category breakdown (top 5)

@@ -52,6 +52,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   AI = nilai jual utama → WAJIB top-up di console.anthropic.com (akun hendrypangg12@icloud.com) → Billing.
   Sisa 2 dokumen profil probe (claude-probe-…@example.com) di Firestore, auth user sudah dihapus.
 
+- 🤖 26 Sep: AI Advisor dapat RIWAYAT 6 BULAN otomatis (`monthlyHistory` di js/ai-advisor.js buildAdvisorContext →
+  dirender di bot/src/advise.js buildUserMessage; system prompt + aturan TREN & rata-rata beberapa bulan untuk goal).
+  Konteks ~1.8rb karakter (batas 20rb). AI TIDAK "belajar"/ingat chat — tiap pertanyaan baca ringkasan data user.
+  Promosi aman: "AI membaca data keuanganmu sendiri"; JANGAN klaim "AI belajar dari kebiasaanmu". ai-advisor v11, SW v55.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

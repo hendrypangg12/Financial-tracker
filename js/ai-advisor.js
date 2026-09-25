@@ -273,9 +273,38 @@ function buildAdvisorContext() {
     .filter((h) => h.jenis === "hutang" && !h.lunas)
     .reduce((s, h) => s + (Number(h.nominal) || 0), 0);
 
+  // Riwayat 6 bulan (bulan ini + 5 sebelumnya) — ringkasan per bulan biar AI bisa baca tren
+  const monthlyHistory = [];
+  for (let back = 5; back >= 0; back--) {
+    const ref = new Date(curYear, curMonth - back, 1);
+    const m = ref.getMonth(), y = ref.getFullYear();
+    const txs = state.transactions.filter((t) => {
+      const d = new Date(t.tanggal);
+      return d.getMonth() === m && d.getFullYear() === y;
+    });
+    if (!txs.length && !monthlyHistory.length) continue; // lewati bulan kosong di awal
+    const pemasukan = sumByJenis(txs, "pemasukan");
+    const pengeluaran = sumByJenis(txs, "pengeluaran");
+    const cats = {};
+    txs.filter((t) => t.jenis === "pengeluaran").forEach((t) => {
+      const cat = t.kategori || "Lain";
+      cats[cat] = (cats[cat] || 0) + (t.jumlah || 0);
+    });
+    monthlyHistory.push({
+      bulan: ref.toLocaleDateString("id-ID", { month: "short", year: "numeric" }),
+      pemasukan,
+      pengeluaran,
+      sisa: pemasukan - pengeluaran,
+      jumlahTransaksi: txs.length,
+      topKategori: Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 3)
+        .map(([name, total]) => ({ name, total })),
+    });
+  }
+
   return {
     userName: (state.userName || "").trim() || null,
     monthName,
+    monthlyHistory,
     totalPemasukan,
     totalPengeluaran,
     sisaSaldo,
