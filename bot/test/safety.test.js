@@ -38,6 +38,15 @@ test('AI rejects anonymous and non-Pro advisor requests', async t => {
   mockFetch(t, async url => String(url).includes('accounts:lookup') ? json({ users: [{ localId: 'u' }] }) : json({ fields: { plan: { stringValue: 'pending' } } }));
   assert.equal((await handleAdvise(request({ question: 'hi' }, authorization), environment())).status, 403);
 });
+test('free trial cannot use AI advisor or Goal planner, even while active', async t => {
+  const future = new Date(Date.now() + 86400000).toISOString();
+  mockFetch(t, async url => String(url).includes('accounts:lookup') ? json({ users: [{ localId: 'u' }] }) : json({ fields: { plan: { stringValue: 'free_trial' }, expiresAt: { stringValue: future } } }));
+  for (const body of [{ question: 'hi' }, { question: 'goal', context: { source: 'goal-planner' } }]) {
+    const res = await handleAdvise(request(body, authorization), environment());
+    assert.equal(res.status, 403);
+    assert.match((await res.json()).reply, /uji coba gratis belum termasuk AI/i);
+  }
+});
 test('Goal prompt above 500 chars reaches server quota check; quota is tied to UID', async t => {
   const env = environment();
   env.data.set('goal_free:u:' + new Date().toISOString().slice(0, 7), '1');

@@ -278,8 +278,14 @@ function renderGoals() {
       const goal = state.goals.find(g => g.id === btn.dataset.id);
       if (!goal) return;
 
+      // Uji coba gratis tidak termasuk AI — arahkan ke paket berbayar
+      if (typeof isFreeTrial === 'function' && isFreeTrial(currentProfile)) {
+        if (typeof openPaywall === 'function') openPaywall();
+        else if (typeof showScreen === 'function') showScreen('paywall');
+        return;
+      }
       // Check Pro status (Goal Planner is Pro feature, free user get 1 plan/month)
-      const userIsPro = typeof isPro === 'function' && isPro(currentProfile);
+      const userIsPro = typeof hasAIAccess === 'function' && hasAIAccess(currentProfile);
       const freeQuotaKey = `goal-ai-free-${new Date().getFullYear()}-${new Date().getMonth()}`;
       const freeUsedThisMonth = parseInt(localStorage.getItem(freeQuotaKey) || '0', 10);
       if (!userIsPro && freeUsedThisMonth >= 1) {

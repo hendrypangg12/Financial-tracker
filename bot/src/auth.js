@@ -21,15 +21,20 @@ export async function requireUser(request, env) {
   return { uid: account.localId, email: account.email || '', token };
 }
 
-export async function hasProAccess(user, env) {
-  // This read obeys Firestore rules. Subscription fields must be admin-only writes.
+// AI hanya untuk paket berbayar: uji coba gratis (free_trial) tidak termasuk AI.
+export async function readPlan(user, env) {
   const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(env.FIREBASE_PROJECT_ID)}/databases/(default)/documents/users/${encodeURIComponent(user.uid)}/meta/profile`;
   const response = await fetch(url, { headers: { Authorization: `Bearer ${user.token}` } });
-  if (response.status === 404) return false;
+  if (response.status === 404) return { plan: null, active: false };
   if (!response.ok) throw new HttpError(503, 'Status langganan belum bisa diperiksa.');
   const fields = (await response.json()).fields || {};
-  const plan = fields.plan?.stringValue;
-  if (plan === 'lifetime' || plan === 'pro') return true;
-  return ['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(plan)
-    && Date.parse(fields.expiresAt?.stringValue || '') > Date.now();
+  const plan = fields.plan?.stringValue || null;
+  const active = plan === 'lifetime' || plan === 'pro' || (['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(plan)
+    && Date.parse(fields.expiresAt?.stringValue || '') > Date.now());
+  return { plan, active };
+}
+
+export async function hasProAccess(user, env) {
+  // This read obeys Firestore rules. Subscription fields must be admin-only writes.
+  return (await readPlan(user, env)).active;
 }

@@ -25,7 +25,7 @@ function initAIAdvisor() {
   // Tap FAB → buka chat (kalau Pro) atau paywall (kalau Free)
   fab.addEventListener("click", () => {
     const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
-    const userIsPro = typeof isPro === "function" && isPro(profile);
+    const userIsPro = typeof hasAIAccess === "function" && hasAIAccess(profile);
     if (userIsPro) {
       openAIChat();
     } else {
@@ -96,6 +96,13 @@ function closeAIChat() {
 }
 
 function openPaywall() {
+  const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
+  const sub = document.querySelector("#ai-paywall-modal .ai-paywall-sub");
+  if (sub) {
+    sub.textContent = typeof isFreeTrial === "function" && isFreeTrial(profile)
+      ? "Uji coba gratis belum termasuk AI. Aktifkan paket mulai Rp 10rb untuk ngobrol dengan Beruang Akuntan."
+      : "AI Advisor 24/7 yang paham data kamu — eksklusif untuk Pro";
+  }
   document.getElementById("ai-paywall-modal").hidden = false;
 }
 function closePaywall() {
@@ -348,7 +355,7 @@ function renderAIPromo() {
   el.querySelector(".ai-promo-cta").onclick = () => {
     dismiss();
     const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
-    const userIsPro = typeof isPro === "function" && isPro(profile);
+    const userIsPro = typeof hasAIAccess === "function" && hasAIAccess(profile);
     if (userIsPro) { if (typeof openAIChat === "function") openAIChat(); }
     else { if (typeof openPaywall === "function") openPaywall(); }
   };

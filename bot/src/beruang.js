@@ -5,6 +5,7 @@
 
 import { sendMessage } from "./telegram.js";
 import { requireUser } from './auth.js';
+import { adminToken, firestoreAdmin } from './firebase-admin.js';
 
 const TTL_CODE = 900;            // kode pairing 15 menit
 const TTL_INBOX = 60 * 60 * 24 * 14; // inbox 14 hari
@@ -140,6 +141,10 @@ export async function handleBeruangWebhook(request, env, ctx) {
       // FOTO STRUK → OCR via Claude vision
       if (photos.length > 0) {
         const photo = photos[photos.length - 1]; // largest variant
+        if (!(await hasPaidAIAccess(env, link))) {
+          await sendMessage(token, chatId, "📸 Baca foto struk pakai AI khusus paket berbayar yang aktif, bos. Aktifkan paket di app BerUang (mulai Rp 10rb), atau ketik manual aja: \"indomaret 85rb\" 🐻");
+          return;
+        }
         await handleStrukPhoto(env, token, chatId, photo, link.email, msg && msg.caption);
         return;
       }
@@ -163,6 +168,28 @@ async function pushInbox(env, email, entry) {
   const arr = (await env.BOT_DATA.get(key, "json")) || [];
   arr.push(entry);
   await env.BOT_DATA.put(key, JSON.stringify(arr.slice(-200)), { expirationTtl: TTL_INBOX });
+}
+
+// AI (Claude vision) hanya untuk paket berbayar yang masih aktif — uji coba gratis & paket habis tidak.
+async function hasPaidAIAccess(env, link) {
+  try {
+    let uid = link.uid;
+    if (!uid) {
+      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(env.FIREBASE_PROJECT_ID)}/accounts:lookup`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + await adminToken(env) },
+        body: JSON.stringify({ email: [link.email] }), signal: AbortSignal.timeout(15000),
+      });
+      uid = (await res.json().catch(() => ({}))).users?.[0]?.localId;
+      if (!uid) return false;
+    }
+    const doc = await firestoreAdmin(env).get(`users/${uid}/meta/profile`);
+    const plan = doc?.data?.plan;
+    if (plan === 'lifetime' || plan === 'pro') return true;
+    return ['trial', 'monthly', 'annual', 'starter'].includes(plan) && Date.parse(doc.data.expiresAt || '') > Date.now();
+  } catch (e) {
+    console.error('[beruang] cek paket gagal', e && e.message);
+    return false; // fail closed: jangan keluar biaya AI kalau status tidak bisa dipastikan
+  }
 }
 
 // ====== FOTO STRUK — Claude vision ======
@@ -287,7 +314,7 @@ export async function handleBeruangPair(request, env) {
   const rec = await env.BOT_DATA.get("btg_code:" + String(code).trim(), "json");
   if (!rec || !rec.chatId) return jres({ ok: false, error: "Kode salah / kadaluarsa. Minta kode baru via /mulai di bot." }, 404);
   // simpan mapping 2 arah
-  await env.BOT_DATA.put("btg_chat:" + rec.chatId, JSON.stringify({ email }));
+  await env.BOT_DATA.put("btg_chat:" + rec.chatId, JSON.stringify({ email, uid: user.uid }));
   await env.BOT_DATA.put("btg_mail:" + email, JSON.stringify({ chatId: rec.chatId, pullToken }));
   await env.BOT_DATA.delete("btg_code:" + String(code).trim());
   const token = (env.BERUANG_TG_TOKEN || "").trim();

@@ -2,7 +2,7 @@
 // Pro-only feature: user kirim pertanyaan + data spending, Claude balas insight.
 
 import Anthropic from "@anthropic-ai/sdk";
-import { requireUser, hasProAccess } from "./auth.js";
+import { requireUser, readPlan } from "./auth.js";
 
 const MODEL = "claude-sonnet-5";
 const MAX_TOKENS = 1024;  // Jawaban ringkas, gak boros token
@@ -111,9 +111,13 @@ export async function handleAdvise(request, env) {
     return jsonResponse({ error: "Pertanyaan atau data pendukung terlalu panjang" }, 400);
   }
 
-  let pro;
-  try { pro = await hasProAccess(user, env); }
+  let account;
+  try { account = await readPlan(user, env); }
   catch (e) { return jsonResponse({ error: e.message }, e.status || 503); }
+  if (account.active && account.plan === 'free_trial') {
+    return jsonResponse({ error: 'AI khusus paket berbayar.', reply: 'Bos, uji coba gratis belum termasuk AI. Aktifkan paket mulai Rp 10rb biar bisa ngobrol sama Beruang Akuntan ya 🐻' }, 403);
+  }
+  const pro = account.active;
   if (!pro && !isGoal) return jsonResponse({ error: 'Fitur ini memerlukan paket Pro aktif.' }, 403);
   const month = new Date().toISOString().slice(0, 7);
   const freeKey = `goal_free:${user.uid}:${month}`;

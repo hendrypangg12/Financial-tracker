@@ -99,6 +99,15 @@ function isSubscriptionActive(profile) {
 //   annual   : Rp 299rb/tahun (hemat 50%)
 //   lifetime : LEGACY only — existing buyer sebelum pricing change masih dihormati
 //   pro      : LEGACY admin/test
+// AI (Tanya Beruang + Goal Planner) hanya untuk paket berbayar — uji coba gratis tidak termasuk AI
+// (keputusan bos 26 Sep 2026: cegah biaya AI dari akun iseng/trial).
+function isFreeTrial(profile) {
+  return profile?.plan === 'free_trial';
+}
+function hasAIAccess(profile) {
+  return isPro(profile) && !isFreeTrial(profile);
+}
+
 function isPro(profile) {
   if (!profile) return false;
   // Legacy lifetime = akses selamanya (honor existing buyers)

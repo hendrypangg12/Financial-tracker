@@ -57,6 +57,12 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Konteks ~1.8rb karakter (batas 20rb). AI TIDAK "belajar"/ingat chat — tiap pertanyaan baca ringkasan data user.
   Promosi aman: "AI membaca data keuanganmu sendiri"; JANGAN klaim "AI belajar dari kebiasaanmu". ai-advisor v11, SW v55.
 
+- 🚫 26 Sep: TRIAL GRATIS 2 HARI TANPA AI (keputusan bos, cegah rugi dari user iseng). AI hanya plan berbayar aktif:
+  client `hasAIAccess()`/`isFreeTrial()` di js/auth.js (AI chat, Goal Planner → modal AI paywall);
+  server `readPlan()` di bot/src/auth.js, /api/advise tolak free_trial (403 + reply ramah);
+  bot Telegram foto struk (Claude vision) cek paket via Firestore admin (`hasPaidAIAccess`, fail closed),
+  pairing sekarang simpan uid. auth v26, goal v3, ai-advisor v12, SW v56.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
