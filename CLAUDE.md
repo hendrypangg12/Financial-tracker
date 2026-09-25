@@ -27,7 +27,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   create dari client). Akun lama aman. Bos harus: Firebase Console → Project settings → Service accounts →
   Generate new private key → Cloudflare Worker berstock-bot → Settings → Variables and Secrets → Secret
   `FIREBASE_SERVICE_ACCOUNT_JSON` (paste isi JSON). Aktivasi Google Play juga butuh secret ini (tulis Firestore).
-- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` tampaknya sudah ada (verify ke Google jalan, token palsu → 400).
+- ⚠️ ADA 2 AKUN CLOUDFLARE. Worker LIVE (berstock-bot.hendrypangg12.workers.dev, account 55dcdad9…, KV 9ca470…/59016f…,
+  login hendrypangg12@icloud.com) = yang di-deploy GitHub Actions. Codex men-setup secret FIREBASE_SERVICE_ACCOUNT_JSON +
+  GOOGLE_PLAY_SERVICE_ACCOUNT_JSON di akun LAIN (login hendryphang12@gmail, account 9c165162…, KV cd51e8…/62028b…) — worker
+  itu TIDAK melayani traffic. Worker live: kedua secret BELUM ada (bootstrap 503, google-play/verify 503).
+  Secret harus ditambahkan di akun icloud.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
