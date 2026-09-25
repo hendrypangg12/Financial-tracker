@@ -48,6 +48,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
 - 💬 26 Sep: bos sempat mau ganti Tahunan → Lifetime, lalu BATAL (ingat biaya AI). Paket tetap: 7 hari Rp10rb /
   Bulanan Rp50rb / Tahunan Rp299rb. JANGAN tawarkan lifetime lagi kecuali tanpa AI.
 
+- 🚨 26 Sep: tes /api/advise dengan akun trial → 503 "kredit AI Admin lagi habis" (saldo Anthropic HABIS).
+  AI = nilai jual utama → WAJIB top-up di console.anthropic.com (akun hendrypangg12@icloud.com) → Billing.
+  Sisa 2 dokumen profil probe (claude-probe-…@example.com) di Firestore, auth user sudah dihapus.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
