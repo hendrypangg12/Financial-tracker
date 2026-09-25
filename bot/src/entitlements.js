@@ -13,6 +13,7 @@ export function assertInvoiceMatches(record, event) {
     throw new HttpError(400, 'Invoice mismatch');
   }
 }
+
 // Receipt creation, profile extension and invoice status are one atomic commit.
 // CAS on the profile prevents two different invoices losing an extension.
 export async function applyPaidInvoice(env, externalId, event) {
