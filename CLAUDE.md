@@ -32,6 +32,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON di akun LAIN (login hendryphang12@gmail, account 9c165162…, KV cd51e8…/62028b…) — worker
   itu TIDAK melayani traffic. Worker live: kedua secret BELUM ada (bootstrap 503, google-play/verify 503).
   Secret harus ditambahkan di akun icloud.
+- ✅ 26 Sep 00:17 WIB: bos set FIREBASE_SERVICE_ACCOUNT_JSON di akun icloud → daftar akun baru BERHASIL
+  (bootstrap 200, profil plan=free_trial 2 hari, self-upgrade tetap 403). Sisa 1 dokumen profil probe
+  (email claude-probe-…@example.com, auth user sudah dihapus) — boleh dihapus dari Firestore.
+- ⏳ GOOGLE_PLAY_SERVICE_ACCOUNT_JSON belum ada di worker live (akun icloud) → wajib sebelum billing v1.3.0 dipakai.
+- Saran: invite hendryphang12@gmail.com sebagai Super Administrator di akun Cloudflare icloud (Members).
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
