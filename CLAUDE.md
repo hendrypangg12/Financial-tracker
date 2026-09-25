@@ -1,5 +1,17 @@
 # CLAUDE.md — Konteks Proyek Financial Tracker
 
+## ✅ BerUang LIVE di Google Play Production — dikonfirmasi 25 September 2026 (22:51 WIB)
+
+Screenshot Play Console dari bos: **Production = Active · 8 active devices · 1 country/region (Indonesia)**.
+Update status: **In review** (update baru, kemungkinan build Capacitor v1.3.0 / versionCode 5 + Google Play Billing dari Codex).
+Link publik: https://play.google.com/store/apps/details?id=id.berstock.beruang
+
+⚠️ Cek link dari server Claude (lokasi US) SELALU 404 karena app hanya rilis di Indonesia (region-locked).
+Itu BUKAN bukti app belum live. Verifikasi status via screenshot Play Console dari bos.
+
+Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
+`BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
+
 ## Review BerUang — 21 September 2026
 
 Perbaikan persiapan penjualan ada di branch `codex/beruang-launch-safety`, belum produksi.
