@@ -89,6 +89,16 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket "Akses 7 Hari" (bukan "Coba 7 Hari"), hapus "Cancel kapan aja". ⚠️ Tombol Tahunan/Bulanan di index.html
   masih ke lynk.id — listing Lynk BELUM di-update (masih Lifetime Rp 125rb). Bos harus update Lynk atau arahkan ke app.
 
+- 🔑 26 Sep 15:30: ChatGPT (laptop bos) buat SA `beruang-play-billing@ber-uang-735b3.iam.gserviceaccount.com`, izin Play
+  Console Active, set secret di Cloudflare 55dcdad9 — TAPI isinya SALAH: `/api/google-play/health` (endpoint diagnostik
+  baru, aman) → present=true, length=59, parses=false ⇒ yang dipaste EMAIL service account (59 char), bukan isi JSON.
+  File JSON sudah dihapus ChatGPT → harus generate key BARU lalu paste isi JSON utuh (~2.3rb char, diawali `{"type":`).
+- ⚠️ DIVERGENSI BRANCH: Codex/ChatGPT kerja di `codex/beruang-phone-handoff-20260926` (v1.4.0 versionCode 6 di Internal
+  Testing, produk Play jadi SUBSCRIPTION auto-renew `beruang_monthly_subscription`/`beruang_annual_subscription` +
+  RTDN, minSdk 24, KV ID salah lagi cd51e8…). Worker LIVE = branch saya (produk one-time `beruang_access_*`), jadi app
+  v1.4.0 beli subscription → live worker jawab 400 "Pembelian tidak valid". terms.html saya bilang TANPA auto-renew.
+  HARUS diputuskan bos & di-merge sebelum v1.4.0 ke Production. Branch Codex juga MENGHAPUS terms.html, video, ASO.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
