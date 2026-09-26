@@ -6,16 +6,17 @@ Pembaruan terakhir: 26 September 2026. Ini catatan keadaan proyek saat laptop ma
 
 - Branch kerja: `codex/beruang-phone-handoff-20260926`
 - Branch dapat dibuka dari HP: https://github.com/hendrypangg12/Financial-tracker/tree/codex/beruang-phone-handoff-20260926
-- Commit sumber terakhir saat catatan ini dibuat: `43a6aafec12edb2c44d50cb21db7ff17b5136fdc` (catatan ini akan menjadi commit berikutnya).
+- Gunakan commit terbaru pada branch ini; catatan dan perbaikan pemulihan langganan ikut disimpan di branch.
 - Repo GitHub bersifat publik. Tidak ada signing keystore atau isi Cloudflare/Firebase service-account secret di commit.
 - Source Android, konfigurasi Firebase klien, Google Play Billing, backend verifikasi pembelian, dan handler notifikasi pembaruan langganan ada di branch ini.
 
 ## Bukti build dan pemeriksaan
 
 - Android debug APK berhasil dibuat: `mobile/android/app/build/outputs/apk/debug/app-debug.apk` (8,278,986 byte). Ini build uji dengan package `id.berstock.beruang.dev`; tidak cocok untuk diunggah sebagai aplikasi Play.
-- Production Android App Bundle berhasil dibuat: `mobile/android/app/build/outputs/bundle/release/app-release.aab` (6,496,427 byte). Isinya package `id.berstock.beruang`, version code 6, version name 1.4.0.
+- Production Android App Bundle berhasil dibuat ulang setelah perbaikan sinkronisasi: `mobile/android/app/build/outputs/bundle/release/app-release.aab` (6,496,625 byte, SHA-256 `6A661E4AB26194AD64E8F20A308A41B7EFB04DA79593587B7F21E8173B79757C`). Isinya package `id.berstock.beruang`, version code 6, version name 1.4.0.
 - AAB ditandatangani dengan upload key yang sidik jari SHA-1-nya cocok dengan upload key di Play Console. File kunci privat tetap hanya di laptop; jangan unggah atau kirim ke GitHub/chat.
-- Pemeriksaan otomatis terakhir: mobile 6 lulus, 0 gagal, 1 dilewati (uji Firestore Rules emulator tidak dijalankan); backend 42 lulus, 0 gagal.
+- Pemeriksaan otomatis terakhir: mobile 12 lulus, 0 gagal, 0 dilewati, termasuk lima uji Firestore Rules pada emulator; backend 42 lulus, 0 gagal.
+- Restore langganan native kini mencoba ulang setelah kegagalan, saat aplikasi kembali aktif, dan maksimal tiap enam jam selama sesi akun.
 - Tidak ada perangkat Android/ADB yang terhubung, sehingga login Google, Play Billing, restore pembelian, dan sinkronisasi lintas perangkat belum diuji pada ponsel nyata.
 
 ## Keadaan Google Play dan pembayaran (cek per 26 September 2026)

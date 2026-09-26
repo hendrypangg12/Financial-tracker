@@ -5,12 +5,13 @@ import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 
 const source=await readFile(new URL('../src/runtime.js',import.meta.url),'utf8');
-function sandbox(plugins={}) {
+function sandbox(plugins={},production=false) {
   const calls=[];
-  const context={ URL, location:{href:'https://localhost/'}, document:{body:{classList:{add:name=>calls.push(['class',name])}},addEventListener(){}}, showToast:(...args)=>calls.push(['toast',...args]), showScreen:name=>calls.push(['screen',name]), fetch:async()=>{calls.push(['fetch']);return 'ok';}, syncData:value=>value, state:{transactions:[]}, Capacitor:{ isNativePlatform:()=>true, registerPlugin:name=>plugins[name] } };
+  const listeners={};
+  const context={ URL, __BERUANG_STORE_BUILD__:production, location:{href:'https://localhost/'}, document:{hidden:false,body:{classList:{add:name=>calls.push(['class',name])}},addEventListener:(name,fn)=>listeners[name]=fn,getElementById:()=>null,querySelectorAll:()=>[]},addEventListener:(name,fn)=>listeners['window:'+name]=fn, showToast:(...args)=>calls.push(['toast',...args]), showScreen:name=>calls.push(['screen',name]), fetch:async()=>{calls.push(['fetch']);return 'ok';}, syncData:value=>value, state:{transactions:[]}, Capacitor:{ isNativePlatform:()=>true, registerPlugin:name=>plugins[name] } };
   context.window=context;
   vm.runInNewContext(source,context);
-  return {context,calls};
+  return {context,calls,listeners};
 }
 test('native build blocks website payment APIs while normal account flow is preserved',async()=>{
   const {context,calls}=sandbox();
@@ -39,6 +40,23 @@ test('Play paywall separates the one-time 7-day pass from recurring subscription
   assert.match(source,/ditagih otomatis setiap periode sampai dibatalkan/);
   assert.match(source,/Paket 7 hari hanya dibayar sekali/);
   assert.match(source,/restorePurchases\(\)/);
+});
+test('subscription restore retries after a verification failure and refreshes again after six hours',async()=>{
+  let restores=0,verified=0,now=Date.now(),failFirst=true;
+  const billing={restorePurchases:async()=>{restores++;return{purchases:[{productId:'beruang_monthly_subscription',purchaseToken:'token'}]};}};
+  const {context,listeners}=sandbox({PlayBilling:billing},true);
+  context.currentUser={uid:'u'};context.authenticatedHeaders=async()=>({});context.refreshUserProfile=async()=>{};
+  context.Date={now:()=>now};
+  context.fetch=async()=>{verified++;return{ok:!failFirst,json:async()=>failFirst?{error:'temporary'}:{entitlementApplied:true}};};
+  const settle=()=>new Promise(resolve=>setTimeout(resolve,10));
+  context.showScreen('app');await settle();
+  assert.equal(restores,1);assert.equal(verified,1);
+  failFirst=false;listeners.visibilitychange();await settle();
+  assert.equal(restores,2);assert.equal(verified,2);
+  listeners.visibilitychange();await settle();
+  assert.equal(restores,2);
+  now+=6*60*60*1000+1;listeners.visibilitychange();await settle();
+  assert.equal(restores,3);assert.equal(verified,3);
 });
 test('native backup is durably written before share, using safe filenames',async()=>{
   const operations=[];
