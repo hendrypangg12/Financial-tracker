@@ -63,6 +63,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   bot Telegram foto struk (Claude vision) cek paket via Firestore admin (`hasPaidAIAccess`, fail closed),
   pairing sekarang simpan uid. auth v26, goal v3, ai-advisor v12, SW v56.
 
+- 🎬 26 Sep: video tutorial Reels 27 detik `beruang-cara-pakai.mp4` (1080x1920, tanpa musik) dari
+  `video-cara-pakai-beruang.html` (render(t) deterministik → Playwright screenshot 30fps → ffmpeg dari pip `imageio-ffmpeg`;
+  system ffmpeg TIDAK ada). Data chat di video = output parser asli.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

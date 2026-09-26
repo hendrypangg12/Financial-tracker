@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Video Cara Pakai BerUang (Reels 1080x1920)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg:#fbf6ee; --ink:#4a3328; --soft:#8a6f5e; --brand:#8b5a2b; --espresso:#412b23; --gold:#c9a352; --green:#2f8a4f; --red:#c0453a; --line:#eadfcd; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "DejaVu Sans", sans-serif; color: var(--ink); position: relative; }
+  .abs { position: absolute; }
+  #bgblob1 { width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(201,163,82,.28), rgba(201,163,82,0) 70%); left: -300px; top: -250px; }
+  #bgblob2 { width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(139,90,43,.18), rgba(139,90,43,0) 70%); right: -350px; bottom: -200px; }
+
+  /* Hook */
+  #hook { left: 0; right: 0; top: 560px; text-align: center; }
+  #hook img { width: 230px; height: 230px; border-radius: 56px; box-shadow: 0 24px 60px rgba(65,43,35,.25); }
+  #hook h1 { font-size: 104px; line-height: 1.08; font-weight: 900; letter-spacing: -2px; margin-top: 56px; color: var(--espresso); }
+  #hook h1 span { color: var(--brand); background: linear-gradient(transparent 62%, rgba(201,163,82,.55) 62%); padding: 0 8px; }
+  #hook p { font-size: 44px; margin-top: 30px; color: var(--soft); font-weight: 600; }
+
+  /* Caption */
+  #caption { left: 60px; right: 60px; top: 190px; text-align: center; font-size: 66px; font-weight: 900; letter-spacing: -1px; color: var(--espresso); line-height: 1.12; }
+  #caption small { display: block; font-size: 38px; font-weight: 600; color: var(--soft); margin-top: 14px; letter-spacing: 0; }
+
+  /* Phone */
+  #phone { left: 150px; top: 470px; width: 780px; height: 1330px; border-radius: 86px; background: #1d1411; padding: 22px; box-shadow: 0 40px 90px rgba(65,43,35,.35); }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 66px; background: var(--bg); overflow: hidden; }
+  .appbar { height: 150px; background: var(--espresso); color: #fff; display: flex; align-items: flex-end; gap: 22px; padding: 0 40px 26px; }
+  .appbar img { width: 64px; height: 64px; border-radius: 16px; }
+  .appbar b { font-size: 40px; font-weight: 800; }
+  .appbar i { font-style: normal; font-size: 26px; opacity: .75; margin-left: auto; margin-bottom: 6px; }
+
+  /* Chat view */
+  #chatview { position: absolute; left: 0; right: 0; top: 150px; bottom: 0; }
+  .panelhead { padding: 30px 40px 10px; }
+  .panelhead h3 { font-size: 38px; font-weight: 800; }
+  .panelhead small { font-size: 25px; color: var(--soft); }
+  #msgs { position: absolute; left: 30px; right: 30px; top: 150px; bottom: 150px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; }
+  .msg { max-width: 88%; padding: 22px 28px; border-radius: 30px; font-size: 30px; line-height: 1.35; }
+  .msg.user { align-self: flex-end; background: var(--brand); color: #fff; font-weight: 700; font-size: 34px; border-bottom-right-radius: 10px; }
+  .msg.bot { align-self: flex-start; background: #fff; border: 2px solid var(--line); border-bottom-left-radius: 10px; }
+  .msg.bot b { font-weight: 800; }
+  .msg.bot .amt-out { color: var(--red); font-weight: 800; white-space: nowrap; }
+  .msg.bot .amt-in { color: var(--green); font-weight: 800; white-space: nowrap; }
+  .msg.bot .meta { display: block; color: var(--soft); font-size: 25px; margin-top: 4px; }
+  .inputbar { position: absolute; left: 24px; right: 24px; bottom: 30px; height: 100px; display: flex; gap: 16px; }
+  .inputbar .field { flex: 1; background: #fff; border: 3px solid var(--line); border-radius: 50px; display: flex; align-items: center; padding: 0 32px; font-size: 34px; font-weight: 600; }
+  .inputbar .field .ph { color: #b9a898; font-weight: 500; }
+  .inputbar .caret { display: inline-block; width: 3px; height: 40px; background: var(--brand); margin-left: 3px; }
+  .inputbar .send { width: 170px; border-radius: 50px; background: var(--brand); color: #fff; font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+
+  /* Dashboard view */
+  #dashview { position: absolute; left: 0; right: 0; top: 150px; bottom: 0; padding: 34px 34px; }
+  .hello { font-size: 30px; color: var(--soft); font-weight: 600; }
+  .hello b { color: var(--ink); }
+  .balance { margin-top: 20px; border-radius: 40px; background: var(--espresso); color: #fff; padding: 36px 40px; }
+  .balance small { font-size: 26px; opacity: .75; }
+  .balance .big { font-size: 74px; font-weight: 900; letter-spacing: -1px; margin-top: 6px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 22px; }
+  .card { background: #fff; border: 2px solid var(--line); border-radius: 32px; padding: 26px 28px; }
+  .card small { font-size: 24px; color: var(--soft); font-weight: 600; }
+  .card .v { font-size: 38px; font-weight: 900; margin-top: 6px; white-space: nowrap; letter-spacing: -0.5px; }
+  .card .v.in { color: var(--green); } .card .v.out { color: var(--red); }
+  .cats { margin-top: 22px; background: #fff; border: 2px solid var(--line); border-radius: 32px; padding: 28px; }
+  .cats h4 { font-size: 30px; font-weight: 800; margin-bottom: 18px; }
+  .bar { margin-top: 16px; }
+  .bar .lbl { display: flex; justify-content: space-between; font-size: 26px; font-weight: 600; }
+  .bar .track { height: 26px; background: #f3ebdf; border-radius: 13px; margin-top: 8px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 13px; }
+  .recent { margin-top: 22px; background: #fff; border: 2px solid var(--line); border-radius: 32px; padding: 24px 28px; }
+  .recent h4 { font-size: 30px; font-weight: 800; margin-bottom: 8px; }
+  .tx { display: flex; justify-content: space-between; align-items: center; font-size: 27px; padding: 14px 0; border-top: 2px solid #f3ebdf; }
+  .tx:first-of-type { border-top: none; }
+  .tx span small { display: block; font-size: 22px; color: var(--soft); }
+  .tx b.in { color: var(--green); } .tx b.out { color: var(--red); }
+
+  /* Struk view */
+  #strukview { position: absolute; left: 0; right: 0; top: 150px; bottom: 0; display: flex; flex-direction: column; align-items: center; padding-top: 60px; }
+  .receipt { width: 620px; background: #fff; border-radius: 8px; box-shadow: 0 18px 40px rgba(65,43,35,.18); padding: 40px 44px; font-family: "DejaVu Sans Mono", monospace; font-size: 30px; color: #333; position: relative; overflow: hidden; }
+  .receipt .c { text-align: center; font-weight: 700; }
+  .receipt .r { display: flex; justify-content: space-between; margin-top: 10px; }
+  .receipt hr { border: none; border-top: 2px dashed #bbb; margin: 18px 0; }
+  .scan { position: absolute; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, transparent, var(--gold), transparent); box-shadow: 0 0 24px var(--gold); }
+  .okpill { margin-top: 44px; background: #e7f4ea; color: var(--green); border: 3px solid #bfe2c8; border-radius: 40px; padding: 22px 36px; font-size: 34px; font-weight: 800; }
+
+  /* CTA */
+  #cta { left: 0; right: 0; top: 380px; text-align: center; }
+  #cta img { width: 260px; height: 260px; border-radius: 62px; box-shadow: 0 24px 60px rgba(65,43,35,.25); }
+  #cta h2 { font-size: 118px; font-weight: 900; letter-spacing: -3px; margin-top: 40px; color: var(--espresso); }
+  #cta .tag { font-size: 48px; font-weight: 700; color: var(--brand); margin-top: 6px; }
+  #cta .pts { margin: 54px auto 0; display: inline-flex; flex-direction: column; gap: 18px; text-align: left; font-size: 40px; font-weight: 700; }
+  #cta .play { margin: 64px auto 0; display: inline-flex; align-items: center; gap: 24px; background: #111; color: #fff; border-radius: 28px; padding: 26px 46px; }
+  #cta .play small { display: block; font-size: 24px; opacity: .8; font-weight: 600; }
+  #cta .play b { font-size: 44px; font-weight: 800; }
+  #cta .url { font-size: 38px; color: var(--soft); font-weight: 700; margin-top: 36px; }
+</style>
+</head>
+<body>
+  <div id="bgblob1" class="abs"></div>
+  <div id="bgblob2" class="abs"></div>
+
+  <div id="hook" class="abs">
+    <img src="assets/icons/beruang-wallet-512.png" alt="" />
+    <h1>Catat keuangan<br><span>cuma 3 detik</span> 🤯</h1>
+    <p>Gak perlu isi form ribet</p>
+  </div>
+
+  <div id="caption" class="abs"></div>
+
+  <div id="phone" class="abs">
+    <div id="screen">
+      <div class="appbar"><img src="assets/icons/beruang-wallet-192.png" alt="" /><b>BerUang</b><i>Sep 2026</i></div>
+
+      <div id="chatview">
+        <div class="panelhead"><h3>💬 Input via Chat</h3><small>Ketik bebas, aplikasi menebak jumlah &amp; kategori</small></div>
+        <div id="msgs"></div>
+        <div class="inputbar"><div class="field" id="field"></div><div class="send" id="sendbtn">Kirim</div></div>
+      </div>
+
+      <div id="dashview">
+        <div class="hello">Halo, <b>Bos</b> 👋 · September 2026</div>
+        <div class="balance"><small>Sisa saldo bulan ini</small><div class="big" id="d-sisa">Rp 0</div></div>
+        <div class="row2">
+          <div class="card"><small>⬆️ Pemasukan</small><div class="v in" id="d-in">Rp 0</div></div>
+          <div class="card"><small>⬇️ Pengeluaran</small><div class="v out" id="d-out">Rp 0</div></div>
+        </div>
+        <div class="cats">
+          <h4>📊 Pengeluaran per kategori</h4>
+          <div class="bar"><div class="lbl"><span>🚗 Transportasi</span><span>Rp 50.000</span></div><div class="track"><div class="fill" id="b1" style="background:var(--brand)"></div></div></div>
+          <div class="bar"><div class="lbl"><span>🍜 Konsumsi Makan</span><span>Rp 25.000</span></div><div class="track"><div class="fill" id="b2" style="background:var(--gold)"></div></div></div>
+        </div>
+        <div class="recent" id="recent">
+          <h4>🧾 Transaksi terakhir</h4>
+          <div class="tx"><span>terima gaji<small>Gaji bulanan</small></span><b class="in">+Rp 8.000.000</b></div>
+          <div class="tx"><span>bensin pertamax<small>BBM/bensin</small></span><b class="out">-Rp 50.000</b></div>
+          <div class="tx"><span>makan bakso<small>Makan keluarga di luar</small></span><b class="out">-Rp 25.000</b></div>
+        </div>
+      </div>
+
+      <div id="strukview">
+        <div class="receipt" id="receipt">
+          <div class="c">MINIMARKET SEJAHTERA</div>
+          <div class="c" style="font-weight:400;font-size:21px">26/09/2026 08:14</div>
+          <hr>
+          <div class="r"><span>Susu UHT 1L</span><span>21.900</span></div>
+          <div class="r"><span>Roti tawar</span><span>16.500</span></div>
+          <div class="r"><span>Telur 1kg</span><span>29.800</span></div>
+          <div class="r"><span>Minyak 1L</span><span>17.300</span></div>
+          <hr>
+          <div class="r" style="font-weight:700"><span>TOTAL</span><span>85.500</span></div>
+          <div class="scan" id="scan"></div>
+        </div>
+        <div class="okpill" id="okpill">✅ Rp 85.500 terbaca otomatis</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cta" class="abs">
+    <img src="assets/icons/beruang-wallet-512.png" alt="" />
+    <h2>BerUang</h2>
+    <div class="tag">Catat Keuangan &amp; AI</div>
+    <div class="pts">
+      <div>✍️ Ketik kayak chat biasa</div>
+      <div>📸 Foto struk langsung kebaca</div>
+      <div>🎁 Coba gratis 2 hari</div>
+    </div><br>
+    <div class="play">
+      <svg width="54" height="60" viewBox="0 0 24 26"><path fill="#34A853" d="M1 1.2 13.6 13 1 24.8c-.4-.3-.6-.8-.6-1.4V2.6c0-.6.2-1.1.6-1.4z"/><path fill="#FBBC04" d="m17.8 17.2-4.2-4.2 4.2-4.2 4.7 2.7c1.3.8 1.3 2.2 0 3z"/><path fill="#4285F4" d="M17.8 8.8 13.6 13 1 1.2c.5-.4 1.2-.4 1.9 0z"/><path fill="#EA4335" d="M17.8 17.2 2.9 25.8c-.7.4-1.4.4-1.9 0L13.6 13z"/></svg>
+      <div style="text-align:left"><small>DOWNLOAD DI</small><b>Google Play</b></div>
+    </div>
+    <div class="url">cari "BerUang" · berstock.id</div>
+  </div>
+
+<script>
+// Semua animasi dihitung dari waktu t (detik) supaya bisa dirender frame per frame secara deterministik.
+const DURATION = 27;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeBack = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const rp = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+function fade(el, t, a, b, fadeDur = 0.4, dy = 40) {
+  const i = easeOut(prog(t, a, a + fadeDur)), o = 1 - prog(t, b - fadeDur, b);
+  const v = Math.min(i, o);
+  el.style.opacity = v;
+  el.style.transform = `translateY(${(1 - i) * dy}px)`;
+  el.style.visibility = v > 0.001 ? 'visible' : 'hidden';
+}
+
+// Data hasil parser asli aplikasi (js/parser.js parseChat)
+const ENTRIES = [
+  { text: 'makan bakso 25rb', start: 4.0, jenis: 'pengeluaran', jumlah: 25000, desc: 'makan bakso', sub: 'Makan keluarga di luar', kat: 'Konsumsi Makan' },
+  { text: 'bensin pertamax 50rb', start: 6.9, jenis: 'pengeluaran', jumlah: 50000, desc: 'bensin pertamax', sub: 'BBM/bensin', kat: 'Transportasi' },
+  { text: 'terima gaji 8jt', start: 9.8, jenis: 'pemasukan', jumlah: 8000000, desc: 'terima gaji', sub: 'Gaji bulanan', kat: 'Gaji & Pendapatan Utama' },
+];
+const TYPE_SPEED = 16; // karakter per detik
+
+const CAPTIONS = [
+  { a: 3.2, b: 9.6, html: 'Ketik kayak chat biasa ✍️<small>"makan bakso 25rb" — beres</small>' },
+  { a: 9.6, b: 13.8, html: 'Kategori ketebak otomatis ✨<small>pemasukan &amp; pengeluaran kepisah sendiri</small>' },
+  { a: 13.8, b: 18.8, html: 'Dashboard langsung update 📊<small>tau sisa uang kamu tiap saat</small>' },
+  { a: 18.8, b: 22.8, html: 'Foto struk? Bisa juga 📸<small>total belanja kebaca otomatis</small>' },
+];
+
+function render(t) {
+  // Hook 0 - 3.1s
+  const hook = $('hook');
+  fade(hook, t, 0, 3.1, 0.5, 60);
+  hook.querySelector('img').style.transform = `scale(${easeBack(prog(t, 0.1, 0.7))})`;
+
+  // Caption
+  const cap = CAPTIONS.find(c => t >= c.a && t < c.b);
+  const capEl = $('caption');
+  if (cap) { if (capEl.dataset.k !== String(cap.a)) { capEl.innerHTML = cap.html; capEl.dataset.k = cap.a; } fade(capEl, t, cap.a, cap.b, 0.35, 30); }
+  else capEl.style.visibility = 'hidden';
+
+  // Phone 3.0 - 22.9s
+  const phone = $('phone');
+  const pin = easeOut(prog(t, 3.0, 3.7)), pout = prog(t, 22.5, 22.9);
+  phone.style.opacity = Math.min(pin, 1 - pout);
+  phone.style.transform = `translateY(${(1 - pin) * 500 + pout * 200}px)`;
+  phone.style.visibility = t > 3.0 && t < 22.9 ? 'visible' : 'hidden';
+
+  // Views inside phone
+  const view = t < 13.8 ? 'chat' : t < 18.8 ? 'dash' : 'struk';
+  $('chatview').style.display = view === 'chat' ? 'block' : 'none';
+  $('dashview').style.display = view === 'dash' ? 'block' : 'none';
+  $('strukview').style.display = view === 'struk' ? 'flex' : 'none';
+
+  if (view === 'chat') renderChat(t);
+  if (view === 'dash') renderDash(t);
+  if (view === 'struk') renderStruk(t);
+
+  // CTA 22.9 - end
+  const cta = $('cta');
+  fade(cta, t, 22.9, DURATION + 1, 0.5, 60);
+  cta.querySelector('img').style.transform = `scale(${easeBack(prog(t, 23.0, 23.6))})`;
+  cta.querySelector('.play').style.transform = `scale(${1 + 0.04 * Math.sin((t - 23) * 5) * prog(t, 24.5, 25)})`;
+}
+
+function renderChat(t) {
+  const msgs = [];
+  let field = '<span class="ph">Ketik transaksi…</span>', typing = false;
+  for (const e of ENTRIES) {
+    const typeEnd = e.start + e.text.length / TYPE_SPEED;
+    const sendAt = typeEnd + 0.3, replyAt = sendAt + 0.5;
+    if (t >= e.start && t < sendAt) {
+      const n = Math.floor((t - e.start) * TYPE_SPEED);
+      field = e.text.slice(0, n) + '<span class="caret"></span>';
+      typing = true;
+    }
+    if (t >= sendAt) msgs.push({ html: e.text, cls: 'user', at: sendAt });
+    if (t >= replyAt) {
+      const amt = e.jenis === 'pemasukan' ? `<span class="amt-in">+${rp(e.jumlah)}</span>` : `<span class="amt-out">${rp(e.jumlah)}</span>`;
+      msgs.push({ html: `✅ Dicatat: <b>${e.jenis}</b> ${amt}<span class="meta">${e.desc} · ${e.sub} (${e.kat})</span>`, cls: 'bot', at: replyAt });
+    }
+  }
+  const box = $('msgs');
+  const key = msgs.map(m => m.cls + m.at).join('|');
+  if (box.dataset.k !== key) {
+    box.innerHTML = msgs.map(m => `<div class="msg ${m.cls}" data-at="${m.at}">${m.html}</div>`).join('');
+    box.dataset.k = key;
+  }
+  box.querySelectorAll('.msg').forEach(el => {
+    const p = easeBack(prog(t, +el.dataset.at, +el.dataset.at + 0.35));
+    el.style.opacity = clamp(p * 1.5);
+    el.style.transform = `scale(${0.85 + 0.15 * p})`;
+    el.style.transformOrigin = el.classList.contains('user') ? 'right bottom' : 'left bottom';
+  });
+  $('field').innerHTML = field;
+  const pressing = ENTRIES.some(e => { const s = e.start + e.text.length / TYPE_SPEED + 0.3; return t >= s - 0.12 && t < s + 0.12; });
+  $('sendbtn').style.transform = pressing ? 'scale(0.9)' : 'scale(1)';
+}
+
+function renderDash(t) {
+  const p = easeOut(prog(t, 14.1, 15.6));
+  const income = 8000000, expense = 25000 + 50000;
+  $('d-in').textContent = rp(income * p);
+  $('d-out').textContent = rp(expense * p);
+  $('d-sisa').textContent = rp((income - expense) * p);
+  $('b1').style.width = (easeOut(prog(t, 15.2, 16.2)) * 100) + '%';
+  $('b2').style.width = (easeOut(prog(t, 15.5, 16.5)) * 50) + '%';
+  const rc = easeOut(prog(t, 16.2, 16.8));
+  $('recent').style.opacity = rc; $('recent').style.transform = `translateY(${(1 - rc) * 40}px)`;
+}
+
+function renderStruk(t) {
+  const r = $('receipt');
+  const pin = easeOut(prog(t, 18.9, 19.5));
+  r.style.transform = `translateY(${(1 - pin) * 300}px) rotate(${(1 - pin) * -6}deg)`;
+  r.style.opacity = pin;
+  const s = prog(t, 19.6, 21.0);
+  $('scan').style.top = (s * 100) + '%';
+  $('scan').style.opacity = s > 0 && s < 1 ? 1 : 0;
+  const ok = easeBack(prog(t, 21.1, 21.5));
+  $('okpill').style.opacity = clamp(ok * 1.5);
+  $('okpill').style.transform = `scale(${0.8 + 0.2 * ok})`;
+}
+
+window.__render = render;
+window.__duration = DURATION;
+// Preview di browser: jalan real-time dan loop
+if (!location.search.includes('capture')) {
+  const t0 = performance.now();
+  (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })();
+} else render(0);
+</script>
+</body>
+</html>
