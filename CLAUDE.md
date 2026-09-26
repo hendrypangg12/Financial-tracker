@@ -803,7 +803,7 @@ state = {
 | **Phone screenshots** | ✅ Done | 4+ slides: "Tracking lengkap", "Foto sekali auto-masuk", "Catat via chat", "Lihat real-time" |
 | **Tablet screenshots** | ❓ Cek status | Opsional |
 | **Promo video YouTube** | ⏳ Empty | Opsional, skip aja |
-| **Short description** (80) | ✅ Done | "Catat keuangan via chat, foto struk & form. Trial Pro 7 hari" (67/80) |
+| **Short description** (80) | Draft lama | Perbarui mengikuti trial gratis 2 hari dan model billing terbaru sebelum diajukan ulang |
 | **Full description** (4000) | ✅ Started | "🐻 BerUang — Catat dulu, biar beneran ber-uang!" (perlu verify length) |
 | **App category** | ⏳ Cek | Should be Finance |
 | **Email contact** | ✅ Done | hendrypangg12@gmail.com (assumed) |

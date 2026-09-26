@@ -85,6 +85,13 @@ export async function processAccountDeletion(env, userId) {
     if (page.documents.length) await db.commit(page.documents.map(doc => ({ delete: doc.name })));
     if (page.nextPageToken) return false;
   }
+  // Token-to-account links are server-only, but must also disappear with the account.
+  const subscriptionRows = await db.request(db.name('').slice(0, -1) + ':runQuery', { method: 'POST', body: JSON.stringify({ structuredQuery: {
+    from: [{ collectionId: 'googlePlaySubscriptions' }], where: { fieldFilter: { field: { fieldPath: 'uid' }, op: 'EQUAL', value: { stringValue: uid } } }, limit: 100,
+  } }) });
+  const subscriptionMappings = subscriptionRows.filter(row => row.document).map(row => row.document);
+  if (subscriptionMappings.length) await db.commit(subscriptionMappings.map(doc => ({ delete: doc.name })));
+  if (subscriptionMappings.length === 100) return false;
   for (const prefix of [`advise_log:${uid}:`, `advise_rate:${uid}:`, `goal_free:${uid}:`, `payment:beruang_${uid}_`,
     ...(email ? [`advise_log:${email}:`, `advise_rate:${email}:`, `goal_free:${email}:`] : [])]) {
     if (!await removeKVPrefix(env.BOT_DATA, prefix)) return false;

@@ -57,7 +57,7 @@ html = html.replace(/\s*<script src="js\/presence\.js[^>]*><\/script>/, '');
 const vendors = [
   ['https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js', 'chart.js/dist/chart.umd.js'],
   ['https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js', 'chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js'],
-  ...['app','auth','firestore','database'].map(name => ['https://www.gstatic.com/firebasejs/11.0.1/firebase-' + name + '-compat.js', 'firebase/firebase-' + name + '-compat.js']),
+  ...['app','auth','firestore','database'].map(name => ['https://www.gstatic.com/firebasejs/12.6.0/firebase-' + name + '-compat.js', 'firebase/firebase-' + name + '-compat.js']),
 ];
 for (const [url, source] of vendors) {
   const filename = 'vendor/' + path.basename(source);

@@ -10,7 +10,7 @@
 
 ## ✅ PRE-FLIGHT CHECKLIST (yang udah Claude siapin)
 
-- [x] **Free Trial 7 hari** — implemented di code (TRIAL_DAYS=7)
+- [x] **Uji coba gratis 2 hari**; setelah itu paket 7 hari Rp 10.000 sekali bayar, dengan pilihan 30 hari/tahunan untuk langganan Google Play pada pembaruan Android berikutnya
 - [x] **Freemium gating** — OCR, Export, Cloud Sync di-lock untuk free user
 - [x] **Privacy Policy** — live di https://berstock.id/privacy.html
 - [x] **Manifest PWA** — updated untuk Play Store (id, screenshots, maskable icon)
@@ -162,7 +162,7 @@ BerUang membantu kamu mengelola keuangan pribadi dengan alur yang cepat dan jela
 
 🎁 COBA PRO GRATIS 2 HARI
 
-Setelah masa uji coba, pilih akses 7 hari, 30 hari, atau 1 tahun melalui Google Play. Pembelian tidak diperpanjang otomatis; harga dan masa akses selalu ditampilkan sebelum pembayaran.
+Setelah masa uji coba, pilih paket melalui Google Play. Paket 7 hari dibayar sekali. Paket 30 hari dan 1 tahun adalah langganan yang diperpanjang otomatis sampai dibatalkan; harga dan periode tagihan ditampilkan sebelum pembelian. Kelola atau batalkan langganan melalui Google Play.
 
 KENAPA BERUANG?
 ✅ Dibuat untuk pengguna Indonesia
@@ -263,7 +263,7 @@ Jawab honestly:
 • Catat keuangan via chat, foto struk, atau form
 • Dashboard real-time dengan grafik & rekap 50/30/20
 • Tab Hutang & Piutang dengan reminder
-• Trial Pro 7 hari GRATIS untuk OCR & cloud sync
+• Uji coba Pro gratis 2 hari; lanjutkan dengan paket sesuai kebutuhan
 • Sync antar device (Pro)
 
 🚀 Mari mulai perjalanan finansial yang lebih sehat!
@@ -294,18 +294,17 @@ Google akan review:
 
 ---
 
-## 💰 STEP 9 (NEXT): Setup In-App Subscription
+## 💰 STEP 9 (NEXT): Setup In-App Billing
 
-Paket Android saat ini memakai **one-time products**, bukan langganan otomatis:
+Paket sekali bayar dan langganan memakai tipe produk Play Console yang berbeda:
 
-1. Di Play Console → **Monetize** → **Products** → **One-time products**
-2. Pastikan tiga produk berikut aktif untuk Indonesia:
-   - `beruang_access_7d` — akses 7 hari, Rp 10.000
-   - `beruang_access_30d` — akses 30 hari, Rp 50.000
-   - `beruang_access_365d` — akses 1 tahun, Rp 299.000
-3. Pembelian harus diverifikasi server, diterapkan ke akun yang sedang login, lalu dikonsumsi agar produk dapat dibeli kembali.
-4. Uji satu pembelian nyata dari closed testing hingga status paket aktif di perangkat kedua.
-5. Jangan menjanjikan auto-renewal atau paket lifetime pada listing. Paket lifetime hanya dihormati untuk pembeli lama.
+1. Buat `beruang_access_7d` di **One-time products** dengan harga Rp 10.000 untuk akses 7 hari.
+2. Buat `beruang_monthly_subscription` di **Subscriptions** dengan satu base plan `monthly-30d` (tagihan setiap 30 hari, Rp 50.000 per periode).
+3. Buat `beruang_annual_subscription` di **Subscriptions** dengan satu base plan `annual-365d` (tagihan setiap tahun, Rp 299.000 per periode).
+4. Produk lama `beruang_access_30d` dan `beruang_access_365d` tetap dipertahankan untuk memverifikasi pembelian sekali bayar pelanggan versi lama; jangan tampilkan lagi sebagai paket baru.
+5. Server memakai Google Play Developer API untuk memeriksa status, UID, masa berlaku, dan base plan, lalu mengakui transaksi langganan atau mengonsumsi produk sekali bayar. Pastikan kredensial service account memiliki akses API yang sesuai.
+6. Backend menyediakan endpoint RTDN `POST /api/google-play/rtdn`; sebelum dipakai, deploy perubahan backend dan set `GOOGLE_PLAY_RTDN_AUDIENCE` (audience push subscription) serta `GOOGLE_PLAY_RTDN_SERVICE_ACCOUNT_EMAIL` (service account OIDC Pub/Sub). Buat topic Pub/Sub, hubungkan RTDN aplikasi di Play Console, beri akun developer Play izin publish ke topic, lalu buat push subscription terautentikasi memakai service account tersebut. Jangan masukkan token pembelian mentah ke URL atau log.
+7. Sinkronisasi saat aplikasi dibuka hanya cadangan, bukan pengganti RTDN. Uji dengan license tester/closed testing: pembelian, renew, cancel, grace period, restore, dan akun berbeda di dua perangkat. Belum aman dirilis selama konfigurasi produk, RTDN, kredensial server, dan pengujian siklus langganan belum selesai.
 
 ---
 

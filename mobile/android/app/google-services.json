@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "746768296778",
+    "firebase_url": "https://ber-uang-735b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "ber-uang-735b3",
+    "storage_bucket": "ber-uang-735b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746768296778:android:c32043971c52657f6a6fb3",
+        "android_client_info": {
+          "package_name": "id.berstock.beruang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "746768296778-l32mg42jpkdl37jl9ea3mmqvskm916gj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.berstock.beruang",
+            "certificate_hash": "d88554ce74b74b01fbfbdfc409c875410b12f600"
+          }
+        },
+        {
+          "client_id": "746768296778-lg7lobod7k3na7r9h2tpis7hs56obd40.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.berstock.beruang",
+            "certificate_hash": "ebb7b35c4fbe646c9ad3d005f80c7d9c78a6fc26"
+          }
+        },
+        {
+          "client_id": "746768296778-d1oqbkoinq9bo8ibnb9a2hhioug9eb4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt3zy2PIz2wpsscj7bWgU2qoUbpEYfXYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "746768296778-d1oqbkoinq9bo8ibnb9a2hhioug9eb4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
