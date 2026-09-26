@@ -108,6 +108,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Hard lock showScreen('app') sekarang lewat window.showScreen('paywall') supaya override Android ikut. app.js v55.
   ⚠️ Build v1.4.0 (vc6) yang sudah di Internal Testing MASIH MEMBAWA BUG paywall tak terlihat → perlu build vc7 dari branch ini.
 
+- 26 Sep malam: versionCode 7 / 1.4.1 disiapkan di build.gradle (fix paywall Android). Toast peringatan H-1 untuk
+  paket yang TIDAK auto-renew (trial, 7 hari, web) — `warnAccessEndingSoon()` di js/app.js, skip kalau
+  activatedBy='google-play-subscription'. Tombol Bulanan/Tahunan di index.html → Google Play (bukan Lynk lagi). app.js v56, SW v59.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

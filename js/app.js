@@ -1242,6 +1242,21 @@ function setAuthBusy(busy) {
 
 // ========== FREEMIUM PRO GATING ==========
 // Setup UI gating untuk free user — tampilkan badge 🔒 + tombol Upgrade
+// Peringatan H-1: paket yang TIDAK diperpanjang otomatis (trial, 7 hari, pembelian web) akan terkunci.
+// Langganan Google Play auto-renew tidak diperingatkan karena Google yang memperpanjang. Sekali per hari.
+function warnAccessEndingSoon(profile, timedPlanActive) {
+  if (!timedPlanActive || typeof showToast !== 'function') return;
+  if (profile?.activatedBy === 'google-play-subscription') return;
+  const days = daysRemaining(profile);
+  if (days > 1) return;
+  const key = 'beruang-expiry-warn:' + (currentUser?.uid || '') + ':' + new Date().toISOString().slice(0, 10);
+  try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (_) {}
+  const msg = profile?.plan === 'free_trial'
+    ? '⏳ Uji coba gratis berakhir besok. Pilih paket supaya BerUang tetap bisa dipakai — data kamu tetap aman.'
+    : '⏳ Paket kamu berakhir besok dan tidak diperpanjang otomatis. Perpanjang supaya aplikasi tidak terkunci.';
+  setTimeout(() => showToast(msg, 'info'), 1500);
+}
+
 function setupProGating(profile) {
   const userIsPro = typeof isPro === 'function' && isPro(profile);
   const timedPlanActive = ['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(profile?.plan) && userIsPro;
@@ -1290,6 +1305,8 @@ function setupProGating(profile) {
       trialBadge.onclick = null;
     }
   }
+
+  warnAccessEndingSoon(profile, timedPlanActive);
 
   // Track GA4 event
   if (typeof gtag === 'function') {
