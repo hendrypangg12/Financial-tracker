@@ -16,8 +16,8 @@ Diperiksa langsung dari kode di branch `claude/financial-tracking-app-QUmrz`, se
 | Pembayaran Google Play (v1.3.0) | 🚨 BELUM SIAP | Secret `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` belum ada di worker live |
 | Login Google di Android | ❌ | Gagal di versi live; disembunyikan di v1.3.0. Perlu native sign-in (build berikutnya) |
 | Admin panel (aktivasi manual) | ❓ | Butuh custom claim `admin` di akun bos — BELUM DIVERIFIKASI |
-| Halaman depan berstock.id | ⚠️ | Masih tulis "Coba 7 hari cuma Rp 10rb", tidak sebut gratis 2 hari & AI khusus berbayar |
-| Syarat & Ketentuan / kebijakan refund | ❌ | Belum ada (privacy.html ada) |
+| Halaman depan berstock.id | ✅ | Disamakan 26 Sep: gratis 2 hari (tanpa AI), paket Akses 7 Hari |
+| Syarat & Ketentuan / kebijakan refund | ✅ | `terms.html` dibuat 26 Sep, di-link dari app & situs |
 | Build Android di repo (`mobile/`) | ⚠️ | Belum membawa kunci total + trial tanpa AI (perlu versionCode 6) |
 
 ## Wajib sebelum jualan (urut prioritas)
@@ -28,9 +28,9 @@ Diperiksa langsung dari kode di branch `claude/financial-tracking-app-QUmrz`, se
    berarti custom claim `admin` belum diset → bos tidak bisa mengaktifkan pembeli QRIS/BCA.
 3. **Pasang `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`** di Cloudflare akun icloud (langkah sudah dikirim di chat).
    Kalau update v1.3.0 lolos review sebelum ini dipasang, pembeli lewat Google Play bayar tapi paket tidak aktif.
-4. **Samakan pesan di berstock.id & landing.html** dengan kenyataan: gratis 2 hari (tanpa AI) → Rp 10rb/7 hari,
+4. ~~Samakan pesan di berstock.id & landing.html~~ ✅ SELESAI 26 Sep. Sisa: **update listing Lynk.id** (tombol Tahunan/Bulanan di homepage masih ke Lynk yang harganya lama) dengan kenyataan: gratis 2 hari (tanpa AI) → Rp 10rb/7 hari,
    Rp 50rb/30 hari, Rp 299rb/tahun. Sekarang homepage bilang "Coba 7 hari Rp 10rb" seolah tidak ada gratis.
-5. **Buat halaman Syarat & Ketentuan singkat** (masa aktif tidak diperpanjang otomatis, kebijakan refund,
+5. ~~Buat halaman Syarat & Ketentuan~~ ✅ SELESAI 26 Sep (`terms.html`). Tinggal tempel URL-nya di Play Console (masa aktif tidak diperpanjang otomatis, kebijakan refund,
    batas AI 30 pertanyaan/hari, data bisa diunduh/dihapus). Dipasang di app + Play listing.
 6. **Cek Play Console → Data safety** sudah menyebut data keuangan dikirim ke pihak ketiga (Anthropic, Cloudflare)
    sesuai privacy.html. Ketidaksesuaian = risiko takedown.

@@ -84,6 +84,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Data dimuat SEBELUM cek kunci + tombol "📥 Unduh backup data" di paywall (user terkunci tetap bisa ambil datanya).
   app.js v54, SW v57. Laporan audit lengkap: `AUDIT-PRA-JUALAN.md`.
 
+- 📝 26 Sep: `terms.html` (Syarat & Ketentuan: paket, tanpa auto-renew, refund 3 hari utk bulanan/tahunan, AI 30/hari)
+  di-link dari menu app, footer index, privacy, sitemap. Homepage + landing disamakan: "gratis 2 hari (tanpa AI)",
+  paket "Akses 7 Hari" (bukan "Coba 7 Hari"), hapus "Cancel kapan aja". ⚠️ Tombol Tahunan/Bulanan di index.html
+  masih ke lynk.id — listing Lynk BELUM di-update (masih Lifetime Rp 125rb). Bos harus update Lynk atau arahkan ke app.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
