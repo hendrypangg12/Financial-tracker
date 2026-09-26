@@ -88,7 +88,8 @@
   /* AI view */
   #aiview { position: absolute; left: 0; right: 0; top: 150px; bottom: 0; }
   .aihead { display: flex; align-items: center; gap: 20px; padding: 30px 36px 22px; border-bottom: 2px solid var(--line); background: #fff; }
-  .aihead .av { width: 78px; height: 78px; border-radius: 50%; background: var(--espresso); display: flex; align-items: center; justify-content: center; font-size: 44px; }
+  .aihead .av { width: 78px; height: 78px; border-radius: 20px; overflow: hidden; background: var(--espresso); display: flex; align-items: center; justify-content: center; font-size: 44px; }
+  .aihead .av img { width: 100%; height: 100%; display: block; }
   .aihead b { font-size: 34px; font-weight: 800; display: block; }
   .aihead small { font-size: 24px; color: var(--green); font-weight: 700; }
   #aimsgs { position: absolute; left: 30px; right: 30px; top: 170px; bottom: 150px; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; overflow: hidden; }
@@ -152,7 +153,7 @@
       </div>
 
       <div id="aiview">
-        <div class="aihead"><div class="av">🐻</div><div><b>Beruang Akuntan</b><small>● AI siap bantu</small></div></div>
+        <div class="aihead"><div class="av"><img src="assets/icons/beruang-wallet-192.png" alt="" /></div><div><b>Beruang Akuntan</b><small>● AI siap bantu</small></div></div>
         <div id="aimsgs"></div>
         <div class="inputbar"><div class="field" id="aifield"></div><div class="send" id="aisend">Kirim</div></div>
       </div>
