@@ -1,6 +1,6 @@
 # BerUang Android — catatan lanjut dari HP
 
-Pembaruan terakhir: 26 September 2026. Ini catatan keadaan proyek saat laptop masih tersedia; jangan anggap build lokal sebagai rilis Play Store.
+Pembaruan terakhir: 26 September 2026. Ini catatan keadaan proyek saat laptop masih tersedia; bedakan rilis internal dari versi publik.
 
 ## Yang sudah tersimpan di GitHub
 
@@ -21,19 +21,23 @@ Pembaruan terakhir: 26 September 2026. Ini catatan keadaan proyek saat laptop ma
 
 ## Keadaan Google Play dan pembayaran (cek per 26 September 2026)
 
-- Versi publik yang terakhir terverifikasi: 1.3.0, version code 5. Versi 1.4.0/version code 6 di atas baru build lokal; belum diunggah atau dikirim untuk ditinjau.
+- Versi publik yang terakhir terverifikasi: 1.3.0, version code 5. Dashboard Production menampilkan 8 instalasi dan 2 ulasan bintang 5 saat diperiksa.
+- Versi 1.4.0/version code 6 telah diunggah dan dipublikasikan ke jalur Internal Testing, nama rilis `BerUang 1.4.0 - Sync langganan`. Status Console: tersedia untuk penguji; ini bukan rilis publik dan bukan pengajuan Production.
+- Tautan bergabung Internal Testing: https://play.google.com/apps/internaltest/4701748702183636599. Penguji harus memakai akun Google yang masuk daftar uji dan perangkat Android yang didukung; perubahan dapat perlu waktu hingga sekitar satu jam untuk terlihat.
+- Pemeriksaan Play memperingatkan 1.172 perangkat kehilangan dukungan (sekitar 8% dari perangkat yang tercatat untuk rilis sebelumnya) karena batas minimum naik dari API 23 ke 24. Ini terkait Capacitor 8 yang menetapkan minimum API 24. Menurunkan kembali minimum mungkin mengharuskan downgrade Capacitor ke 7 serta build dan tes ulang; pertimbangkan dukungan perangkat lawas sebelum Production.
+- Play juga memperingatkan ukuran unduhan bertambah (5,96 MB dibanding 4,93 MB) dan tidak ada berkas deobfuscation; R8 saat ini nonaktif, jadi peringatan deobfuscation bukan blocker.
 - Langganan aktif di Play Console: `beruang_monthly_subscription` / `monthly-30d` dan `beruang_annual_subscription` / `annual-365d`. Keduanya auto-renewing dan cocok dengan ID yang dibaca klien/backend.
 - Worker Cloudflare memiliki secret bernama `FIREBASE_SERVICE_ACCOUNT_JSON` dan `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (hanya keberadaan nama yang diperiksa; isi tidak dibaca/dicetak).
 - Endpoint live `/api/google-play/verify` menjawab 401 untuk permintaan tanpa login. Ini membuktikan rute meminta autentikasi, bukan bahwa verifikasi pembelian berhasil dari ujung ke ujung.
-- Deployment Worker live terakhir yang terlihat: 25 September 2026, version `c09710fd`. Deployment itu lebih lama daripada perubahan kode pembayaran Play di branch ini. Jadi verifikasi pembelian dan notifikasi pembaruan langganan dalam branch belum aktif di Worker produksi.
-- Handler RTDN sudah ada di source, tetapi variabel `GOOGLE_PLAY_RTDN_AUDIENCE` dan `GOOGLE_PLAY_RTDN_SERVICE_ACCOUNT_EMAIL`, serta sambungan Pub/Sub ke endpoint, belum dikonfigurasi/dibuktikan. Tanpa RTDN, pembaruan otomatis setelah perpanjangan atau pembatalan belum terjamin.
+- Worker Cloudflare produksi kini sudah memuat verifikasi Google Play dan handler RTDN dari branch ini: version `c8d92158-5034-4c6b-a291-54cb98cc2c75`, deployed 26 September 2026 06:35 UTC. Smoke check tanpa login mendapat HTTP 401 sesuai harapan; transaksi Play sungguhan belum dites.
+- RTDN belum aktif: di Play Console checkbox masih mati dan kolom topic kosong; di Google Cloud project `ber-uang-735b3` belum ada Pub/Sub topic. Perlu topic, push subscription yang memakai OIDC, izin publish Google Play, lalu simpan audience/email service account di Worker dan kirim test notification.
 
 ## Urutan kerja berikutnya
 
-1. Jalankan backend Play billing + RTDN di staging dengan pembelian uji; buktikan aktivasi, restore, renewal, cancel, expiry, dan akun BerUang yang benar.
-2. Uji login Google dan pembelian dari HP Android. ADB saat pemeriksaan kosong, jadi perlu perangkat Android untuk langkah ini.
-3. Siapkan konfigurasi Pub/Sub/RTDN dan audience/service account untuk Worker; deploy Worker setelah staging lolos. Deployment produksi belum dilakukan dari branch ini.
-4. Bangun ulang AAB setelah pengujian, lalu unggah version code 6 ke jalur pengujian Play terlebih dahulu. Rilis publik baru setelah tes dan Console menyatakan siap.
+1. Selesaikan Pub/Sub/RTDN dengan OIDC push dan kirim test notification dari Play Console.
+2. Uji build internal di HP Android: login Google, data akun konsisten di dua perangkat, pembelian Play, pemulihan langganan, dan pembatalan. Transaksi sungguhan dan renewal otomatis belum teruji.
+3. Putuskan apakah kenaikan minimum API 24 dapat diterima. Jika tidak, evaluasi downgrade Capacitor 7 lalu bangun version code berikutnya (code 6 sudah terpakai di Console).
+4. Jika tes dan pemeriksaan kebijakan lolos, promosikan build dari jalur test ke Production. Versi publik tetap 1.3.0/version code 5 sampai rilis Production disetujui dan tayang.
 
 ## Berkas lokal yang tidak ikut ke HP/GitHub
 
