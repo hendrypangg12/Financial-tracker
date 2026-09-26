@@ -606,16 +606,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // HARD PAYWALL (26 Sep 2026, keputusan bos): trial habis & belum bayar = aplikasi terkunci total.
       // Data tetap aman di cloud; terbuka lagi setelah paket aktif. Admin tidak ikut terkunci.
       const userIsPro = typeof isPro === 'function' && isPro(profile);
-      if (isAccessLocked(profile)) {
-        stopAutoSync(); stopCloudListener();
-        showScreen('paywall');
-        return;
-      }
       // Backup ke cloud untuk SEMUA user (data integrity, bukan feature)
       selectUserStorage(user.uid);
       loadState();
       await loadFromCloud();
       if (currentUser?.uid !== user.uid) return;
+      // Data dimuat dulu supaya user yang terkunci tetap bisa mengunduh backup dari layar paywall.
+      if (isAccessLocked(profile)) {
+        stopAutoSync(); stopCloudListener();
+        showScreen('paywall');
+        return;
+      }
       init(false);
       showScreen('app');
       setupWelcomeBanner();
@@ -878,6 +879,9 @@ function setupPaymentModalEvents() {
 // Akses terkunci = login, bukan admin, dan tidak punya paket aktif (trial/berbayar habis).
 function isAccessLocked(profile = currentProfile) {
   if (typeof isPro !== 'function') return false;
+  // Profil belum terbaca (offline / server gangguan) = status tidak diketahui → JANGAN kunci
+  // user yang sudah bayar. Fitur AI tetap dicek di server, jadi tidak ada biaya yang bocor.
+  if (!profile) return false;
   const admin = typeof isAdmin === 'function' && isAdmin();
   return !!currentUser && !admin && !isPro(profile);
 }
@@ -1038,6 +1042,10 @@ function setupAuthUI() {
   if (btnPayLogout) btnPayLogout.onclick = () => logout();
 
   // Paywall back — balik ke dashboard (mode preview, fitur Pro tetap di-gate)
+  // Backup data selalu boleh diunduh, termasuk saat terkunci (data milik user, bukan sandera paket)
+  const btnPayExport = document.getElementById('btn-paywall-export');
+  if (btnPayExport) btnPayExport.onclick = () => exportData();
+
   const btnPayReload = document.getElementById('btn-paywall-reload');
   if (btnPayReload) btnPayReload.onclick = () => window.location.reload();
 

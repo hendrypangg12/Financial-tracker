@@ -79,6 +79,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   polish EQ+kompresor+room tipis. Video di-RETIME mengikuti suara: per adegan diperpanjang dengan "hold" frame
   (warp waktu), bukan suara dipercepat.
 
+- 🩹 26 Sep (audit pra-jualan): FIX bug hard paywall — profil gagal dibaca (offline/server down) tadinya ikut
+  mengunci user BERBAYAR; sekarang `isAccessLocked()` return false kalau profil null (AI tetap dicek server).
+  Data dimuat SEBELUM cek kunci + tombol "📥 Unduh backup data" di paywall (user terkunci tetap bisa ambil datanya).
+  app.js v54, SW v57. Laporan audit lengkap: `AUDIT-PRA-JUALAN.md`.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
