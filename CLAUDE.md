@@ -74,6 +74,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Video KHUSUS AI AKUNTAN (38 dtk): `beruang-ai-akuntan-voiceover.mp4` dari `video-ai-akuntan-beruang.html` —
   hook "akuntan pribadi 24 jam", intro Beruang Akuntan, 3 contoh tanya (boros di mana / target beli HP / tren),
   recap 4 manfaat, CTA "AI Akuntan mulai Rp 10rb" + catatan "*contoh percakapan".
+  Versi SUARA WANITA (lebih halus, pilihan bos): `beruang-ai-akuntan-suara-wanita.mp4` (48 dtk) +
+  `beruang-cara-pakai-suara-wanita.mp4` (41 dtk) — id-ID-GadisNeural rate +4% pitch -2Hz, naskah pakai jeda (koma/…),
+  polish EQ+kompresor+room tipis. Video di-RETIME mengikuti suara: per adegan diperpanjang dengan "hold" frame
+  (warp waktu), bukan suara dipercepat.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
