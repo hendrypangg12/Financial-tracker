@@ -12,7 +12,7 @@ import { handleAdvise } from "./advise.js";
 import { handleBeruangWebhook, handleBeruangPair, handleBeruangPull, handleBeruangBillsPush, handleBeruangBillsTest, handleBeruangSetupWebhook, handleBeruangDebug, sendBillReminders } from "./beruang.js";
 import { handleCreateInvoice, handleVerifyPayment, handleXenditWebhook } from "./payment.js";
 import { handleDeleteAccount, processAccountDeletions } from './account.js';
-import { handleGooglePlayVerify } from './google-play.js';
+import { handleGooglePlayVerify, handleGooglePlayHealth } from './google-play.js';
 import { handleAccountBootstrap } from './bootstrap.js';
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
@@ -66,6 +66,7 @@ export default {
         case "/api/verify-payment":  return await handleVerifyPayment(request, env);
         case "/api/xendit-webhook":  return await handleXenditWebhook(request, env);
         case "/api/google-play/verify": return await handleGooglePlayVerify(request, env);
+        case "/api/google-play/health": return handleGooglePlayHealth(env);
         case "/api/account/bootstrap": return await handleAccountBootstrap(request, env);
         case "/api/delete-account": return await handleDeleteAccount(request, env, ctx);
         case "/api/health": return jsonResponse({ ok: true, bot: env.BOT_NAME || "Berstock" });

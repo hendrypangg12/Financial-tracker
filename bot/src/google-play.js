@@ -12,6 +12,22 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), { status
 const digest = async value => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))))
   .map(v => v.toString(16).padStart(2, '0')).join('');
 
+// Diagnostik konfigurasi tanpa membocorkan rahasia: hanya boolean + domain email service account.
+export function handleGooglePlayHealth(env) {
+  const raw = env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON;
+  let account = null; try { account = JSON.parse(raw || ''); } catch {}
+  const email = typeof account?.client_email === 'string' ? account.client_email : '';
+  return json({
+    present: typeof raw === 'string' && raw.length > 0,
+    length: typeof raw === 'string' ? raw.length : 0,
+    parses: !!account,
+    hasClientEmail: !!email,
+    hasPrivateKey: typeof account?.private_key === 'string' && account.private_key.includes('PRIVATE KEY'),
+    projectMatches: account?.project_id === env.FIREBASE_PROJECT_ID,
+    emailDomain: email.includes('@') ? email.split('@')[1] : null,
+  });
+}
+
 export async function handleGooglePlayVerify(request, env) {
   try {
     if (request.method !== 'POST') throw new HttpError(405, 'Method not allowed');
