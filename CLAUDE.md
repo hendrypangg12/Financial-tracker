@@ -69,6 +69,8 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Versi voice over: `beruang-cara-pakai-voiceover.mp4` — suara id-ID-ArdiNeural via pip `edge-tts`
   (butuh patch `certifi.where = lambda: '/root/.ccr/ca-bundle.crt'` karena proxy TLS), 6 potong narasi
   di-trim silence + adelay (0.15/3.4/10.45/14.1/18.95/23.25 dtk), loudnorm -15 LUFS.
+  Versi FOKUS MUDAH + AI AKUNTAN (31 dtk): `beruang-cara-pakai-ai-voiceover.mp4` — adegan struk diganti tanya AI
+  ("Bulan ini aku boros di mana?"), CTA ada catatan "*AI Akuntan tersedia di paket berbayar". HTML sumber = versi AI ini.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.

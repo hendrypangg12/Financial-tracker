@@ -46,7 +46,7 @@
   .msg.bot .amt-in { color: var(--green); font-weight: 800; white-space: nowrap; }
   .msg.bot .meta { display: block; color: var(--soft); font-size: 25px; margin-top: 4px; }
   .inputbar { position: absolute; left: 24px; right: 24px; bottom: 30px; height: 100px; display: flex; gap: 16px; }
-  .inputbar .field { flex: 1; background: #fff; border: 3px solid var(--line); border-radius: 50px; display: flex; align-items: center; padding: 0 32px; font-size: 34px; font-weight: 600; }
+  .inputbar .field { flex: 1; white-space: nowrap; overflow: hidden; background: #fff; border: 3px solid var(--line); border-radius: 50px; display: flex; align-items: center; padding: 0 32px; font-size: 34px; font-weight: 600; }
   .inputbar .field .ph { color: #b9a898; font-weight: 500; }
   .inputbar .caret { display: inline-block; width: 3px; height: 40px; background: var(--brand); margin-left: 3px; }
   .inputbar .send { width: 170px; border-radius: 50px; background: var(--brand); color: #fff; font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
@@ -85,6 +85,18 @@
   .scan { position: absolute; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, transparent, var(--gold), transparent); box-shadow: 0 0 24px var(--gold); }
   .okpill { margin-top: 44px; background: #e7f4ea; color: var(--green); border: 3px solid #bfe2c8; border-radius: 40px; padding: 22px 36px; font-size: 34px; font-weight: 800; }
 
+  /* AI view */
+  #aiview { position: absolute; left: 0; right: 0; top: 150px; bottom: 0; }
+  .aihead { display: flex; align-items: center; gap: 20px; padding: 30px 36px 22px; border-bottom: 2px solid var(--line); background: #fff; }
+  .aihead .av { width: 78px; height: 78px; border-radius: 50%; background: var(--espresso); display: flex; align-items: center; justify-content: center; font-size: 44px; }
+  .aihead b { font-size: 34px; font-weight: 800; display: block; }
+  .aihead small { font-size: 24px; color: var(--green); font-weight: 700; }
+  #aimsgs { position: absolute; left: 30px; right: 30px; top: 170px; bottom: 150px; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; overflow: hidden; }
+  .msg.ai { align-self: flex-start; background: #fff; border: 2px solid var(--gold); border-bottom-left-radius: 10px; font-size: 34px; max-width: 92%; }
+  .msg.ai b { color: var(--brand); }
+  .dots span { display: inline-block; width: 16px; height: 16px; margin: 0 5px; border-radius: 50%; background: var(--soft); }
+  .footnote { font-size: 26px; color: var(--soft); margin-top: 22px; font-weight: 600; }
+
   /* CTA */
   #cta { left: 0; right: 0; top: 380px; text-align: center; }
   #cta img { width: 260px; height: 260px; border-radius: 62px; box-shadow: 0 24px 60px rgba(65,43,35,.25); }
@@ -104,7 +116,7 @@
   <div id="hook" class="abs">
     <img src="assets/icons/beruang-wallet-512.png" alt="" />
     <h1>Catat keuangan<br><span>cuma 3 detik</span> 🤯</h1>
-    <p>Gak perlu isi form ribet</p>
+    <p>+ punya AI Akuntan pribadi 🤖</p>
   </div>
 
   <div id="caption" class="abs"></div>
@@ -139,20 +151,10 @@
         </div>
       </div>
 
-      <div id="strukview">
-        <div class="receipt" id="receipt">
-          <div class="c">MINIMARKET SEJAHTERA</div>
-          <div class="c" style="font-weight:400;font-size:21px">26/09/2026 08:14</div>
-          <hr>
-          <div class="r"><span>Susu UHT 1L</span><span>21.900</span></div>
-          <div class="r"><span>Roti tawar</span><span>16.500</span></div>
-          <div class="r"><span>Telur 1kg</span><span>29.800</span></div>
-          <div class="r"><span>Minyak 1L</span><span>17.300</span></div>
-          <hr>
-          <div class="r" style="font-weight:700"><span>TOTAL</span><span>85.500</span></div>
-          <div class="scan" id="scan"></div>
-        </div>
-        <div class="okpill" id="okpill">✅ Rp 85.500 terbaca otomatis</div>
+      <div id="aiview">
+        <div class="aihead"><div class="av">🐻</div><div><b>Beruang Akuntan</b><small>● AI siap bantu</small></div></div>
+        <div id="aimsgs"></div>
+        <div class="inputbar"><div class="field" id="aifield"></div><div class="send" id="aisend">Kirim</div></div>
       </div>
     </div>
   </div>
@@ -163,19 +165,20 @@
     <div class="tag">Catat Keuangan &amp; AI</div>
     <div class="pts">
       <div>✍️ Ketik kayak chat biasa</div>
-      <div>📸 Foto struk langsung kebaca</div>
-      <div>🎁 Coba gratis 2 hari</div>
+      <div>🤖 AI Akuntan pribadi</div>
+      <div>🎁 Coba gratis 2 hari*</div>
     </div><br>
     <div class="play">
       <svg width="54" height="60" viewBox="0 0 24 26"><path fill="#34A853" d="M1 1.2 13.6 13 1 24.8c-.4-.3-.6-.8-.6-1.4V2.6c0-.6.2-1.1.6-1.4z"/><path fill="#FBBC04" d="m17.8 17.2-4.2-4.2 4.2-4.2 4.7 2.7c1.3.8 1.3 2.2 0 3z"/><path fill="#4285F4" d="M17.8 8.8 13.6 13 1 1.2c.5-.4 1.2-.4 1.9 0z"/><path fill="#EA4335" d="M17.8 17.2 2.9 25.8c-.7.4-1.4.4-1.9 0L13.6 13z"/></svg>
       <div style="text-align:left"><small>DOWNLOAD DI</small><b>Google Play</b></div>
     </div>
     <div class="url">cari "BerUang" · berstock.id</div>
+    <div class="footnote">*AI Akuntan tersedia di paket berbayar, mulai Rp 10rb</div>
   </div>
 
 <script>
 // Semua animasi dihitung dari waktu t (detik) supaya bisa dirender frame per frame secara deterministik.
-const DURATION = 27;
+const DURATION = 31;
 const $ = id => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const prog = (t, a, b) => clamp((t - a) / (b - a));
@@ -201,8 +204,8 @@ const TYPE_SPEED = 16; // karakter per detik
 const CAPTIONS = [
   { a: 3.2, b: 9.6, html: 'Ketik kayak chat biasa ✍️<small>"makan bakso 25rb" — beres</small>' },
   { a: 9.6, b: 13.8, html: 'Kategori ketebak otomatis ✨<small>pemasukan &amp; pengeluaran kepisah sendiri</small>' },
-  { a: 13.8, b: 18.8, html: 'Dashboard langsung update 📊<small>tau sisa uang kamu tiap saat</small>' },
-  { a: 18.8, b: 22.8, html: 'Foto struk? Bisa juga 📸<small>total belanja kebaca otomatis</small>' },
+  { a: 13.8, b: 18.3, html: 'Dashboard langsung update 📊<small>tau sisa uang kamu tiap saat</small>' },
+  { a: 18.3, b: 26.3, html: 'Tanya AI Akuntan 🤖<small>dijawab pakai data keuanganmu sendiri</small>' },
 ];
 
 function render(t) {
@@ -219,26 +222,26 @@ function render(t) {
 
   // Phone 3.0 - 22.9s
   const phone = $('phone');
-  const pin = easeOut(prog(t, 3.0, 3.7)), pout = prog(t, 22.5, 22.9);
+  const pin = easeOut(prog(t, 3.0, 3.7)), pout = prog(t, 26.0, 26.4);
   phone.style.opacity = Math.min(pin, 1 - pout);
   phone.style.transform = `translateY(${(1 - pin) * 500 + pout * 200}px)`;
-  phone.style.visibility = t > 3.0 && t < 22.9 ? 'visible' : 'hidden';
+  phone.style.visibility = t > 3.0 && t < 26.4 ? 'visible' : 'hidden';
 
   // Views inside phone
-  const view = t < 13.8 ? 'chat' : t < 18.8 ? 'dash' : 'struk';
+  const view = t < 13.8 ? 'chat' : t < 18.3 ? 'dash' : 'ai';
   $('chatview').style.display = view === 'chat' ? 'block' : 'none';
   $('dashview').style.display = view === 'dash' ? 'block' : 'none';
-  $('strukview').style.display = view === 'struk' ? 'flex' : 'none';
+  $('aiview').style.display = view === 'ai' ? 'block' : 'none';
 
   if (view === 'chat') renderChat(t);
   if (view === 'dash') renderDash(t);
-  if (view === 'struk') renderStruk(t);
+  if (view === 'ai') renderAI(t);
 
   // CTA 22.9 - end
   const cta = $('cta');
-  fade(cta, t, 22.9, DURATION + 1, 0.5, 60);
-  cta.querySelector('img').style.transform = `scale(${easeBack(prog(t, 23.0, 23.6))})`;
-  cta.querySelector('.play').style.transform = `scale(${1 + 0.04 * Math.sin((t - 23) * 5) * prog(t, 24.5, 25)})`;
+  fade(cta, t, 26.4, DURATION + 1, 0.5, 60);
+  cta.querySelector('img').style.transform = `scale(${easeBack(prog(t, 26.5, 27.1))})`;
+  cta.querySelector('.play').style.transform = `scale(${1 + 0.04 * Math.sin((t - 26.5) * 5) * prog(t, 28, 28.5)})`;
 }
 
 function renderChat(t) {
@@ -287,17 +290,34 @@ function renderDash(t) {
   $('recent').style.opacity = rc; $('recent').style.transform = `translateY(${(1 - rc) * 40}px)`;
 }
 
-function renderStruk(t) {
-  const r = $('receipt');
-  const pin = easeOut(prog(t, 18.9, 19.5));
-  r.style.transform = `translateY(${(1 - pin) * 300}px) rotate(${(1 - pin) * -6}deg)`;
-  r.style.opacity = pin;
-  const s = prog(t, 19.6, 21.0);
-  $('scan').style.top = (s * 100) + '%';
-  $('scan').style.opacity = s > 0 && s < 1 ? 1 : 0;
-  const ok = easeBack(prog(t, 21.1, 21.5));
-  $('okpill').style.opacity = clamp(ok * 1.5);
-  $('okpill').style.transform = `scale(${0.8 + 0.2 * ok})`;
+const AI_Q = 'Bulan ini aku boros di mana?';
+const AI_A = 'Bos, pengeluaran terbesar di <b>Transportasi Rp 50.000</b> (67%), sisanya makan Rp 25.000. Sisa uangmu masih <b>Rp 7.925.000</b> 👍 Sisihin <b>Rp 2 juta</b> ke tabungan sekarang, masih aman banget! 💰';
+function renderAI(t) {
+  const qStart = 18.9, qEnd = qStart + AI_Q.length / 22, send = qEnd + 0.25, think = send + 0.4, ans = think + 1.1;
+  let field = '<span class="ph">Tanya AI Akuntan…</span>';
+  if (t >= qStart && t < send) field = '<span style="font-size:30px">' + AI_Q.slice(0, Math.floor((t - qStart) * 22)) + '</span><span class="caret"></span>';
+  $('aifield').innerHTML = field;
+  $('aisend').style.transform = t >= send - 0.12 && t < send + 0.12 ? 'scale(0.9)' : 'scale(1)';
+  let html = '';
+  if (t >= send) html += `<div class="msg user" data-at="${send}">${AI_Q}</div>`;
+  if (t >= think && t < ans) {
+    const d = [0, 1, 2].map(i => `<span style="opacity:${0.35 + 0.65 * Math.abs(Math.sin((t - think) * 5 + i * 0.8))}"></span>`).join('');
+    html += `<div class="msg ai dots" data-at="${think}">${d}</div>`;
+  }
+  if (t >= ans) {
+    // efek mengetik: tampilkan jawaban bertahap per kata (tag HTML tetap utuh)
+    const words = AI_A.split(' ');
+    const n = Math.min(words.length, Math.floor((t - ans) * 11) + 1);
+    html += `<div class="msg ai" data-at="${ans}">${words.slice(0, n).join(' ')}</div>`;
+  }
+  const box = $('aimsgs');
+  box.innerHTML = html;
+  box.querySelectorAll('.msg').forEach(el => {
+    const p = easeBack(prog(t, +el.dataset.at, +el.dataset.at + 0.35));
+    el.style.opacity = clamp(p * 1.5);
+    el.style.transform = `scale(${0.85 + 0.15 * p})`;
+    el.style.transformOrigin = el.classList.contains('user') ? 'right bottom' : 'left bottom';
+  });
 }
 
 window.__render = render;
