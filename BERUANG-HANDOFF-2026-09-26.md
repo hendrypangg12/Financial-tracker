@@ -27,17 +27,20 @@ Pembaruan terakhir: 26 September 2026. Ini catatan keadaan proyek saat laptop ma
 - Pemeriksaan Play memperingatkan 1.172 perangkat kehilangan dukungan (sekitar 8% dari perangkat yang tercatat untuk rilis sebelumnya) karena batas minimum naik dari API 23 ke 24. Ini terkait Capacitor 8 yang menetapkan minimum API 24. Menurunkan kembali minimum mungkin mengharuskan downgrade Capacitor ke 7 serta build dan tes ulang; pertimbangkan dukungan perangkat lawas sebelum Production.
 - Play juga memperingatkan ukuran unduhan bertambah (5,96 MB dibanding 4,93 MB) dan tidak ada berkas deobfuscation; R8 saat ini nonaktif, jadi peringatan deobfuscation bukan blocker.
 - Langganan aktif di Play Console: `beruang_monthly_subscription` / `monthly-30d` dan `beruang_annual_subscription` / `annual-365d`. Keduanya auto-renewing dan cocok dengan ID yang dibaca klien/backend.
-- Worker Cloudflare memiliki secret bernama `FIREBASE_SERVICE_ACCOUNT_JSON` dan `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` (hanya keberadaan nama yang diperiksa; isi tidak dibaca/dicetak).
+- Service account khusus `beruang-play-billing@ber-uang-735b3.iam.gserviceaccount.com` berstatus Active di Play Console untuk aplikasi BerUang. Izin yang diberikan adalah View financial data dan Manage orders and subscriptions; izin rilis/admin tidak diberikan.
+- Secret `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` di Worker Cloudflare account `55dcdad9595a282a448413e8167a21bf` sudah diganti dengan kunci service account khusus tersebut. Cloudflare mengenkripsinya; isi private key tidak dicetak atau disimpan di repo.
 - Endpoint live `/api/google-play/verify` menjawab 401 untuk permintaan tanpa login. Ini membuktikan rute meminta autentikasi, bukan bahwa verifikasi pembelian berhasil dari ujung ke ujung.
-- Worker Cloudflare produksi kini sudah memuat verifikasi Google Play dan handler RTDN dari branch ini: version `c8d92158-5034-4c6b-a291-54cb98cc2c75`, deployed 26 September 2026 06:35 UTC. Smoke check tanpa login mendapat HTTP 401 sesuai harapan; transaksi Play sungguhan belum dites.
+- Deployment aktif Cloudflare setelah pemasangan secret adalah version `0d659880`, dengan catatan `Add secret: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`. File JSON khusus Play Billing di Downloads dan salinan clipboard sudah dihapus setelah deployment terverifikasi.
+- Uji kredensial berhasil memperoleh OAuth token Google, tetapi Android Publisher masih menjawab `401 insufficient permissions`. Izin Play Console baru dapat memerlukan waktu hingga 48 jam untuk dipropagasi; ulangi uji setelah propagasi sebelum menyatakan pembayaran siap produksi. Transaksi Play sungguhan belum dites.
 - RTDN belum aktif: di Play Console checkbox masih mati dan kolom topic kosong; di Google Cloud project `ber-uang-735b3` belum ada Pub/Sub topic. Perlu topic, push subscription yang memakai OIDC, izin publish Google Play, lalu simpan audience/email service account di Worker dan kirim test notification.
 
 ## Urutan kerja berikutnya
 
-1. Selesaikan Pub/Sub/RTDN dengan OIDC push dan kirim test notification dari Play Console.
-2. Uji build internal di HP Android: login Google, data akun konsisten di dua perangkat, pembelian Play, pemulihan langganan, dan pembatalan. Transaksi sungguhan dan renewal otomatis belum teruji.
-3. Putuskan apakah kenaikan minimum API 24 dapat diterima. Jika tidak, evaluasi downgrade Capacitor 7 lalu bangun version code berikutnya (code 6 sudah terpakai di Console).
-4. Jika tes dan pemeriksaan kebijakan lolos, promosikan build dari jalur test ke Production. Versi publik tetap 1.3.0/version code 5 sampai rilis Production disetujui dan tayang.
+1. Tunggu propagasi izin service account, lalu ulangi uji Android Publisher sampai tidak lagi mengembalikan `insufficient permissions`.
+2. Selesaikan Pub/Sub/RTDN dengan OIDC push dan kirim test notification dari Play Console.
+3. Uji build internal di HP Android: login Google, data akun konsisten di dua perangkat, pembelian Play, pemulihan langganan, dan pembatalan. Transaksi sungguhan dan renewal otomatis belum teruji.
+4. Putuskan apakah kenaikan minimum API 24 dapat diterima. Jika tidak, evaluasi downgrade Capacitor 7 lalu bangun version code berikutnya (code 6 sudah terpakai di Console).
+5. Jika tes dan pemeriksaan kebijakan lolos, promosikan build dari jalur test ke Production. Versi publik tetap 1.3.0/version code 5 sampai rilis Production disetujui dan tayang.
 
 ## Berkas lokal yang tidak ikut ke HP/GitHub
 
