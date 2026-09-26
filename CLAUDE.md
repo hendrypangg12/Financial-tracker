@@ -71,6 +71,9 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   di-trim silence + adelay (0.15/3.4/10.45/14.1/18.95/23.25 dtk), loudnorm -15 LUFS.
   Versi FOKUS MUDAH + AI AKUNTAN (31 dtk): `beruang-cara-pakai-ai-voiceover.mp4` — adegan struk diganti tanya AI
   ("Bulan ini aku boros di mana?"), CTA ada catatan "*AI Akuntan tersedia di paket berbayar". HTML sumber = versi AI ini.
+  Video KHUSUS AI AKUNTAN (38 dtk): `beruang-ai-akuntan-voiceover.mp4` dari `video-ai-akuntan-beruang.html` —
+  hook "akuntan pribadi 24 jam", intro Beruang Akuntan, 3 contoh tanya (boros di mana / target beli HP / tren),
+  recap 4 manfaat, CTA "AI Akuntan mulai Rp 10rb" + catatan "*contoh percakapan".
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
