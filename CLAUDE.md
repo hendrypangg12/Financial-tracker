@@ -66,6 +66,9 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
 - 🎬 26 Sep: video tutorial Reels 27 detik `beruang-cara-pakai.mp4` (1080x1920, tanpa musik) dari
   `video-cara-pakai-beruang.html` (render(t) deterministik → Playwright screenshot 30fps → ffmpeg dari pip `imageio-ffmpeg`;
   system ffmpeg TIDAK ada). Data chat di video = output parser asli.
+  Versi voice over: `beruang-cara-pakai-voiceover.mp4` — suara id-ID-ArdiNeural via pip `edge-tts`
+  (butuh patch `certifi.where = lambda: '/root/.ccr/ca-bundle.crt'` karena proxy TLS), 6 potong narasi
+  di-trim silence + adelay (0.15/3.4/10.45/14.1/18.95/23.25 dtk), loudnorm -15 LUFS.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
