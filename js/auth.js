@@ -95,7 +95,7 @@ function isSubscriptionActive(profile) {
 // Pricing model:
 //   free_trial: uji coba gratis 2 hari, dibuat oleh server
 //   trial    : akses 7 hari sekali bayar (Rp 10rb)
-//   monthly  : akses 30 hari; renewal otomatis belum diimplementasikan
+//   monthly  : akses 30 hari; checkout website sekali bayar (Google Play dikelola adapter Android)
 //   annual   : Rp 299rb/tahun (hemat 50%)
 //   lifetime : LEGACY only — existing buyer sebelum pricing change masih dihormati
 //   pro      : LEGACY admin/test
@@ -178,6 +178,7 @@ function authErrorMessage(err) {
     'auth/network-request-failed': 'Koneksi internet bermasalah.',
     'auth/too-many-requests': 'Terlalu banyak percobaan. Coba lagi beberapa menit.',
     'auth/popup-closed-by-user': 'Login Google dibatalkan.',
+    'auth/account-exists-with-different-credential': 'Email ini sudah terdaftar dengan metode masuk lain. Gunakan metode yang pernah dipakai agar catatan tetap di akun yang sama.',
     'auth/unauthorized-domain': 'Domain ini belum di-whitelist di Firebase.',
   };
   return map[code] || (err.message || 'Terjadi kesalahan.');

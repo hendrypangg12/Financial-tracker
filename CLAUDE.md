@@ -99,6 +99,15 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   v1.4.0 beli subscription → live worker jawab 400 "Pembelian tidak valid". terms.html saya bilang TANPA auto-renew.
   HARUS diputuskan bos & di-merge sebelum v1.4.0 ke Production. Branch Codex juga MENGHAPUS terms.html, video, ASO.
 
+- ✅ 26 Sep sore — KEPUTUSAN BOS: Bulanan & Tahunan = LANGGANAN AUTO-RENEW Google Play (dipotong otomatis tiap periode,
+  batal via Play Store). Akses 7 Hari tetap sekali bayar. Pembayaran web (QRIS/BCA) tetap sekali bayar, manual.
+  Branch Codex `codex/beruang-phone-handoff-20260926` (v1.4.0 vc6, subscription `beruang_monthly_subscription`/
+  `beruang_annual_subscription`, RTDN `/api/google-play/rtdn`) DI-MERGE ke branch ini. KV ID tetap 9ca470…/59016f….
+  terms.html, index, landing, ASO diperbarui ke auto-renew + cara batal. FIX bug Codex: mobile.css menyembunyikan
+  #paywall-screen dengan !important → paywall Play TIDAK TAMPIL di Android; sekarang tampil (dites) + tombol backup.
+  Hard lock showScreen('app') sekarang lewat window.showScreen('paywall') supaya override Android ikut. app.js v55.
+  ⚠️ Build v1.4.0 (vc6) yang sudah di Internal Testing MASIH MEMBAWA BUG paywall tak terlihat → perlu build vc7 dari branch ini.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
@@ -905,7 +914,7 @@ state = {
 | **Phone screenshots** | ✅ Done | 4+ slides: "Tracking lengkap", "Foto sekali auto-masuk", "Catat via chat", "Lihat real-time" |
 | **Tablet screenshots** | ❓ Cek status | Opsional |
 | **Promo video YouTube** | ⏳ Empty | Opsional, skip aja |
-| **Short description** (80) | ✅ Done | "Catat keuangan via chat, foto struk & form. Trial Pro 7 hari" (67/80) |
+| **Short description** (80) | Draft lama | Perbarui mengikuti trial gratis 2 hari dan model billing terbaru sebelum diajukan ulang |
 | **Full description** (4000) | ✅ Started | "🐻 BerUang — Catat dulu, biar beneran ber-uang!" (perlu verify length) |
 | **App category** | ⏳ Cek | Should be Finance |
 | **Email contact** | ✅ Done | hendrypangg12@gmail.com (assumed) |

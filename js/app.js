@@ -903,7 +903,7 @@ function watchAccessExpiry() {
 // Tampilkan layar tertentu (login/paywall/app)
 function showScreen(which) {
   // Pengguna yang terkunci tidak boleh kembali ke dashboard lewat jalur mana pun.
-  if (which === 'app' && isAccessLocked()) which = 'paywall';
+  if (which === 'app' && isAccessLocked()) return window.showScreen('paywall');
   document.body.classList.toggle('app-locked', which !== 'app');
   const startup = document.getElementById('startup-screen');
   if (startup) startup.hidden = which !== 'loading';

@@ -5,5 +5,11 @@
   "backgroundColor": "#fbf6ee",
   "server": { "androidScheme": "https", "hostname": "localhost" },
   "android": { "allowMixedContent": false },
-  "ios": { "contentInset": "automatic" }
+  "ios": { "contentInset": "automatic" },
+  "plugins": {
+    "FirebaseAuthentication": {
+      "providers": ["google.com"],
+      "skipNativeAuth": true
+    }
+  }
 }

@@ -46,7 +46,7 @@ Catat siapa yang pinjam dan ke siapa kamu berhutang, lengkap dengan jatuh tempo.
 Data tersimpan di akunmu dan tersinkron ke cloud, jadi tidak hilang saat ganti HP.
 
 💳 PAKET
-Coba gratis 2 hari untuk fitur pencatatan (AI Akuntan khusus paket berbayar). Setelah itu pilih masa akses 7 hari, 30 hari, atau 1 tahun untuk terus memakai BerUang. Pembayaran lewat Google Play dan tidak diperpanjang otomatis.
+Coba gratis 2 hari untuk fitur pencatatan (AI Akuntan khusus paket berbayar). Setelah itu pilih Akses 7 Hari (sekali bayar), atau langganan Bulanan / Tahunan yang diperpanjang otomatis lewat Google Play dan bisa dibatalkan kapan saja.
 
 Cocok untuk karyawan, mahasiswa, ibu rumah tangga, freelancer, dan pemilik usaha kecil yang ingin punya "akuntan pribadi" di HP.
 
