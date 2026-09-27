@@ -1,0 +1,186 @@
+TUGAS UNTUK CHATGPT DI LAPTOP BOS — BerUang (dibuat 27 September 2026)
+=======================================================================
+
+Halo ChatGPT. Kamu membantu Hendry (pemilik BerUang, non-teknis) menyelesaikan
+tugas yang butuh laptop dan akun miliknya. Kerjakan berurutan. Setiap tugas punya
+cara mengecek hasilnya. Jangan lanjut ke tugas berikutnya kalau cek belum lolos.
+
+------------------------------------------------------------------------
+KONTEKS SINGKAT
+------------------------------------------------------------------------
+- Aplikasi: BerUang (catat keuangan + AI Akuntan). Android package: id.berstock.beruang
+- Repo GitHub: hendrypangg12/financial-tracker
+- BRANCH YANG BENAR: claude/financial-tracking-app-QUmrz
+  (JANGAN pakai branch lama codex/beruang-phone-handoff-20260926, sudah di-merge ke branch ini)
+- Backend: Cloudflare Worker "berstock-bot"
+  URL: https://berstock-bot.hendrypangg12.workers.dev
+- Worker di-deploy otomatis oleh GitHub Actions setiap ada push ke folder bot/.
+- Firebase project: ber-uang-735b3
+
+!!! PENTING: ADA 2 AKUN CLOUDFLARE !!!
+- Akun YANG BENAR (melayani user): login hendrypangg12@icloud.com
+  Account ID 55dcdad9595a282a448413e8167a21bf
+- Akun SALAH (tidak dipakai): login hendryphang12@gmail.com, Account ID 9c165162...
+  Secret yang dipasang di akun ini TIDAK berpengaruh. Jangan pasang apa pun di sini.
+
+------------------------------------------------------------------------
+ATURAN KEAMANAN (WAJIB)
+------------------------------------------------------------------------
+1. Jangan pernah minta Hendry mengetik password Google/Cloudflare/Play Console ke chat.
+   Hendry login sendiri di browser.
+2. Isi file JSON kunci (service account) dan file keystore JANGAN ditempel ke chat,
+   JANGAN di-commit ke GitHub (repo ini PUBLIK), JANGAN diupload ke mana pun selain
+   tempat yang disebut di bawah.
+3. Jangan ubah ID KV di bot/wrangler.toml. Yang benar:
+   BOT_DATA = 9ca47054eecf4b25b9714b1555b80d6b
+   BOT_AUTH = 59016f42dc314b02ba508cf5025cd09f
+4. Jangan hapus file yang sudah ada (terms.html, video .mp4, store-assets/, dll).
+5. Jangan ganti model AI di kode.
+6. Kalau perlu mengubah kode, commit ke branch claude/financial-tracking-app-QUmrz saja.
+   Jangan buat branch baru, jangan push ke main.
+7. Keystore upload Android (dipakai sejak build 1.4.0) adalah satu-satunya kunci untuk
+   update aplikasi. Pastikan ada cadangannya di tempat aman (mis. Google Drive pribadi
+   terenkripsi / flashdisk) sebelum apa pun.
+
+------------------------------------------------------------------------
+TUGAS 1 — PASANG KUNCI GOOGLE PLAY DI CLOUDFLARE (PALING PENTING)
+------------------------------------------------------------------------
+Masalah sekarang: secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON di worker berisi EMAIL
+service account (59 karakter), bukan isi file JSON. Akibatnya pembeli lewat Google Play
+bayar tapi paketnya TIDAK aktif otomatis.
+
+Cek status sekarang (aman, tidak membuka rahasia):
+  https://berstock-bot.hendrypangg12.workers.dev/api/google-play/health
+Sekarang hasilnya: "length":59, "parses":false  -> SALAH.
+
+Langkah:
+a. Buka https://console.cloud.google.com -> pilih project ber-uang-735b3
+   -> IAM & Admin -> Service Accounts.
+b. Klik service account: beruang-play-billing@ber-uang-735b3.iam.gserviceaccount.com
+   -> tab Keys -> Add key -> Create new key -> JSON -> Create.
+   File .json akan terunduh.
+c. Buka file itu dengan Notepad. Isinya diawali {"type": "service_account", ...
+   dan panjangnya sekitar 2.300 karakter. Salin SEMUA isinya (Ctrl+A, Ctrl+C).
+d. Buka https://dash.cloudflare.com, login dengan hendrypangg12@icloud.com
+   (pastikan Account ID 55dcdad9...).
+   Workers & Pages -> berstock-bot -> Settings -> Variables and Secrets.
+e. Edit secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON (Type harus "Secret"),
+   hapus isi lama, tempel isi JSON lengkap -> Save/Deploy.
+f. Hapus file .json dari folder Downloads setelah berhasil (jangan disimpan sembarangan).
+
+Cek berhasil: buka lagi /api/google-play/health. Harus:
+  "present":true, "parses":true, "hasClientEmail":true, "hasPrivateKey":true, "projectMatches":true
+Kalau "projectMatches":false, kunci dibuat dari project yang salah.
+
+Pastikan juga di Play Console -> Users and permissions, email service account di atas
+punya izin minimal "View financial data" dan "Manage orders and subscriptions".
+
+------------------------------------------------------------------------
+TUGAS 2 — BUILD ANDROID 1.4.1 (versionCode 7)
+------------------------------------------------------------------------
+Build 1.4.0 (versionCode 6) yang ada di Internal Testing punya BUG: layar paket
+(paywall) tidak tampil. Build 1.4.1 memperbaikinya, plus fitur baru:
+rating Play Store dalam app, panduan user baru, hitungan penjualan anonim.
+versionCode 7 / versionName 1.4.1 SUDAH diset di mobile/android/app/build.gradle.
+
+Langkah (sesuaikan untuk Windows PowerShell / Mac):
+  git fetch origin
+  git checkout claude/financial-tracking-app-QUmrz
+  git pull origin claude/financial-tracking-app-QUmrz
+  cd mobile
+  pnpm install
+
+  # WAJIB mode production saat staging (menandai build toko):
+  # PowerShell:  $env:BERUANG_BUILD_KIND="production"
+  # Mac/Linux:   export BERUANG_BUILD_KIND=production
+  pnpm sync          # = stage web + cap sync android (memasang plugin rating baru)
+
+  # Variabel penandatanganan (pakai keystore upload yang sama dengan build 1.4.0):
+  #   BERUANG_UPLOAD_STORE_FILE     = path file keystore
+  #   BERUANG_UPLOAD_STORE_PASSWORD = password keystore
+  #   BERUANG_UPLOAD_KEY_ALIAS      = alias kunci
+  #   BERUANG_UPLOAD_KEY_PASSWORD   = password kunci
+  cd android
+  ./gradlew bundleRelease -PberuangProduction=true      (Windows: .\gradlew.bat ...)
+
+Hasil: mobile/android/app/build/outputs/bundle/release/app-release.aab
+Cek: package id.berstock.beruang, versionCode 7, versionName 1.4.1.
+
+Tes sebelum build (opsional tapi disarankan):
+  cd mobile && node --test test/native.test.mjs      -> semua pass
+  cd bot && npm install && npm test                  -> semua pass
+
+Catatan: "pnpm sync" mengubah mobile/android/capacitor.settings.gradle sesuai laptop.
+Itu normal. Tidak perlu di-commit.
+
+------------------------------------------------------------------------
+TUGAS 3 — PLAY CONSOLE: DATA SAFETY (sebelum kirim 1.4.1)
+------------------------------------------------------------------------
+Build 1.4.1 mengirim hitungan pemakaian anonim ke server BerUang (tanpa email/nama/isi
+transaksi). Kebijakan privasi sudah diperbarui: https://berstock.id/privacy.html
+Di Play Console -> App content -> Data safety -> Edit:
+- Tambah "App activity" -> "App interactions":
+  Collected = Ya. Shared = Tidak. Tujuan = Analytics.
+  "Linked to user's identity" = pilih YA (pilihan paling aman: hitungan dikirim saat user
+  login, walau server hanya menyimpan angka total + penanda acak hasil hash).
+  "Processed ephemerally" = Tidak. "Required/optional" = Required.
+- Pastikan data keuangan & AI sudah tercantum seperti di privacy.html
+  (data dikirim ke Anthropic untuk fitur AI, disimpan di Firebase/Cloudflare).
+
+------------------------------------------------------------------------
+TUGAS 4 — UPLOAD 1.4.1 KE INTERNAL TESTING + TES BELI
+------------------------------------------------------------------------
+a. Play Console -> Testing -> Internal testing -> Create new release -> upload app-release.aab.
+   Release notes (Indonesia):
+   "Perbaikan layar paket, tampilan baru yang lebih ringkas, panduan untuk pengguna baru."
+b. Pastikan akun Google Hendry ada di daftar tester + License testing
+   (Settings -> License testing) supaya tes beli tidak memotong uang sungguhan.
+c. Install dari link Internal testing di HP. Login pakai akun uji (bukan akun admin).
+d. Tunggu uji coba habis ATAU pakai akun yang paketnya habis -> layar paket harus tampil.
+e. Beli "Akses 7 Hari" (lisensi tes). Setelah bayar, aplikasi harus langsung terbuka
+   dan menampilkan paket aktif.
+   Kalau muncul error "Aktivasi paket gagal": cek lagi Tugas 1 (/api/google-play/health).
+f. Coba juga langganan Bulanan, lalu batalkan dari Play Store (Pembayaran & langganan).
+g. Kalau semua lancar -> promote ke Production.
+
+Produk di Play Console yang harus ada & Aktif:
+- beruang_access_7d (sekali bayar, Rp 10.000)
+- beruang_monthly_subscription (langganan, base plan 30 hari, Rp 50.000)
+- beruang_annual_subscription (langganan, base plan 365 hari, Rp 299.000)
+Real-time developer notifications (RTDN) ke: https://berstock-bot.hendrypangg12.workers.dev/api/google-play/rtdn
+
+------------------------------------------------------------------------
+TUGAS 5 — TEKS LISTING PLAY STORE
+------------------------------------------------------------------------
+Deskripsi singkat yang tampil sekarang masih "Trial Pro 7 hari gratis" (SALAH).
+Teks yang benar ada di repo: store-assets/play-listing-aso.md
+Play Console -> Grow users -> Store presence -> Main store listing (Bahasa Indonesia):
+- Nama aplikasi: BerUang: Catat Keuangan & AI
+- Deskripsi singkat & lengkap: salin dari file tersebut.
+Lakukan SETELAH saldo AI Anthropic terisi (lihat Tugas 6), supaya janji AI di listing jalan.
+
+------------------------------------------------------------------------
+TUGAS 6 — SALDO AI (HENDRY SENDIRI, BISA DARI HP)
+------------------------------------------------------------------------
+Saldo Anthropic HABIS -> semua fitur AI error "kredit AI Admin lagi habis".
+console.anthropic.com (login hendrypangg12@icloud.com) -> Billing -> top up,
+nyalakan auto-reload. Jangan ganti API key di Cloudflare kecuali memang diminta.
+
+------------------------------------------------------------------------
+TUGAS 7 — CEK ADMIN PANEL (5 menit)
+------------------------------------------------------------------------
+Buka https://berstock.id/app.html, login dengan akun admin (hendryphang12@gmail.com).
+Menu profil -> Admin Panel. Harus muncul daftar user + tabel "Corong Penjualan".
+Kalau muncul "Akses admin hanya untuk akun admin", akun belum punya custom claim
+admin=true di Firebase Auth. Setel claim itu dengan Firebase Admin SDK
+(skrip lokal pakai service account Firebase, JANGAN commit kuncinya), lalu logout-login.
+
+------------------------------------------------------------------------
+LAPORAN BALIK
+------------------------------------------------------------------------
+Setelah selesai, buat ringkasan singkat untuk Hendry berisi:
+- Hasil /api/google-play/health (tempel JSON-nya; itu aman, tidak berisi rahasia)
+- versionCode/versionName AAB yang diupload
+- Hasil tes beli (berhasil/gagal + pesan error kalau ada)
+- Tugas yang belum selesai dan alasannya
+Hendry akan meneruskan ringkasan itu ke Claude.
