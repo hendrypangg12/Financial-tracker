@@ -136,6 +136,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   SEO: "BerUang – Aplikasi Catat Keuangan dengan AI Akuntan | Gratis 2 Hari". Nada "lu/gue" DIBIARKAN (menunggu bos).
   Belum: social proof (tunggu ≥5 ulasan Play), FAQ di index.
 
+- 🔎 27 Sep: CARA CEK LISTING PLAY DARI SERVER US: tambah `&hl=id&gl=ID` + User-Agent Android →
+  `curl -A "Mozilla/5.0 (Linux; Android 13)..." "https://play.google.com/store/apps/details?id=id.berstock.beruang&hl=id&gl=ID"` → 200.
+  Hasil 27 Sep: versi PUBLIK = 1.3.0 (Diupdate 25 Sep 2026) ⇒ REVIEW v1.3.0 SUDAH LOLOS & LIVE. 10+ download, belum ada rating
+  tampil, "Pembelian dalam aplikasi" sudah tercantum. Deskripsi singkat listing MASIH "Trial Pro 7 hari gratis" (salah) — tempel ASO.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
