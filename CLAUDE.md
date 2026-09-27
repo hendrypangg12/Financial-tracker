@@ -141,6 +141,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Hasil 27 Sep: versi PUBLIK = 1.3.0 (Diupdate 25 Sep 2026) ⇒ REVIEW v1.3.0 SUDAH LOLOS & LIVE. 10+ download, belum ada rating
   tampil, "Pembelian dalam aplikasi" sudah tercantum. Deskripsi singkat listing MASIH "Trial Pro 7 hari gratis" (salah) — tempel ASO.
 
+- 🍎 27 Sep: bos tanya App Store. KEPUTUSAN: FOKUS ANDROID DULU. iOS ditunda sampai ada ~20 pembeli Android.
+  Kalau lanjut nanti: Apple Developer $99/thn (individu, paspor OK), butuh Mac/Codemagic, tambah StoreKit + Sign in with Apple,
+  komisi 15–30%, dilarang sebut harga web di app. Sementara iPhone dilayani PWA (Add to Home Screen).
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
