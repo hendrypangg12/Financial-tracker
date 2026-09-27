@@ -317,7 +317,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 /* Sticky CTA (HP): muncul setelah scroll, biar tombol download selalu di jangkauan jempol */
 .sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: rgba(251,246,238,.96); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: none; transform: translateY(110%); transition: transform .25s; }
 .sticky-cta.show { transform: translateY(0); }
-.sticky-cta a { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ink); color: #fff; border-radius: 12px; padding: 13px; font-weight: 800; text-decoration: none; font-size: 15px; }
+.sticky-cta a { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ink); color: #fff; border-radius: 12px; padding: 13px 10px; font-weight: 800; text-decoration: none; font-size: 14px; white-space: nowrap; }
 .sticky-cta small { display: block; font-size: 11px; font-weight: 500; opacity: .75; }
 @media (max-width: 900px) { .sticky-cta { display: block; padding-right: 84px; } body.has-sticky { padding-bottom: 76px; } }
 </style>
@@ -798,7 +798,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 
 <div class="sticky-cta" id="sticky-cta">
   <a href="https://play.google.com/store/apps/details?id=id.berstock.beruang" target="_blank" rel="noopener" onclick="if(window.gtag)gtag('event','sticky_play_store');">
-    <span>📲 Download BerUang · Gratis 2 hari</span>
+    <span>📲 Download BerUang · Gratis</span>
   </a>
 </div>
 <script>
