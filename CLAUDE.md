@@ -112,6 +112,14 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket yang TIDAK auto-renew (trial, 7 hari, web) — `warnAccessEndingSoon()` di js/app.js, skip kalau
   activatedBy='google-play-subscription'. Tombol Bulanan/Tahunan di index.html → Google Play (bukan Lynk lagi). app.js v56, SW v59.
 
+- 🐻 27 Sep: LAPORAN BERUANG MINGGUAN (proaktif) — `bot/src/weekly-report.js`. Cron `0 13 * * 0` (Minggu 20:00 WIB;
+  `scheduled()` cabang by `event.cron`), iterasi KV `btg_chat:*`, baca Firestore `users/{uid}/data/main` via service account,
+  hanya user BERBAYAR (bukan free_trial) + Telegram tersambung. Ringkasan angka deterministik (minggu ini vs lalu, top
+  kategori, transaksi terbesar, MTD vs target) + 1 paragraf insight AI (max 350 token; kalau AI gagal laporan angka
+  tetap terkirim). Dedupe KV `btg_weekly:<uid>:<senin>` 14 hari; skip user tanpa catatan 2 minggu. Perintah Telegram:
+  `/laporan` (manual, 1x/hari), `/laporan off|on` (KV `btg_weekly_off:<uid>`). Debug: `/api/beruang-weekly-test?admin_key=&email=&force=1`.
+  `resolveLinkUid()`/`hasPaidAIAccess()` di-export dari beruang.js. Tes: bot/test/weekly-report.test.js (5). telegram-link v6.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

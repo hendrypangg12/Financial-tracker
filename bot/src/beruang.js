@@ -127,7 +127,7 @@ export async function handleBeruangWebhook(request, env, ctx) {
       }
       if (/^\/(help|bantuan)\b/i.test(text)) {
         await sendMessage(token, chatId,
-          `Cara pakai 🐻:\n• Ketik transaksi: "kopi 25rb", "gaji 5jt", "grab 30000"\n• 📸 Kirim foto struk → auto-baca total + toko\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
+          `Cara pakai 🐻:\n• Ketik transaksi: "kopi 25rb", "gaji 5jt", "grab 30000"\n• 📸 Kirim foto struk → auto-baca total + toko\n• /laporan — rekap mingguan dari Beruang Akuntan (otomatis tiap Minggu malam)\n• /laporan off — berhenti laporan otomatis\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
         return;
       }
 
@@ -135,6 +135,23 @@ export async function handleBeruangWebhook(request, env, ctx) {
       const link = await env.BOT_DATA.get("btg_chat:" + chatId, "json");
       if (!link || !link.email) {
         await sendMessage(token, chatId, `Belum tersambung ke akun BerUang. Ketik /mulai dulu ya bos 🐻`);
+        return;
+      }
+
+      // LAPORAN MINGGUAN: /laporan (kirim sekarang), /laporan off, /laporan on
+      if (/^\/laporan\b/i.test(text)) {
+        const arg = text.replace(/^\/laporan\s*/i, "").trim().toLowerCase();
+        const uid = await resolveLinkUid(env, link);
+        if (arg === "off" && uid) {
+          await env.BOT_DATA.put("btg_weekly_off:" + uid, "1");
+          await sendMessage(token, chatId, "Oke, laporan mingguan otomatis dimatikan. Ketik /laporan on kalau mau nyala lagi 🐻");
+        } else if (arg === "on" && uid) {
+          await env.BOT_DATA.delete("btg_weekly_off:" + uid);
+          await sendMessage(token, chatId, "Sip, laporan mingguan otomatis aktif lagi — tiap Minggu malam 🐻");
+        } else {
+          const { sendWeeklyReportFor } = await import("./weekly-report.js");
+          await sendWeeklyReportFor(env, token, chatId, link, { manual: true });
+        }
         return;
       }
 
@@ -171,17 +188,23 @@ async function pushInbox(env, email, entry) {
 }
 
 // AI (Claude vision) hanya untuk paket berbayar yang masih aktif — uji coba gratis & paket habis tidak.
-async function hasPaidAIAccess(env, link) {
+// uid dari link Telegram; link lama (sebelum 26 Sep) hanya punya email → lookup ke Firebase Auth.
+export async function resolveLinkUid(env, link) {
+  if (link?.uid) return link.uid;
+  if (!link?.email) return null;
   try {
-    let uid = link.uid;
-    if (!uid) {
-      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(env.FIREBASE_PROJECT_ID)}/accounts:lookup`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + await adminToken(env) },
-        body: JSON.stringify({ email: [link.email] }), signal: AbortSignal.timeout(15000),
-      });
-      uid = (await res.json().catch(() => ({}))).users?.[0]?.localId;
-      if (!uid) return false;
-    }
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(env.FIREBASE_PROJECT_ID)}/accounts:lookup`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + await adminToken(env) },
+      body: JSON.stringify({ email: [link.email] }), signal: AbortSignal.timeout(15000),
+    });
+    return (await res.json().catch(() => ({}))).users?.[0]?.localId || null;
+  } catch (e) { console.error('[beruang] lookup uid gagal', e && e.message); return null; }
+}
+
+export async function hasPaidAIAccess(env, link) {
+  try {
+    const uid = await resolveLinkUid(env, link);
+    if (!uid) return false;
     const doc = await firestoreAdmin(env).get(`users/${uid}/meta/profile`);
     const plan = doc?.data?.plan;
     if (plan === 'lifetime' || plan === 'pro') return true;

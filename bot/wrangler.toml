@@ -36,4 +36,4 @@ enabled = true
 # Cron triggers — Daily Digest auto-send
 # Jam 7 pagi WIB = 00:00 UTC (Indonesia +7)
 [triggers]
-crons = ["0 0 * * *"]
+crons = ["0 0 * * *", "0 13 * * 0"]

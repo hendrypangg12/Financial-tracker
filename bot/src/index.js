@@ -14,6 +14,7 @@ import { handleCreateInvoice, handleVerifyPayment, handleXenditWebhook } from ".
 import { handleDeleteAccount, processAccountDeletions } from './account.js';
 import { handleGooglePlayVerify, handleGooglePlayHealth } from './google-play.js';
 import { handleGooglePlayRtdn } from './google-play-rtdn.js';
+import { sendWeeklyReports, handleWeeklyReportTest } from './weekly-report.js';
 import { handleAccountBootstrap } from './bootstrap.js';
 import {
   getTenantMeta, setTenantMeta, getTenantData, setTenantData,
@@ -26,6 +27,8 @@ import {
 export default {
   // Cron handler — jalan 1x sehari pagi WIB (00:00 UTC = 07:00 WIB)
   async scheduled(event, env, ctx) {
+    // Minggu 13:00 UTC = 20:00 WIB → Laporan Beruang mingguan (BerUang, user berbayar + Telegram tersambung)
+    if (event && event.cron === "0 13 * * 0") { ctx.waitUntil(sendWeeklyReports(env)); return; }
     ctx.waitUntil(processAccountDeletions(env));
     ctx.waitUntil(sendDailyDigestToAllTenants(env));
     ctx.waitUntil(sendBillReminders(env)); // BerUang: notif H-3 + H-0 tagihan rutin
@@ -60,6 +63,7 @@ export default {
         case "/api/beruang-pull":  return await handleBeruangPull(request, env);
         case "/api/beruang-bills-push": return await handleBeruangBillsPush(request, env);
         case "/api/beruang-bills-test": return await handleBeruangBillsTest(request, env);
+        case "/api/beruang-weekly-test": return await handleWeeklyReportTest(request, env);
         case "/api/beruang-setup-webhook": return await handleBeruangSetupWebhook(request, env);
         case "/api/beruang-debug": return await handleBeruangDebug(request, env);
         // Payment (Xendit) — siap diisi credentials setelah approved
