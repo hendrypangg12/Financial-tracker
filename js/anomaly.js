@@ -29,12 +29,12 @@ function getCurrentWeekId() {
 function getDismissedAnomalies() {
   try {
     const raw = localStorage.getItem(ANOMALY_DISMISS_KEY);
-    if (!raw) return {};
+    if (!raw) return { week: getCurrentWeekId(), categories: [] };
     const data = JSON.parse(raw);
     const currentWeek = getCurrentWeekId();
     // Clear stale weeks (only keep current week)
     if (data.week !== currentWeek) return { week: currentWeek, categories: [] };
-    return data;
+    return Array.isArray(data.categories) ? data : { week: currentWeek, categories: [] };
   } catch { return { week: getCurrentWeekId(), categories: [] }; }
 }
 

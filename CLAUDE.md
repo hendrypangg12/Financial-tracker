@@ -145,6 +145,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Kalau lanjut nanti: Apple Developer $99/thn (individu, paspor OK), butuh Mac/Codemagic, tambah StoreKit + Sign in with Apple,
   komisi 15–30%, dilarang sebut harga web di app. Sementara iPhone dilayani PWA (Add to Home Screen).
 
+- 🐛 27 Sep FIX: js/anomaly.js `getDismissedAnomalies()` return `{}` saat belum pernah dismiss → `isDismissed()` crash
+  `.includes` of undefined → renderDashboard throw → renderAll berhenti (tab lain kosong) untuk user dengan ≥10 transaksi
+  yang punya anomali. Ditemukan saat render UI dengan data demo. anomaly v2. Catatan render lokal: CDN (jsdelivr/gstatic)
+  ERR_CERT_AUTHORITY_INVALID di Chromium headless → pakai page.route ke file lokal (scratchpad/chart.umd.min.js).
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
