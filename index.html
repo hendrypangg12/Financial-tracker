@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>BerUang — Punya Akuntan AI Pribadi yang Ngatur Duit Lu 🐻🧠</title>
-<meta name="description" content="Punya Akuntan AI Pribadi yang ngatur duit lu — pelajari pola keuangan, kasih insight rutin & saran konkret biar duit lu makin tertata. Powered by Anthropic. Bahasa Indonesia." />
+<title>BerUang – Aplikasi Catat Keuangan dengan AI Akuntan | Gratis 2 Hari</title>
+<meta name="description" content="Aplikasi catat keuangan harian: ketik 'bakso 25rb' langsung tercatat, foto struk, dashboard, hutang piutang, dan AI Akuntan yang menjawab pakai data keuanganmu sendiri. Gratis 2 hari, Bahasa Indonesia." />
 <meta name="theme-color" content="#412b23" />
 <link rel="canonical" href="https://berstock.id/" />
 <link rel="icon" type="image/png" href="assets/icons/beruang-wallet-192.png" />
@@ -139,7 +139,8 @@ nav .nav-cta:hover { background: var(--brown-dark); }
 .hero-phone { display: flex; justify-content: center; }
 .phone-frame { width: 290px; background: var(--ink); border-radius: 40px; padding: 10px; box-shadow: 0 40px 100px rgba(62,45,33,.3); position: relative; }
 .phone-frame::before { content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 90px; height: 22px; background: #1a1a1a; border-radius: 999px; z-index: 2; }
-.phone-screen { background: var(--bg); border-radius: 30px; overflow: hidden; min-height: 580px; position: relative; }
+.phone-screen { background: var(--bg); border-radius: 30px; overflow: hidden; position: relative; aspect-ratio: 9 / 16; }
+.hero-video { width: 100%; height: 100%; display: block; object-fit: cover; }
 .phone-screen img { width: 100%; display: block; }
 
 /* CSS-only mockup inside phone-screen */
@@ -166,7 +167,9 @@ nav .nav-cta:hover { background: var(--brown-dark); }
   .hero-trust { display: inline-flex; font-size: 12px; gap: 12px; }
   .hero h1 { font-size: 34px; }
   .hero p.lead { font-size: 15px; }
-  .hero-phone { display: none; }
+  .hero-phone { display: flex; margin-top: 8px; }
+  .phone-frame { width: 230px; padding: 8px; border-radius: 34px; }
+  .phone-screen { border-radius: 26px; }
 }
 @media (max-width: 480px) {
   .hero h1 { font-size: 28px; line-height: 1.1; }
@@ -300,17 +303,23 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 .suite-showcase::after{content:"";position:absolute;width:300px;height:300px;left:-180px;bottom:-170px;border-radius:50%;border:1px solid rgba(139,90,43,.13);box-shadow:0 0 0 35px rgba(139,90,43,.04),0 0 0 70px rgba(139,90,43,.025)}
 .suite-showcase .container{position:relative;z-index:1}.suite-kicker{color:var(--brown);font-size:11px;font-weight:900;letter-spacing:1.6px;margin-bottom:12px}
 .suite-heading{display:flex;align-items:end;justify-content:space-between;gap:28px;margin-bottom:30px}.suite-heading h2{text-align:left;margin-bottom:9px}.suite-heading p{color:var(--ink-soft);max-width:680px;font-size:15px}.suite-all-link{color:var(--brown-dark);font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;padding-bottom:4px;border-bottom:1px solid rgba(111,69,24,.35)}
-.suite-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.suite-card{position:relative;min-height:300px;display:flex;flex-direction:column;align-items:flex-start;padding:24px;overflow:hidden;border:1px solid rgba(139,90,43,.14);border-radius:22px;background:rgba(255,255,255,.82);color:var(--ink);text-decoration:none;box-shadow:0 14px 35px rgba(65,43,35,.06);transition:transform .25s,border-color .25s,box-shadow .25s}.suite-card:hover{transform:translateY(-7px);border-color:rgba(201,163,82,.65);box-shadow:0 22px 50px rgba(65,43,35,.13)}
+.suite-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.suite-card{position:relative;min-height:300px;display:flex;flex-direction:column;align-items:flex-start;padding:24px;overflow:hidden;border:1px solid rgba(139,90,43,.14);border-radius:22px;background:rgba(255,255,255,.82);color:var(--ink);text-decoration:none;box-shadow:0 14px 35px rgba(65,43,35,.06);transition:transform .25s,border-color .25s,box-shadow .25s}.suite-card:hover{transform:translateY(-7px);border-color:rgba(201,163,82,.65);box-shadow:0 22px 50px rgba(65,43,35,.13)}
 .suite-card--featured{background:linear-gradient(155deg,#fffdf9 15%,#f5e4c5 100%)}.suite-card--neural{background:linear-gradient(155deg,#171028,#2d1950);color:#fff;border-color:rgba(168,85,247,.28)}.suite-card--neural p{color:rgba(255,255,255,.7)}
 .suite-icon{display:grid;place-items:center;width:58px;height:58px;margin-bottom:28px;border-radius:17px;background:#f3e8d8;font-size:29px;box-shadow:0 8px 20px rgba(65,43,35,.1)}.suite-icon img{width:58px;height:58px;border-radius:17px}.suite-card--neural .suite-icon{background:rgba(168,85,247,.16);color:#d8b4fe;box-shadow:0 0 30px rgba(168,85,247,.22);animation:neural-pulse 2.8s ease-in-out infinite}
 .suite-status{display:inline-flex;padding:5px 8px;margin-bottom:11px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.45px;text-transform:uppercase}.suite-status--live{color:#127149;background:#e5f7ed}.suite-status--trial{color:#8a6214;background:#fff0c6}.suite-status--info{color:#596170;background:#e9edf2}.suite-status--demo{color:#d8b4fe;background:rgba(168,85,247,.16)}
 .suite-card h3{font-size:21px;margin-bottom:8px}.suite-card p{color:var(--ink-soft);font-size:13px;line-height:1.6;margin-bottom:22px}.suite-action{margin-top:auto;font-size:12px;font-weight:800}.suite-action b{display:inline-block;margin-left:4px;transition:transform .2s}.suite-card:hover .suite-action b{transform:translateX(4px)}
 .suite-orbit{position:absolute;width:120px;height:120px;right:-45px;top:-45px;border:1px solid rgba(201,163,82,.35);border-radius:50%;animation:suite-spin 11s linear infinite}.suite-orbit::after{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold-bright);top:53px;left:-4px;box-shadow:0 0 13px rgba(212,175,55,.8)}.suite-disclaimer{margin-top:18px;color:var(--ink-soft);font-size:11px}
 @keyframes suite-spin{to{transform:rotate(360deg)}}@keyframes neural-pulse{50%{transform:scale(1.06);box-shadow:0 0 42px rgba(168,85,247,.4)}}@keyframes suite-glow{to{transform:translate(-25px,22px) scale(1.1)}}
-@media(max-width:768px){.suite-showcase{padding:58px 0}.suite-heading{display:block}.suite-all-link{display:inline-block;margin-top:14px}.suite-grid{grid-template-columns:1fr 1fr}.suite-card{min-height:270px;padding:20px}}
+@media(max-width:768px){.suite-showcase{padding:40px 0}.suite-card{min-height:0 !important;padding:16px !important}.suite-card p{font-size:12px;line-height:1.45}.suite-card h3{font-size:16px}.suite-heading{display:block}.suite-all-link{display:inline-block;margin-top:14px}.suite-grid{grid-template-columns:1fr 1fr}.suite-card{min-height:270px;padding:20px}}
 @media(max-width:480px){nav .suite-all-link{display:none}.suite-grid{grid-template-columns:1fr}.suite-card{min-height:235px}.suite-icon{margin-bottom:20px}}
 @media(prefers-reduced-motion:reduce){.suite-showcase::before,.suite-orbit,.suite-card--neural .suite-icon{animation:none!important}.suite-card,.suite-action b{transition:none!important}}
 
+/* Sticky CTA (HP): muncul setelah scroll, biar tombol download selalu di jangkauan jempol */
+.sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: rgba(251,246,238,.96); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: none; transform: translateY(110%); transition: transform .25s; }
+.sticky-cta.show { transform: translateY(0); }
+.sticky-cta a { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ink); color: #fff; border-radius: 12px; padding: 13px; font-weight: 800; text-decoration: none; font-size: 15px; }
+.sticky-cta small { display: block; font-size: 11px; font-weight: 500; opacity: .75; }
+@media (max-width: 900px) { .sticky-cta { display: block; padding-right: 84px; } body.has-sticky { padding-bottom: 76px; } }
 </style>
 </head>
 <body>
@@ -379,7 +388,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       <div class="hero-badge"><span class="dot"></span> 🧠 POWERED BY AI ANTHROPIC</div>
       <h1>Punya <span class="grad">Akuntan AI Pribadi</span><br>yang Ngatur Duit Lu.</h1>
       <p class="lead">
-        Bukan cuma catat. <strong>Akuntan AI BerUang pelajari pola keuangan lu, kasih insight rutin, dan saran konkret biar duit lu makin tertata.</strong> Tinggal chat — semua kepantau otomatis. <strong>Bahasa Indonesia, kapan aja.</strong>
+        Ketik <strong>"bakso 25rb"</strong> — langsung tercatat, kategori otomatis. Lalu tanya <strong>"bulan ini aku boros di mana?"</strong> dan AI Akuntan jawab pakai angka dari catatan lu sendiri. <strong>Bahasa Indonesia, 3 detik per transaksi.</strong>
       </p>
       <div class="cta-row">
         <a href="https://play.google.com/store/apps/details?id=id.berstock.beruang" target="_blank" rel="noopener" class="playstore-badge" onclick="if(window.gtag)gtag('event','hero_play_store');" aria-label="Get it on Google Play">
@@ -405,14 +414,14 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
             <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
           </svg>
           <span class="ios-text">
-            <span class="ios-small">DOWNLOAD ON THE</span>
-            <span class="ios-big">App Store</span>
+            <span class="ios-small">PAKAI DI</span>
+            <span class="ios-big">iPhone · via Safari</span>
           </span>
         </a>
       </div>
       <div class="ios-note">
         <span class="ios-note-ic">💡</span>
-        <span><b>iOS:</b> belum di App Store, tapi bisa install langsung dari Safari (Add to Home Screen) — <b>kayak install APK</b>, gratis. <b>Tap badge App Store</b> buat panduan 30 detik.</span>
+        <span><b>iPhone:</b> belum ada di App Store. Buka lewat Safari lalu <b>Add to Home Screen</b> — jadi ikon di layar utama <b>kayak install APK</b>, gratis. Tap tombol iPhone untuk panduan 30 detik.</span>
       </div>
       <div class="hero-trust">
         <span><span class="ic">✓</span> Gratis 2 hari, tanpa kartu</span>
@@ -422,81 +431,26 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
     </div>
     <div class="hero-phone">
       <div class="phone-frame">
-        <div class="phone-screen mock-screen">
-          <div class="mock-topbar">
-            <span class="mock-time">9:41</span>
-            <span class="mock-icons">●●● 5G</span>
-          </div>
-          <div class="mock-header">
-            <div class="mock-logo-circle">🐻</div>
-            <div>
-              <div class="mock-greet">Halo, Bos!</div>
-              <div class="mock-sub">Beruang AI siap bantu</div>
-            </div>
-          </div>
-          <div class="mock-balance">
-            <div class="mock-label">Sisa Bulan Ini</div>
-            <div class="mock-amount">Rp 3.270.000</div>
-            <div class="mock-trend">↑ Pemasukan 8.5jt · ↓ Keluar 5.2jt</div>
-          </div>
-          <div class="mock-chat-bubble user">bakso 45rb</div>
-          <div class="mock-chat-bubble ai">
-            <b>Beruang AI:</b> ✓ Tercatat<br>
-            <span style="opacity:.7;">Rp 45.000 · 🍜 Makanan</span>
-          </div>
-          <div class="mock-chat-bubble user">📸 [struk Indomaret]</div>
-          <div class="mock-chat-bubble ai">
-            <b>AI Vision:</b> Total Rp 87.500<br>
-            <span style="opacity:.7;">5 items · 28 Mei</span>
-          </div>
+        <div class="phone-screen">
+          <video class="hero-video" src="beruang-cara-pakai.mp4" poster="assets/hero-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Demo BerUang: ketik transaksi, langsung tercatat"></video>
         </div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ============ COBA EKOSISTEM ============ -->
-<section class="suite-showcase" id="coba-aplikasi">
-  <div class="container">
-    <div class="suite-kicker">SATU EKOSISTEM · PILIH SESUAI KEBUTUHAN</div>
-    <div class="suite-heading">
-      <div>
-        <h2>Coba Langsung dari <span class="grad">Berstock.id</span></h2>
-        <p>Mulai dari keuangan pribadi sampai operasional bisnis. Setiap kartu menjelaskan status produknya supaya kamu tahu mana aplikasi aktif dan mana demo.</p>
-      </div>
-      <a class="suite-all-link" href="bersatu.html">Lihat ekosistem lengkap →</a>
-    </div>
-    <div class="suite-grid">
-      <a class="suite-card suite-card--featured" href="app.html">
-        <span class="suite-orbit" aria-hidden="true"></span><span class="suite-icon"><img src="assets/icons/beruang-wallet-192.png" alt="" /></span>
-        <span class="suite-status suite-status--live">Aplikasi aktif</span><h3>BerUang</h3><p>Catat pemasukan dan pengeluaran, lihat dashboard, lalu akses data yang sama saat masuk dengan akunmu.</p><span class="suite-action">Buka BerUang <b>→</b></span>
-      </a>
-      <a class="suite-card" href="tokountung/app.html">
-        <span class="suite-icon">🏪</span><span class="suite-status suite-status--trial">Trial 3 hari</span><h3>BerBisnis</h3><p>Kasir, stok, pelanggan, piutang, laporan, dan profit untuk operasional UMKM.</p><span class="suite-action">Coba BerBisnis <b>→</b></span>
-      </a>
-      <a class="suite-card" href="landing-berstock.html">
-        <span class="suite-icon">🤖</span><span class="suite-status suite-status--info">Info produk</span><h3>Berstock AI</h3><p>Kenali konsep asisten stok dan laporan bisnis melalui Telegram sebelum meminta aktivasi.</p><span class="suite-action">Lihat Berstock AI <b>→</b></span>
-      </a>
-      <a class="suite-card suite-card--neural" href="bersatu-demo.html">
-        <span class="suite-icon">✦</span><span class="suite-status suite-status--demo">Demo interaktif</span><h3>BerSatu</h3><p>Jelajahi visual command center dan peran enam agen bisnis dalam satu demo.</p><span class="suite-action">Jalankan demo <b>→</b></span>
-      </a>
-    </div>
-    <p class="suite-disclaimer">Demo interaktif menunjukkan konsep produk dan tidak menjalankan transaksi atau keputusan bisnis sungguhan.</p>
-  </div>
-</section>
-
 <!-- ============ AI HIGHLIGHT (DARK) ============ -->
 <section class="section ai-section">
   <div class="container">
     <div class="ai-tag">🧠 AI ENGINE · POWERED BY ANTHROPIC</div>
     <h2>Bukan Aplikasi Catat Biasa.<br><span class="grad">Ini AI Akuntan Pribadi Lu.</span></h2>
-    <p class="subtitle">BerUang punya AI yang baca, pelajari, dan ngerti pola keuangan lu. Makin sering dipake, makin pintar.</p>
+    <p class="subtitle">AI Akuntan BerUang baca ringkasan catatan lu (sampai 6 bulan terakhir) dan jawab pakai angka nyata — bukan jawaban umum dari internet.</p>
 
     <div class="ai-grid">
       <div class="ai-card">
         <div class="ai-ic">🧠</div>
-        <h3>Belajar pola lu, auto-kategori</h3>
-        <p>Pertama kali "bakso 45rb" lu input → AI tau itu <b>Makanan</b>. Bulan depan lu ketik "warung mie 30rb" → langsung masuk Makanan, tanpa perlu setting. AI ngapal dari kebiasaan lu.</p>
+        <h3>Kategori otomatis, tanpa setting</h3>
+        <p>Ketik "bakso 45rb" → langsung masuk <b>Makanan</b>. "grab 22rb" → Transportasi. Ratusan kata sehari-hari orang Indonesia sudah dikenali; kalau meleset, tinggal koreksi sekali tap.</p>
         <div class="ai-demo">
           <div class="ai-row"><span class="ai-q">"warung mie 30rb"</span><span class="ai-arrow">→</span></div>
           <div class="ai-row"><span class="ai-a">Rp 30.000 · 🍜 Makanan · <em>(belajar dari bakso 45rb)</em></span></div>
@@ -505,8 +459,8 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 
       <div class="ai-card">
         <div class="ai-ic">📸</div>
-        <h3>AI Vision baca struk</h3>
-        <p>Jepret struk Indomaret, restoran, atau invoice — AI vision ekstrak total, nama toko, tanggal, dan item-item-nya. Bukan OCR text biasa, ini AI yang ngerti konteks struk.</p>
+        <h3>Foto struk, langsung terbaca</h3>
+        <p>Jepret struk Indomaret atau restoran — total dan tanggal terbaca otomatis, tinggal konfirmasi. Kirim lewat bot Telegram, AI juga baca nama toko dan item-itemnya.</p>
         <div class="ai-demo">
           <div class="ai-row"><span class="ai-q">📸 [foto struk Indomaret]</span><span class="ai-arrow">→</span></div>
           <div class="ai-row"><span class="ai-a">Rp 87.500 · 🛒 Belanja · 28 Mei · 5 items</span></div>
@@ -515,10 +469,10 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 
       <div class="ai-card">
         <div class="ai-ic">💡</div>
-        <h3>Insight bulanan dari pola lu</h3>
-        <p>Akhir bulan AI kirim summary <em>real</em>: bukan cuma angka, tapi observasi. "Bos, makanan naik 35% dari bulan lalu. Mostly dari Gojek Food." Bisa kasih saran budget juga.</p>
+        <h3>Laporan Beruang tiap minggu</h3>
+        <p>Ketik <b>/laporan</b> di bot Telegram → rekap minggu ini vs minggu lalu, kategori terbesar, dan 1 saran hemat dari AI. Mau dikirim otomatis tiap Minggu malam? Ketik <b>/laporan on</b>.</p>
         <div class="ai-demo">
-          <div class="ai-row ai-insight"><b>🐻 Beruang AI:</b> "Bos, bulan ini makanan Rp 4.2jt — naik 35% vs April. 60% dari delivery online. Mau set budget Rp 3jt buat Juni?"</div>
+          <div class="ai-row ai-insight"><b>🐻 Beruang AI:</b> "Bos, minggu ini keluar Rp 1.240.000, naik 18% vs minggu lalu — penyebabnya kopi 6x (Rp 210rb). Tahan jadi 3x, target bulan ini aman."</div>
         </div>
       </div>
 
@@ -602,7 +556,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
       <div class="feature-card">
         <div class="ic">📸</div>
         <h3>Foto struk, auto-baca</h3>
-        <p>Jepret struk Indomaret/restoran — AI vision baca total, nama toko, dan tanggal otomatis. Tinggal konfirm, masuk dashboard.</p>
+        <p>Jepret struk Indomaret/restoran — total dan tanggal terbaca otomatis, tinggal konfirm, masuk dashboard. Lewat Telegram, AI baca nama toko dan item.</p>
         <div class="feat-preview">
           <div class="label">Auto-detected</div>
           Total: <b style="color:var(--green)">Rp 87.500</b> · Indomaret · 28 Mei
@@ -667,7 +621,7 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
         <ul>
           <li>Akuntan AI dengan batas penggunaan harian</li>
           <li>Bot Telegram + reminder tagihan</li>
-          <li>Foto struk AI Vision</li>
+          <li>Foto struk auto-baca (Telegram: AI baca item)</li>
           <li>Cloud sync multi-device</li>
           <li>Hutang & Piutang tracking</li>
           <li>Dashboard + insight bulanan</li>
@@ -740,6 +694,32 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
 </section>
 
 <!-- ============ FINAL CTA ============ -->
+<!-- ============ COBA EKOSISTEM ============ -->
+<section class="suite-showcase" id="coba-aplikasi">
+  <div class="container">
+    <div class="suite-kicker">SATU EKOSISTEM · PILIH SESUAI KEBUTUHAN</div>
+    <div class="suite-heading">
+      <div>
+        <h2>Produk Lain dari <span class="grad">Berstock.id</span></h2>
+        <p>Punya usaha? Kasir &amp; stok ada di BerBisnis. Setiap kartu menyebut statusnya: aplikasi aktif atau demo.</p>
+      </div>
+      <a class="suite-all-link" href="bersatu.html">Lihat ekosistem lengkap →</a>
+    </div>
+    <div class="suite-grid">
+      <a class="suite-card" href="tokountung/app.html">
+        <span class="suite-icon">🏪</span><span class="suite-status suite-status--trial">Trial 3 hari</span><h3>BerBisnis</h3><p>Kasir, stok, pelanggan, piutang, laporan, dan profit untuk operasional UMKM.</p><span class="suite-action">Coba BerBisnis <b>→</b></span>
+      </a>
+      <a class="suite-card" href="landing-berstock.html">
+        <span class="suite-icon">🤖</span><span class="suite-status suite-status--info">Info produk</span><h3>Berstock AI</h3><p>Kenali konsep asisten stok dan laporan bisnis melalui Telegram sebelum meminta aktivasi.</p><span class="suite-action">Lihat Berstock AI <b>→</b></span>
+      </a>
+      <a class="suite-card suite-card--neural" href="bersatu-demo.html">
+        <span class="suite-icon">✦</span><span class="suite-status suite-status--demo">Demo interaktif</span><h3>BerSatu</h3><p>Jelajahi visual command center dan peran enam agen bisnis dalam satu demo.</p><span class="suite-action">Jalankan demo <b>→</b></span>
+      </a>
+    </div>
+    <p class="suite-disclaimer">Demo interaktif menunjukkan konsep produk dan tidak menjalankan transaksi atau keputusan bisnis sungguhan.</p>
+  </div>
+</section>
+
 <section class="final-cta">
   <div class="container">
     <h2>Mulai Catet, Mulai Ber-Uang 🐻</h2>
@@ -768,8 +748,8 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
           <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
         </svg>
         <span class="ios-text">
-          <span class="ios-small">DOWNLOAD ON THE</span>
-          <span class="ios-big">App Store</span>
+          <span class="ios-small">PAKAI DI</span>
+          <span class="ios-big">iPhone · via Safari</span>
         </span>
       </a>
     </div>
@@ -816,7 +796,19 @@ footer .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px sol
   </div>
 </footer>
 
+<div class="sticky-cta" id="sticky-cta">
+  <a href="https://play.google.com/store/apps/details?id=id.berstock.beruang" target="_blank" rel="noopener" onclick="if(window.gtag)gtag('event','sticky_play_store');">
+    <span>📲 Download BerUang · Gratis 2 hari</span>
+  </a>
+</div>
 <script>
+  // Sticky CTA: tampil setelah user scroll lewat hero (HP saja, via CSS)
+  (function() {
+    var bar = document.getElementById('sticky-cta'); if (!bar) return;
+    document.body.classList.add('has-sticky');
+    function onScroll() { bar.classList.toggle('show', window.scrollY > 560); }
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  })();
   // Modal install iOS — close handler (X, background click, ESC) — selalu attach
   (function() {
     var modal = document.getElementById('ios-install-modal');

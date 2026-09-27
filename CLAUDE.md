@@ -126,6 +126,16 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   mode test 5 nomor tanpa verifikasi. Biaya: user-initiated 24 jam GRATIS, pesan proaktif (laporan) ~Rp300–500.
   KEPUTUSAN BOS: DITUNDA ("nomor WA nanti dulu"). Prioritas: kunci Google Play → saldo AI → build 1.4.1.
 
+- 🏠 27 Sep: HOMEPAGE index.html dirapikan (audit LP): (1) klaim AI palsu dihapus — "pelajari/ngapal pola", "AI Vision"
+  di app, "insight bulanan otomatis" → diganti jujur (kategori = kata kunci; OCR di app; AI vision hanya Telegram;
+  Laporan Beruang mingguan opt-in). (2) Hero: video demo asli `beruang-cara-pakai.mp4` autoplay-muted di phone frame
+  (poster `assets/hero-poster.jpg`), tampil juga di HP. (3) Badge "App Store" (menyesatkan, melanggar guideline Apple)
+  → tombol "Pakai di iPhone · via Safari" (id tetap → modal iOS masih jalan). (4) Section ekosistem BerBisnis/Berstock/
+  BerSatu dipindah dari posisi ke-2 ke sebelum final CTA, judul "Produk Lain", kartu BerUang dihapus, dipadatkan di HP.
+  (5) Sticky CTA bawah (HP, muncul setelah scroll 560px, padding kanan biar tak tabrak chat widget). (6) <title>/meta
+  SEO: "BerUang – Aplikasi Catat Keuangan dengan AI Akuntan | Gratis 2 Hari". Nada "lu/gue" DIBIARKAN (menunggu bos).
+  Belum: social proof (tunggu ≥5 ulasan Play), FAQ di index.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
