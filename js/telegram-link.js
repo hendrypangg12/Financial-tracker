@@ -128,7 +128,7 @@ function renderTgModal() {
         🔔 <b>Bonus:</b> Tagihan rutin (kost/cicilan/langganan) yang kamu input di app akan otomatis dapat <b>notif H-3 &amp; hari H</b> via Telegram. Tap "Udah bayar" — langsung ke-catat.
       </div>
       <div style="background:#fff7e6;border:1px solid #f0d488;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--ink);line-height:1.5">
-        🐻 <b>Laporan Beruang:</b> tiap <b>Minggu malam</b> Beruang Akuntan kirim rekap minggumu + 1 saran hemat langsung ke Telegram (paket berbayar). Ketik <b>/laporan</b> kapan saja untuk rekap terbaru.
+        🐻 <b>Laporan Beruang:</b> ketik <b>/laporan</b> di Telegram untuk rekap minggumu + 1 saran hemat dari Beruang Akuntan (paket berbayar). Mau dikirim otomatis tiap Minggu malam? Ketik <b>/laporan on</b>.
       </div>
       <p style="color:var(--muted);font-size:12px;margin:0 0 14px">Nominal otomatis kebaca (rb = ribu, jt = juta). Foto struk pakai AI vision.</p>
       <div class="modal-actions" style="flex-wrap:wrap;gap:8px">

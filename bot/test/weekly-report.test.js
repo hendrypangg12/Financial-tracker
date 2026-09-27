@@ -58,7 +58,7 @@ test('report without transactions nudges instead of showing zeros', () => {
   assert.match(buildReportMessage(s, null, ''), /Belum ada catatan minggu ini/);
 });
 
-test('sendWeeklyReportFor: paid user gets report even when AI fails; dedupe reserved; free trial refused', async (t) => {
+test('sendWeeklyReportFor: opt-in only; paid user gets report even when AI fails; dedupe; free trial refused', async (t) => {
   const store = new Map();
   const env = {
     BOT_DATA: { get: async (k) => store.get(k) ?? null, put: async (k, v) => store.set(k, v), delete: async (k) => store.delete(k) },
@@ -86,6 +86,8 @@ test('sendWeeklyReportFor: paid user gets report even when AI fails; dedupe rese
   t.after(() => Object.defineProperty(globalThis.crypto, 'subtle', { value: oldSubtle, configurable: true }));
 
   const link = { email: 'budi@example.test', uid: 'uid-budi' };
+  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, {}), 'skipped:not-opted-in'); // default: TIDAK auto
+  store.set('btg_weekly_on:uid-budi', '1');
   const r1 = await sendWeeklyReportFor(env, 'tg-token', '123', link, {});
   assert.equal(r1, 'sent');
   assert.equal(sent.length, 1);
@@ -94,9 +96,9 @@ test('sendWeeklyReportFor: paid user gets report even when AI fails; dedupe rese
   assert.doesNotMatch(sent[0].text, /💡/); // AI gagal → tanpa paragraf insight, laporan tetap terkirim
   assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, {}), 'skipped:already-sent');
 
-  plan = 'free_trial';
+  plan = 'free_trial'; store.set('btg_weekly_on:uid-trial', '1');
   const r3 = await sendWeeklyReportFor(env, 'tg-token', '124', { email: 'trial@example.test', uid: 'uid-trial' }, {});
   assert.equal(r3, 'skipped:not-paid');
-  store.set('btg_weekly_off:uid-budi', '1'); plan = 'monthly';
-  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { force: true }), 'skipped:opt-out');
+  store.delete('btg_weekly_on:uid-budi'); plan = 'monthly';
+  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { force: true }), 'skipped:not-opted-in');
 });

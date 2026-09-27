@@ -117,7 +117,8 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   hanya user BERBAYAR (bukan free_trial) + Telegram tersambung. Ringkasan angka deterministik (minggu ini vs lalu, top
   kategori, transaksi terbesar, MTD vs target) + 1 paragraf insight AI (max 350 token; kalau AI gagal laporan angka
   tetap terkirim). Dedupe KV `btg_weekly:<uid>:<senin>` 14 hari; skip user tanpa catatan 2 minggu. Perintah Telegram:
-  `/laporan` (manual, 1x/hari), `/laporan off|on` (KV `btg_weekly_off:<uid>`). Debug: `/api/beruang-weekly-test?admin_key=&email=&force=1`.
+  `/laporan` (manual, 1x/hari), `/laporan on|off`. 27 Sep KEPUTUSAN BOS: OPT-IN (jaga saldo AI) — cron hanya kirim ke
+  user dengan KV `btg_weekly_on:<uid>` (diset lewat `/laporan on`, hanya paket berbayar). Default: TIDAK otomatis. Debug: `/api/beruang-weekly-test?admin_key=&email=&force=1`.
   `resolveLinkUid()`/`hasPaidAIAccess()` di-export dari beruang.js. Tes: bot/test/weekly-report.test.js (5). telegram-link v6.
 
 - 💬 27 Sep: bos tanya input via WhatsApp → BISA (WhatsApp Business Cloud API resmi; ~80% reuse alur Telegram:

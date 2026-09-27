@@ -127,7 +127,7 @@ export async function handleBeruangWebhook(request, env, ctx) {
       }
       if (/^\/(help|bantuan)\b/i.test(text)) {
         await sendMessage(token, chatId,
-          `Cara pakai 🐻:\n• Ketik transaksi: "kopi 25rb", "gaji 5jt", "grab 30000"\n• 📸 Kirim foto struk → auto-baca total + toko\n• /laporan — rekap mingguan dari Beruang Akuntan (otomatis tiap Minggu malam)\n• /laporan off — berhenti laporan otomatis\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
+          `Cara pakai 🐻:\n• Ketik transaksi: "kopi 25rb", "gaji 5jt", "grab 30000"\n• 📸 Kirim foto struk → auto-baca total + toko\n• /laporan — rekap minggu ini dari Beruang Akuntan\n• /laporan on — kirim otomatis tiap Minggu malam\n• /mulai — hubungkan/ganti akun\n\nNominal otomatis kebaca (rb=ribu, jt=juta).`);
         return;
       }
 
@@ -143,11 +143,15 @@ export async function handleBeruangWebhook(request, env, ctx) {
         const arg = text.replace(/^\/laporan\s*/i, "").trim().toLowerCase();
         const uid = await resolveLinkUid(env, link);
         if (arg === "off" && uid) {
-          await env.BOT_DATA.put("btg_weekly_off:" + uid, "1");
+          await env.BOT_DATA.delete("btg_weekly_on:" + uid);
           await sendMessage(token, chatId, "Oke, laporan mingguan otomatis dimatikan. Ketik /laporan on kalau mau nyala lagi 🐻");
         } else if (arg === "on" && uid) {
-          await env.BOT_DATA.delete("btg_weekly_off:" + uid);
-          await sendMessage(token, chatId, "Sip, laporan mingguan otomatis aktif lagi — tiap Minggu malam 🐻");
+          if (!(await hasPaidAIAccess(env, { ...link, uid }))) {
+            await sendMessage(token, chatId, "Laporan otomatis khusus paket berbayar yang aktif, bos. Aktifkan paket di app BerUang dulu ya 🐻");
+          } else {
+            await env.BOT_DATA.put("btg_weekly_on:" + uid, "1");
+            await sendMessage(token, chatId, "Sip! Tiap Minggu malam aku kirim rekap minggumu + 1 saran hemat ke sini 🐻 Ketik /laporan off kalau mau berhenti.");
+          }
         } else {
           const { sendWeeklyReportFor } = await import("./weekly-report.js");
           await sendWeeklyReportFor(env, token, chatId, link, { manual: true });

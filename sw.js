@@ -27,7 +27,7 @@ const CORE = [
   './js/hutang.js?v=2',
   './js/ai-advisor.js?v=12',
   './js/recurring.js?v=2',
-  './js/telegram-link.js?v=6',
+  './js/telegram-link.js?v=7',
   './js/onboarding.js?v=7',
 ];
 

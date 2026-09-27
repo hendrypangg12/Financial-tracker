@@ -3,6 +3,7 @@
 // service account, jadi tidak perlu push data tambahan dari aplikasi.
 // Ringkasan angka dihitung deterministik di sini; AI hanya menulis 1 paragraf insight.
 // Kalau AI gagal (kredit habis, timeout), laporan angka tetap terkirim — user tidak dapat pesan kosong.
+// OPT-IN (keputusan bos 27 Sep, jaga saldo AI): laporan otomatis hanya untuk user yang ketik /laporan on.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { sendMessage } from "./telegram.js";
@@ -112,7 +113,7 @@ export function buildReportMessage(s, insight, userName) {
     lines.push(``, `📅 Bulan ini: keluar ${fmt(s.mtdExpense)}`);
   }
   if (insight) lines.push(``, `💡 ${esc(insight.trim())}`);
-  lines.push(``, `<i>Catat terus ya, ${name}. Ketik /laporan kapan saja untuk rekap terbaru · /laporan off untuk berhenti.</i>`);
+  lines.push(``, `<i>Catat terus ya, ${name}. Ketik /laporan kapan saja · /laporan on = kirim otomatis tiap Minggu malam · /laporan off = berhenti.</i>`);
   return lines.join("\n");
 }
 
@@ -144,7 +145,7 @@ async function getAIInsight(env, s) {
 export async function sendWeeklyReportFor(env, token, chatId, link, { force = false, manual = false } = {}) {
   const uid = await resolveLinkUid(env, link);
   if (!uid) return "skipped:no-uid";
-  if (!manual && await env.BOT_DATA.get("btg_weekly_off:" + uid)) return "skipped:opt-out";
+  if (!manual && !(await env.BOT_DATA.get("btg_weekly_on:" + uid))) return "skipped:not-opted-in";
   if (!(await hasPaidAIAccess(env, { ...link, uid }))) {
     if (manual) await sendMessage(token, chatId, "Laporan Beruang mingguan khusus paket berbayar yang aktif, bos. Aktifkan paket di app BerUang (mulai Rp 10rb) ya 🐻", { parse_mode: "HTML" });
     return "skipped:not-paid";
