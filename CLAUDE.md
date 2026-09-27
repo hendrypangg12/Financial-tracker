@@ -161,6 +161,25 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   lewat jatuh tempo, progres target (`renderPlanHub()` di js/pages.js). (7) Form: Kategori dulu lalu Sub Kategori
   (`fillFormSubsForKategori()`), tombol foto struk warna brand. app v57, pages v23, dashboard v33, anomaly v3, styles v54, SW v62.
 
+- 📈 27 Sep: 3 FITUR PENJUALAN (permintaan bos):
+  (1) CORONG PENJUALAN ANONIM (bukan Google Analytics — privacy.html menjanjikan app Android tanpa GA):
+  `js/metrics.js` `trackOnce(event)` → POST `/api/metric` (butuh login) → `bot/src/metrics.js` increment atomik Firestore
+  `metrics/day-YYYY-MM-DD` {event, event__android}; dedupe per user via `metricsSeen/<sha256(uid:event)>` (precondition
+  exists:false). Hanya user yang DAFTAR mulai 27 Sep 2026 (creationTime) yang dihitung. Event: signup, first_tx, tx5, returned,
+  guide_done, ai_open, ai_locked, ai_ask, paywall_view, checkout_click, paid, review_prompt. Admin lihat di Admin Panel →
+  "📈 Corong Penjualan" (GET `/api/metrics?days=` khusus custom claim admin; `requireUser()` sekarang mengembalikan `claims`).
+  privacy.html ditambah paragraf "Hitungan pemakaian anonim". ⚠️ Bos: Play Console Data safety → tambah "App activity /
+  App interactions" (tidak ditautkan, untuk analitik) saat upload build 1.4.1.
+  (2) RATING PLAY STORE DALAM APP: plugin `@capacitor-community/in-app-review@8.0.0` (Capacitor 8), `window.maybeAskReview()`
+  di mobile/src/runtime.js dipanggil 1,5 dtk setelah transaksi disimpan. Syarat: ≥10 transaksi asli (Saldo Awal tidak dihitung),
+  ≥3 hari sejak pertama buka, maks 1x/120 hari, tidak di paywall. Tidak ada pertanyaan "suka/tidak" dulu (dilarang Google).
+  Build WAJIB `pnpm sync` (stage + cap sync) supaya plugin & path Gradle ter-generate di laptop bos.
+  (3) PANDUAN "MULAI DI SINI" di dashboard (`renderStartGuide()` js/dashboard.js), menggantikan welcome banner:
+  3 langkah (transaksi pertama → kenalan AI Akuntan → sambungkan Telegram), progres, bisa ditutup, hilang kalau selesai
+  atau user lama (≥30 transaksi). Onboarding "Setup Dana Awal" tetap.
+  Versi: app v58, dashboard v34, storage v25, ai-advisor v13, admin v22, metrics v1, styles v55, SW v63.
+  Worker ter-deploy otomatis (push bot/**); metrics butuh FIREBASE_SERVICE_ACCOUNT_JSON (sudah ada di akun icloud).
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

@@ -65,6 +65,7 @@ function addTransaction(t) {
   t.id = t.id || uid();
   state.transactions.push(t);
   saveState();
+  if (typeof trackTxMilestones === 'function') trackTxMilestones();
 }
 
 function updateTransaction(id, patch) {

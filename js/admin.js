@@ -116,6 +116,7 @@ async function renderAdmin() {
     return;
   }
   root.innerHTML = '<div class="empty">⏳ Memuat data customer…</div>';
+  renderAdminFunnel(30);
   const users = await loadAllUsers();
   renderAdminUsers(users);
 }
@@ -290,4 +291,51 @@ function customConfirm(title, message, okText = 'OK') {
     document.getElementById('ac-cancel').onclick = () => close(false);
     modal.onclick = (e) => { if (e.target === modal) close(false); };
   });
+}
+
+// Corong penjualan (hitungan anonim dari /api/metrics, hanya user yang daftar mulai 27 Sep 2026)
+const FUNNEL_STEPS = [
+  ['signup', 'Daftar (uji coba gratis)'],
+  ['first_tx', 'Catat transaksi pertama'],
+  ['tx5', 'Sudah 5 transaksi'],
+  ['returned', 'Kembali di hari lain'],
+  ['ai_locked', 'User uji coba mencoba AI (terkunci)'],
+  ['paywall_view', 'Lihat layar paket'],
+  ['checkout_click', 'Tekan salah satu paket'],
+  ['paid', 'Bayar (paket aktif)'],
+  ['ai_ask', 'Tanya AI (berbayar)'],
+  ['guide_done', 'Selesai 3 langkah panduan'],
+  ['review_prompt', 'Diminta rating Play Store'],
+];
+async function renderAdminFunnel(days) {
+  const box = document.getElementById('admin-funnel');
+  if (!box) return;
+  box.innerHTML = '<div class="empty">⏳ Memuat corong penjualan…</div>';
+  try {
+    const res = await fetch('https://berstock-bot.hendrypangg12.workers.dev/api/metrics?days=' + days, { headers: await authenticatedHeaders() });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal memuat');
+    const base = data.totals.signup || 0;
+    const rows = FUNNEL_STEPS.map(([key, label]) => {
+      const n = data.totals[key] || 0;
+      const pct = base ? Math.round(n / base * 100) : 0;
+      const android = data.bySource.android[key] || 0;
+      return `<tr><td>${label}</td><td class="num"><b>${n}</b></td><td class="num">${base ? pct + '%' : '—'}</td><td class="num">${android}</td></tr>`;
+    }).join('');
+    box.innerHTML = `
+      <div class="panel-head">
+        <h3>📈 Corong Penjualan</h3>
+        <select id="admin-funnel-days" aria-label="Periode">
+          ${[7, 30, 90].map(d => `<option value="${d}" ${d === days ? 'selected' : ''}>${d} hari</option>`).join('')}
+        </select>
+      </div>
+      <small style="color:var(--ink-soft);display:block;margin-bottom:8px;">Jumlah user baru (daftar mulai 27 Sep 2026) yang mencapai tiap langkah. Anonim, tiap user dihitung sekali.</small>
+      <table class="rekap-table admin-funnel-table">
+        <thead><tr><th>Langkah</th><th class="num">User</th><th class="num">% dari daftar</th><th class="num">Android</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    document.getElementById('admin-funnel-days').onchange = (e) => renderAdminFunnel(Number(e.target.value));
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Corong belum bisa dimuat: ${e.message}</div>`;
+  }
 }

@@ -18,7 +18,9 @@ export async function requireUser(request, env) {
   if (!response.ok) throw new HttpError(401, 'Sesi tidak valid. Silakan login kembali.');
   const account = (await response.json()).users?.[0];
   if (!account?.localId || account.disabled) throw new HttpError(401, 'Akun tidak aktif.');
-  return { uid: account.localId, email: account.email || '', token };
+  let claims = {};
+  try { claims = JSON.parse(account.customAttributes || '{}') || {}; } catch {}
+  return { uid: account.localId, email: account.email || '', token, claims };
 }
 
 // AI hanya untuk paket berbayar: uji coba gratis (free_trial) tidak termasuk AI.

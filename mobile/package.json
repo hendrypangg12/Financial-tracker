@@ -12,6 +12,7 @@
     "ios:scaffold": "cap add ios"
   },
   "dependencies": {
+    "@capacitor-community/in-app-review": "8.0.0",
     "@capacitor-firebase/authentication": "8.5.2",
     "@capacitor/android": "8.5.2",
     "@capacitor/core": "8.5.2",

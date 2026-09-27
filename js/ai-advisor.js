@@ -82,7 +82,16 @@ function showAIFab() {
   if (fab) fab.hidden = false;
 }
 
+function markGuideAI() {
+  try {
+    const uid = (typeof currentUser !== "undefined" && currentUser?.uid) || "local";
+    localStorage.setItem("beruang-guide-ai:" + uid, "1");
+  } catch (_) {}
+}
+
 function openAIChat() {
+  markGuideAI();
+  if (typeof trackOnce === "function") trackOnce("ai_open");
   document.getElementById("ai-chat-overlay").hidden = false;
   document.getElementById("ai-chat-panel").hidden = false;
   // NOTE: visualViewport listener di-disable — bikin layout broken di iOS Safari.
@@ -96,6 +105,8 @@ function closeAIChat() {
 }
 
 function openPaywall() {
+  markGuideAI();
+  if (typeof trackOnce === "function") trackOnce("ai_locked");
   const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
   const sub = document.querySelector("#ai-paywall-modal .ai-paywall-sub");
   if (sub) {
@@ -149,6 +160,7 @@ async function sendQuestion(question) {
 
     if (data.reply) {
       appendBubble(data.reply, "bot");
+      if (res.ok && typeof trackOnce === "function") trackOnce("ai_ask");
     } else if (data.error) {
       appendBubble(`Bos, ada error: ${data.error}. Coba lagi ya 🐻`, "bot");
     } else {

@@ -15,6 +15,70 @@ function renderGreeting() {
   el.innerHTML = `Halo, <b>${escapeHtmlDash(nama)}</b> 👋`;
 }
 
+// Panduan 3 langkah untuk user baru (menggantikan banner selamat datang).
+function guideUid() {
+  return (typeof currentUser !== 'undefined' && currentUser?.uid) || 'local';
+}
+function renderStartGuide() {
+  const el = document.getElementById('start-guide');
+  if (!el) return;
+  const uid = guideUid();
+  let dismissed = false, aiSeen = false;
+  try {
+    dismissed = localStorage.getItem('beruang-guide-dismissed:' + uid) === '1';
+    aiSeen = localStorage.getItem('beruang-guide-ai:' + uid) === '1';
+  } catch (_) {}
+  const realTx = (state.transactions || []).filter(t => t.kategori !== 'Saldo Awal').length;
+  const aiPaid = typeof hasAIAccess === 'function' && typeof currentProfile !== 'undefined' && hasAIAccess(currentProfile);
+  const steps = [
+    { id: 'tx', done: realTx > 0, title: 'Catat transaksi pertama', desc: 'Cukup ketik, misalnya "bakso 25rb"' },
+    { id: 'ai', done: aiSeen, title: aiPaid ? 'Tanya AI Akuntan' : 'Kenalan dengan AI Akuntan',
+      desc: aiPaid ? 'Coba: "Bulan ini aku boros di mana?"' : 'Asisten keuangan pribadi, di paket berbayar' },
+    { id: 'tg', done: typeof tgIsLinked === 'function' && tgIsLinked(), title: 'Sambungkan Telegram',
+      desc: 'Catat lewat chat + pengingat tagihan' },
+  ];
+  const doneCount = steps.filter(s => s.done).length;
+  if (doneCount === steps.length && typeof trackOnce === 'function') trackOnce('guide_done');
+  // User lama (sudah banyak catatan) tidak perlu panduan.
+  if (dismissed || doneCount === steps.length || realTx >= 30) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="start-guide-head">
+      <div><b>Mulai di sini</b><span>${doneCount} dari ${steps.length} selesai</span></div>
+      <button type="button" class="start-guide-close" aria-label="Tutup panduan">×</button>
+    </div>
+    <div class="start-guide-bar"><i style="width:${Math.round(doneCount / steps.length * 100)}%"></i></div>
+    <ol class="start-guide-steps">
+      ${steps.map((s, i) => `
+        <li class="${s.done ? 'is-done' : ''}">
+          <button type="button" data-guide-step="${s.id}" ${s.done ? 'disabled' : ''}>
+            <span class="start-guide-num">${s.done ? '✓' : i + 1}</span>
+            <span class="start-guide-text"><b>${s.title}</b><small>${s.desc}</small></span>
+            ${s.done ? '' : '<span class="start-guide-go" aria-hidden="true">→</span>'}
+          </button>
+        </li>`).join('')}
+    </ol>`;
+  el.querySelector('.start-guide-close').onclick = () => {
+    try { localStorage.setItem('beruang-guide-dismissed:' + uid, '1'); } catch (_) {}
+    renderDashboard();
+  };
+  el.querySelectorAll('[data-guide-step]').forEach(btn => {
+    btn.onclick = () => {
+      const step = btn.dataset.guideStep;
+      if (step === 'tx') {
+        if (typeof window.switchBeruangTab === 'function') window.switchBeruangTab('tambah');
+        setTimeout(() => document.getElementById('chat-input')?.focus(), 350);
+      } else if (step === 'ai') {
+        const fab = document.getElementById('ai-fab');
+        if (fab) fab.click();
+        setTimeout(renderStartGuide, 300);
+      } else if (step === 'tg' && typeof openTelegramLink === 'function') {
+        openTelegramLink();
+      }
+    };
+  });
+}
+
 // Kartu Aset / Kekayaan (info terpisah, gak ngaruh ke Sisa Saldo cashflow)
 function renderAssets() {
   const el = document.getElementById('dash-assets');
@@ -116,6 +180,8 @@ function renderDashboard() {
 
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
   renderGreeting();
+  renderStartGuide();
+  if (emptyState && !document.getElementById('start-guide')?.hidden) emptyState.hidden = true;
   renderAssets();
   renderHutangSummary();
   if (typeof renderAnomalyBanner === 'function') renderAnomalyBanner();

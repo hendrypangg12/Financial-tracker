@@ -90,3 +90,22 @@ test('bundle contains local frontend only, with payment and admin surfaces exclu
   assert.match(sync,/await window\.saveNativeBackup\(backup/);
   assert.doesNotMatch(sync,/link\.download/);
 });
+test('in-app review asks only after 10 real transactions, 3 days of use, and at most once per 120 days',async()=>{
+  let asked=0;
+  const store={};
+  const {context}=sandbox({InAppReview:{requestReview:async()=>{asked++;}}});
+  context.localStorage={getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=String(v);}};
+  // localStorage dipasang setelah runtime jalan → set waktu buka pertama secara manual
+  const day=86400000;
+  store['beruang-first-open-at']=String(Date.now()-4*day);
+  context.state={transactions:Array.from({length:9},()=>({kategori:'Makan'}))};
+  assert.equal(await context.maybeAskReview(),false);
+  context.state.transactions.push({kategori:'Saldo Awal'});
+  assert.equal(await context.maybeAskReview(),false,'saldo awal tidak dihitung');
+  context.state.transactions.push({kategori:'Transport'});
+  assert.equal(await context.maybeAskReview(),true);
+  assert.equal(asked,1);
+  assert.equal(await context.maybeAskReview(),false,'tidak diminta dua kali');
+  store['beruang-review-asked-at']='0';store['beruang-first-open-at']=String(Date.now()-day);
+  assert.equal(await context.maybeAskReview(),false,'belum 3 hari');
+});

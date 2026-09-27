@@ -204,6 +204,8 @@ function attachEvents() {
       t.recurringMonth = (new Date()).toISOString().slice(0, 7);
     }
     addTransaction(t);
+    // Android: minta rating Play Store di momen positif (aturan & batas ada di mobile runtime)
+    if (typeof window.maybeAskReview === 'function') setTimeout(() => window.maybeAskReview(), 1500);
     showToast(jadikanRutin ? 'Transaksi + tagihan rutin disimpan 🔁' : 'Transaksi ditambahkan', 'success');
     form.reset();
     chooseQuickEntry('pengeluaran', false);
@@ -230,6 +232,8 @@ function attachEvents() {
       return;
     }
     addTransaction(res);
+    // Android: minta rating Play Store di momen positif (aturan & batas ada di mobile runtime)
+    if (typeof window.maybeAskReview === 'function') setTimeout(() => window.maybeAskReview(), 1500);
     appendChat('bot', `✅ Dicatat: <b>${res.jenis}</b> ${formatRupiah(res.jumlah)}<br>${escapeHtml(res.deskripsi)} · ${escapeHtml(res.subKategori)} (${escapeHtml(res.kategori)})${res.alokasi ? ' · ' + escapeHtml(res.alokasi) : ''} · ${formatTanggal(res.tanggal)}`);
     renderAll();
   };
@@ -560,9 +564,8 @@ function loadTesseract() {
 function setupWelcomeBanner() {
   const banner = document.getElementById('welcome-banner');
   if (!banner) return;
-  const dismissed = localStorage.getItem('beruang-welcome-dismissed') === '1';
-  const hasData = state.transactions && state.transactions.length > 0;
-  banner.hidden = dismissed || hasData;
+  // Digantikan panduan "Mulai di sini" di dashboard (renderStartGuide).
+  banner.hidden = true;
   const btn = document.getElementById('btn-dismiss-welcome');
   if (btn) {
     btn.onclick = () => {
@@ -622,6 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadState();
       await loadFromCloud();
       if (currentUser?.uid !== user.uid) return;
+      if (typeof trackSessionMilestones === 'function') trackSessionMilestones(profile);
       // Data dimuat dulu supaya user yang terkunci tetap bisa mengunduh backup dari layar paywall.
       if (isAccessLocked(profile)) {
         stopAutoSync(); stopCloudListener();
@@ -802,6 +806,7 @@ function openPaymentModal(paket) {
   }
   const modal = document.getElementById('payment-modal');
   if (!modal) return;
+  if (typeof trackOnce === 'function') trackOnce('checkout_click');
 
   const amount = cfg.priceIdr;
   const amountFormatted = `Rp ${amount.toLocaleString('id-ID')}`;
@@ -924,6 +929,7 @@ function showScreen(which) {
   const menu = document.getElementById('user-menu');
   if (menu) menu.hidden = which !== 'app';
   if (which === 'paywall') {
+    if (typeof trackOnce === 'function') trackOnce('paywall_view');
     // Isi email user di paywall
     const emailEl = document.getElementById('paywall-email');
     if (emailEl && currentUser) emailEl.textContent = currentUser.email || '—';
