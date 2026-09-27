@@ -2900,3 +2900,112 @@ main { padding-top: 28px; max-width: 1440px; }
   .bottom-nav .bnav-fab { flex: 0 0 54px; }
   .bnav-label { max-width: 100%; overflow: hidden; font-size: 9.5px; text-overflow: ellipsis; }
 }
+
+/* ============================================================
+   UI pass 27 Sep 2026: hierarki dashboard, tambah (chat dulu),
+   transaksi per tanggal, rekap ringkas, rencana dengan angka
+   ============================================================ */
+.dash-greeting { margin: 0 0 4px; font-size: 14px; color: var(--ink-soft); }
+.dash-greeting b { color: var(--ink); }
+#tab-dashboard .page-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+#tab-dashboard .page-filters { display: flex; gap: 6px; width: auto; }
+#tab-dashboard .page-filters label { flex: 0 0 auto; width: auto; }
+#tab-dashboard .page-filters select { width: auto; min-width: 0; padding: 7px 10px; font-size: 13px; border-radius: 10px; }
+.card-balance .card-delta.up { color: #75d89a; }
+.card-balance .card-delta.down { color: #ff9b91; }
+#anomaly-banner:empty { display: none; }
+
+/* Tambah: chat jadi cara utama */
+.chat-panel-hero { margin-bottom: 18px; }
+.chat-examples { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.chat-example {
+  padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
+  background: #faf6ee; color: var(--ink); font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.chat-example:active { transform: scale(.97); background: #f0e6d0; }
+.chat-panel-hero .chat-box { min-height: 0; max-height: 240px; }
+.chat-panel-hero .chat-box:empty { display: none; }
+.quick-entry-caption { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--ink-soft); }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-row-2 label { min-width: 0; }
+.form-row-2 select { width: 100%; min-width: 0; }
+.struk-photo-btn { background: linear-gradient(135deg, #8b5a2b, #6b4423); }
+.struk-gallery-btn { background: #fff; color: var(--primary) !important; border: 1.5px solid #d9c3a0 !important; }
+.struk-gallery-btn:hover, .struk-gallery-btn:active { color: var(--primary) !important; }
+
+/* Transaksi: header tanggal */
+.trx-table tr.trx-date-row td {
+  background: #faf6ee; color: var(--ink-soft); font-size: 12px; font-weight: 700;
+  padding: 8px 12px; border-bottom: 1px solid var(--line);
+}
+.trx-table tr.trx-date-row td { display: table-cell; }
+.trx-table tr.trx-date-row td > span:last-child { float: right; }
+
+/* Rencana: angka di kartu */
+.plan-hub-stat { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 13px; font-weight: 700; }
+.plan-hub-stat:empty { display: none; }
+.plan-hub-muted { color: var(--ink-soft); font-weight: 500; }
+.plan-hub-warn { color: #b45309; }
+.plan-hub-goal { display: flex; flex-direction: column; gap: 5px; width: 100%; color: var(--ink); }
+.plan-hub-bar { display: block; height: 6px; border-radius: 99px; background: #f0e6d6; overflow: hidden; }
+.plan-hub-bar i { display: block; height: 100%; background: var(--primary); border-radius: 99px; }
+
+@media (max-width: 768px) {
+  #tab-dashboard .page-head { flex-direction: row; align-items: center; }
+  #tab-dashboard .page-title h1, #dash-month-label { font-size: 22px; }
+  #tab-dashboard .page-filters { display: flex; width: auto; }
+  .struk-gallery-btn { background: #fff !important; }
+
+  /* Transaksi: baris ringkas per tanggal */
+  .trx-table tr.trx-date-row { display: block; }
+  .trx-table tr.trx-date-row td {
+    display: flex; justify-content: space-between; align-items: baseline;
+    background: transparent; border: none; padding: 14px 4px 6px;
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+  .trx-table tr.trx-date-row td > span:last-child { float: none; text-transform: none; }
+  .trx-table tr.trx-row {
+    grid-template-areas: "desc amount" "meta actions";
+    padding: 10px 12px; margin-bottom: 6px; border-radius: 12px; gap: 2px 10px; align-items: center;
+  }
+  .trx-table tr.trx-row td[data-label="Tanggal"],
+  .trx-table tr.trx-row td[data-label="Jenis"] { display: none; }
+  .trx-table tr.trx-row td[data-label="Sub Kategori"] {
+    display: block; grid-area: meta; font-size: 12px; color: var(--ink-soft);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  }
+  .trx-table tr.trx-row td.trx-desc { font-size: 14px; font-weight: 650; min-width: 0; overflow-wrap: anywhere; }
+  .trx-table tr.trx-row td.trx-amount { font-size: 15px; }
+  .trx-table tr.trx-row td.row-actions { gap: 4px; }
+  .trx-table tr.trx-row td.row-actions .icon-btn { width: 30px; height: 30px; font-size: 12px; background: transparent; border-color: transparent; }
+
+  /* Rekap: kartu per periode, tidak perlu geser tabel */
+  .panel > table.rekap-table { display: block; overflow: visible; }
+  .rekap-table thead { display: none; }
+  .rekap-table tbody { display: block; }
+  .rekap-table tr.rekap-row {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label bal" "inc exp";
+    gap: 2px 10px; padding: 10px 2px; border-bottom: 1px solid var(--line);
+  }
+  .rekap-table tr.rekap-row td { display: block; border: none; padding: 0; text-align: left; }
+  .rekap-table td.rekap-label { grid-area: label; font-weight: 700; color: var(--ink); }
+  .rekap-table td.rekap-bal { grid-area: bal; text-align: right; }
+  .rekap-table td[data-label="Masuk"] { grid-area: inc; font-size: 12px; }
+  .rekap-table td[data-label="Keluar"] { grid-area: exp; font-size: 12px; text-align: right; }
+  .rekap-table td[data-label="Masuk"]::before { content: 'Masuk '; color: var(--ink-soft); }
+  .rekap-table td[data-label="Keluar"]::before { content: 'Keluar '; color: var(--ink-soft); }
+  .rekap-table tr.rekap-row td.rekap-count { display: none; }
+  .rekap-actions .page-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .rekap-actions .page-filters .seg { width: 100%; }
+
+  /* Dashboard: pilihan bulan sudah cukup sebagai judul, kartu jumlah transaksi ada di ringkasan */
+  #tab-dashboard .page-title { display: none; }
+  #tab-dashboard .page-head { margin-bottom: 12px; }
+  #tab-dashboard .card-count { display: none; }
+
+  /* Tambah: tombol pilihan manual jadi 3 kolom ringkas */
+  .quick-entry-chooser { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .quick-entry { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 0; padding: 10px 6px; }
+  .quick-entry small { display: none; }
+  .quick-entry-icon { flex: 0 0 auto; width: 32px; height: 32px; font-size: 19px; }
+}

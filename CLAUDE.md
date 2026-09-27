@@ -150,6 +150,17 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   yang punya anomali. Ditemukan saat render UI dengan data demo. anomaly v2. Catatan render lokal: CDN (jsdelivr/gstatic)
   ERR_CERT_AUTHORITY_INVALID di Chromium headless → pakai page.route ke file lokal (scratchpad/chart.umd.min.js).
 
+- 🎨 27 Sep: UI APP DIRAPIKAN (7 poin, permintaan bos "kerjakan semua sekaligus"):
+  (1) Dashboard: sapaan 1 baris kecil, pilih bulan ringkas (judul bulan disembunyikan di HP), kartu SISA SALDO paling atas
+  dengan "+Rp X bulan ini" (bukan "▲% vs bulan lalu" yang tidak bermakna untuk saldo akumulatif), kartu jumlah transaksi
+  disembunyikan di HP, banner peringatan dipindah ke bawah kartu. (2) Peringatan pengeluaran: label "Perlu dicek" (bukan
+  "Insight AI", karena ini aturan, bukan AI), hanya kategori rutin (≥3 dari 4 minggu) supaya kos/cicilan bulanan tidak
+  dianggap lonjakan, maks 2. (3) Tab Tambah: chat "Cara tercepat: ketik saja" + tombol contoh di paling atas, lalu form,
+  struk, tagihan rutin. (4) Rekap: hanya periode yang ada transaksinya, tampilan kartu di HP. (5) Transaksi: dikelompokkan
+  per tanggal (Hari ini/Kemarin + total harian), baris ringkas. (6) Rencana: kartu menampilkan total hutang/piutang, jumlah
+  lewat jatuh tempo, progres target (`renderPlanHub()` di js/pages.js). (7) Form: Kategori dulu lalu Sub Kategori
+  (`fillFormSubsForKategori()`), tombol foto struk warna brand. app v57, pages v23, dashboard v33, anomaly v3, styles v54, SW v62.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

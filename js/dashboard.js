@@ -12,9 +12,7 @@ function renderGreeting() {
   const nama = (state.userName || '').trim();
   if (!nama) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px;">
-    <span style="font-size:20px;font-weight:800;color:#5d3a1a;">Halo, ${escapeHtmlDash(nama)} 👋</span>
-    <span style="font-size:13px;color:#8a7766;">ini ringkasan keuanganmu</span></div>`;
+  el.innerHTML = `Halo, <b>${escapeHtmlDash(nama)}</b> 👋`;
 }
 
 // Kartu Aset / Kekayaan (info terpisah, gak ngaruh ke Sisa Saldo cashflow)
@@ -131,11 +129,17 @@ function renderDashboard() {
   const balance = balanceThrough(m, y);
   const incomePrev = sumBy(trxPrev, 'pemasukan');
   const expensePrev = sumBy(trxPrev, 'pengeluaran');
-  const balancePrev = balanceThrough(prev.m, prev.y);
 
   setKPIAnimated('kpi-income', income, formatRupiah, pctDelta(income, incomePrev), 'income');
   setKPIAnimated('kpi-expense', expense, (v) => `\u2212${formatRupiah(v)}`, pctDelta(expense, expensePrev), 'expense');
-  setKPIAnimated('kpi-balance', balance, formatRupiah, pctDelta(balance, balancePrev), 'income');
+  setKPIAnimated('kpi-balance', balance, formatRupiah, null, 'income');
+  // Saldo akumulatif tidak cocok dibanding % dengan bulan lalu; tampilkan selisih bulan ini.
+  const balanceDelta = document.getElementById('kpi-balance-delta');
+  if (balanceDelta) {
+    const sign = monthlyNet >= 0 ? '+' : '\u2212';
+    balanceDelta.textContent = `${sign}${formatRupiah(Math.abs(monthlyNet))} bulan ini`;
+    balanceDelta.className = 'card-delta ' + (monthlyNet >= 0 ? 'up' : 'down');
+  }
   setKPIAnimated('kpi-count', trx.length, (v) => String(Math.round(v)), pctDelta(trx.length, trxPrev.length), 'income');
   const balanceEl = document.getElementById('kpi-balance');
   if (balanceEl) balanceEl.style.color = balance >= 0 ? '#75d89a' : '#ff8278';
@@ -172,7 +176,7 @@ function balanceThrough(month, year) {
 function setKPI(id, text, pct, goodDir) {
   document.getElementById(id).textContent = text;
   const delta = document.getElementById(id + '-delta');
-  if (!delta) return;
+  if (!delta || pct == null) return;
   const up = pct >= 0;
   const arrow = up ? '▲' : '▼';
   delta.textContent = `${arrow} ${Math.abs(pct).toFixed(0)}% vs Bulan Lalu`;
@@ -189,7 +193,7 @@ function setKPIAnimated(id, target, formatFn, pct, goodDir) {
     el.textContent = formatFn(target);
   }
   const delta = document.getElementById(id + '-delta');
-  if (!delta) return;
+  if (!delta || pct == null) return;
   const up = pct >= 0;
   const arrow = up ? '▲' : '▼';
   delta.textContent = `${arrow} ${Math.abs(pct).toFixed(0)}% vs Bulan Lalu`;

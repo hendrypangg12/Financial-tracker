@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=53" />
+  <link rel="stylesheet" href="styles.css?v=54" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -279,11 +279,11 @@
           <h1 id="dash-month-label">—</h1>
         </div>
         <div class="page-filters">
-          <label>Pilih Bulan
-            <select id="dash-month"></select>
+          <label><span class="visually-hidden">Pilih Bulan</span>
+            <select id="dash-month" aria-label="Pilih bulan"></select>
           </label>
-          <label>Pilih Tahun
-            <select id="dash-year"></select>
+          <label><span class="visually-hidden">Pilih Tahun</span>
+            <select id="dash-year" aria-label="Pilih tahun"></select>
           </label>
         </div>
       </div>
@@ -299,10 +299,15 @@
         <button class="btn btn-primary" type="button" data-open-tab="tambah">Catat transaksi pertama</button>
       </div>
 
-      <!-- AI Anomaly Alert Banner — diisi oleh js/anomaly.js -->
-      <div id="anomaly-banner"></div>
-
       <div class="cards">
+        <div class="card card-balance">
+          <div class="card-icon">🏦</div>
+          <div class="card-body">
+            <div class="card-label">SISA SALDO</div>
+            <div class="card-value" id="kpi-balance">Rp 0</div>
+            <div class="card-delta" id="kpi-balance-delta">—</div>
+          </div>
+        </div>
         <div class="card card-income">
           <div class="card-icon">💰</div>
           <div class="card-body">
@@ -319,14 +324,6 @@
             <div class="card-delta" id="kpi-expense-delta">— vs Bulan Lalu</div>
           </div>
         </div>
-        <div class="card card-balance">
-          <div class="card-icon">🏦</div>
-          <div class="card-body">
-            <div class="card-label">SISA SALDO AKUMULATIF</div>
-            <div class="card-value" id="kpi-balance">Rp 0</div>
-            <div class="card-delta" id="kpi-balance-delta">— vs Bulan Lalu</div>
-          </div>
-        </div>
         <div class="card card-count">
           <div class="card-icon">📝</div>
           <div class="card-body">
@@ -336,6 +333,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Peringatan pengeluaran tidak biasa — diisi oleh js/anomaly.js -->
+      <div id="anomaly-banner"></div>
 
       <div id="ai-promo" class="ai-promo" hidden></div>
       <div id="tg-bill-promo" class="tg-bill-promo" hidden></div>
@@ -558,6 +558,26 @@
     <!-- ================= TAMBAH ================= -->
     <section id="tab-tambah" class="tab-panel">
       <div class="page-head"><h1>Tambah Transaksi</h1></div>
+      <!-- CHAT (cara tercepat) -->
+      <div class="panel chat-panel chat-panel-hero">
+        <div class="panel-head">
+          <h3>💬 Cara tercepat: ketik saja</h3>
+          <small>Jumlah dan kategori dikenali otomatis.</small>
+        </div>
+        <div class="chat-examples" aria-label="Contoh">
+          <button type="button" class="chat-example" data-chat-example="bakso 25rb">bakso 25rb</button>
+          <button type="button" class="chat-example" data-chat-example="bensin 50rb">bensin 50rb</button>
+          <button type="button" class="chat-example" data-chat-example="gaji 8jt">gaji 8jt</button>
+          <button type="button" class="chat-example" data-chat-example="kopi 28k kemarin">kopi 28k kemarin</button>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="mis. makan siang 35rb" autocomplete="off" enterkeyhint="send" />
+          <button class="btn btn-primary" type="submit">Catat</button>
+        </form>
+      </div>
+
+      <p class="quick-entry-caption">Atau isi manual</p>
       <div class="quick-entry-chooser" aria-label="Pilih cara mencatat transaksi">
         <button type="button" class="quick-entry active" data-quick-kind="pengeluaran">
           <span class="quick-entry-icon expense" aria-hidden="true">−</span>
@@ -585,12 +605,14 @@
             <label>Deskripsi
               <input type="text" name="deskripsi" placeholder="mis. Bensin Pertamax" required />
             </label>
-            <label>Sub Kategori
-              <select name="subKategori" required></select>
-            </label>
-            <label>Kategori
-              <input type="text" name="kategori" readonly />
-            </label>
+            <div class="form-row-2">
+              <label>Kategori
+                <select name="kategori" required></select>
+              </label>
+              <label>Sub Kategori
+                <select name="subKategori" required></select>
+              </label>
+            </div>
             <details class="advanced-fields">
               <summary>Opsi lanjutan</summary>
               <div class="advanced-fields-body">
@@ -626,33 +648,6 @@
           </form>
         </div>
 
-        <!-- TAGIHAN RUTIN -->
-        <div class="panel">
-          <div class="panel-head"><h3>🔁 Tagihan Rutin</h3></div>
-          <div id="recurring-list"></div>
-        </div>
-
-        <!-- CHAT -->
-        <div class="panel chat-panel">
-          <div class="panel-head">
-            <h3>💬 Input via Chat</h3>
-            <small>Ketik bebas, aplikasi akan menebak jumlah & kategori.</small>
-          </div>
-          <div class="chat-box" id="chat-box">
-            <div class="chat-msg bot">
-              Halo! Tulis transaksi natural, contoh:<br>
-              • <i>bensin pertamax 250rb</i><br>
-              • <i>makan bakso 45000</i><br>
-              • <i>terima gaji 5jt</i><br>
-              • <i>beli kopi 28k kemarin</i>
-            </div>
-          </div>
-          <form id="chat-form" class="chat-form">
-            <input type="text" id="chat-input" placeholder="Ketik transaksi…" autocomplete="off" />
-            <button class="btn btn-primary" type="submit">Kirim</button>
-          </form>
-        </div>
-
         <!-- STRUK -->
         <div class="panel" id="receipt-panel">
           <div class="panel-head">
@@ -680,6 +675,12 @@ TOTAL            86.500"></textarea>
           </div>
           <div id="struk-preview" class="struk-preview"></div>
         </div>
+
+        <!-- TAGIHAN RUTIN -->
+        <div class="panel">
+          <div class="panel-head"><h3>🔁 Tagihan Rutin</h3></div>
+          <div id="recurring-list"></div>
+        </div>
       </div>
     </section>
 
@@ -696,14 +697,14 @@ TOTAL            86.500"></textarea>
           <span class="plan-hub-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M4 7h16v12H4zM7 7V5h10v2m-8 6h6"/></svg>
           </span>
-          <span><b>Hutang &amp; Piutang</b><small>Pantau kewajiban, pinjaman, dan jatuh tempo.</small></span>
+          <span><b>Hutang &amp; Piutang</b><small>Pantau kewajiban, pinjaman, dan jatuh tempo.</small><span class="plan-hub-stat" id="plan-stat-hutang"></span></span>
           <span class="plan-hub-arrow" aria-hidden="true">→</span>
         </button>
         <button type="button" class="plan-hub-card" data-open-tab="goal">
           <span class="plan-hub-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="m14 10 6-6"/></svg>
           </span>
-          <span><b>Target Keuangan</b><small>Susun target menabung dan lihat progresnya.</small></span>
+          <span><b>Target Keuangan</b><small>Susun target menabung dan lihat progresnya.</small><span class="plan-hub-stat" id="plan-stat-goal"></span></span>
           <span class="plan-hub-arrow" aria-hidden="true">→</span>
         </button>
       </div>
@@ -1065,9 +1066,9 @@ TOTAL            86.500"></textarea>
   <script src="js/parser.js?v=20"></script>
   <script src="js/sync.js?v=26"></script>
   <script src="js/auth.js?v=26"></script>
-  <script src="js/dashboard.js?v=32"></script>
-  <script src="js/anomaly.js?v=2"></script>
-  <script src="js/pages.js?v=22"></script>
+  <script src="js/dashboard.js?v=33"></script>
+  <script src="js/anomaly.js?v=3"></script>
+  <script src="js/pages.js?v=23"></script>
   <script src="js/reports.js?v=1"></script>
   <script src="js/admin.js?v=21"></script>
   <script src="js/hutang.js?v=2"></script>
@@ -1076,6 +1077,6 @@ TOTAL            86.500"></textarea>
   <script src="js/recurring.js?v=2"></script>
   <script src="js/telegram-link.js?v=7"></script>
   <script src="js/onboarding.js?v=7"></script>
-  <script src="js/app.js?v=56"></script>
+  <script src="js/app.js?v=57"></script>
 </body>
 </html>

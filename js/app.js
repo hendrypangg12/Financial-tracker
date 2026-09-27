@@ -39,6 +39,7 @@ function renderAll() {
   if (typeof renderHutang === 'function') renderHutang();
   if (typeof renderGoals === 'function') renderGoals();
   renderRekap();
+  if (typeof renderPlanHub === 'function') renderPlanHub();
   renderKategori();
 }
 
@@ -98,6 +99,7 @@ function attachEvents() {
     if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
     if (tabName === 'goal' && typeof renderGoals === 'function') renderGoals();
     if (tabName === 'rekap') renderRekap();
+    if (tabName === 'rencana' && typeof renderPlanHub === 'function') renderPlanHub();
     if (tabName === 'kategori') renderKategori();
     if (tabName === 'tambah' && typeof renderRecurringManager === 'function') renderRecurringManager();
     if (tabName === 'admin' && typeof renderAdmin === 'function') renderAdmin();
@@ -161,7 +163,7 @@ function attachEvents() {
     button.onclick = () => chooseQuickEntry(button.dataset.quickKind);
   });
   form.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
-  form.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-transaksi');
+  form.querySelector('[name="kategori"]').onchange = () => fillFormSubsForKategori();
   // Toggle field "Jatuh tempo tiap tanggal" saat checkbox "Jadikan tagihan rutin" di-centang
   const chkRutin = document.getElementById('chk-jadikan-rutin');
   const fieldHariTagih = document.getElementById('field-hari-tagih');
@@ -185,7 +187,8 @@ function attachEvents() {
     delete t.hariTagih;
     t.jumlah = parseMoney(t.jumlah);
     if (!t.jumlah || t.jumlah <= 0) { showToast('Jumlah harus > 0', 'error'); return; }
-    const info = findCategoryForSub(t.subKategori, t.jenis);
+    const picked = (state.categories[t.jenis] || {})[t.kategori];
+    const info = picked ? { kategori: t.kategori, alokasi: picked.alokasi || '' } : findCategoryForSub(t.subKategori, t.jenis);
     t.kategori = info.kategori;
     if (!t.alokasi && info.alokasi) t.alokasi = info.alokasi;
     // Tagihan rutin (cuma pengeluaran) — buat template + tag transaksi ini sbg posting bln ini
@@ -230,6 +233,14 @@ function attachEvents() {
     appendChat('bot', `✅ Dicatat: <b>${res.jenis}</b> ${formatRupiah(res.jumlah)}<br>${escapeHtml(res.deskripsi)} · ${escapeHtml(res.subKategori)} (${escapeHtml(res.kategori)})${res.alokasi ? ' · ' + escapeHtml(res.alokasi) : ''} · ${formatTanggal(res.tanggal)}`);
     renderAll();
   };
+  // Contoh cepat: isi kolom saja (tidak langsung disimpan) supaya user bisa ubah angkanya.
+  document.querySelectorAll('[data-chat-example]').forEach(btn => {
+    btn.onclick = () => {
+      chatInput.value = btn.dataset.chatExample;
+      chatInput.focus();
+      chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
+    };
+  });
   function appendChat(role, html) {
     const msg = document.createElement('div');
     msg.className = 'chat-msg ' + role;

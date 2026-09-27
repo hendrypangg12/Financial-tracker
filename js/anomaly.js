@@ -1,12 +1,14 @@
 // ============================================================
-// AI ANOMALY ALERT — deteksi pola spending abnormal
+// PERINGATAN PENGELUARAN — deteksi pola spending tidak biasa (aturan, bukan AI)
 // ============================================================
 // Logika:
 //   - Bandingkan spending per kategori 7 hari terakhir vs rata-rata 4 minggu sebelumnya
 //   - Skip kategori dengan avg < Rp 50rb (noise)
 //   - Alert kalau naik >50% (medium) atau >100% (high severity)
 //   - Alert kalau turun drastis >80% AND avg > Rp 200rb (mungkin lupa catat)
-//   - Max 3 anomalies ditampilkan (sorted by severity)
+//   - Hanya kategori RUTIN mingguan (muncul di ≥3 dari 4 minggu sebelumnya),
+//     supaya tagihan bulanan seperti kos/cicilan tidak dianggap lonjakan
+//   - Max 2 anomalies ditampilkan (sorted by severity)
 //   - Dismiss per kategori per minggu (localStorage)
 
 const ANOMALY_DISMISS_KEY = 'anomaly-dismissed';
@@ -16,6 +18,7 @@ const MIN_AVG_DROP_THRESHOLD = 200000;  // Drop alert hanya untuk kategori avg >
 const INCREASE_THRESHOLD = 1.5;         // Naik >50%
 const HIGH_INCREASE_THRESHOLD = 2.0;    // Naik >100% = high severity
 const DROP_THRESHOLD = 0.2;             // Turun ke <20% = anomaly drop
+const MIN_ACTIVE_WEEKS = 3;             // Kategori harus muncul di ≥3 dari 4 minggu
 
 function getCurrentWeekId() {
   const now = new Date();
@@ -83,6 +86,8 @@ function detectSpendingAnomalies() {
   for (const [cat, data] of Object.entries(byCat)) {
     const sumPrev = data.prev4Weeks.reduce((a, b) => a + b, 0);
     const avgPrev = sumPrev / 4;
+    const activeWeeks = data.prev4Weeks.filter(v => v > 0).length;
+    if (activeWeeks < MIN_ACTIVE_WEEKS) continue;
 
     if (avgPrev < MIN_AVG_THRESHOLD) continue;
     if (isDismissed(cat)) continue;
@@ -103,7 +108,7 @@ function detectSpendingAnomalies() {
   const sevOrder = { high: 3, medium: 2, low: 1 };
   anomalies.sort((a, b) => sevOrder[b.severity] - sevOrder[a.severity] || Math.abs(b.percentChange) - Math.abs(a.percentChange));
 
-  return anomalies.slice(0, 3); // Max 3 banners
+  return anomalies.slice(0, 2); // Max 2 banner
 }
 
 function getCategoryEmoji(cat) {
@@ -129,17 +134,17 @@ function formatAnomalyMessage(a) {
     if (a.severity === 'high') {
       return {
         title: `${emoji} ${a.category} naik ${pct}% minggu ini`,
-        body: `Lu spending <b>${thisWeekFmt}</b> di kategori ini — naik drastis dari rata-rata mingguan <b>${avgWeekFmt}</b>. Ada acara khusus? Atau lupa double-record?`,
+        body: `Minggu ini <b>${thisWeekFmt}</b>, biasanya sekitar <b>${avgWeekFmt}</b> per minggu. Ada acara khusus, atau ada catatan dobel?`,
       };
     }
     return {
       title: `${emoji} ${a.category} naik ${pct}%`,
-      body: `Minggu ini <b>${thisWeekFmt}</b> vs rata-rata <b>${avgWeekFmt}</b>. Worth dicek bos — mungkin ada pola baru yang bisa dipangkas.`,
+      body: `Minggu ini <b>${thisWeekFmt}</b>, biasanya sekitar <b>${avgWeekFmt}</b> per minggu. Coba cek, mungkin ada yang bisa dipangkas.`,
     };
   }
   return {
-    title: `${emoji} ${a.category} sepi banget minggu ini`,
-    body: `Cuma <b>${thisWeekFmt}</b> minggu ini — turun dari rata-rata <b>${avgWeekFmt}</b>. Memang lagi hemat, atau lupa catat?`,
+    title: `${emoji} ${a.category} jauh lebih sedikit minggu ini`,
+    body: `Baru <b>${thisWeekFmt}</b>, biasanya sekitar <b>${avgWeekFmt}</b> per minggu. Lagi hemat, atau ada yang lupa dicatat?`,
   };
 }
 
@@ -155,7 +160,7 @@ function renderAnomalyBanner() {
     const sevClass = `anomaly-${a.severity}`;
     return `
       <div class="anomaly-card ${sevClass}" data-cat="${escapeHtml(a.category)}">
-        <div class="anomaly-icon">🧠</div>
+        <div class="anomaly-icon">${a.type === 'increase' ? '📈' : '📉'}</div>
         <div class="anomaly-content">
           <div class="anomaly-title">${title}</div>
           <div class="anomaly-body">${body}</div>
@@ -168,7 +173,7 @@ function renderAnomalyBanner() {
   container.innerHTML = `
     <div class="anomaly-wrap">
       <div class="anomaly-header">
-        <span class="anomaly-label">🧠 Insight AI · ${anomalies.length} pola perlu dicek</span>
+        <span class="anomaly-label">Perlu dicek · dibanding kebiasaan 4 minggu terakhir</span>
       </div>
       ${html}
     </div>
