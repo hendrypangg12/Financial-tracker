@@ -120,6 +120,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   `/laporan` (manual, 1x/hari), `/laporan off|on` (KV `btg_weekly_off:<uid>`). Debug: `/api/beruang-weekly-test?admin_key=&email=&force=1`.
   `resolveLinkUid()`/`hasPaidAIAccess()` di-export dari beruang.js. Tes: bot/test/weekly-report.test.js (5). telegram-link v6.
 
+- 💬 27 Sep: bos tanya input via WhatsApp → BISA (WhatsApp Business Cloud API resmi; ~80% reuse alur Telegram:
+  webhook → parseEntry → btg_inbox → app pull). Syarat: nomor HP khusus + verifikasi bisnis Meta (NIB/PT Perorangan);
+  mode test 5 nomor tanpa verifikasi. Biaya: user-initiated 24 jam GRATIS, pesan proaktif (laporan) ~Rp300–500.
+  KEPUTUSAN BOS: DITUNDA ("nomor WA nanti dulu"). Prioritas: kunci Google Play → saldo AI → build 1.4.1.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
