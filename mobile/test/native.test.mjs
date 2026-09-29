@@ -109,3 +109,20 @@ test('in-app review asks only after 10 real transactions, 3 days of use, and at 
   store['beruang-review-asked-at']='0';store['beruang-first-open-at']=String(Date.now()-day);
   assert.equal(await context.maybeAskReview(),false,'belum 3 hari');
 });
+test('after a verified purchase the header, plan label and Pro gating are redrawn immediately',async()=>{
+  const calls=[];
+  const billing={purchase:async()=>({productId:'beruang_access_7d',purchaseToken:'t'}),restorePurchases:async()=>({purchases:[]})};
+  const {context,listeners}=sandbox({PlayBilling:billing},true);
+  context.currentUser={uid:'u'};context.currentProfile={plan:'free_trial'};
+  context.authenticatedHeaders=async()=>({});
+  context.refreshUserProfile=async()=>{context.currentProfile={plan:'trial',expiresAt:'2099-01-01'};};
+  context.updateUserMenu=(u,p)=>calls.push(['menu',p.plan]);
+  context.setupProGating=p=>calls.push(['gating',p.plan]);
+  context.renderAll=()=>calls.push(['render']);
+  context.crypto=globalThis.crypto;context.TextEncoder=TextEncoder;
+  context.fetch=async()=>({ok:true,json:async()=>({entitlementApplied:true})});
+  const button={dataset:{playProduct:'beruang_access_7d'},disabled:false};
+  await listeners.click({target:{closest:sel=>sel==='[data-play-product]'?button:null}});
+  assert.deepEqual(calls.filter(c=>c[0]!=='render'),[['menu','trial'],['gating','trial']]);
+  assert.ok(calls.some(c=>c[0]==='render'));
+});

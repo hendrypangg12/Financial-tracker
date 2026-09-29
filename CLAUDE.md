@@ -180,6 +180,14 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   Versi: app v58, dashboard v34, storage v25, ai-advisor v13, admin v22, metrics v1, styles v55, SW v63.
   Worker ter-deploy otomatis (push bot/**); metrics butuh FIREBASE_SERVICE_ACCOUNT_JSON (sudah ada di akun icloud).
 
+- 🧪 28-29 Sep (ChatGPT di laptop bos): kunci Google Play di Cloudflare icloud BENAR (health parses:true, length 2376);
+  keystore upload ditemukan; 1.4.1 aktif di Internal Testing; deskripsi singkat Play diganti "Coba fitur pencatatan gratis
+  2 hari" (tanpa klaim AI). ChatGPT menyiapkan draft Production 1.4.2 (rollout 10%, managed publishing ON) + patch RTDN/refund
+  LOKAL (belum di-push). Temuan ChatGPT: (1) UI tidak berubah setelah beli → DIPERBAIKI di branch ini (runtime.js
+  `applyFreshProfile()` panggil updateUserMenu/setupProGating/renderAll setelah verify); (2) refund salah satu dari dua
+  paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
+  → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

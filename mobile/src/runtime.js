@@ -9,7 +9,9 @@
   if(nativeGoogleAuth)document.body?.classList.add('native-google-auth');
   const syncedEntitlementAt=new Map(),entitlementSyncInFlight=new Map(),ENTITLEMENT_SYNC_INTERVAL=6*60*60*1000;
   async function hash(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');}
-  async function verify(p){const r=await fetch(API+'/api/google-play/verify',{method:'POST',headers:await authenticatedHeaders(),body:JSON.stringify({productId:p.productId,purchaseToken:p.purchaseToken})});const x=await r.json().catch(()=>({}));if(!r.ok||x.entitlementApplied!==true)throw new Error(x.error||'Aktivasi paket gagal.');await refreshUserProfile();return x;}
+  async function verify(p){const r=await fetch(API+'/api/google-play/verify',{method:'POST',headers:await authenticatedHeaders(),body:JSON.stringify({productId:p.productId,purchaseToken:p.purchaseToken})});const x=await r.json().catch(()=>({}));if(!r.ok||x.entitlementApplied!==true)throw new Error(x.error||'Aktivasi paket gagal.');await refreshUserProfile();applyFreshProfile();return x;}
+  // Setelah paket aktif: gambar ulang header, label paket & kunci fitur Pro tanpa perlu buka ulang app.
+  function applyFreshProfile(){try{if(typeof updateUserMenu==='function')updateUserMenu(currentUser,currentProfile);if(typeof setupProGating==='function')setupProGating(currentProfile);if(typeof renderAll==='function')renderAll();}catch(e){console.warn('Tampilan paket belum diperbarui:',e.message);}}
   async function syncOwnedSubscriptions(force=false){
     const uid=typeof currentUser==='undefined'?'':currentUser?.uid;
     if(!production||!billing||!uid)return;
