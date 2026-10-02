@@ -29,7 +29,7 @@ export default {
   // Cron handler — jalan 1x sehari pagi WIB (00:00 UTC = 07:00 WIB)
   async scheduled(event, env, ctx) {
     // Minggu 13:00 UTC = 20:00 WIB → Laporan Beruang mingguan (BerUang, user berbayar + Telegram tersambung)
-    if (event && event.cron === "0 13 * * 0") { ctx.waitUntil(sendWeeklyReports(env)); return; }
+    if (event && event.cron === "0 13 * * SUN") { ctx.waitUntil(sendWeeklyReports(env)); return; }
     ctx.waitUntil(processAccountDeletions(env));
     ctx.waitUntil(sendDailyDigestToAllTenants(env));
     ctx.waitUntil(sendBillReminders(env)); // BerUang: notif H-3 + H-0 tagihan rutin
