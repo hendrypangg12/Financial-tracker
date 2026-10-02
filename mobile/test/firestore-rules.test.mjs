@@ -15,7 +15,7 @@ if (!process.env.FIRESTORE_EMULATOR_HOST) {
   });
   after(() => env.cleanup());
   const profile = { email: 'u@example.com', displayName: 'U', photoURL: '', createdAt: '2026-01-01T00:00:00.000Z', plan: 'pending', expiresAt: '2026-01-01T00:00:00.000Z' };
-  const data = { transactions: [], hutangs: [], assets: [], recurring: [], goals: [], userName: '', categories: {}, target: 0, _updatedAt: '2026-01-01T00:00:00.000Z', _updatedBy: 'device-a' };
+  const data = { transactions: [], hutangs: [], assets: [], recurring: [], goals: [], userName: '', categories: {}, target: 0, startingBalance: null, _updatedAt: '2026-01-01T00:00:00.000Z', _updatedBy: 'device-a' };
   async function seedProfile(uid = 'u', email = 'u@example.com') {
     await env.withSecurityRulesDisabled(async context => {
       await setDoc(doc(context.firestore(), `users/${uid}/meta/profile`), { ...profile, email });
@@ -36,6 +36,8 @@ if (!process.env.FIRESTORE_EMULATOR_HOST) {
   test('owner data sync accepts the real schema but rejects unknown authority fields', async () => {
     const db = env.authenticatedContext('u', { email: 'u@example.com' }).firestore();
     await assertSucceeds(setDoc(doc(db, 'users/u/data/main'), data));
+    await assertSucceeds(setDoc(doc(db, 'users/u/data/main'), { ...data, startingBalance: { amount: 1500000, date: '2026-09-28', completed: true, completedAt: '2026-09-28T01:00:00.000Z' } }));
+    await assertFails(setDoc(doc(db, 'users/u/data/main'), { ...data, startingBalance: { amount: -1, date: '2026-09-28', completed: true } }));
     await assertFails(setDoc(doc(db, 'users/u/data/main'), { ...data, plan: 'annual' }));
     await assertFails(setDoc(doc(db, 'users/u/verifiedPaymentReceipts/fake'), { paid: true }));
   });

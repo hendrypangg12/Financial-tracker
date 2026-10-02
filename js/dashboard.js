@@ -15,6 +15,44 @@ function renderGreeting() {
   el.innerHTML = `Halo, <b>${escapeHtmlDash(nama)}</b> 👋`;
 }
 
+function renderSubscriptionSummary() {
+  const el = document.getElementById('subscription-summary');
+  if (!el) return;
+  if (typeof currentUser === 'undefined' || !currentUser) { el.hidden = true; el.innerHTML = ''; return; }
+
+  const profile = typeof currentProfile !== 'undefined' ? currentProfile : null;
+  const planNames = {
+    free_trial: 'Uji Coba Gratis', trial: 'Akses 7 Hari', starter: 'Akses 7 Hari',
+    monthly: 'Pro Bulanan', annual: 'Pro Tahunan', lifetime: 'Lifetime', pro: 'Pro',
+  };
+  const active = profile && typeof isPro === 'function' && isPro(profile);
+  const planName = profile ? (planNames[profile.plan] || 'Belum berlangganan') : 'Status belum termuat';
+  let detail = 'Periksa paket dan pilih cara pembayaran.';
+  if (!profile) detail = 'Status paket belum dapat dibaca. Muat ulang untuk memeriksa akun.';
+  else if (active && profile.expiresAt) {
+    const date = new Date(profile.expiresAt);
+    const end = Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+    const days = typeof daysRemaining === 'function' ? daysRemaining(profile) : null;
+    detail = `Aktif${end ? ` sampai ${end}` : ''}${days != null ? ` · ${days} hari tersisa` : ''}.`;
+  } else if (active) detail = 'Paket aktif tanpa tanggal berakhir.';
+  else if (profile.expiresAt) detail = 'Masa aktif paket sudah berakhir. Pilih paket untuk lanjut.';
+  else detail = 'Belum ada paket aktif. Pilih paket untuk membuka fitur Pro.';
+
+  el.hidden = false;
+  el.innerHTML = `<div class="subscription-summary-copy"><span class="subscription-summary-label">PAKET AKUN</span><strong>${planName}${active ? ' · Aktif' : ''}</strong><small>${detail}</small></div><button type="button" class="subscription-summary-action" id="subscription-summary-action">Paket &amp; pembayaran <span aria-hidden="true">→</span></button>`;
+  el.querySelector('#subscription-summary-action').onclick = () => showScreen('paywall');
+}
+
+function renderStartingBalancePrompt() {
+  const el = document.getElementById('starting-balance-reminder');
+  if (!el) return;
+  const complete = state.startingBalance?.completed === true;
+  el.hidden = complete;
+  if (complete) return;
+  el.innerHTML = `<div><b>Langkah pertama: setup dana awal</b><span>Masukkan saldo rekening, e-wallet, dan tunai agar ringkasanmu akurat. Kamu belum bisa mencatat transaksi sebelum memilih saldo atau Rp0.</span></div><button type="button" id="starting-balance-reminder-action">Setup sekarang →</button>`;
+  el.querySelector('#starting-balance-reminder-action').onclick = () => window.openOnboardingManual?.();
+}
+
 // Panduan 3 langkah untuk user baru (menggantikan banner selamat datang).
 function guideUid() {
   return (typeof currentUser !== 'undefined' && currentUser?.uid) || 'local';
@@ -156,11 +194,11 @@ function renderHutangSummary() {
 
 function renderDashboard() {
   const m = state.selectedMonth, y = state.selectedYear;
-  const trx = getTransactionsFor(m, y);
+  const trx = getCashflowTransactionsFor(m, y);
   const prev = addMonths(m, y, -1);
-  const trxPrev = getTransactionsFor(prev.m, prev.y);
+  const trxPrev = getCashflowTransactionsFor(prev.m, prev.y);
 
-  const hasTransactions = Array.isArray(state.transactions) && state.transactions.length > 0;
+  const hasTransactions = Array.isArray(state.transactions) && state.transactions.some(t => !isOpeningBalanceTransaction(t));
   const emptyState = document.getElementById('dashboard-empty-state');
   const overview = document.getElementById('dashboard-overview');
   const moreAction = document.getElementById('dashboard-more-action');
@@ -179,6 +217,8 @@ function renderDashboard() {
   }
 
   document.getElementById('dash-month-label').textContent = `${MONTHS[m]} ${y}`;
+  renderSubscriptionSummary();
+  renderStartingBalancePrompt();
   renderGreeting();
   renderStartGuide();
   if (emptyState && !document.getElementById('start-guide')?.hidden) emptyState.hidden = true;
@@ -231,12 +271,18 @@ function sumBy(trx, jenis) {
 // Semua transaksi sampai akhir bulan dipakai supaya saldo bulan lalu terbawa.
 function balanceThrough(month, year) {
   const cutoff = new Date(year, month + 1, 1).getTime();
+  const setup = state.startingBalance?.completed === true ? state.startingBalance : null;
+  const startDate = setup?.date ? parseISO(setup.date).getTime() : null;
+  const initial = setup && startDate != null && !Number.isNaN(startDate) && startDate < cutoff
+    ? Math.max(0, Number(setup.amount) || 0) : 0;
   return (state.transactions || []).reduce((total, transaction) => {
+    if (isOpeningBalanceTransaction(transaction)) return total;
     const date = parseISO(transaction.tanggal);
     if (!(date instanceof Date) || Number.isNaN(date.getTime()) || date.getTime() >= cutoff) return total;
+    if (startDate != null && date.getTime() < startDate) return total;
     const amount = Number(transaction.jumlah) || 0;
     return total + (transaction.jenis === 'pemasukan' ? amount : transaction.jenis === 'pengeluaran' ? -amount : 0);
-  }, 0);
+  }, initial);
 }
 
 function setKPI(id, text, pct, goodDir) {
@@ -502,15 +548,20 @@ function renderSixMonth(m, y) {
   const rows = [];
   const selectedIndex = y * 12 + m;
   const transactionIndexes = (state.transactions || [])
+    .filter(t => !isOpeningBalanceTransaction(t))
     .map(t => parseISO(t.tanggal))
     .filter(d => d instanceof Date && !Number.isNaN(d.getTime()))
     .map(d => d.getFullYear() * 12 + d.getMonth())
     .filter(index => index <= selectedIndex);
+  if (state.startingBalance?.completed && state.startingBalance.date) {
+    const start = parseISO(state.startingBalance.date);
+    if (!Number.isNaN(start.getTime())) transactionIndexes.push(start.getFullYear() * 12 + start.getMonth());
+  }
   const firstIndex = transactionIndexes.length ? Math.min(...transactionIndexes) : selectedIndex;
   const monthCount = selectedIndex - firstIndex + 1;
   for (let i = 0; i < monthCount; i++) {
     const { m: mm, y: yy } = addMonths(m, y, -i);
-    const trx = getTransactionsFor(mm, yy);
+    const trx = getCashflowTransactionsFor(mm, yy);
     const inc = sumBy(trx, 'pemasukan');
     const exp = sumBy(trx, 'pengeluaran');
     rows.push({ label: `${MONTHS_SHORT[mm]} ${yy}`, inc, exp, bal: balanceThrough(mm, yy), count: trx.length });

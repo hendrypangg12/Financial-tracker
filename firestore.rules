@@ -30,7 +30,7 @@ service cloud.firestore {
     match /users/{uid}/data/main {
       allow read: if owner(uid);
       allow create, update: if owner(uid)
-        && request.resource.data.keys().hasOnly(['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'updatedAt', '_updatedAt', '_updatedBy'])
+        && request.resource.data.keys().hasOnly(['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'startingBalance', 'updatedAt', '_updatedAt', '_updatedBy'])
         && request.resource.data.transactions is list
         && request.resource.data.hutangs is list
         && request.resource.data.assets is list
@@ -38,7 +38,15 @@ service cloud.firestore {
         && request.resource.data.goals is list
         && request.resource.data.userName is string
         && request.resource.data.categories is map
-        && request.resource.data.target is number;
+        && request.resource.data.target is number
+        && (!request.resource.data.keys().hasAny(['startingBalance'])
+          || request.resource.data.startingBalance == null
+          || (request.resource.data.startingBalance is map
+            && request.resource.data.startingBalance.keys().hasOnly(['amount', 'date', 'completed', 'completedAt'])
+            && request.resource.data.startingBalance.amount is number
+            && request.resource.data.startingBalance.amount >= 0
+            && request.resource.data.startingBalance.date is string
+            && request.resource.data.startingBalance.completed == true));
       allow delete: if false;
     }
     match /users/{uid}/verifiedPaymentReceipts/{receipt} {

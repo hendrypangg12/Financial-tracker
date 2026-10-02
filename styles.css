@@ -726,6 +726,8 @@ body.app-locked > .ai-paywall-modal { display: none !important; }
   font-size: 13px; color: var(--ink);
 }
 .user-item:hover { background: #fee2e2; color: #991b1b; }
+.user-item-plan { color: var(--brown); font-weight: 800; background: #fff8e8; }
+.user-item-plan:hover { color: var(--brown-dark); background: #f7edd8; }
 .user-item-admin { color: var(--brand); font-weight: 600; }
 .user-item-admin:hover { background: #fef3c7; color: var(--brown-dark); }
 .user-item-danger { color: #c0392b; font-weight: 600; }
@@ -3039,6 +3041,44 @@ main { padding-top: 28px; max-width: 1440px; }
 .start-guide-text small { display: block; margin-top: 1px; font-size: 12px; color: var(--ink-soft); }
 .start-guide-steps li.is-done .start-guide-text b { color: var(--ink-soft); text-decoration: line-through; }
 .start-guide-go { color: var(--primary); font-weight: 700; }
+
+/* Status paket dan langkah wajib setup saldo, dibuat tetap jelas di web dan APK. */
+.subscription-summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin: 0 0 14px; padding: 12px 16px;
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(62,45,33,.045);
+}
+.subscription-summary[hidden] { display: none !important; }
+.subscription-summary-copy { display: grid; gap: 2px; min-width: 0; }
+.subscription-summary-label { color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .8px; }
+.subscription-summary-copy strong { color: var(--ink); font-size: 14px; }
+.subscription-summary-copy small { color: var(--ink-soft); font-size: 12px; line-height: 1.4; }
+.subscription-summary-action {
+  flex: 0 0 auto; border: 1px solid #d9c49f; border-radius: 10px; padding: 9px 12px;
+  color: var(--brown); background: #fffaf0; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+}
+.subscription-summary-action:hover { background: #f8edda; }
+.starting-balance-reminder {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin: 0 0 16px; padding: 16px; border: 1px solid #d9bd84; border-radius: 16px;
+  color: var(--ink); background: linear-gradient(110deg, #fff8e8, #f6ead0);
+}
+.starting-balance-reminder[hidden] { display: none !important; }
+.starting-balance-reminder div { display: grid; gap: 4px; }
+.starting-balance-reminder b { font-size: 15px; }
+.starting-balance-reminder span { color: var(--ink-soft); font-size: 12px; line-height: 1.45; }
+.starting-balance-reminder button {
+  flex: 0 0 auto; min-height: 40px; padding: 9px 13px; border: 0; border-radius: 10px;
+  background: var(--brown); color: #fff; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+}
+.starting-balance-reminder button:hover { filter: brightness(1.08); }
+@media (max-width: 520px) {
+  .subscription-summary { align-items: flex-start; gap: 10px; padding: 11px 12px; }
+  .subscription-summary-action { max-width: 126px; white-space: normal; line-height: 1.25; }
+  .starting-balance-reminder { align-items: stretch; flex-direction: column; padding: 14px; }
+  .starting-balance-reminder button { width: 100%; }
+}
 .admin-funnel-table tr td:first-child { white-space: normal; }
 @media (max-width: 768px) {
   .panel > table.admin-funnel-table { display: table; width: 100%; }

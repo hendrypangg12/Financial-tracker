@@ -1,165 +1,270 @@
-// Onboarding "Setup Dana Awal" — buat user baru, dipanggil sebelum masuk menu utama.
-// Tujuan: bantu user catat posisi awal (aset, piutang, utang, biaya rutin) biar
-// dashboard + AI Advisor langsung paham kondisi keuangannya.
-// Keputusan desain (bos, 27 Mei): aset = info terpisah (gak masuk cashflow);
-// biaya rutin (kost/cicilan) = dicatat sebagai pengeluaran bulan ini.
+// Langkah wajib pertama: catat baseline uang cair agar saldo akun tidak dimulai dari angka yang menyesatkan.
 
-let onbInited = false;
-
-function onbFlagKey() {
-  const email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) || 'local';
-  return 'beruang-onboarding-done:' + email;
+function hasStartingBalanceSetup() {
+  return state.startingBalance?.completed === true
+    && Number.isFinite(Number(state.startingBalance.amount))
+    && Number(state.startingBalance.amount) >= 0
+    && typeof state.startingBalance.date === 'string'
+    && /^\d{4}-\d{2}-\d{2}$/.test(state.startingBalance.date);
 }
 
-function isFreshUser() {
-  const noTrx = !state.transactions || state.transactions.length === 0;
-  const noHutang = !state.hutangs || state.hutangs.length === 0;
-  const noAset = !state.assets || state.assets.length === 0;
-  return noTrx && noHutang && noAset;
+// Versi lama menyimpan dana awal sebagai transaksi pemasukan. Akun yang sudah
+// punya transaksi juga harus mempertahankan saldo historisnya saat upgrade.
+function migrateLegacyStartingBalance() {
+  if (hasStartingBalanceSetup()) return false;
+  const openingRows = (state.transactions || []).filter(t => isOpeningBalanceTransaction(t));
+  const existingRows = state.transactions || [];
+  if (!existingRows.length) return false;
+
+  // Existing accounts already have a transaction history. A zero baseline at
+  // their first transaction keeps their cumulative balance unchanged; asking
+  // them to enter today's balance would discard all earlier transactions.
+  const dates = existingRows.map(t => t.tanggal).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  state.startingBalance = {
+    amount: openingRows.reduce((sum, t) => sum + (Number(t.jumlah) || 0), 0),
+    date: dates[0] || todayISO(),
+    completed: true,
+    completedAt: new Date().toISOString(),
+  };
+  saveState();
+  return true;
 }
 
-// Dipanggil setelah init() di alur login. Tampilkan wizard kalau user baru & belum skip.
 function maybeShowOnboarding() {
   try {
-    if (localStorage.getItem(onbFlagKey()) === '1') return false;
-    if (!isFreshUser()) return false;
-    showOnboarding();
+    const migrated = migrateLegacyStartingBalance();
+    if (hasStartingBalanceSetup()) {
+      if (migrated && typeof renderAll === 'function') renderAll();
+      return false;
+    }
+    showOnboarding(false);
     return true;
-  } catch (e) { return false; }
+  } catch (e) {
+    console.warn('Setup dana awal belum dapat dimuat:', e);
+    return false;
+  }
 }
 
 function injectOnbStyles() {
   if (document.getElementById('onb-styles')) return;
   const css = `
-  .onb-wrap{position:fixed;inset:0;z-index:9000;overflow-y:auto;background:linear-gradient(180deg,#fef3e2,#fbf6ee);-webkit-overflow-scrolling:touch;}
-  .onb-card{max-width:520px;margin:0 auto;padding:28px 20px 48px;}
-  .onb-logo{width:72px;height:72px;border-radius:18px;display:block;margin:8px auto 10px;}
-  .onb-title{font-size:24px;font-weight:900;color:#5d3a1a;text-align:center;margin:0 0 4px;}
-  .onb-sub{font-size:14px;color:#6e5a4a;text-align:center;line-height:1.5;margin:0 auto 22px;max-width:420px;}
-  .onb-sec{background:#fff;border:2px solid #f0e9d8;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(74,51,40,.05);}
-  .onb-sec h3{font-size:15px;font-weight:800;color:#8b5a2b;margin:0 0 3px;}
-  .onb-sec .hint{font-size:12px;color:#8a7766;margin:0 0 12px;line-height:1.4;}
-  .onb-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
-  .onb-row input{padding:11px 12px;border:1.5px solid #e6dcc6;border-radius:10px;font-size:15px;font-family:inherit;width:100%;background:#fdfbf6;}
-  .onb-row input:focus{outline:none;border-color:#c9a352;}
-  .onb-row .onb-nama{flex:1.3;min-width:0;}
-  .onb-row .onb-jml{flex:1;min-width:0;}
-  .onb-del{flex:0 0 auto;width:36px;height:40px;border:none;background:#f7ede0;color:#b91c1c;border-radius:9px;font-size:17px;cursor:pointer;}
-  .onb-add{background:none;border:1.5px dashed #c9a352;color:#a3823a;border-radius:10px;padding:9px;width:100%;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
-  .onb-fixed{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-  .onb-fixed label{flex:1;font-size:14px;color:#4a3328;font-weight:600;}
-  .onb-fixed input{flex:1;padding:11px 12px;border:1.5px solid #e6dcc6;border-radius:10px;font-size:15px;font-family:inherit;background:#fdfbf6;min-width:0;}
-  .onb-actions{margin-top:18px;}
-  .onb-actions .btn{margin-bottom:10px;}
+  .onb-wrap{position:fixed;inset:0;z-index:9000;overflow-y:auto;background:linear-gradient(180deg,#f8f0e3,#fbf8f2);-webkit-overflow-scrolling:touch;display:grid;place-items:center;padding:20px 14px;}
+  .onb-card{width:min(100%,480px);margin:auto;padding:26px 24px 24px;background:#fff;border:1px solid #eadcc5;border-radius:24px;box-shadow:0 20px 70px rgba(65,43,28,.16);}
+  .onb-logo{width:58px;height:58px;border-radius:16px;display:block;margin:0 auto 14px;}
+  .onb-title{font-size:24px;font-weight:850;color:#422e22;text-align:center;margin:0 0 8px;letter-spacing:-.5px;}
+  .onb-sub{font-size:14px;color:#786757;text-align:center;line-height:1.55;margin:0 auto 20px;max-width:400px;}
+  .onb-field-label{display:block;font-size:13px;font-weight:750;color:#493427;margin:0 0 8px;}
+  .onb-amount-wrap{display:flex;align-items:center;gap:8px;padding:0 14px;border:1.5px solid #d9c8aa;border-radius:13px;background:#fffdf9;}
+  .onb-amount-wrap:focus-within{border-color:#a16c31;box-shadow:0 0 0 3px rgba(161,108,49,.12);}
+  .onb-currency{font-size:18px;font-weight:800;color:#967044;}
+  .onb-amount{width:100%;min-width:0;padding:14px 0;border:0;background:transparent;color:#34251c;font-family:inherit;font-size:23px;line-height:1.2;font-weight:700;outline:0;}
+  .onb-hint{display:block;margin:8px 0 0;color:#887968;font-size:12px;line-height:1.5;}
+  .onb-name{width:100%;margin-top:16px;padding:11px 12px;border:1px solid #e9dfd1;border-radius:10px;font:inherit;background:#fff;}
+  .onb-error{margin:10px 0 0;color:#b42318;font-size:12px;}
+  .onb-actions{display:grid;gap:9px;margin-top:20px;}
+  .onb-actions button{width:100%;min-height:46px;border-radius:11px;font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
+  .onb-primary{border:1px solid #815328;background:#815328;color:#fff;}
+  .onb-primary:hover{background:#69421e;}
+  .onb-zero{border:1px solid #e6dccd;background:#fff;color:#5f4e3e;}
+  .onb-zero:hover{background:#faf6ef;}
+  .onb-cancel{border:0;background:transparent;color:#776757;}
+  .onb-extras{margin-top:18px;border:1px solid #eee5d8;border-radius:12px;padding:0 12px;background:#fffdf9;}
+  .onb-extras summary{padding:12px 0;color:#60482f;font-size:13px;font-weight:750;cursor:pointer;}
+  .onb-extras-body{padding:0 0 12px;display:grid;gap:14px;}
+  .onb-extra-section{display:grid;gap:7px;}
+  .onb-extra-section b{font-size:12px;color:#493427;}
+  .onb-extra-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.8fr);gap:7px;}
+  .onb-extra-row input,.onb-fixed input{min-width:0;width:100%;padding:10px;border:1px solid #e9dfd1;border-radius:9px;font:inherit;font-size:13px;background:#fff;}
+  .onb-add-row{justify-self:start;border:0;background:transparent;color:#815328;font:inherit;font-size:12px;font-weight:750;cursor:pointer;padding:3px 0;}
+  .onb-extras-hint{margin:0;color:#827262;font-size:11px;line-height:1.45;}
+  .onb-foot{margin:14px 0 0;text-align:center;color:#8a7b6d;font-size:11px;line-height:1.45;}
+  @media(max-width:420px){.onb-wrap{padding:10px}.onb-card{padding:22px 18px;border-radius:20px}.onb-title{font-size:22px}.onb-amount{font-size:21px;}}
   `;
-  const s = document.createElement('style');
-  s.id = 'onb-styles';
-  s.textContent = css;
-  document.head.appendChild(s);
+  const style = document.createElement('style');
+  style.id = 'onb-styles';
+  style.textContent = css;
+  document.head.appendChild(style);
 }
 
-function onbRowHtml(namaPh, jmlPh) {
-  return `<div class="onb-row">
-    <input class="onb-nama" type="text" placeholder="${namaPh}" />
-    <input class="onb-jml" type="tel" inputmode="numeric" placeholder="${jmlPh}" />
-    <button type="button" class="onb-del" title="Hapus">×</button>
-  </div>`;
-}
-
-function showOnboarding() {
+function showOnboarding(editing = false) {
   const screen = document.getElementById('onboarding-screen');
   if (!screen) return;
   injectOnbStyles();
-
+  const existing = editing && hasStartingBalanceSetup() ? Number(state.startingBalance.amount) : '';
+  const amount = existing === '' ? '' : existing.toLocaleString('id-ID');
+  const displayName = state.userName
+    || (typeof currentProfile !== 'undefined' && currentProfile && currentProfile.displayName)
+    || '';
   screen.innerHTML = `
-  <div class="onb-wrap">
-    <div class="onb-card">
-      <img class="onb-logo" src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
-      <h1 class="onb-title">Setup Dana Awal 🐻</h1>
-      <p class="onb-sub">Halo bos! Biar dashboard & si Beruang Akuntan langsung paham kondisi duitmu, isi posisi awal di bawah. Isi yang ada aja — sisanya bisa dilewati, bisa diubah kapan aja.</p>
-
-      <div class="onb-sec">
-        <h3>👤 Nama Kamu</h3>
-        <p class="hint">Biar pas buka app langsung kelihatan ini keuangan siapa.</p>
-        <div class="onb-fixed"><input id="onb-nama-user" type="text" placeholder="Nama panggilan kamu" autocomplete="name" /></div>
-      </div>
-
-      <div class="onb-sec">
-        <h3>💳 Saldo di Rekening (uang cair)</h3>
-        <p class="hint">Bank/e-wallet & saldonya (BCA, BNI, GoPay, Dana, cash). 👉 Ini <b>langsung masuk ke Sisa Saldo</b> kamu.</p>
-        <div id="onb-rekening">${onbRowHtml('Nama bank / e-wallet', 'Saldo (Rp)')}</div>
-        <button type="button" class="onb-add" data-add="onb-rekening" data-nama="Nama bank / e-wallet" data-jml="Saldo (Rp)">+ Tambah rekening</button>
-      </div>
-
-      <div class="onb-sec">
-        <h3>📈 Investasi &amp; Aset</h3>
-        <p class="hint">Saham, reksadana, emas, kripto, properti, kendaraan, dll. 👉 Dihitung sebagai <b>kekayaan</b>, TERPISAH dari saldo harian (gak ikut Sisa Saldo).</p>
-        <div id="onb-investasi">${onbRowHtml('Jenis (saham/emas/rumah)', 'Nilai (Rp)')}</div>
-        <button type="button" class="onb-add" data-add="onb-investasi" data-nama="Jenis (saham/emas/rumah)" data-jml="Nilai (Rp)">+ Tambah aset</button>
-      </div>
-
-      <div class="onb-sec">
-        <h3>🤝 Duit di Teman (piutang)</h3>
-        <p class="hint">Uang yang dipinjam orang ke kamu — mereka utang ke kamu.</p>
-        <div id="onb-piutang">${onbRowHtml('Nama orang', 'Jumlah (Rp)')}</div>
-        <button type="button" class="onb-add" data-add="onb-piutang" data-nama="Nama orang" data-jml="Jumlah (Rp)">+ Tambah piutang</button>
-      </div>
-
-      <div class="onb-sec">
-        <h3>💸 Utang Kamu</h3>
-        <p class="hint">Uang yang kamu pinjam dari orang/pihak lain. Cuma buat pencatatan, gak ngurangi saldo.</p>
-        <div id="onb-utang">${onbRowHtml('Ke siapa / keterangan', 'Jumlah (Rp)')}</div>
-        <button type="button" class="onb-add" data-add="onb-utang" data-nama="Ke siapa / keterangan" data-jml="Jumlah (Rp)">+ Tambah utang</button>
-      </div>
-
-      <div class="onb-sec">
-        <h3>🔁 Biaya Rutin Bulan Ini</h3>
-        <p class="hint">Dicatat sebagai pengeluaran bulan ini. Kosongin kalau gak ada.</p>
-        <div class="onb-fixed"><label>🏠 Kost / sewa bulanan</label><input id="onb-kost" type="tel" inputmode="numeric" placeholder="Rp" /></div>
-        <div class="onb-fixed"><label>💳 Cicilan kartu kredit</label><input id="onb-cicilan" type="tel" inputmode="numeric" placeholder="Rp" /></div>
-      </div>
-
-      <div class="onb-actions">
-        <button type="button" class="btn btn-primary btn-block" id="onb-save">Simpan & Mulai 🚀</button>
-        <button type="button" class="btn btn-ghost btn-block" id="onb-skip">Lewati dulu</button>
-      </div>
-    </div>
-  </div>`;
-
+    <div class="onb-wrap" role="dialog" aria-modal="true" aria-labelledby="onb-title">
+      <section class="onb-card">
+        <img class="onb-logo" src="assets/icons/beruang-wallet-192.png" alt="" />
+        <h1 class="onb-title" id="onb-title">${editing ? 'Ubah Dana Awal' : 'Mulai dengan Dana Awal'}</h1>
+        <p class="onb-sub">${editing
+          ? 'Perbaiki angka saldo saat pertama mulai memakai BerUang. Transaksi setelah tanggal setup tetap dihitung seperti biasa.'
+          : 'Sebelum mencatat transaksi, masukkan uang yang tersedia sekarang supaya saldo awal dan laporanmu akurat.'}</p>
+        <label class="onb-field-label" for="onb-starting-amount">${editing ? `Saldo pembuka pada ${state.startingBalance.date}` : 'Total uang tersedia sekarang'}</label>
+        <div class="onb-amount-wrap"><span class="onb-currency">Rp</span><input id="onb-starting-amount" class="onb-amount" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="${amount}" aria-describedby="onb-starting-hint" /></div>
+        <small class="onb-hint" id="onb-starting-hint">${editing ? 'Ubah saldo saat pertama mulai mencatat. Jangan isi saldo hari ini jika sudah ada transaksi sesudah tanggal tersebut, karena transaksi itu tetap dihitung.' : 'Jumlahkan saldo di rekening, e-wallet, dan uang tunai. Jangan masukkan investasi, piutang, atau limit kartu kredit. Dana awal hanya menjadi saldo pembuka, bukan pemasukan di laporan.'}</small>
+        <input id="onb-nama-user" class="onb-name" type="text" placeholder="Nama panggilan (opsional)" autocomplete="name" value="${escapeHtmlOnboarding(displayName)}" />
+        ${editing ? '' : `
+        <details class="onb-extras">
+          <summary>Opsional: isi aset, utang, dan tagihan rutin</summary>
+          <div class="onb-extras-body">
+            <section class="onb-extra-section"><b>Investasi &amp; aset</b><div id="onb-assets"></div><button type="button" class="onb-add-row" data-add-row="onb-assets" data-name-placeholder="Jenis aset">+ Tambah aset</button></section>
+            <section class="onb-extra-section"><b>Piutang</b><div id="onb-receivables"></div><button type="button" class="onb-add-row" data-add-row="onb-receivables" data-name-placeholder="Nama orang">+ Tambah piutang</button></section>
+            <section class="onb-extra-section"><b>Utang</b><div id="onb-debts"></div><button type="button" class="onb-add-row" data-add-row="onb-debts" data-name-placeholder="Ke siapa / keterangan">+ Tambah utang</button></section>
+            <section class="onb-extra-section"><b>Pengingat tagihan rutin</b><div id="onb-routines"></div><button type="button" class="onb-add-row" id="onb-add-routine">+ Tambah pengingat</button><p class="onb-extras-hint">Disimpan sebagai pengingat belum dibayar; tagihan tidak otomatis dicatat sebagai pengeluaran.</p></section>
+          </div>
+        </details>`}
+        <p id="onb-error" class="onb-error" role="alert" hidden></p>
+        <div class="onb-actions">
+          <button type="button" class="onb-primary" id="onb-save">${editing ? 'Simpan perubahan' : 'Simpan dana awal & lanjutkan'}</button>
+          <button type="button" class="onb-zero" id="onb-zero">${editing ? 'Atur saldo ke Rp0' : 'Saya mulai dari Rp0'}</button>
+          ${editing ? '<button type="button" class="onb-cancel" id="onb-cancel">Batal</button>' : ''}
+        </div>
+        <p class="onb-foot">${editing ? 'Perubahan hanya memperbaiki angka saldo pembuka.' : 'Isi nominal atau pilih Rp0. Setelah itu kamu langsung masuk ke BerUang.'}</p>
+      </section>
+    </div>`;
   screen.hidden = false;
 
-  // Prefill nama kalau udah pernah diisi
-  const namaInput = document.getElementById('onb-nama-user');
-  if (namaInput) {
-    namaInput.value = state.userName
-      || (typeof currentProfile !== 'undefined' && currentProfile && currentProfile.displayName)
-      || '';
+  const input = document.getElementById('onb-starting-amount');
+  input.addEventListener('input', () => {
+    const digits = input.value.replace(/[^\d]/g, '');
+    input.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+    document.getElementById('onb-error').hidden = true;
+  });
+  screen.querySelectorAll('.onb-add-row').forEach(button => {
+    button.onclick = () => appendOnboardingRow(button.dataset.addRow, button.dataset.namePlaceholder);
+  });
+  document.getElementById('onb-add-routine')?.addEventListener('click', appendOnboardingRoutineRow);
+  screen.addEventListener('input', event => {
+    if (!event.target.matches('.onb-money')) return;
+    const digits = event.target.value.replace(/[^\d]/g, '');
+    event.target.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+  });
+  if (!editing) {
+    appendOnboardingRow('onb-assets', 'Jenis aset');
+    appendOnboardingRow('onb-receivables', 'Nama orang');
+    appendOnboardingRow('onb-debts', 'Ke siapa / keterangan');
+    appendOnboardingRoutineRow();
   }
+  document.getElementById('onb-save').onclick = () => {
+    const amountValue = Number(input.value.replace(/[^\d]/g, ''));
+    if (!Number.isSafeInteger(amountValue) || amountValue <= 0) {
+      const error = document.getElementById('onb-error');
+      error.textContent = 'Masukkan saldo lebih dari Rp0, atau pilih tombol “Saya mulai dari Rp0”.';
+      error.hidden = false;
+      input.focus();
+      return;
+    }
+    saveStartingBalance(amountValue);
+  };
+  document.getElementById('onb-zero').onclick = () => {
+    if (editing && !window.confirm('Ubah saldo awal akun ini menjadi Rp0?')) return;
+    saveStartingBalance(0);
+  };
+  document.getElementById('onb-cancel')?.addEventListener('click', hideOnboarding);
+}
 
-  // Tambah baris dinamis
-  screen.querySelectorAll('.onb-add').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const cont = document.getElementById(btn.dataset.add);
-      cont.insertAdjacentHTML('beforeend', onbRowHtml(btn.dataset.nama, btn.dataset.jml));
+function appendOnboardingRow(containerId, namePlaceholder) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'onb-extra-row';
+  const name = document.createElement('input');
+  name.className = 'onb-extra-name';
+  name.type = 'text';
+  name.placeholder = namePlaceholder || 'Nama';
+  const amount = document.createElement('input');
+  amount.className = 'onb-money onb-extra-amount';
+  amount.type = 'text';
+  amount.inputMode = 'numeric';
+  amount.placeholder = 'Nominal Rp';
+  row.append(name, amount);
+  container.appendChild(row);
+}
+
+function appendOnboardingRoutineRow() {
+  const container = document.getElementById('onb-routines');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'onb-extra-row';
+  const name = document.createElement('input');
+  name.className = 'onb-routine-name';
+  name.type = 'text';
+  name.placeholder = 'Contoh: kost / cicilan';
+  const amount = document.createElement('input');
+  amount.className = 'onb-money onb-routine-amount';
+  amount.type = 'text';
+  amount.inputMode = 'numeric';
+  amount.placeholder = 'Nominal Rp';
+  row.append(name, amount);
+  container.appendChild(row);
+}
+
+function onboardingRoutineCategory(name) {
+  const available = Object.keys(state.categories?.pengeluaran || {});
+  const categoryHints = [
+    { re: /kost|kos|sewa|kontrak|rumah|kpr|listrik|air/i, names: ['Hunian', 'Tempat Tinggal'] },
+    { re: /cicil|utang|pinjaman/i, names: ['Utang & Pinjaman', 'Cicilan'] },
+    { re: /internet|wifi|pulsa|data/i, names: ['Internet & Komunikasi'] },
+    { re: /stream|hiburan|langganan/i, names: ['Hiburan & Rekreasi'] },
+  ];
+  const hint = categoryHints.find(item => item.re.test(name));
+  return (hint && hint.names.find(candidate => available.includes(candidate))) || available[0] || 'Tagihan Rutin';
+}
+
+function escapeHtmlOnboarding(value) {
+  return String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function saveStartingBalance(amount) {
+  const existingDate = hasStartingBalanceSetup() ? state.startingBalance.date : '';
+  const name = (document.getElementById('onb-nama-user')?.value || '').trim();
+  if (name) state.userName = name;
+  state.startingBalance = {
+    amount,
+    date: existingDate || todayISO(),
+    completed: true,
+    completedAt: new Date().toISOString(),
+  };
+  saveOptionalOnboardingData();
+  saveState();
+  hideOnboarding();
+  if (typeof renderAll === 'function') renderAll();
+  if (typeof showToast === 'function') showToast('Dana awal tersimpan. BerUang siap dipakai.', 'success');
+}
+
+function saveOptionalOnboardingData() {
+  if (document.getElementById('onb-assets')) {
+    document.querySelectorAll('#onb-assets .onb-extra-row').forEach(row => {
+      const amount = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
+      if (Number.isSafeInteger(amount) && amount > 0 && typeof addAsset === 'function') {
+        addAsset({ jenis: 'investasi', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Aset', jumlah: amount });
+      }
     });
-  });
-  // Hapus baris (event delegation)
-  screen.addEventListener('click', (e) => {
-    const del = e.target.closest('.onb-del');
-    if (del) del.closest('.onb-row').remove();
-  });
-
-  // Format ribuan otomatis di field nominal (4000000 → 4.000.000) biar gak salah nol
-  screen.addEventListener('input', (e) => {
-    const t = e.target;
-    if (t.classList && (t.classList.contains('onb-jml') || t.id === 'onb-kost' || t.id === 'onb-cicilan')) {
-      const digits = t.value.replace(/[^\d]/g, '');
-      t.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+    document.querySelectorAll('#onb-receivables .onb-extra-row').forEach(row => {
+      const nominal = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
+      if (Number.isSafeInteger(nominal) && nominal > 0 && typeof addHutang === 'function') {
+        addHutang({ jenis: 'piutang', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Piutang', nominal, keterangan: 'Setup dana awal' });
+      }
+    });
+    document.querySelectorAll('#onb-debts .onb-extra-row').forEach(row => {
+      const nominal = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
+      if (Number.isSafeInteger(nominal) && nominal > 0 && typeof addHutang === 'function') {
+        addHutang({ jenis: 'hutang', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Utang', nominal, keterangan: 'Setup dana awal' });
+      }
+    });
+  }
+  document.querySelectorAll('#onb-routines .onb-extra-row').forEach(row => {
+    const routineName = row.querySelector('.onb-routine-name')?.value.trim();
+    const routineAmount = Number(row.querySelector('.onb-routine-amount')?.value.replace(/[^\d]/g, '') || 0);
+    if (routineName && Number.isSafeInteger(routineAmount) && routineAmount > 0 && typeof addRecurring === 'function') {
+      const category = onboardingRoutineCategory(routineName);
+      addRecurring({ nama: routineName, jumlah: routineAmount, hariTagih: Math.min(parseInt(todayISO().slice(8, 10), 10) || 1, 28), kategori: category, subKategori: routineName, alokasi: 'Kebutuhan' });
     }
   });
-
-  document.getElementById('onb-skip').addEventListener('click', () => finishOnboarding(false));
-  document.getElementById('onb-save').addEventListener('click', () => finishOnboarding(true));
 }
 
 function hideOnboarding() {
@@ -167,77 +272,14 @@ function hideOnboarding() {
   if (screen) { screen.hidden = true; screen.innerHTML = ''; }
 }
 
-function onbNum(v) {
-  return Number(String(v || '').replace(/[^\d]/g, '')) || 0;
-}
-
-function onbReadRows(contId, jenis, sink) {
-  document.querySelectorAll('#' + contId + ' .onb-row').forEach(row => {
-    const nama = row.querySelector('.onb-nama').value.trim();
-    const jml = onbNum(row.querySelector('.onb-jml').value);
-    if (jml > 0) sink(nama, jml);
-  });
-}
-
-function finishOnboarding(save) {
-  if (save) {
-    try {
-      // Nama user → state.userName (buat sapaan & identitas di dashboard)
-      const namaUser = (document.getElementById('onb-nama-user').value || '').trim();
-      if (namaUser) { state.userName = namaUser; saveState(); }
-
-      // Saldo rekening/e-wallet (uang cair) → pemasukan "Saldo Awal" → MASUK Sisa Saldo
-      onbReadRows('onb-rekening', 'rekening', (nama, jml) =>
-        addTransaction({ jenis: 'pemasukan', jumlah: jml, kategori: 'Saldo Awal', subKategori: 'Saldo Awal', alokasi: '', tanggal: todayISO(), deskripsi: 'Saldo awal ' + (nama || 'rekening') }));
-      // Investasi/properti/kendaraan (gak cair) → state.assets (kekayaan TERPISAH dari cashflow)
-      onbReadRows('onb-investasi', 'investasi', (nama, jml) =>
-        addAsset({ jenis: 'investasi', nama: nama || 'Investasi', jumlah: jml }));
-
-      // Piutang (duit di teman) → hutangs jenis piutang (field jumlah = 'nominal')
-      onbReadRows('onb-piutang', 'piutang', (nama, jml) =>
-        addHutang({ jenis: 'piutang', nama: nama || 'Teman', nominal: jml, keterangan: 'Setup dana awal' }));
-
-      // Utang kamu → hutangs jenis hutang
-      onbReadRows('onb-utang', 'hutang', (nama, jml) =>
-        addHutang({ jenis: 'hutang', nama: nama || 'Utang', nominal: jml, keterangan: 'Setup dana awal' }));
-
-      // Biaya rutin → pengeluaran bulan ini + jadi TAGIHAN RUTIN (nge-remind bulan depan)
-      const ym = new Date().toISOString().slice(0, 7);
-      const hari = parseInt(todayISO().slice(8, 10), 10) || 1;
-      function rutinDanCatat(jml, kategori, subKategori, nama) {
-        const rec = { nama, jumlah: jml, hariTagih: hari, kategori, subKategori, alokasi: 'Kebutuhan' };
-        let rid = null;
-        if (typeof addRecurring === 'function') { addRecurring(rec); rid = rec.id; }
-        addTransaction({ jenis: 'pengeluaran', jumlah: jml, kategori, subKategori, alokasi: 'Kebutuhan', tanggal: todayISO(), deskripsi: nama, recurringId: rid, recurringMonth: rid ? ym : undefined });
-      }
-      const kost = onbNum(document.getElementById('onb-kost').value);
-      const cicilan = onbNum(document.getElementById('onb-cicilan').value);
-      if (kost > 0) rutinDanCatat(kost, 'Tempat Tinggal', 'Kost/Sewa', 'Kost/sewa bulanan');
-      if (cicilan > 0) rutinDanCatat(cicilan, 'Cicilan', 'Cicilan Kartu Kredit', 'Cicilan kartu kredit');
-
-      if (typeof showToast === 'function') showToast('Dana awal tersimpan! Selamat datang 🐻', 'success');
-    } catch (e) {
-      console.warn('Onboarding save error:', e);
-    }
-  }
-  try { localStorage.setItem(onbFlagKey(), '1'); } catch (_) {}
-  hideOnboarding();
-  // Refresh tampilan dengan data baru
-  if (typeof renderAll === 'function') renderAll();
-  if (typeof renderAssets === 'function') renderAssets();
-}
-
-// Buka ulang manual dari menu (reset flag biar form muncul lagi walau bukan user fresh)
 function openOnboardingManual() {
-  showOnboarding();
+  showOnboarding(hasStartingBalanceSetup());
 }
 
-// Hapus flag "udah onboarding" (dipakai saat Reset Data → biar dianggap user baru lagi)
 function clearOnboardingDone() {
-  try { localStorage.removeItem(onbFlagKey()); } catch (_) {}
+  // Status setup disimpan bersama data akun; resetAll() menghapusnya.
 }
 
-// Expose
 window.maybeShowOnboarding = maybeShowOnboarding;
 window.openOnboardingManual = openOnboardingManual;
 window.clearOnboardingDone = clearOnboardingDone;

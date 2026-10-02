@@ -83,6 +83,7 @@ function computeMonthlyAvg(jenis) {
     const m = checkDate.getMonth();
     const y = checkDate.getFullYear();
     const txs = (state.transactions || []).filter(t => {
+      if (isOpeningBalanceTransaction(t)) return false;
       if (!t.tanggal) return false;
       const td = new Date(t.tanggal);
       return td.getMonth() === m && td.getFullYear() === y && t.jenis === jenis;

@@ -142,7 +142,7 @@ async function getAIInsight(env, s) {
 }
 
 // Kirim laporan untuk satu link Telegram. Return: 'sent' | 'skipped:<alasan>'
-export async function sendWeeklyReportFor(env, token, chatId, link, { force = false, manual = false } = {}) {
+export async function sendWeeklyReportFor(env, token, chatId, link, { force = false, manual = false, nowMs = Date.now() } = {}) {
   const uid = await resolveLinkUid(env, link);
   if (!uid) return "skipped:no-uid";
   if (!manual && !(await env.BOT_DATA.get("btg_weekly_on:" + uid))) return "skipped:not-opted-in";
@@ -150,7 +150,7 @@ export async function sendWeeklyReportFor(env, token, chatId, link, { force = fa
     if (manual) await sendMessage(token, chatId, "Laporan Beruang mingguan khusus paket berbayar yang aktif, bos. Aktifkan paket di app BerUang (mulai Rp 10rb) ya 🐻", { parse_mode: "HTML" });
     return "skipped:not-paid";
   }
-  const ranges = weekRanges();
+  const ranges = weekRanges(nowMs);
   const dedupeKey = manual ? `btg_weekly_manual:${uid}:${ranges.today}` : `btg_weekly:${uid}:${ranges.weekKey}`;
   if (!force && await env.BOT_DATA.get(dedupeKey)) {
     if (manual) await sendMessage(token, chatId, "Laporan hari ini sudah dikirim tadi, bos. Coba lagi besok ya 🐻", { parse_mode: "HTML" });
@@ -158,7 +158,7 @@ export async function sendWeeklyReportFor(env, token, chatId, link, { force = fa
   }
   const doc = await firestoreAdmin(env).get(`users/${uid}/data/main`);
   const data = doc?.data || {};
-  const s = computeWeeklySummary(data.transactions, data.target);
+  const s = computeWeeklySummary(data.transactions, data.target, nowMs);
   if (!manual && s.inactiveTwoWeeks) return "skipped:inactive"; // jangan spam user yang berhenti mencatat
   await env.BOT_DATA.put(dedupeKey, "1", { expirationTtl: manual ? TTL_MANUAL : TTL_SENT }); // reservasi dulu (anti dobel & anti biaya ganda)
   const insight = await getAIInsight(env, s);

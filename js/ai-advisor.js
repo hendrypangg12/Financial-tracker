@@ -219,13 +219,14 @@ function buildAdvisorContext() {
   const monthName = now.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
   // Filter transaksi bulan ini
-  const thisMonth = state.transactions.filter((t) => {
+  const cashflowTransactions = (state.transactions || []).filter(t => !isOpeningBalanceTransaction(t));
+  const thisMonth = cashflowTransactions.filter((t) => {
     const d = new Date(t.tanggal);
     return d.getMonth() === curMonth && d.getFullYear() === curYear;
   });
 
   // Filter bulan lalu (untuk comparison)
-  const lastMonth = state.transactions.filter((t) => {
+  const lastMonth = cashflowTransactions.filter((t) => {
     const d = new Date(t.tanggal);
     const lastMonthYear = curMonth === 0 ? curYear - 1 : curYear;
     const lastMonthIdx = curMonth === 0 ? 11 : curMonth - 1;
@@ -297,7 +298,7 @@ function buildAdvisorContext() {
   for (let back = 5; back >= 0; back--) {
     const ref = new Date(curYear, curMonth - back, 1);
     const m = ref.getMonth(), y = ref.getFullYear();
-    const txs = state.transactions.filter((t) => {
+    const txs = cashflowTransactions.filter((t) => {
       const d = new Date(t.tanggal);
       return d.getMonth() === m && d.getFullYear() === y;
     });

@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
       init(false);
       showScreen('app');
       setupWelcomeBanner();
-      // User baru → tampilkan onboarding "Setup Dana Awal" dulu (bisa dilewati)
+      // Pastikan setiap akun memilih saldo awal atau secara eksplisit mulai dari Rp0.
       if (typeof maybeShowOnboarding === 'function') maybeShowOnboarding();
       // Tarik transaksi dari bot Telegram (kalau tersambung) + auto tiap buka/berkala
       if (typeof pullTelegramInbox === 'function') {
@@ -652,6 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
       startCloudListener(() => {
         renderAll();
         fillSubCategoriSelects();
+        if (typeof hasStartingBalanceSetup === 'function' && hasStartingBalanceSetup() && typeof hideOnboarding === 'function') hideOnboarding();
       });
       if (typeof startAutoSync === 'function') startAutoSync();
       watchAccessExpiry();
@@ -940,6 +941,21 @@ function showScreen(which) {
     if (reloadBtn) reloadBtn.hidden = !locked;
     const title = document.getElementById('paywall-title');
     if (title) title.textContent = locked ? 'Masa aktif habis' : 'Pilih Paket Langganan';
+    const description = document.getElementById('paywall-description');
+    if (description) {
+      const active = typeof isPro === 'function' && isPro(currentProfile);
+      const planNames = { free_trial: 'Uji Coba Gratis', trial: 'Akses 7 Hari', starter: 'Akses 7 Hari', monthly: 'Pro Bulanan', annual: 'Pro Tahunan', lifetime: 'Lifetime', pro: 'Pro' };
+      if (!currentProfile) description.textContent = 'Status paket belum dapat dibaca. Coba muat ulang sebelum memilih pembayaran.';
+      else if (active) {
+        const date = currentProfile.expiresAt ? new Date(currentProfile.expiresAt) : null;
+        const end = date && !Number.isNaN(date.getTime()) ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date) : '';
+        description.textContent = `Paket ${planNames[currentProfile.plan] || 'Pro'} kamu aktif${end ? ` sampai ${end}` : ''}. Kamu bisa melihat pilihan paket di bawah. Data akun tetap tersimpan.`;
+      } else description.textContent = `Akun ${currentUser?.email || ''} belum memiliki paket aktif. Pilih paket untuk melanjutkan; data akun tetap tersimpan.`;
+    }
+    document.querySelectorAll('.btn-buy').forEach(btn => {
+      btn.disabled = !currentProfile;
+      btn.title = currentProfile ? '' : 'Status akun belum terbaca. Muat ulang sebelum membayar.';
+    });
     // Set link WhatsApp umum & Instagram
     const waBtn = document.getElementById('btn-wa-admin');
     const igBtn = document.getElementById('btn-ig-admin');
@@ -1130,13 +1146,23 @@ function setupAuthUI() {
     };
   }
 
-  // Buka ulang onboarding "Setup Dana Awal" dari menu
+  // Koreksi saldo awal dari menu akun.
   const btnSetupDana = document.getElementById('btn-setup-dana');
   if (btnSetupDana) {
     btnSetupDana.onclick = (e) => {
       e.stopPropagation();
       document.getElementById('user-dropdown').hidden = true;
       if (typeof openOnboardingManual === 'function') openOnboardingManual();
+    };
+  }
+
+  const btnOpenPaywall = document.getElementById('btn-open-paywall');
+  if (btnOpenPaywall) {
+    btnOpenPaywall.onclick = (e) => {
+      e.stopPropagation();
+      const dropdown = document.getElementById('user-dropdown');
+      if (dropdown) dropdown.hidden = true;
+      showScreen('paywall');
     };
   }
 
@@ -1224,14 +1250,15 @@ function updateUserMenu(user, profile) {
   if (email) email.textContent = user.email || '';
   if (plan && profile) {
     const days = daysRemaining(profile);
-    const planLabel = profile.plan === 'lifetime' ? 'Lifetime ∞'
-      : profile.plan === 'pro'      ? 'Pro ∞'
-      : profile.plan === 'annual'   ? `Tahunan (${days} hari lagi)`
-      : profile.plan === 'monthly'  ? `Bulanan (${days} hari lagi)`
-      : profile.plan === 'free_trial' ? `Uji Coba Gratis (${days} hari lagi)`
-      : profile.plan === 'trial'    ? `Akses 7 Hari (${days} hari lagi)`
-      : 'Gratis';
-    plan.innerHTML = `📅 ${planLabel}`;
+    const active = typeof isPro === 'function' && isPro(profile);
+    const planLabel = profile.plan === 'lifetime' ? 'Lifetime'
+      : profile.plan === 'pro' ? 'Pro'
+      : profile.plan === 'annual' ? 'Pro Tahunan'
+      : profile.plan === 'monthly' ? 'Pro Bulanan'
+      : profile.plan === 'free_trial' ? 'Uji Coba Gratis'
+      : profile.plan === 'trial' || profile.plan === 'starter' ? 'Akses 7 Hari'
+      : 'Belum berlangganan';
+    plan.textContent = `📅 Paket: ${planLabel}${active && profile.expiresAt ? ` · ${days} hari tersisa` : !active && profile.expiresAt ? ' · Masa aktif berakhir' : active ? ' · Aktif' : ''}`;
   }
 }
 
@@ -1279,6 +1306,7 @@ function setupProGating(profile) {
   const timedPlanActive = ['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(profile?.plan) && userIsPro;
   document.body.classList.toggle('is-free-user', !userIsPro);
   document.body.classList.toggle('is-pro-user', userIsPro);
+  if (typeof renderSubscriptionSummary === 'function') renderSubscriptionSummary();
 
   // Pengguna aktif tetap bisa memperpanjang, tetapi jangan terlihat seperti belum berlangganan.
   const btnUpgrade = document.getElementById('btn-upgrade-pro');

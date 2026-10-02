@@ -66,14 +66,14 @@ function renderRekap() {
   const m = state.selectedMonth, y = state.selectedYear;
   let rows = [];
   if (period === 'harian') {
-    const trx = getTransactionsFor(m, y);
+    const trx = getCashflowTransactionsFor(m, y);
     const days = daysInMonth(m, y);
     for (let i = 1; i <= days; i++) {
       const list = trx.filter(t => parseISO(t.tanggal).getDate() === i);
       if (list.length) rows.push(makeRekapRow(`${i} ${MONTHS_SHORT[m]}`, list));
     }
   } else if (period === 'mingguan') {
-    const trx = getTransactionsFor(m, y);
+    const trx = getCashflowTransactionsFor(m, y);
     const weeks = {};
     for (const t of trx) {
       const w = weekOfMonth(parseISO(t.tanggal));
@@ -85,7 +85,7 @@ function renderRekap() {
   } else {
     for (let i = 11; i >= 0; i--) {
       const { m: mm, y: yy } = addMonths(state.selectedMonth, state.selectedYear, -i);
-      const trx = getTransactionsFor(mm, yy);
+      const trx = getCashflowTransactionsFor(mm, yy);
       // Lewati bulan kosong di awal (sebelum mulai mencatat) supaya daftar tidak penuh Rp 0.
       if (!trx.length && !rows.length) continue;
       rows.push(makeRekapRow(`${MONTHS_SHORT[mm]} ${yy}`, trx));

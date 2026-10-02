@@ -86,19 +86,19 @@ test('sendWeeklyReportFor: opt-in only; paid user gets report even when AI fails
   t.after(() => Object.defineProperty(globalThis.crypto, 'subtle', { value: oldSubtle, configurable: true }));
 
   const link = { email: 'budi@example.test', uid: 'uid-budi' };
-  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, {}), 'skipped:not-opted-in'); // default: TIDAK auto
+  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { nowMs: NOW }), 'skipped:not-opted-in'); // default: TIDAK auto
   store.set('btg_weekly_on:uid-budi', '1');
-  const r1 = await sendWeeklyReportFor(env, 'tg-token', '123', link, {});
+  const r1 = await sendWeeklyReportFor(env, 'tg-token', '123', link, { nowMs: NOW });
   assert.equal(r1, 'sent');
   assert.equal(sent.length, 1);
   assert.match(sent[0].text, /Laporan Beruang/);
   assert.match(sent[0].text, /Rp 495\.000/);
   assert.doesNotMatch(sent[0].text, /💡/); // AI gagal → tanpa paragraf insight, laporan tetap terkirim
-  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, {}), 'skipped:already-sent');
+  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { nowMs: NOW }), 'skipped:already-sent');
 
   plan = 'free_trial'; store.set('btg_weekly_on:uid-trial', '1');
-  const r3 = await sendWeeklyReportFor(env, 'tg-token', '124', { email: 'trial@example.test', uid: 'uid-trial' }, {});
+  const r3 = await sendWeeklyReportFor(env, 'tg-token', '124', { email: 'trial@example.test', uid: 'uid-trial' }, { nowMs: NOW });
   assert.equal(r3, 'skipped:not-paid');
   store.delete('btg_weekly_on:uid-budi'); plan = 'monthly';
-  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { force: true }), 'skipped:not-opted-in');
+  assert.equal(await sendWeeklyReportFor(env, 'tg-token', '123', link, { force: true, nowMs: NOW }), 'skipped:not-opted-in');
 });

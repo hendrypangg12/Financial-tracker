@@ -7,7 +7,7 @@
     "stage": "node scripts/stage-web.mjs",
     "test": "node --test test/*.test.mjs",
     "test:rules": "node --test test/firestore-rules.test.mjs",
-    "sync": "pnpm stage && cap sync android",
+    "sync": "pnpm run stage && cap sync android",
     "android": "cap open android",
     "ios:scaffold": "cap add ios"
   },

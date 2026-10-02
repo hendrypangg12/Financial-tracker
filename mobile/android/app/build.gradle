@@ -26,8 +26,8 @@ android {
         applicationId beruangProduction ? "id.berstock.beruang" : "id.berstock.beruang.dev"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode beruangProduction ? 7 : 1
-        versionName beruangProduction ? "1.4.1" : "0.1.0-test"
+        versionCode beruangProduction ? 9 : 1
+        versionName beruangProduction ? "1.4.3" : "0.1.0-test"
         manifestPlaceholders = [appLabel: beruangProduction ? 'BerUang' : 'BerUang Uji']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -43,6 +43,28 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+if (beruangProduction) {
+    def verifyProductionWebBundle = tasks.register('verifyProductionWebBundle') {
+        doLast {
+            def publicDir = file('src/main/assets/public')
+            def index = new File(publicDir, 'index.html')
+            def manifest = new File(publicDir, 'bundle-manifest.json')
+            if (!index.isFile() || !manifest.isFile()) {
+                throw new GradleException('Production web assets are missing. Stage and sync the production bundle first.')
+            }
+            def html = index.getText('UTF-8')
+            def kind = new groovy.json.JsonSlurper().parse(manifest).kind
+            if (kind != 'production-candidate' || !html.contains('window.__BERUANG_STORE_BUILD__=true')) {
+                throw new GradleException('Refusing to package test-only web assets in a production Android build.')
+            }
+            if (html.contains('id="payment-modal"')) {
+                throw new GradleException('Website payment modal must not be present in the Play bundle.')
+            }
+        }
+    }
+    tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn(verifyProductionWebBundle) }
 }
 
 repositories {

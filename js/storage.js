@@ -4,7 +4,7 @@ function storageKey() { return activeStorageKey; }
 function selectUserStorage(uid) {
   activeStorageKey = STORAGE_KEY + ':' + uid;
   for (const key of ['transactions', 'hutangs', 'assets', 'recurring', 'goals']) state[key] = [];
-  state.userName = ''; state.target = 0;
+  state.userName = ''; state.target = 0; state.startingBalance = null;
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
 }
 // Storage & state
@@ -15,6 +15,7 @@ const state = {
   recurring: [], // tagihan rutin bulanan (kost, cicilan, langganan) — buat reminder
   goals: [], // 🎯 AI Goal Planner — target nabung dengan AI plan (v1.0.2)
   userName: '', // nama panggilan user (dari onboarding) — buat sapaan
+  startingBalance: null, // { amount, date, completed } — baseline kas, bukan pemasukan
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
   selectedMonth: new Date().getMonth(),
@@ -33,6 +34,7 @@ function loadState() {
     if (Array.isArray(data.recurring)) state.recurring = data.recurring;
     if (Array.isArray(data.goals)) state.goals = data.goals;
     if (typeof data.userName === 'string') state.userName = data.userName;
+    if (data.startingBalance && typeof data.startingBalance === 'object') state.startingBalance = data.startingBalance;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
   } catch (e) {
@@ -49,6 +51,7 @@ function saveState() {
       recurring: state.recurring,
       goals: state.goals,
       userName: state.userName,
+      startingBalance: state.startingBalance,
       categories: state.categories,
       target: state.target,
     }));
@@ -107,6 +110,15 @@ function getTransactionsFor(month, year) {
   });
 }
 
+function isOpeningBalanceTransaction(transaction) {
+  return !!transaction && (transaction.isOpeningBalance === true
+    || transaction.kategori === 'Saldo Awal' || transaction.subKategori === 'Saldo Awal');
+}
+
+function getCashflowTransactionsFor(month, year) {
+  return getTransactionsFor(month, year).filter(t => !isOpeningBalanceTransaction(t));
+}
+
 function exportData() {
   const data = {
     exportedAt: new Date().toISOString(),
@@ -116,6 +128,7 @@ function exportData() {
     recurring: state.recurring,
     goals: state.goals,
     userName: state.userName,
+    startingBalance: state.startingBalance,
     categories: state.categories,
     target: state.target,
   };
@@ -139,6 +152,11 @@ function importData(file) {
         if (Array.isArray(data.assets)) state.assets = data.assets;
         if (Array.isArray(data.recurring)) state.recurring = data.recurring;
         if (typeof data.userName === 'string') state.userName = data.userName;
+        // A legacy backup has no baseline. Do not retain the previous account's
+        // baseline when its transactions are replaced by imported history.
+        state.startingBalance = data.startingBalance && typeof data.startingBalance === 'object'
+          ? data.startingBalance : null;
+        if (typeof migrateLegacyStartingBalance === 'function') migrateLegacyStartingBalance();
         if (data.categories) state.categories = data.categories;
         if (data.target != null) state.target = data.target;
         saveState();
@@ -156,6 +174,7 @@ function resetAll() {
   state.assets = [];
   state.recurring = [];
   state.userName = '';
+  state.startingBalance = null;
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   state.target = 0;
   saveState();

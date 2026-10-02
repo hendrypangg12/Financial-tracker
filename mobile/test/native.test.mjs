@@ -41,6 +41,48 @@ test('Play paywall separates the one-time 7-day pass from recurring subscription
   assert.match(source,/Paket 7 hari hanya dibayar sekali/);
   assert.match(source,/restorePurchases\(\)/);
 });
+test('Play paywall prevents a second charged plan from overlapping active access',async()=>{
+  const products=[
+    {productId:'beruang_access_7d',productType:'INAPP',price:'Rp 10.000'},
+    {productId:'beruang_monthly_subscription',productType:'SUBS',price:'Rp 50.000'},
+    {productId:'beruang_annual_subscription',productType:'SUBS',price:'Rp 299.000'},
+  ];
+  let purchases=0;
+  const billing={getProducts:async()=>({products}),restorePurchases:async()=>({purchases:[]}),purchase:async()=>{purchases++;}};
+  const createNode=tag=>({tag,children:[],dataset:{},disabled:false,append(...items){this.children.push(...items);},replaceChildren(){this.children=[];}});
+  const render=async profile=>{
+    const {context,listeners,calls}=sandbox({PlayBilling:billing},true);
+    const elements={
+      'paywall-screen':createNode('main'),
+      'play-plan-status':createNode('p'),
+      'play-manage':createNode('a'),
+      'play-products':createNode('div'),
+    };
+    context.document.getElementById=id=>elements[id]||null;
+    context.document.createElement=createNode;
+    context.currentUser={uid:'user-1'};
+    context.currentProfile=profile;
+    context.isPro=value=>value&&(['lifetime','pro'].includes(value.plan)||Date.parse(value.expiresAt)>Date.now());
+    context.showScreen('paywall');
+    await new Promise(resolve=>setTimeout(resolve,10));
+    const buttons=elements['play-products'].children.filter(node=>node.tag==='button');
+    return {context,listeners,calls,elements,buttons};
+  };
+  const expiresAt=new Date(Date.now()+7*86400000).toISOString();
+  const pass=await render({plan:'trial',activatedBy:'google-play',expiresAt});
+  assert.deepEqual(pass.buttons.map(button=>button.disabled),[false,true,true]);
+  const subscription=await render({plan:'monthly',activatedBy:'google-play-subscription',expiresAt});
+  assert.deepEqual(subscription.buttons.map(button=>button.disabled),[true,true,true]);
+  assert.equal(subscription.elements['play-manage'].hidden,false);
+  const expired=await render({plan:'trial',activatedBy:'google-play',expiresAt:'2020-01-01T00:00:00.000Z'});
+  assert.deepEqual(expired.buttons.map(button=>button.disabled),[false,false,false]);
+  // Profile can change after rendering; the click handler checks the current profile again.
+  expired.context.currentProfile={plan:'monthly',activatedBy:'google-play-subscription',expiresAt};
+  const clicked=expired.buttons[0];
+  await expired.listeners.click({target:{closest:selector=>selector==='[data-play-product]'?clicked:null}});
+  assert.equal(purchases,0);
+  assert.ok(expired.calls.some(row=>row[0]==='toast'&&row[1].includes('tumpang tindih')));
+});
 test('subscription restore retries after a verification failure and refreshes again after six hours',async()=>{
   let restores=0,verified=0,now=Date.now(),failFirst=true;
   const billing={restorePurchases:async()=>{restores++;return{purchases:[{productId:'beruang_monthly_subscription',purchaseToken:'token'}]};}};
@@ -57,6 +99,28 @@ test('subscription restore retries after a verification failure and refreshes ag
   assert.equal(restores,2);
   now+=6*60*60*1000+1;listeners.visibilitychange();await settle();
   assert.equal(restores,3);assert.equal(verified,3);
+});
+test('verified Play entitlement updates the visible package and menu only after server confirmation',async()=>{
+  const profile={plan:'monthly',expiresAt:'2026-10-29T00:00:00.000Z'};
+  const billing={restorePurchases:async()=>({purchases:[{productId:'beruang_monthly_subscription',purchaseToken:'subscription-token'}]})};
+  const run=async accepted=>{
+    const {context,calls,listeners}=sandbox({PlayBilling:billing},true);
+    context.currentUser={uid:'user-1',email:'user@example.com'};
+    context.authenticatedHeaders=async()=>({Authorization:'Bearer test'});
+    context.fetch=async()=>({ok:accepted,json:async()=>accepted?{entitlementApplied:true}:{error:'Pembayaran belum dapat diverifikasi.'}});
+    context.refreshUserProfile=async()=>{calls.push(['profile']);return profile;};
+    context.setupProGating=value=>calls.push(['gating',value]);
+    context.updateUserMenu=(user,value)=>calls.push(['menu',user.uid,value]);
+    listeners.visibilitychange();
+    await new Promise(resolve=>setTimeout(resolve,10));
+    return calls;
+  };
+  const success=await run(true);
+  assert.deepEqual(success.filter(row=>['profile','gating','menu'].includes(row[0])).map(row=>row[0]),['profile','gating','menu']);
+  assert.equal(success.find(row=>row[0]==='gating')[1],profile);
+  assert.equal(success.find(row=>row[0]==='menu')[2],profile);
+  const failure=await run(false);
+  assert.equal(failure.some(row=>['profile','gating','menu'].includes(row[0])),false);
 });
 test('native backup is durably written before share, using safe filenames',async()=>{
   const operations=[];

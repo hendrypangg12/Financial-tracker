@@ -1,11 +1,11 @@
 // Service worker untuk BerUang — cache first strategy agar aplikasi bisa jalan offline
-const CACHE_VERSION = 'beruang-v63';
+const CACHE_VERSION = 'beruang-v64';
 const CORE = [
   './',
   './index.html',
   './app.html',
   './landing.html',
-  './styles.css?v=55',
+  './styles.css?v=56',
   './manifest.json',
   './assets/icons/beruang-wallet-192.png',
   './assets/icons/beruang-wallet-512.png',
@@ -13,23 +13,23 @@ const CORE = [
   './js/utils.js?v=21',
   './js/firebase-config.js?v=25',
   './js/presence.js?v=2',
-  './js/storage.js?v=25',
+  './js/storage.js?v=26',
   './js/parser.js?v=20',
-  './js/sync.js?v=26',
+  './js/sync.js?v=27',
   './js/auth.js?v=26',
   './js/admin.js?v=22',
-  './js/dashboard.js?v=34',
+  './js/dashboard.js?v=35',
   './js/anomaly.js?v=3',
-  './js/pages.js?v=23',
-  './js/reports.js?v=1',
-  './js/app.js?v=58',
+  './js/pages.js?v=24',
+  './js/reports.js?v=2',
+  './js/app.js?v=59',
   './js/metrics.js?v=1',
-  './js/goal.js?v=3',
+  './js/goal.js?v=4',
   './js/hutang.js?v=2',
-  './js/ai-advisor.js?v=13',
+  './js/ai-advisor.js?v=14',
   './js/recurring.js?v=2',
   './js/telegram-link.js?v=7',
-  './js/onboarding.js?v=7',
+  './js/onboarding.js?v=8',
 ];
 
 self.addEventListener('install', (event) => {

@@ -3,9 +3,9 @@ let cloudUnsubscribe = null, cloudPushTimer = null, autoSyncInterval = null;
 let cloudLoadedOnce = false, isApplyingRemote = false, cloudConflict = false;
 let cloudBase = null, cloudOwner = null, cloudWrite = null;
 let pendingCloudSnapshot = null;
-const SYNC_FIELDS = ['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target'];
+const SYNC_FIELDS = ['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'startingBalance'];
 function syncData(data) {
-  return Object.fromEntries(SYNC_FIELDS.map(k => [k, data[k] ?? (k === 'userName' ? '' : k === 'target' ? 0 : k === 'categories' ? {} : [])]));
+  return Object.fromEntries(SYNC_FIELDS.map(k => [k, data[k] ?? (k === 'userName' ? '' : k === 'target' ? 0 : k === 'categories' ? {} : k === 'startingBalance' ? null : [])]));
 }
 function stableJSON(v) {
   if (Array.isArray(v)) return '[' + v.map(stableJSON).join(',') + ']';
