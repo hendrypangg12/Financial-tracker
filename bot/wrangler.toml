@@ -19,6 +19,8 @@ FIREBASE_WEB_API_KEY = "AIzaSyDe-giPojPsL6-XeQf_4atnJqoemjj69oc"
 BOT_NAME = "Berstock"
 BUSINESS_NAME_DEFAULT = "Toko Anda"
 DEFAULT_TZ = "Asia/Jakarta"
+GOOGLE_PLAY_RTDN_AUDIENCE = "https://berstock-bot.hendrypangg12.workers.dev/api/google-play/rtdn"
+GOOGLE_PLAY_RTDN_SERVICE_ACCOUNT_EMAIL = "beruang-rtdn-push@ber-uang-735b3.iam.gserviceaccount.com"
 
 # Secrets diset via: wrangler secret put <NAMA>
 # - ANTHROPIC_API_KEY
