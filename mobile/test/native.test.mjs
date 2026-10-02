@@ -87,7 +87,7 @@ test('subscription restore retries after a verification failure and refreshes ag
   let restores=0,verified=0,now=Date.now(),failFirst=true;
   const billing={restorePurchases:async()=>{restores++;return{purchases:[{productId:'beruang_monthly_subscription',purchaseToken:'token'}]};}};
   const {context,listeners}=sandbox({PlayBilling:billing},true);
-  context.currentUser={uid:'u'};context.authenticatedHeaders=async()=>({});context.refreshUserProfile=async()=>{};
+  context.currentUser={uid:'u'};context.authenticatedHeaders=async()=>({});context.refreshUserProfile=async()=>({plan:'monthly',expiresAt:'2099-01-01T00:00:00.000Z'});
   context.Date={now:()=>now};
   context.fetch=async()=>{verified++;return{ok:!failFirst,json:async()=>failFirst?{error:'temporary'}:{entitlementApplied:true}};};
   const settle=()=>new Promise(resolve=>setTimeout(resolve,10));
@@ -116,7 +116,7 @@ test('verified Play entitlement updates the visible package and menu only after 
     return calls;
   };
   const success=await run(true);
-  assert.deepEqual(success.filter(row=>['profile','gating','menu'].includes(row[0])).map(row=>row[0]),['profile','gating','menu']);
+  assert.deepEqual(success.filter(row=>['profile','gating','menu'].includes(row[0])).map(row=>row[0]),['profile','menu','gating']);
   assert.equal(success.find(row=>row[0]==='gating')[1],profile);
   assert.equal(success.find(row=>row[0]==='menu')[2],profile);
   const failure=await run(false);
