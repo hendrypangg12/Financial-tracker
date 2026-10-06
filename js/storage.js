@@ -103,6 +103,57 @@ function allSubs(jenis) {
   return result;
 }
 
+function normalizeCategoryName(value) {
+  const name = String(value == null ? '' : value).trim().replace(/\s+/g, ' ');
+  if (!name) return { error: 'Nama kategori belum diisi.' };
+  if (name.length > 40) return { error: 'Nama kategori maksimal 40 karakter.' };
+  if (name in Object.prototype || name === '__proto__') return { error: 'Nama kategori itu tidak dapat digunakan.' };
+  return { name };
+}
+
+function createCustomCategory(jenis, rawName, alokasi = '') {
+  if (!['pengeluaran', 'pemasukan'].includes(jenis)) return { ok: false, error: 'Jenis transaksi tidak valid.' };
+  const normalized = normalizeCategoryName(rawName);
+  if (normalized.error) return { ok: false, error: normalized.error };
+  const name = normalized.name;
+  const categories = state.categories[jenis] || (state.categories[jenis] = {});
+  const duplicate = Object.keys(categories).some(existing => existing.toLocaleLowerCase('id-ID') === name.toLocaleLowerCase('id-ID'));
+  if (duplicate) return { ok: false, error: 'Kategori dengan nama itu sudah ada.' };
+  const allowedAllocations = ['Kebutuhan', 'Keinginan', 'Investasi'];
+  categories[name] = {
+    ...(jenis === 'pengeluaran' ? { alokasi: allowedAllocations.includes(alokasi) ? alokasi : 'Kebutuhan' } : {}),
+    subs: ['Umum'],
+    custom: true,
+  };
+  return { ok: true, name };
+}
+
+function renameCustomCategory(jenis, oldName, rawName) {
+  if (!['pengeluaran', 'pemasukan'].includes(jenis)) return { ok: false, error: 'Jenis transaksi tidak valid.' };
+  const categories = state.categories[jenis] || {};
+  const info = Object.prototype.hasOwnProperty.call(categories, oldName) ? categories[oldName] : null;
+  if (!info || info.custom !== true) return { ok: false, error: 'Hanya kategori buatan sendiri yang dapat diubah namanya.' };
+  const normalized = normalizeCategoryName(rawName);
+  if (normalized.error) return { ok: false, error: normalized.error };
+  const newName = normalized.name;
+  const duplicate = Object.keys(categories).some(existing => existing !== oldName && existing.toLocaleLowerCase('id-ID') === newName.toLocaleLowerCase('id-ID'));
+  if (duplicate) return { ok: false, error: 'Kategori dengan nama itu sudah ada.' };
+  if (newName === oldName) return { ok: false, error: 'Nama kategori tidak berubah.' };
+
+  const updatedInfo = { ...info, subs: [...(info.subs || [])] };
+  delete categories[oldName];
+  categories[newName] = updatedInfo;
+  (state.transactions || []).forEach(transaction => {
+    if (transaction.jenis === jenis && transaction.kategori === oldName) transaction.kategori = newName;
+  });
+  if (jenis === 'pengeluaran') {
+    (state.recurring || []).forEach(item => {
+      if (item.kategori === oldName) item.kategori = newName;
+    });
+  }
+  return { ok: true, oldName, name: newName };
+}
+
 function getTransactionsFor(month, year) {
   return state.transactions.filter(t => {
     const d = parseISO(t.tanggal);

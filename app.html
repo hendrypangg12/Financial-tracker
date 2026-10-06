@@ -618,6 +618,21 @@
                 <select name="subKategori" required></select>
               </label>
             </div>
+            <details class="category-create-inline" id="transaction-category-create">
+              <summary id="transaction-category-create-summary">＋ Tambah kategori pengeluaran</summary>
+              <div class="category-inline-fields">
+                <input type="text" id="transaction-category-name" maxlength="40" placeholder="Nama kategori baru" aria-label="Nama kategori baru" />
+                <label id="transaction-category-allocation-field">Alokasi pengeluaran
+                  <select id="transaction-category-allocation" aria-label="Alokasi kategori pengeluaran">
+                    <option value="Kebutuhan">Kebutuhan</option>
+                    <option value="Keinginan">Keinginan</option>
+                    <option value="Investasi">Investasi</option>
+                  </select>
+                </label>
+                <button class="btn btn-small btn-primary" id="btn-create-transaction-category" type="button">Tambahkan</button>
+              </div>
+              <small id="transaction-category-create-hint">Kategori pengeluaran baru langsung dipilih. Subkategori awalnya “Umum”.</small>
+            </details>
             <details class="advanced-fields">
               <summary>Opsi lanjutan</summary>
               <div class="advanced-fields-body">
@@ -834,6 +849,18 @@ TOTAL            86.500"></textarea>
       <div class="grid-2">
         <div class="panel">
           <div class="panel-head"><h3>Pengeluaran</h3></div>
+          <details class="category-create">
+            <summary>＋ Buat kategori pengeluaran</summary>
+            <form id="form-add-category-out" class="form-inline">
+              <input type="text" name="nama" maxlength="40" placeholder="Nama kategori baru" aria-label="Nama kategori pengeluaran" required />
+              <select name="alokasi" aria-label="Alokasi kategori pengeluaran">
+                <option value="Kebutuhan">Kebutuhan</option>
+                <option value="Keinginan">Keinginan</option>
+                <option value="Investasi">Investasi</option>
+              </select>
+              <button class="btn btn-small btn-primary" type="submit">Buat kategori</button>
+            </form>
+          </details>
           <div id="kategori-pengeluaran"></div>
           <form id="form-add-sub-out" class="form-inline">
             <select name="kategori" required></select>
@@ -849,6 +876,13 @@ TOTAL            86.500"></textarea>
         </div>
         <div class="panel">
           <div class="panel-head"><h3>Pemasukan</h3></div>
+          <details class="category-create">
+            <summary>＋ Buat kategori pemasukan</summary>
+            <form id="form-add-category-in" class="form-inline">
+              <input type="text" name="nama" maxlength="40" placeholder="Nama kategori baru" aria-label="Nama kategori pemasukan" required />
+              <button class="btn btn-small btn-primary" type="submit">Buat kategori</button>
+            </form>
+          </details>
           <div id="kategori-pemasukan"></div>
           <form id="form-add-sub-in" class="form-inline">
             <select name="kategori" required></select>
@@ -991,8 +1025,8 @@ TOTAL            86.500"></textarea>
         </label>
         <label>Jumlah <input type="text" inputmode="numeric" name="jumlah" class="money-input" placeholder="0" required /></label>
         <label>Deskripsi <input type="text" name="deskripsi" required /></label>
+        <label>Kategori <select name="kategori" required></select></label>
         <label>Sub Kategori <select name="subKategori" required></select></label>
-        <label>Kategori <input type="text" name="kategori" readonly /></label>
         <label>Alokasi
           <select name="alokasi">
             <option value="">—</option>

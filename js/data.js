@@ -61,7 +61,7 @@ const KEYWORD_MAP = [
   // Pengeluaran
   { re: /\b(kpr|cicilan|kredit rumah|kredit mobil|kredit motor)\b/i, jenis: 'pengeluaran', sub: 'KPR & cicilan mobil' },
   { re: /\b(listrik|pln|pdam|tagihan air)\b/i, jenis: 'pengeluaran', sub: 'Listrik & air' },
-  { re: /\b(cat rumah|perawatan rumah|servis ac)\b/i, jenis: 'pengeluaran', sub: 'Perawatan rumah' },
+  { re: /\b(cat rumah|perawatan rumah|servis ac|baygon|baigon|obat nyamuk|racun serangga|pembasmi serangga|pestisida|pembersih rumah|detergen|deterjen)\b/i, jenis: 'pengeluaran', sub: 'Perawatan rumah' },
   { re: /\b(reksa\s*dana|reksadana|saham)\b/i, jenis: 'pengeluaran', sub: 'Investasi reksa dana/saham' },
   { re: /\b(emas|antam|logam mulia)\b/i, jenis: 'pengeluaran', sub: 'Investasi emas' },
   { re: /\b(les|kursus|bimbel|privat)\b/i, jenis: 'pengeluaran', sub: 'Les privat/kursus' },

@@ -134,15 +134,34 @@ function renderKategori() {
   fillSelect(document.querySelector('#form-add-sub-in select[name="kategori"]'),
     Object.keys(state.categories.pemasukan), 'Kategori…');
 
+  bindCustomCategoryRename(boxOut, 'pengeluaran');
+  bindCustomCategoryRename(boxIn, 'pemasukan');
   boxOut.querySelectorAll('button[data-del-sub]').forEach(btn => btn.onclick = () => deleteSub('pengeluaran', btn.dataset.cat, btn.dataset.sub));
   boxIn.querySelectorAll('button[data-del-sub]').forEach(btn => btn.onclick = () => deleteSub('pemasukan', btn.dataset.cat, btn.dataset.sub));
+}
+
+function bindCustomCategoryRename(box, jenis) {
+  box.querySelectorAll('form[data-rename-category]').forEach(form => {
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const result = renameCustomCategory(jenis, form.dataset.oldName, new FormData(form).get('nama'));
+      if (!result.ok) { showToast(result.error); return; }
+      saveState();
+      renderAll();
+      fillSubCategoriSelects();
+      showToast(`Kategori diubah menjadi “${result.name}”.`, 'success');
+    };
+  });
 }
 
 function renderKatList(jenis) {
   const cats = state.categories[jenis];
   return `<div class="kat-list">` + Object.entries(cats).map(([name, info]) => `
     <div class="kat-group">
-      <h4>${escapeHtml(name)} ${info.alokasi ? `<span class="pill pill-alok">${info.alokasi}</span>` : ''}</h4>
+      <div class="kat-group-head">
+        <div class="kat-group-title"><h4>${escapeHtml(name)}</h4>${info.alokasi ? `<span class="pill pill-alok">${escapeHtml(info.alokasi)}</span>` : ''}${info.custom ? '<span class="pill pill-custom">Kategori Anda</span>' : ''}</div>
+        ${info.custom ? `<details class="category-rename"><summary>Ubah nama</summary><form data-rename-category data-old-name="${escapeHtml(name)}"><input type="text" name="nama" value="${escapeHtml(name)}" maxlength="40" aria-label="Nama baru untuk ${escapeHtml(name)}" required /><button class="btn btn-small btn-primary" type="submit">Simpan</button></form></details>` : ''}
+      </div>
       <ul>
         ${(info.subs || []).map(s => `<li>${escapeHtml(s)} <button data-del-sub data-cat="${escapeHtml(name)}" data-sub="${escapeHtml(s)}" title="Hapus">×</button></li>`).join('')}
       </ul>
@@ -183,12 +202,35 @@ function fillSubCategoriSelects() {
   }
 
   const editJenis = document.querySelector('#form-edit select[name="jenis"]');
-  if (editJenis) {
-    const editSub = document.querySelector('#form-edit select[name="subKategori"]');
-    const subs2 = allSubs(editJenis.value).map(x => x.sub);
-    fillSelect(editSub, subs2);
-    syncKategoriFromSub('#form-edit');
-  }
+  if (editJenis) fillEditSubcategories();
+}
+
+function fillEditSubcategories() {
+  const form = document.getElementById('form-edit');
+  if (!form) return;
+  const jenis = form.querySelector('[name="jenis"]').value;
+  const categories = state.categories[jenis] || {};
+  const categorySelect = form.querySelector('[name="kategori"]');
+  const subSelect = form.querySelector('[name="subKategori"]');
+  const allocationSelect = form.querySelector('[name="alokasi"]');
+  const selectedCategory = categorySelect.value;
+  fillSelect(categorySelect, Object.keys(categories));
+  if (Object.prototype.hasOwnProperty.call(categories, selectedCategory)) categorySelect.value = selectedCategory;
+  const info = categories[categorySelect.value] || {};
+  const selectedSub = subSelect.value;
+  fillSelect(subSelect, info.subs || []);
+  if ((info.subs || []).includes(selectedSub)) subSelect.value = selectedSub;
+  if (allocationSelect) allocationSelect.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
+}
+
+function syncEditTransactionAllocation() {
+  const form = document.getElementById('form-edit');
+  if (!form) return;
+  const jenis = form.querySelector('[name="jenis"]').value;
+  const category = form.querySelector('[name="kategori"]').value;
+  const info = (state.categories[jenis] || {})[category] || {};
+  const allocationSelect = form.querySelector('[name="alokasi"]');
+  if (allocationSelect) allocationSelect.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
 }
 
 function fillFormSubsForKategori() {
@@ -199,7 +241,7 @@ function fillFormSubsForKategori() {
   const info = (state.categories[jenis] || {})[kat] || {};
   fillSelect(form.querySelector('[name="subKategori"]'), info.subs || []);
   const alok = form.querySelector('[name="alokasi"]');
-  if (alok && info.alokasi) alok.value = info.alokasi;
+  if (alok) alok.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
 }
 
 function syncKategoriFromSub(formSel) {
@@ -210,7 +252,7 @@ function syncKategoriFromSub(formSel) {
   const info = findCategoryForSub(sub, jenis);
   form.querySelector('[name="kategori"]').value = info.kategori;
   const alok = form.querySelector('[name="alokasi"]');
-  if (alok && info.alokasi) alok.value = info.alokasi;
+  if (alok) alok.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
 }
 
 // Tab Rencana: tampilkan angka ringkas langsung di kartu (bukan kartu kosong).

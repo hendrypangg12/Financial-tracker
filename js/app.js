@@ -43,6 +43,18 @@ function renderAll() {
   renderKategori();
 }
 
+function syncTransactionCategoryCreateUI() {
+  const isIncome = document.querySelector('#form-transaksi select[name="jenis"]')?.value === 'pemasukan';
+  const summary = document.getElementById('transaction-category-create-summary');
+  const allocation = document.getElementById('transaction-category-allocation-field');
+  const hint = document.getElementById('transaction-category-create-hint');
+  if (summary) summary.textContent = isIncome ? '＋ Tambah kategori pemasukan' : '＋ Tambah kategori pengeluaran';
+  if (allocation) allocation.hidden = isIncome;
+  if (hint) hint.textContent = isIncome
+    ? 'Kategori pemasukan baru langsung dipilih. Subkategori awalnya “Umum”.'
+    : 'Kategori pengeluaran baru langsung dipilih. Subkategori awalnya “Umum”.';
+}
+
 function fillMonthYearSelectors() {
   const monthSel = document.getElementById('dash-month');
   const yearSel = document.getElementById('dash-year');
@@ -155,6 +167,7 @@ function attachEvents() {
     if (jenis) {
       jenis.value = kind;
       fillSubCategoriSelects();
+      syncTransactionCategoryCreateUI();
     }
     document.getElementById('quick-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     if (focus) setTimeout(() => form.querySelector('[name="jumlah"]')?.focus(), 300);
@@ -162,7 +175,11 @@ function attachEvents() {
   quickEntryButtons.forEach(button => {
     button.onclick = () => chooseQuickEntry(button.dataset.quickKind);
   });
-  form.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
+  form.querySelector('[name="jenis"]').onchange = () => {
+    fillSubCategoriSelects();
+    syncTransactionCategoryCreateUI();
+  };
+  syncTransactionCategoryCreateUI();
   form.querySelector('[name="kategori"]').onchange = () => fillFormSubsForKategori();
   // Toggle field "Jatuh tempo tiap tanggal" saat checkbox "Jadikan tagihan rutin" di-centang
   const chkRutin = document.getElementById('chk-jadikan-rutin');
@@ -228,6 +245,7 @@ function attachEvents() {
     chatInput.value = '';
     const res = parseChat(text);
     if (!res || res.error) {
+      chatInput.value = text;
       appendChat('bot', `❌ ${res && res.error ? res.error : 'Gagal memproses.'}`);
       return;
     }
@@ -436,7 +454,8 @@ function attachEvents() {
   const editModal = document.getElementById('modal-edit');
   const editForm = document.getElementById('form-edit');
   editForm.querySelector('[name="jenis"]').onchange = () => fillSubCategoriSelects();
-  editForm.querySelector('[name="subKategori"]').onchange = () => syncKategoriFromSub('#form-edit');
+  editForm.querySelector('[name="kategori"]').onchange = () => fillEditSubcategories();
+  editForm.querySelector('[name="subKategori"]').onchange = () => syncEditTransactionAllocation();
   // Tutup modal (3 cara: tombol Batal, tombol ×, klik backdrop, Escape)
   document.getElementById('btn-cancel-edit').onclick = hideEditModal;
   const closeBtn = document.getElementById('btn-close-edit');
@@ -467,6 +486,44 @@ function attachEvents() {
   });
 
   // Kategori forms
+  [
+    { id: 'form-add-category-out', jenis: 'pengeluaran' },
+    { id: 'form-add-category-in', jenis: 'pemasukan' },
+  ].forEach(({ id, jenis }) => {
+    const form = document.getElementById(id);
+    if (!form) return;
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const result = createCustomCategory(jenis, fd.get('nama'), fd.get('alokasi'));
+      if (!result.ok) { showToast(result.error); return; }
+      saveState();
+      form.reset();
+      form.closest('details')?.removeAttribute('open');
+      renderAll();
+      fillSubCategoriSelects();
+      showToast(`Kategori “${result.name}” ditambahkan.`, 'success');
+    };
+  });
+
+  const createCategoryDuringTransaction = document.getElementById('btn-create-transaction-category');
+  if (createCategoryDuringTransaction) createCategoryDuringTransaction.onclick = () => {
+    const nameInput = document.getElementById('transaction-category-name');
+    const allocationInput = document.getElementById('transaction-category-allocation');
+    const typeInput = document.querySelector('#form-transaksi select[name="jenis"]');
+    const jenis = typeInput?.value === 'pemasukan' ? 'pemasukan' : 'pengeluaran';
+    const result = createCustomCategory(jenis, nameInput?.value, allocationInput?.value);
+    if (!result.ok) { showToast(result.error); return; }
+    saveState();
+    fillSubCategoriSelects();
+    const categoryInput = document.querySelector('#form-transaksi select[name="kategori"]');
+    if (categoryInput) categoryInput.value = result.name;
+    fillFormSubsForKategori();
+    if (nameInput) nameInput.value = '';
+    document.getElementById('transaction-category-create')?.removeAttribute('open');
+    showToast(`Kategori “${result.name}” ditambahkan dan dipilih.`, 'success');
+  };
+
   document.getElementById('form-add-sub-out').onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
@@ -526,9 +583,12 @@ function openEditModal(id) {
   form.querySelector('[name="jumlah"]').value = fmtThousands(t.jumlah);
   form.querySelector('[name="deskripsi"]').value = t.deskripsi || '';
   fillSubCategoriSelects();
+  const categorySelect = form.querySelector('[name="kategori"]');
+  if ([...categorySelect.options].some(option => option.value === t.kategori)) categorySelect.value = t.kategori;
+  fillEditSubcategories();
   form.querySelector('[name="subKategori"]').value = t.subKategori || '';
-  syncKategoriFromSub('#form-edit');
-  form.querySelector('[name="alokasi"]').value = t.alokasi || '';
+  syncEditTransactionAllocation();
+  if (t.jenis === 'pengeluaran' && t.alokasi) form.querySelector('[name="alokasi"]').value = t.alokasi;
   showEditModal();
 }
 

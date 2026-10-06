@@ -18,11 +18,21 @@ function parseChat(text) {
   if (!jenis) {
     jenis = INCOME_HINTS.test(text) ? 'pemasukan' : 'pengeluaran';
   }
-  if (!sub) {
-    sub = jenis === 'pemasukan' ? 'Gaji bulanan' : 'Makan keluarga di luar';
-  }
+  // If the user explicitly names one of their categories in the sentence,
+  // honor that choice before using the keyword-based suggestion.
+  const categoryMap = state.categories?.[jenis] || {};
+  const explicitCategory = Object.keys(categoryMap)
+    .sort((a, b) => b.length - a.length)
+    .find(name => new RegExp('\\b' + escapeRegexText(name) + '\\b', 'i').test(text));
+  const selectedInfo = explicitCategory ? categoryMap[explicitCategory] : null;
+  if (!sub && selectedInfo?.subs?.length) sub = selectedInfo.subs[0];
+  if (!sub && jenis === 'pemasukan') sub = 'Gaji bulanan';
+  if (!sub) return { error: 'Kategori transaksi belum dikenali. Belum disimpan. Tulis nama kategori yang sudah dibuat, atau gunakan form Tambah untuk memilih/membuat kategori.' };
 
-  const { kategori, alokasi } = findCategoryForSub(sub, jenis);
+  const matched = findCategoryForSub(sub, jenis);
+  const kategori = explicitCategory || matched.kategori;
+  const alokasi = selectedInfo ? (selectedInfo.alokasi || '') : matched.alokasi;
+  if (selectedInfo?.subs?.length) sub = selectedInfo.subs[0];
   const tanggal = detectDateFromChat(text);
 
   // Deskripsi: buang angka & satuan
@@ -42,6 +52,11 @@ function parseChat(text) {
     kategori,
     alokasi,
   };
+}
+
+function escapeRegexText(value) {
+  const meta = '.*+?^${}()|[]\\';
+  return [...String(value)].map(char => meta.includes(char) ? '\\' + char : char).join('');
 }
 
 function parseStruk(text, fallbackDate) {

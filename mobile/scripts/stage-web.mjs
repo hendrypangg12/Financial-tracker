@@ -49,7 +49,9 @@ html = html.replace(/<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?\/>/,
   .replace(/<script src="js\/admin\.js[^>]+><\/script>/, '')
   .replace('width=device-width, initial-scale=1.0', 'width=device-width, initial-scale=1.0, viewport-fit=cover')
   .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n</head>')
-  .replace('</body>', `${production ? '<script>window.__BERUANG_STORE_BUILD__=true</script>\n' : ''}<script src="mobile-runtime.js"></script>\n</body>`);
+  .replace('</body>', `${production ? '<script>window.__BERUANG_STORE_BUILD__=true</script>\n' : ''}<script src="vendor/capacitor.js"></script>\n<script src="mobile-runtime.js"></script>\n</body>`);
+// Tanpa bundler, Capacitor.registerPlugin hanya ada jika build browser @capacitor/core ikut dimuat.
+await copy('vendor/capacitor.js', path.join(mobile, 'node_modules/@capacitor/core/dist/capacitor.js'));
 // Do not merely hide external digital-product promotions: remove them from the
 // Play-distributed bundle so they cannot be exposed by CSS or accessibility APIs.
 html = html.replace(/\s*<div id="affiliate-section"[\s\S]*?<\/div>\s*(?=<\/section>)/, '');
@@ -65,7 +67,7 @@ for (const [url, source] of vendors) {
   await copy(filename, path.join(mobile, 'node_modules', source));
 }
 // Website QRIS/transfer is excluded. The runtime supplies the Google Play UI.
-html = html.replace(/  <!-- ============ PAYWALL[\s\S]*?(?=  <header)/, '<div id="paywall-screen" hidden></div>\n');
+html = html.replace(/  <!-- ============ PAYWALL[\s\S]*?(?=  <header)/, '<div id="paywall-screen" hidden><main class="play-paywall"><h1>Paket &amp; pembayaran</h1><p>Halaman paket belum dapat dimuat.</p><p><button id="play-reload" type="button" onclick="window.location.reload()">Muat ulang</button></p><p><button id="play-logout" type="button" onclick="logout()">Keluar akun</button></p></main></div>\n');
 if (html.includes('id="payment-modal"')) throw new Error('Native bundle still contains payment form');
 if (html.includes('id="affiliate-section"') || html.includes('js/presence.js')) throw new Error('Store bundle still contains excluded promotion or anonymous presence');
 await put('index.html', html);

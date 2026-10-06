@@ -33,6 +33,21 @@ test('native Google sign-in exchanges the native ID token for the existing Fireb
   await context.loginGoogle();
   assert.deepEqual(JSON.parse(JSON.stringify(calls)),[['google',{skipNativeAuth:true}],['firebase',{idToken:'google-id-token'}]]);
 });
+test('runtime survives a bare native bridge that has Capacitor.Plugins but no registerPlugin',async()=>{
+  const calls=[];
+  const context={ URL, __BERUANG_STORE_BUILD__:true, location:{href:'https://localhost/'}, document:{hidden:false,body:{classList:{add:()=>{}}},addEventListener:()=>{},getElementById:()=>null,querySelectorAll:()=>[]},addEventListener:()=>{}, showScreen:()=>{}, fetch:async()=>'ok', Capacitor:{ isNativePlatform:()=>true, Plugins:{FirebaseAuthentication:{signInWithGoogle:async()=>{calls.push('google');return{credential:{idToken:'t'}};}}} } };
+  context.window=context;
+  context.firebase={auth:{GoogleAuthProvider:{credential:idToken=>({idToken})}}};
+  context.fbAuth={signInWithCredential:async()=>calls.push('firebase')};
+  vm.runInNewContext(source,context);
+  await context.loginGoogle();
+  assert.deepEqual(calls,['google','firebase']);
+});
+test('staged bundle loads @capacitor/core before the runtime and never ships an empty paywall',async()=>{
+  const stage=await readFile(new URL('../scripts/stage-web.mjs',import.meta.url),'utf8');
+  assert.match(stage,/<script src="vendor\/capacitor\.js"><\/script>\\n<script src="mobile-runtime\.js">/);
+  assert.doesNotMatch(stage,/<div id="paywall-screen" hidden><\/div>/);
+});
 test('Play paywall separates the one-time 7-day pass from recurring subscriptions',()=>{
   assert.match(source,/beruang_access_7d/);
   assert.match(source,/beruang_monthly_subscription/);

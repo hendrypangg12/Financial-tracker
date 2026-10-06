@@ -474,7 +474,24 @@ main { padding: 20px 24px 60px; max-width: 1400px; margin: 0 auto; }
 .kat-group {
   border: 1px solid var(--line); border-radius: 10px; padding: 10px;
 }
-.kat-group h4 { margin: 0 0 6px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+.kat-group h4 { margin: 0; font-size: 13px; }
+.kat-group-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.kat-group-title { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.pill-custom { background: #f3ecdd; color: #8b5a2b; }
+.category-create { margin: 0 0 12px; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; background: #fffdf9; }
+.category-create > summary, .category-create-inline > summary, .category-rename > summary { cursor: pointer; color: #8b5a2b; font-size: 12px; font-weight: 700; }
+.category-create > summary::marker, .category-create-inline > summary::marker, .category-rename > summary::marker { color: #b08a3c; }
+.category-create[open] { background: #fff; }
+.category-rename { flex: 0 0 auto; }
+.category-rename form { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; margin-top: 7px; }
+.category-rename input { min-width: 130px; max-width: 190px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; }
+.category-create-inline { margin-top: 7px; }
+.category-inline-fields { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.category-inline-fields input, .category-inline-fields select { min-width: 130px; flex: 1 1 130px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+.category-inline-fields label { display: flex; flex: 1 1 130px; flex-direction: column; gap: 4px; min-width: 130px; color: var(--ink-soft); font-size: 11px; }
+.category-inline-fields label select { width: 100%; }
+.category-inline-fields label[hidden] { display: none; }
+.category-create-inline small { display: block; margin-top: 6px; color: var(--ink-soft); font-size: 11px; }
 .kat-group ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .kat-group li {
   background: #f7f2e9; border: 1px solid var(--line); padding: 4px 8px; border-radius: 999px; font-size: 12px;

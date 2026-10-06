@@ -4,8 +4,11 @@
   const production=window.__BERUANG_STORE_BUILD__===true, API='https://berstock-bot.hendrypangg12.workers.dev';
   const IDS=['beruang_access_7d','beruang_monthly_subscription','beruang_annual_subscription'];
   const LABELS={beruang_access_7d:'Akses 7 Hari · sekali bayar',beruang_monthly_subscription:'Pro 30 Hari · berulang otomatis',beruang_annual_subscription:'Pro 1 Tahun · berulang otomatis'};
-  const billing=window.Capacitor?.registerPlugin('PlayBilling');
-  const nativeGoogleAuth=window.Capacitor?.isNativePlatform?.()?window.Capacitor.registerPlugin('FirebaseAuthentication'):null;
+  // registerPlugin berasal dari @capacitor/core (vendor/capacitor.js). Bridge native saja hanya menyediakan
+  // Capacitor.Plugins, jadi tetap ada jalur cadangan supaya adapter ini tidak mati dan paywall tidak kosong.
+  const plugin=name=>{const cap=window.Capacitor;if(!cap)return undefined;return typeof cap.registerPlugin==='function'?cap.registerPlugin(name):cap.Plugins?.[name];};
+  const billing=plugin('PlayBilling');
+  const nativeGoogleAuth=window.Capacitor?.isNativePlatform?.()?plugin('FirebaseAuthentication'):null;
   if(nativeGoogleAuth)document.body?.classList.add('native-google-auth');
   const syncedEntitlementAt=new Map(),entitlementSyncInFlight=new Map(),ENTITLEMENT_SYNC_INTERVAL=6*60*60*1000;
   async function hash(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -78,7 +81,7 @@
   }
   const originalScreen=window.showScreen;window.showScreen=function(which){if(which==='paywall'&&production){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));renderPaywall();syncOwnedSubscriptions();return;}const result=originalScreen(which);if(which==='app')syncOwnedSubscriptions();return result;};
   window.loginGoogle=async()=>{if(!nativeGoogleAuth)throw new Error('Login Google belum dikonfigurasi di versi aplikasi ini.');const result=await nativeGoogleAuth.signInWithGoogle({skipNativeAuth:true});const idToken=result?.credential?.idToken;if(!idToken)throw new Error('Google tidak mengembalikan token login. Coba lagi.');const credential=firebase.auth.GoogleAuthProvider.credential(idToken);await fbAuth.signInWithCredential(credential);};window.createPaymentInvoice=async()=>{throw new Error('Pembelian menggunakan Google Play.');};window.openPaymentModal=()=>window.showScreen('paywall');window.handlePostPaymentRedirect=async()=>{};window.showProGate=()=>window.showScreen('paywall');window.isAdmin=()=>false;
-  window.saveNativeBackup=async(data,filename)=>{const fs=window.Capacitor.registerPlugin('Filesystem'),share=window.Capacitor.registerPlugin('Share'),name=filename.replace(/[^a-zA-Z0-9._-]/g,'_'),json=JSON.stringify(data,null,2);await fs.writeFile({path:'backups/'+name,data:json,directory:'DATA',encoding:'utf8',recursive:true});const file=await fs.writeFile({path:'backups/'+name,data:json,directory:'CACHE',encoding:'utf8',recursive:true});await share.share({title:'Backup BerUang',files:[file.uri],dialogTitle:'Simpan backup BerUang'});};
+  window.saveNativeBackup=async(data,filename)=>{const fs=plugin('Filesystem'),share=plugin('Share'),name=filename.replace(/[^a-zA-Z0-9._-]/g,'_'),json=JSON.stringify(data,null,2);await fs.writeFile({path:'backups/'+name,data:json,directory:'DATA',encoding:'utf8',recursive:true});const file=await fs.writeFile({path:'backups/'+name,data:json,directory:'CACHE',encoding:'utf8',recursive:true});await share.share({title:'Backup BerUang',files:[file.uri],dialogTitle:'Simpan backup BerUang'});};
   window.exportData=async()=>{try{await window.saveNativeBackup({...syncData(state),exportedAt:new Date().toISOString()},'beruang-'+Date.now()+'.json');}catch(e){showToast('Backup belum diekspor: '+e.message,'error');}};
   const originalFetch=window.fetch.bind(window);window.fetch=function(input,init){const target=new URL(typeof input==='string'?input:input.url,location.href);if(/\/api\/(create-invoice|verify-payment)/.test(target.pathname))return Promise.reject(new Error('Gunakan Google Play.'));return originalFetch(input,init);};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncOwnedSubscriptions();});
@@ -91,7 +94,7 @@
   window.maybeAskReview=async()=>{
     try{
       if(!window.Capacitor?.isNativePlatform?.())return false;
-      const review=window.Capacitor.registerPlugin('InAppReview');
+      const review=plugin('InAppReview');
       const tx=((typeof state!=='undefined'&&state.transactions)||[]).filter(t=>t.kategori!=='Saldo Awal').length;
       const first=Number(localStorage.getItem(FIRST_OPEN_KEY))||Date.now(),last=Number(localStorage.getItem(REVIEW_KEY))||0;
       if(tx<10||Date.now()-first<3*DAY||Date.now()-last<120*DAY)return false;
