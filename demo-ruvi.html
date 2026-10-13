@@ -44,7 +44,6 @@ button{cursor:pointer;border:0;background:none}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
 .head h1{font-size:24px;letter-spacing:-.6px}.head p{color:var(--soft);font-size:13px;margin-top:3px}
 .chip{border-radius:13px;padding:9px 12px;font-size:12.5px;font-weight:600;white-space:nowrap}
-.streak{background:linear-gradient(90deg,rgba(251,191,36,.18),rgba(244,114,182,.12));border:1px solid rgba(251,191,36,.3)}
 .view{display:none}.view.on{display:block;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .kpis{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:14px}
@@ -292,7 +291,7 @@ html[data-theme=light] .nav button:hover{color:#0f1d2b}
  <main class="main">
   <div class="head">
    <div><h1 id="hello">Halo, Budi 👋</h1><p id="subhead">Kondisi keuanganmu bulan ini</p></div>
-   <div class="tools" style="display:flex;gap:8px"><span class="chip streak" id="streak" data-ruvi="streak">🔥 6 hari beruntun</span><span class="chip glass hide-m" id="monthChip">📅</span><button class="chip glass theme-btn" id="themeBtn" aria-label="Ganti tema">🌙</button></div>
+   <div class="tools" style="display:flex;gap:8px"><span class="chip glass hide-m" id="monthChip">📅</span><button class="chip glass theme-btn" id="themeBtn" aria-label="Ganti tema">🌙</button></div>
   </div>
 
   <section class="view on" id="v-home">
@@ -712,8 +711,7 @@ document.addEventListener('click',e=>{
      income:()=>comment([`Pemasukan bulan ini ${rp(i)}.`, `Mau aku sisihkan 10% (${rp(Math.round(i*0.1))}) buat target?`],'wink',`+Rp ${short(i)} 😉`),
      expense:()=>comment([`Pengeluaran bulan ini ${rp(o)}.`, po<=0?`${Math.abs(po)}% lebih hemat dari bulan lalu sejauh ini 👍`:`Naik ${po}% dari bulan lalu. Aku bantu pantau ya.`], po<=0?'happy':'worry', po<=0?`Hemat ${Math.abs(po)}% 👍`:`Naik ${po}% 😬`),
      flow:()=>comment(['Garis hijau itu saldomu dari hari ke hari.','Lonjakan di awal bulan = gaji masuk. Garis ungu = total pengeluaran yang terus naik.'],'normal','📈'),
-     wallet:()=>{ const w=W(k.dataset.wallet); openWalletDetail(w.id); pop(`${w.ic} Rp ${short(walletBal(w))}`); setMood(w.type==='invest'?'heart':'normal',2500); },
-     streak:()=>comment(['6 hari berturut-turut kamu mencatat! 🔥','Besok catat lagi ya, biar genap seminggu.'],'heart','🔥 6 hari!') }[k.dataset.ruvi]||(()=>{}))();
+     wallet:()=>{ const w=W(k.dataset.wallet); openWalletDetail(w.id); pop(`${w.ic} Rp ${short(walletBal(w))}`); setMood(w.type==='invest'?'heart':'normal',2500); } }[k.dataset.ruvi]||(()=>{}))();
 });
 const seenTab={};
 window.__tabComment=v=>{ if(seenTab[v]||muted) return; seenTab[v]=1; const {o}=totals(MK);
@@ -794,7 +792,7 @@ setTimeout(()=>{ setMood('normal',0); moodAt=performance.now(); say([`${greet()}
 let tipsGiven=0;
 setInterval(()=>{ if(muted||tipsGiven>=2||Date.now()-lastUser<22000) return; tipsGiven++; lastUser=Date.now();
   if(tipsGiven===1){ const j=sumCat('Jajan & Kopi',MK); say([`Psst… Jajan & Kopi bulan ini sudah ${rp(j)} dari budget ${rp(BUDGET['Jajan & Kopi'])}.`, 'Mau aku kasih ide biar tetap bisa ngopi tapi hemat? 😉'],{mood:'wink',short:'Psst… 😉'}); }
-  else say(['Kamu sudah 6 hari berturut-turut catat keuangan. Satu hari lagi jadi seminggu! 🥰'],{mood:'heart',short:'🔥 6 hari!'});
+  else { const g=GOALS[0]; say([`Target ${g.n} sudah ${Math.round(g.s/g.t*100)}%. Sedikit lagi! 🥰`, 'Mau aku hitung berapa yang perlu disisihkan tiap bulan?'],{mood:'heart',short:`Target ${Math.round(g.s/g.t*100)}% 🎯`}); }
 },5000);
 window.__ruviDemo={handle,TX,answer,parseEntries};
 })();

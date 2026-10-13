@@ -216,6 +216,7 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   13 Okt: TEMA TERANG + GELAP (permintaan bos): default ikut pengaturan perangkat (prefers-color-scheme), tombol ☀️/🌙 di atas,
   pilihan disimpan localStorage `ruvi-theme`; warna lewat CSS var (`html[data-theme=light]`), grafik pakai var --c1/--c2/--grid.
   → Keputusan #1 rencana perubahan total: tema ikut perangkat + bisa diganti manual.
+  13 Okt: label "🔥 hari beruntun" (streak) DIHAPUS dari demo atas permintaan bos ("ga perlu"); jangan dipakai di versi baru.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
