@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#070b16" id="themeColor">
+<script>(function(){var t;try{t=localStorage.getItem('ruvi-theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark'}document.documentElement.setAttribute('data-theme',t);})();</script>
 <title>BerUang × Ruvi — Demo</title>
 <style>
 :root{
@@ -11,6 +13,7 @@
   --mint:#2dd4bf; --indigo:#818cf8; --pink:#f472b6; --amber:#fbbf24;
   --in:#34d399; --out:#fb7185;
   --glass:rgba(255,255,255,.055); --glass2:rgba(255,255,255,.09); --line:rgba(255,255,255,.12);
+  --grid:rgba(255,255,255,.07); --c1:#5eead4; --c2:#a5b4fc; --soft-bg:rgba(255,255,255,.07);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
@@ -222,6 +225,35 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
   .fab.has-new .badge{display:block}
 }
 @keyframes popin{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ===== TEMA TERANG ===== */
+html[data-theme=light]{--bg:#eef2f8;--ink:#0f1d2b;--soft:#4c5d72;--mute:#7b889b;--glass:rgba(255,255,255,.62);--glass2:rgba(255,255,255,.88);--line:rgba(15,29,43,.11);--in:#059669;--out:#e11d48;--mint:#0d9488;--grid:rgba(15,29,43,.08);--c1:#0d9488;--c2:#6366f1;--soft-bg:rgba(15,29,43,.05)}
+html[data-theme=light] body{background:var(--bg);color:var(--ink)}
+html[data-theme=light] .aurora i{opacity:.32}
+html[data-theme=light] .aurora .grid{background-image:linear-gradient(rgba(15,29,43,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(15,29,43,.045) 1px,transparent 1px)}
+html[data-theme=light] .glass{box-shadow:0 10px 30px rgba(31,45,90,.08),inset 0 1px 0 rgba(255,255,255,.9)}
+html[data-theme=light] .hero{background:linear-gradient(135deg,rgba(45,212,191,.24),rgba(129,140,248,.2) 60%,rgba(244,114,182,.12));border-color:rgba(255,255,255,.85)}
+html[data-theme=light] .tag,html[data-theme=light] .chips button,html[data-theme=light] .seg2 button,html[data-theme=light] .wact button:not(.pri):not(.sure),html[data-theme=light] .mute,html[data-theme=light] .close,html[data-theme=light] .sh-head .x,html[data-theme=light] .rec .ed{background:rgba(255,255,255,.75)}
+html[data-theme=light] .nav button.on{color:#0f1d2b}
+html[data-theme=light] .wcard{background:linear-gradient(140deg,rgba(255,255,255,.92),rgba(255,255,255,.6))}
+html[data-theme=light] .wcard.inv{background:linear-gradient(140deg,rgba(167,139,250,.24),rgba(255,255,255,.7))}
+html[data-theme=light] .wadd{background:rgba(255,255,255,.45);border-color:rgba(15,29,43,.22)}
+html[data-theme=light] .txrow .ic,html[data-theme=light] .rec .ic,html[data-theme=light] .sh-sum div{background:var(--soft-bg)}
+html[data-theme=light] .txrow{border-top-color:rgba(15,29,43,.07)}
+html[data-theme=light] .cats div{border-bottom-color:rgba(15,29,43,.07)}
+html[data-theme=light] .b.bot,html[data-theme=light] .typing{background:rgba(255,255,255,.9)}
+html[data-theme=light] .rec{background:rgba(255,255,255,.75)}
+html[data-theme=light] .inbar input,html[data-theme=light] .inbar .c:not(.send),html[data-theme=light] .wbox input[type=text],html[data-theme=light] .wbox select,html[data-theme=light] .wbox input[type=date]{background:rgba(255,255,255,.85);color:var(--ink);color-scheme:light}
+html[data-theme=light] .inbar svg{stroke:#0f1d2b}
+html[data-theme=light] .inbar .send svg{stroke:#06101c}
+html[data-theme=light] .wbox{background:rgba(255,255,255,.97)}
+html[data-theme=light] .wmodal{background:rgba(15,29,43,.32)}
+html[data-theme=light] .plan{background:linear-gradient(135deg,rgba(45,212,191,.2),rgba(129,140,248,.2))}
+html[data-theme=light] .rtoast,html[data-theme=light] .rh-pop{box-shadow:0 8px 22px rgba(31,45,90,.18);border:1px solid rgba(15,29,43,.08)}
+@media (max-width:900px){ html[data-theme=light] .ruvi{background:rgba(238,242,248,.97)} }
+.theme-btn{font-size:15px;line-height:1;padding:8px 11px !important}
+html[data-theme=light] .seg2 button.on{color:var(--mint);background:rgba(13,148,136,.12)}
+html[data-theme=light] .nav button:hover{color:#0f1d2b}
 </style>
 </head>
 <body>
@@ -260,7 +292,7 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
  <main class="main">
   <div class="head">
    <div><h1 id="hello">Halo, Budi 👋</h1><p id="subhead">Kondisi keuanganmu bulan ini</p></div>
-   <div class="tools" style="display:flex;gap:8px"><span class="chip streak" id="streak" data-ruvi="streak">🔥 6 hari beruntun</span><span class="chip glass hide-m" id="monthChip">📅</span></div>
+   <div class="tools" style="display:flex;gap:8px"><span class="chip streak" id="streak" data-ruvi="streak">🔥 6 hari beruntun</span><span class="chip glass hide-m" id="monthChip">📅</span><button class="chip glass theme-btn" id="themeBtn" aria-label="Ganti tema">🌙</button></div>
   </div>
 
   <section class="view on" id="v-home">
@@ -501,10 +533,10 @@ function icon(t){ if(t.type==='move') return t.cat==='Investasi'?'📈':'↔️'
 const VIA={chat:'💬 Chat Ruvi',suara:'🎤 Suara',struk:'📷 Struk',manual:''};
 function row(t,newId){ const isNew=t.id===newId||(Array.isArray(newId)&&newId.includes(t.id)); const mv=t.type==='move'; const wl=mv?'':` · <span class="wn">${esc(W(t.wallet).name)}</span>`; const cls=mv?'':(t.type==='in'?'up':'dn'); const sign=mv?'':(t.type==='in'?'+':'−'); return `<div data-tx="${t.id}" class="txrow ${isNew?'new':''}"><div class="ic">${icon(t)}</div><div class="t"><b>${esc(t.desc)}</b><small>${esc(t.cat)} · ${dayLabel(t.date)}${wl}${t.via!=='manual'?`<span class="via ${t.via==='chat'?'ai':''}">${VIA[t.via]}</span>`:''}</small></div><div class="v ${cls}">${sign}${rp(t.amt)}</div></div>`; }
 function smoothPath(pts){ if(!pts.length) return ''; let d='M'+pts[0][0]+' '+pts[0][1]; for(let i=1;i<pts.length;i++){ const [x0,y0]=pts[i-1],[x1,y1]=pts[i]; const cx=(x0+x1)/2; d+=` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`; } return d; }
-function drawSpark(){ const pts=[]; let b=balance()-TX.filter(t=>t.date>iso(addDays(today,-30))).reduce((s,t)=>s+cashDelta(t),0); const vals=[]; for(let k=29;k>=0;k--){ const d=iso(addDays(today,-k)); b+=TX.filter(t=>t.date===d).reduce((s,t)=>s+cashDelta(t),0); vals.push(b);} const mn=Math.min(...vals), mx=Math.max(...vals)||1; vals.forEach((v,k)=>pts.push([k*300/29, 40-36*(v-mn)/((mx-mn)||1)])); const p=smoothPath(pts); $('spark').innerHTML=`<defs><linearGradient id="spg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".45"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient></defs><path d="${p} V44 H0Z" fill="url(#spg)"/><path d="${p}" stroke="#5eead4" stroke-width="2.5" fill="none"/>`; }
-function drawFlow(){ const dim=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), dn=today.getDate(); let bal=balance()-TX.filter(t=>inMonth(t,MK)).reduce((s,t)=>s+cashDelta(t),0), out=0; const A=[],B=[]; for(let d=1; d<=dn; d++){ const ds=iso(new Date(today.getFullYear(),today.getMonth(),d,12)); for(const t of TX) if(t.date===ds){ bal+=cashDelta(t); if(t.type==='out') out+=t.amt; } A.push(bal); B.push(out); } const mx=Math.max(...A,...B,1); const X=d=>(d)*600/(dim-1||1), Y=v=>160-140*v/mx; const pa=smoothPath(A.map((v,k)=>[X(k),Y(v)])), pb=smoothPath(B.map((v,k)=>[X(k),Y(v)])); const lx=X(A.length-1); $('flow').innerHTML=`<defs><linearGradient id="fa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".4"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".35"/><stop offset="1" stop-color="#818cf8" stop-opacity="0"/></linearGradient></defs><g stroke="rgba(255,255,255,.06)"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="90" x2="600" y2="90"/><line x1="0" y1="140" x2="600" y2="140"/></g><path d="${pa} V170 H0Z" fill="url(#fa)"/><path d="${pa}" stroke="#5eead4" stroke-width="3" fill="none"/><path d="${pb} V170 H0Z" fill="url(#fb)"/><path d="${pb}" stroke="#a5b4fc" stroke-width="2.5" fill="none"/><circle cx="${lx}" cy="${Y(A[A.length-1])}" r="6" fill="#5eead4" stroke="#070b16" stroke-width="3"/>`; }
-function drawDonut(svgId,listId){ const cb=catBreakdown(MK), tot=cb.reduce((s,[,v])=>s+v,0)||1; let off=25, html='<circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>'; cb.slice(0,6).forEach(([c,v])=>{ const pct=v/tot*100; html+=`<circle cx="21" cy="21" r="15.9" fill="none" stroke="${(CATS[c]||CATS.Lainnya).c}" stroke-width="5" stroke-dasharray="${Math.max(pct-1.2,0.5)} ${100-Math.max(pct-1.2,0.5)}" stroke-dashoffset="${off}"/>`; off-=pct; }); html+=`<text x="21" y="20" font-size="3.3" text-anchor="middle" fill="#93a3c4" font-weight="600" font-family="Inter,sans-serif">Keluar</text><text x="21" y="25" font-size="4.6" text-anchor="middle" fill="#e8eefc" font-weight="800" font-family="Inter,sans-serif">${short(tot)}</text>`; $(svgId).innerHTML=html; $(listId).innerHTML=cb.slice(0,5).map(([c,v])=>`<div data-cat="${esc(c)}"><span><i class="dot" style="background:${(CATS[c]||CATS.Lainnya).c}"></i>${esc(c)}</span><b>${short(v).replace(/^/,'Rp ')}</b></div>`).join(''); }
-function drawBars(){ const vals=[]; for(let k=5;k>=0;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); vals.push([MS[d.getMonth()], totals(monthKey(d)).o]); } const mx=Math.max(...vals.map(v=>v[1]),1); const w=600/6; $('bars').innerHTML='<defs><linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".6"/></linearGradient></defs>'+vals.map(([m,v],k)=>{ const h=140*v/mx; return `<rect x="${k*w+18}" y="${160-h}" width="${w-36}" height="${h}" rx="10" fill="url(#bg1)" opacity="${k===5?1:.6}"/><text x="${k*w+w/2}" y="182" text-anchor="middle" font-size="13" fill="#93a3c4" font-family="Inter,sans-serif">${m}</text><text x="${k*w+w/2}" y="${152-h}" text-anchor="middle" font-size="12" fill="#e8eefc" font-weight="700" font-family="Inter,sans-serif">${short(v)}</text>`; }).join(''); }
+function drawSpark(){ const pts=[]; let b=balance()-TX.filter(t=>t.date>iso(addDays(today,-30))).reduce((s,t)=>s+cashDelta(t),0); const vals=[]; for(let k=29;k>=0;k--){ const d=iso(addDays(today,-k)); b+=TX.filter(t=>t.date===d).reduce((s,t)=>s+cashDelta(t),0); vals.push(b);} const mn=Math.min(...vals), mx=Math.max(...vals)||1; vals.forEach((v,k)=>pts.push([k*300/29, 40-36*(v-mn)/((mx-mn)||1)])); const p=smoothPath(pts); $('spark').innerHTML=`<defs><linearGradient id="spg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".45"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient></defs><path d="${p} V44 H0Z" fill="url(#spg)"/><path d="${p}" style="stroke:var(--c1)" stroke-width="2.5" fill="none"/>`; }
+function drawFlow(){ const dim=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), dn=today.getDate(); let bal=balance()-TX.filter(t=>inMonth(t,MK)).reduce((s,t)=>s+cashDelta(t),0), out=0; const A=[],B=[]; for(let d=1; d<=dn; d++){ const ds=iso(new Date(today.getFullYear(),today.getMonth(),d,12)); for(const t of TX) if(t.date===ds){ bal+=cashDelta(t); if(t.type==='out') out+=t.amt; } A.push(bal); B.push(out); } const mx=Math.max(...A,...B,1); const X=d=>(d)*600/(dim-1||1), Y=v=>160-140*v/mx; const pa=smoothPath(A.map((v,k)=>[X(k),Y(v)])), pb=smoothPath(B.map((v,k)=>[X(k),Y(v)])); const lx=X(A.length-1); $('flow').innerHTML=`<defs><linearGradient id="fa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".4"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".35"/><stop offset="1" stop-color="#818cf8" stop-opacity="0"/></linearGradient></defs><g style="stroke:var(--grid)"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="90" x2="600" y2="90"/><line x1="0" y1="140" x2="600" y2="140"/></g><path d="${pa} V170 H0Z" fill="url(#fa)"/><path d="${pa}" style="stroke:var(--c1)" stroke-width="3" fill="none"/><path d="${pb} V170 H0Z" fill="url(#fb)"/><path d="${pb}" style="stroke:var(--c2)" stroke-width="2.5" fill="none"/><circle cx="${lx}" cy="${Y(A[A.length-1])}" r="6" fill="#5eead4" style="stroke:var(--bg)" stroke-width="3"/>`; }
+function drawDonut(svgId,listId){ const cb=catBreakdown(MK), tot=cb.reduce((s,[,v])=>s+v,0)||1; let off=25, html='<circle cx="21" cy="21" r="15.9" fill="none" style="stroke:var(--grid)" stroke-width="5"/>'; cb.slice(0,6).forEach(([c,v])=>{ const pct=v/tot*100; html+=`<circle cx="21" cy="21" r="15.9" fill="none" stroke="${(CATS[c]||CATS.Lainnya).c}" stroke-width="5" stroke-dasharray="${Math.max(pct-1.2,0.5)} ${100-Math.max(pct-1.2,0.5)}" stroke-dashoffset="${off}"/>`; off-=pct; }); html+=`<text x="21" y="20" font-size="3.3" text-anchor="middle" style="fill:var(--soft)" font-weight="600" font-family="Inter,sans-serif">Keluar</text><text x="21" y="25" font-size="4.6" text-anchor="middle" style="fill:var(--ink)" font-weight="800" font-family="Inter,sans-serif">${short(tot)}</text>`; $(svgId).innerHTML=html; $(listId).innerHTML=cb.slice(0,5).map(([c,v])=>`<div data-cat="${esc(c)}"><span><i class="dot" style="background:${(CATS[c]||CATS.Lainnya).c}"></i>${esc(c)}</span><b>${short(v).replace(/^/,'Rp ')}</b></div>`).join(''); }
+function drawBars(){ const vals=[]; for(let k=5;k>=0;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); vals.push([MS[d.getMonth()], totals(monthKey(d)).o]); } const mx=Math.max(...vals.map(v=>v[1]),1); const w=600/6; $('bars').innerHTML='<defs><linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".6"/></linearGradient></defs>'+vals.map(([m,v],k)=>{ const h=140*v/mx; return `<rect x="${k*w+18}" y="${160-h}" width="${w-36}" height="${h}" rx="10" fill="url(#bg1)" opacity="${k===5?1:.6}"/><text x="${k*w+w/2}" y="182" text-anchor="middle" font-size="13" style="fill:var(--soft)" font-family="Inter,sans-serif">${m}</text><text x="${k*w+w/2}" y="${152-h}" text-anchor="middle" font-size="12" style="fill:var(--ink)" font-weight="700" font-family="Inter,sans-serif">${short(v)}</text>`; }).join(''); }
 const GOALS=[{n:'HP baru',ic:'📱',t:6000000,s:2400000},{n:'Dana darurat',ic:'🛟',t:24000000,s:9600000},{n:'Liburan Bali',ic:'🏝️',t:5000000,s:1250000}];
 function renderPlan(){ $('goals').innerHTML=GOALS.map(g=>{const p=Math.min(100,Math.round(g.s/g.t*100)); return `<div class="goal"><div class="ic" style="font-size:24px">${g.ic}</div><div class="t"><b>${g.n}</b> <small>· ${p}%</small><div class="bar"><i style="width:${p}%"></i></div><small>${rp(g.s)} dari ${rp(g.t)}</small></div></div>`;}).join(''); $('budgets').innerHTML=Object.entries(BUDGET).map(([c,b])=>{ const u=sumCat(c,MK), p=Math.round(u/b*100); const col=p>=100?'#fb7185':p>=85?'#fbbf24':'linear-gradient(90deg,#2dd4bf,#818cf8)'; return `<div class="bgt"><div class="top"><span>${CATS[c].ic} ${c}</span><span class="${p>=100?'dn':''}">${rp(u)} / ${short(b)}</span></div><div class="bar"><i style="width:${Math.min(p,100)}%;background:${col}"></i></div></div>`; }).join(''); }
 function greet(){ const h=new Date().getHours(); return h<11?'Selamat pagi':h<15?'Selamat siang':h<19?'Selamat sore':'Selamat malam'; }
@@ -746,6 +778,11 @@ $('wForm').onsubmit=e=>{ e.preventDefault(); const f=e.target; const name=f.n.va
   const w={id:'w'+Date.now(),name,type,ic:WIC[type],col:WCOL[WALLETS.length%WCOL.length],start:amt}; WALLETS.splice(type==='invest'?WALLETS.length:WALLETS.findIndex(x=>x.type==='invest')<0?WALLETS.length:WALLETS.findIndex(x=>x.type==='invest'),0,w);
   $('wModal').hidden=true; render(); renderWallets(w.id); lastUser=Date.now();
   say([`Dompet ${name} ditambahkan dengan saldo ${rp(amt)} 🎉`, type==='invest'?'Saldo investasi dihitung terpisah dari uang harian, tapi masuk ke total kekayaanmu.':`Kalau catat, sebut nama dompetnya, misalnya "bensin 50rb pakai ${name}".`],{mood:'happy',short:'Dompet baru! 🎉'}); };
+
+// tema terang / gelap
+function applyTheme(t,announce){ document.documentElement.setAttribute('data-theme',t); $('themeBtn').textContent=t==='light'?'🌙':'☀️'; $('themeBtn').title=t==='light'?'Ganti ke gelap':'Ganti ke terang'; const m=document.getElementById('themeColor'); if(m) m.content=t==='light'?'#eef2f8':'#070b16'; if(announce){ pop(t==='light'?'Terang ☀️':'Gelap 🌙'); setMood('happy',1500); } }
+applyTheme(document.documentElement.getAttribute('data-theme')||'dark',false);
+$('themeBtn').onclick=()=>{ const t=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'; try{localStorage.setItem('ruvi-theme',t);}catch(e){} applyTheme(t,true); };
 
 // mode diam
 let muted=false; $('mute').onclick=()=>{ muted=!muted; $('mute').classList.toggle('on',muted); $('mute').textContent=muted?'🔕 Ruvi diam dulu':'🔔 Ruvi aktif'; if(!muted) say(['Aku balik lagi! 👋'],{mood:'normal',short:'👋'}); };

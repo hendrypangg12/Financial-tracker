@@ -54,7 +54,7 @@ Total realistis: **±4–5 minggu** sampai versi Ruvi tayang penuh di Play Store
 
 ## Keputusan yang perlu bos ambil
 
-1. Tema default: **ikut pengaturan HP** (disarankan) / selalu gelap / selalu terang.
+1. ~~Tema default~~ ✅ DIPUTUSKAN 13 Okt: ikut pengaturan HP + tombol ☀️/🌙 untuk ganti manual (sudah di demo).
 2. Fitur **budget per kategori** dimasukkan di fase 3? (disarankan ya — inilah yang membuat Ruvi bisa "khawatir" dan kasih tips)
 3. Untuk kalimat yang tidak terbaca parser, boleh pakai **model AI kecil yang lebih murah** (khusus paket berbayar)?
 4. **Ikon aplikasi** diganti wajah Ruvi? Nama aplikasi tetap "BerUang"?

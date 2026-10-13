@@ -213,6 +213,9 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   (saldo, masuk/keluar bulan ini, filter Semua/Masuk/Keluar, daftar transaksi termasuk pindah dana). Ketuk transaksi mana pun
   (beranda, tab Transaksi, detail dompet, atau tombol "✏️ Ubah" di kartu catatan Ruvi) → form ubah: jenis, keterangan, jumlah,
   tanggal, kategori, dompet (pindah dana: dari/ke) + Hapus (konfirmasi 2x). Ruvi: "Diperbaiki ✓" / "Dihapus 🗑️".
+  13 Okt: TEMA TERANG + GELAP (permintaan bos): default ikut pengaturan perangkat (prefers-color-scheme), tombol ☀️/🌙 di atas,
+  pilihan disimpan localStorage `ruvi-theme`; warna lewat CSS var (`html[data-theme=light]`), grafik pakai var --c1/--c2/--grid.
+  → Keputusan #1 rencana perubahan total: tema ikut perangkat + bisa diganti manual.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
