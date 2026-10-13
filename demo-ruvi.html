@@ -177,6 +177,27 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
 .wact button{padding:11px 16px;border-radius:13px;font-weight:700;font-size:14px;border:1px solid var(--line)}
 .wact .pri{background:linear-gradient(135deg,var(--mint),var(--indigo));color:#06101c;border:0}
 .txrow .wn{color:var(--soft)}
+/* detail dompet & edit transaksi */
+.sheetwrap{align-items:center}
+.sheet{width:min(460px,100%);max-height:86vh;overflow-y:auto;padding:18px 18px 20px}
+.sh-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sh-head .wi{font-size:24px}.sh-head b{font-size:18px;display:block}.sh-head small{font-size:12px;color:var(--soft)}
+.sh-head .x{margin-left:auto;width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-size:16px}
+.sh-bal{font-size:28px;font-weight:800;letter-spacing:-1px;margin:2px 0 12px}
+.sh-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sh-sum div{border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.sh-sum small{display:block;font-size:11.5px;color:var(--soft);font-weight:600}.sh-sum b{font-size:16px}
+.seg2{display:flex;gap:6px;margin-bottom:6px}
+.seg2 button{flex:1;padding:8px;border-radius:12px;font-size:12.5px;font-weight:700;border:1px solid var(--line);color:var(--soft)}
+.seg2 button.on{color:#fff;background:rgba(45,212,191,.16);border-color:rgba(45,212,191,.5)}
+.sh-hint{font-size:11.5px;color:var(--mute);margin:8px 2px 0}
+.sh-empty{padding:18px;text-align:center;color:var(--soft);font-size:13px}
+.wbox select,.wbox input[type=date]{display:block;width:100%;margin-top:6px;border-radius:14px;padding:11px 12px;font-size:15px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);outline:none;color-scheme:dark}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wact .del{margin-right:auto;color:#fb7185;border-color:rgba(251,113,133,.4)}
+.wact .del.sure{background:#fb7185;color:#160a0d}
+.rec .ed{margin-left:8px;font-size:12px;padding:4px 8px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid var(--line);white-space:nowrap}
+@media (max-width:900px){ .sheetwrap{align-items:end;padding:0} .sheet{width:100%;border-radius:24px 24px 0 0;max-height:88vh;padding-bottom:calc(20px + env(safe-area-inset-bottom))} }
 /* interaksi */
 [data-ruvi],.txrow,.cats div{cursor:pointer;transition:transform .12s}
 [data-ruvi]:active,.txrow:active,.cats div:active{transform:scale(.985)}
@@ -338,6 +359,18 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
 
 <button class="fab glass" id="fab"><svg viewBox="70 0 160 330"><use href="#botg"/></svg>Catat ke Ruvi<span class="badge"></span></button>
 <div class="rtoast glass" id="rtoast" aria-live="polite"></div>
+<div class="wmodal sheetwrap" id="wDetail" hidden><div class="wbox glass sheet" id="wdBox"></div></div>
+<div class="wmodal sheetwrap" id="txEdit" hidden><form class="wbox glass sheet" id="txForm" autocomplete="off">
+ <div class="sh-head"><span class="wi">✏️</span><div><b>Ubah transaksi</b><small>Perbaiki kalau Ruvi salah catat</small></div><button type="button" class="x" id="txX">✕</button></div>
+ <div id="txNormal">
+  <div class="wtypes" style="grid-template-columns:1fr 1fr;margin-bottom:12px"><label><input type="radio" name="ty" value="out">− Pengeluaran</label><label><input type="radio" name="ty" value="in">+ Pemasukan</label></div>
+  <label class="f">Keterangan<input type="text" name="d" maxlength="40"></label>
+ </div>
+ <div class="f2"><label class="f">Jumlah<input type="text" name="a" inputmode="numeric"></label><label class="f">Tanggal<input type="date" name="dt"></label></div>
+ <div class="f2" id="txCatRow"><label class="f">Kategori<select name="c"></select></label><label class="f">Dompet<select name="w"></select></label></div>
+ <div class="f2" id="txMoveRow"><label class="f">Dari dompet<select name="fr"></select></label><label class="f">Ke dompet<select name="to"></select></label></div>
+ <div class="wact"><button type="button" class="del" id="txDel">Hapus</button><button type="button" id="txCancel">Batal</button><button type="submit" class="pri">Simpan</button></div>
+</form></div>
 <div class="wmodal" id="wModal" hidden><form class="wbox glass" id="wForm" autocomplete="off">
  <h3>👛 Dompet baru</h3>
  <label class="f">Nama dompet<input type="text" name="n" placeholder="mis. Mandiri, OVO, Emas Antam" maxlength="24" required></label>
@@ -588,14 +621,14 @@ function answer(q){
   if(/makasih|terima kasih|thanks/.test(low)) return {mood:'heart',lines:['Sama-sama! Senang bisa bantu 🥰']};
   return null;
 }
-function recHtml(list){ return list.map(t=>`<div class="rec"><span class="ic">${icon(t)}</span><div><b>${esc(t.desc)}</b><small>${esc(t.cat)} · ${dayLabel(t.date)} · ${esc(W(t.wallet).name)}</small></div><span class="v ${t.type==='in'?'up':'dn'}">${t.type==='in'?'+':'−'}${short(t.amt)}</span></div>`).join(''); }
+function recHtml(list){ return list.map(t=>{ const mv=t.type==='move'; return `<div class="rec" data-tx="${t.id}"><span class="ic">${icon(t)}</span><div><b>${esc(t.desc)}</b><small>${mv?'Pindah dana':esc(t.cat)+' · '+esc(W(t.wallet).name)} · ${dayLabel(t.date)}</small></div><span class="v ${mv?'':t.type==='in'?'up':'dn'}">${mv?'':t.type==='in'?'+':'−'}${short(t.amt)}</span><span class="ed">✏️ Ubah</span></div>`; }).join(''); }
 let lastUser=Date.now();
 async function handle(text,via='chat'){
   text=text.trim(); if(!text) return; lastUser=Date.now();
   bubble('me',esc(text));
   const mv=parseMove(text);
   if(mv){ await thinking(650); addMove(TODAY,mv.from,mv.to,mv.amt,via); render(seq); renderWallets(mv.to); const F=W(mv.from), T=W(mv.to);
-    return say([T.type==='invest'?`Investasi ${rp(mv.amt)} ke ${T.name} dicatat 📈`:`Dipindah ✓ ${F.name} → ${T.name} ${rp(mv.amt)}`, `Saldo ${F.name} sekarang ${rp(walletBal(F))}, ${T.name} ${rp(walletBal(T))}.`],{mood:T.type==='invest'?'heart':'happy',short:T.type==='invest'?'Investasi 📈':'Dipindah ✓'}); }
+    return say([T.type==='invest'?`Investasi ${rp(mv.amt)} ke ${T.name} dicatat 📈`:`Dipindah ✓ ${F.name} → ${T.name} ${rp(mv.amt)}`, `Saldo ${F.name} sekarang ${rp(walletBal(F))}, ${T.name} ${rp(walletBal(T))}.`],{mood:T.type==='invest'?'heart':'happy',short:T.type==='invest'?'Investasi 📈':'Dipindah ✓',extra:recHtml([TX[TX.length-1]])}); }
   const entries=parseEntries(text);
   const q=answer(text);
   if(entries.length && !(q && !/\d/.test(text))){
@@ -614,7 +647,7 @@ async function handle(text,via='chat'){
         else lines.push(`${c} minggu ini ${rp(weekSum(c))}, masih aman. Budget bulan ini terpakai ${pct}%.`);
       } else lines.push(`Pengeluaran bulan ini jadi ${rp(totals(MK).o)}.`);
     }
-    return say(lines,{mood:m,extra:recHtml(entries)});
+    return say(lines,{mood:m,extra:recHtml(ids.map(id=>TX.find(t=>t.id===id)))});
   }
   if(q){ await thinking(1100); const mm=q.mood==='think2'?'normal':q.mood; return say(q.lines,{mood:mm}); }
   await thinking(600);
@@ -639,7 +672,7 @@ function comment(lines,m,sh){ const now=Date.now(); if(now-lastComment<1500) ret
 document.addEventListener('click',e=>{
   if(e.target.closest('button')&&!e.target.closest('[data-ruvi]')) return;
   const {i,o}=totals(MK), p=totals(PMK);
-  const tx=e.target.closest('[data-tx]'); if(tx){ const t=TX.find(x=>x.id===+tx.dataset.tx); if(t){ const share=t.type==='out'?Math.round(t.amt/Math.max(1,o)*100):0; comment(t.type==='in'?[`${t.desc}: masuk ${rp(t.amt)} ${dayLabel(t.date).toLowerCase()}. Mantap! 🎉`]:[`${t.desc} ${rp(t.amt)}, kategori ${t.cat}.`, share>=5?`Itu ${share}% dari pengeluaran bulan ini.`:'Kecil kok, aman 👍'], t.type==='in'?'happy':share>=10?'worry':'normal', t.type==='in'?`+Rp ${short(t.amt)} 🎉`:`−Rp ${short(t.amt)} ${share>=10?'😬':'👍'}`); } return; }
+  const tx=e.target.closest('[data-tx]'); if(tx){ openEdit(+tx.dataset.tx); return; }
   const ct=e.target.closest('[data-cat]'); if(ct){ const c=ct.dataset.cat, v=sumCat(c,MK), b=BUDGET[c]; const pct=b?Math.round(v/b*100):null; comment([`${c} bulan ini ${rp(v)} (${Math.round(v/Math.max(1,o)*100)}% dari pengeluaran).`, b?(pct>=100?`Sudah lewat budget ${rp(b)} 😬`:pct>=85?`Budget-nya tinggal ${rp(b-v)}, hati-hati ya 😉`:`Masih ${pct}% dari budget, aman.`):'Ini biaya rutin, wajar kok.'], b?(pct>=100?'worry':pct>=85?'wink':'normal'):'normal', b?(pct>=100?'Lewat budget 😬':pct>=85?'Hampir habis 😉':'Aman 👍'):'Rutin 👌'); return; }
   const k=e.target.closest('[data-ruvi]'); if(!k) return;
   const net=i-o, po=p.o?Math.round((o-p.o)/p.o*100):0;
@@ -647,7 +680,7 @@ document.addEventListener('click',e=>{
      income:()=>comment([`Pemasukan bulan ini ${rp(i)}.`, `Mau aku sisihkan 10% (${rp(Math.round(i*0.1))}) buat target?`],'wink',`+Rp ${short(i)} 😉`),
      expense:()=>comment([`Pengeluaran bulan ini ${rp(o)}.`, po<=0?`${Math.abs(po)}% lebih hemat dari bulan lalu sejauh ini 👍`:`Naik ${po}% dari bulan lalu. Aku bantu pantau ya.`], po<=0?'happy':'worry', po<=0?`Hemat ${Math.abs(po)}% 👍`:`Naik ${po}% 😬`),
      flow:()=>comment(['Garis hijau itu saldomu dari hari ke hari.','Lonjakan di awal bulan = gaji masuk. Garis ungu = total pengeluaran yang terus naik.'],'normal','📈'),
-     wallet:()=>{ const w=W(k.dataset.wallet); const outM=TX.filter(t=>t.type==='out'&&t.wallet===w.id&&inMonth(t,MK)).reduce((a,t)=>a+t.amt,0); comment([`Saldo ${w.name} ${rp(walletBal(w))}.`, w.type==='invest'?'Ini investasi, dihitung terpisah dari uang harianmu.':outM?`Bulan ini keluar ${rp(outM)} dari dompet ini.`:'Belum ada pengeluaran dari dompet ini bulan ini.'], w.type==='invest'?'heart':'normal', `${w.ic} ${short(walletBal(w)).replace(/^/,'Rp ')}`); },
+     wallet:()=>{ const w=W(k.dataset.wallet); openWalletDetail(w.id); pop(`${w.ic} Rp ${short(walletBal(w))}`); setMood(w.type==='invest'?'heart':'normal',2500); },
      streak:()=>comment(['6 hari berturut-turut kamu mencatat! 🔥','Besok catat lagi ya, biar genap seminggu.'],'heart','🔥 6 hari!') }[k.dataset.ruvi]||(()=>{}))();
 });
 const seenTab={};
@@ -657,6 +690,53 @@ window.__tabComment=v=>{ if(seenTab[v]||muted) return; seenTab[v]=1; const {o}=t
   if(v==='plan'){ const g=GOALS[0]; comment([`Target ${g.n} sudah ${Math.round(g.s/g.t*100)}%.`, `Jajan & Kopi bulan ini ${Math.round(sumCat('Jajan & Kopi',MK)/BUDGET['Jajan & Kopi']*100)}% dari budget. Yang merah artinya lewat.`],'wink',`Target ${Math.round(g.s/g.t*100)}% 🎯`); }
   if(v==='home') comment(['Selamat datang kembali di beranda! 👋'],'normal','👋');
 };
+
+// detail dompet
+let wdId=null, wdFilter='all';
+function walletRows(id){ return TX.filter(t=>t.wallet===id&&t.type!=='move'||t.from===id||t.to===id).sort(sortTx); }
+function openWalletDetail(id,filter){ wdId=id; if(filter) wdFilter=filter; const w=W(id); const mine=walletRows(id).filter(t=>inMonth(t,MK));
+  let inn=0,out=0; for(const t of mine){ if(t.type==='in') inn+=t.amt; else if(t.type==='out') out+=t.amt; else if(t.to===id) inn+=t.amt; else out+=t.amt; }
+  const all=walletRows(id).filter(t=> wdFilter==='all' || (wdFilter==='in' ? (t.type==='in'||t.to===id) : (t.type==='out'||t.from===id)) );
+  const rowW=t=>{ const mv=t.type==='move'; const plus=t.type==='in'||(mv&&t.to===id); return `<div data-tx="${t.id}" class="txrow"><div class="ic">${icon(t)}</div><div class="t"><b>${esc(t.desc)}</b><small>${esc(t.cat)} · ${dayLabel(t.date)}</small></div><div class="v ${plus?'up':'dn'}">${plus?'+':'−'}${rp(t.amt)}</div></div>`; };
+  $('wdBox').innerHTML=`<div class="sh-head"><span class="wi">${w.ic}</span><div><b>${esc(w.name)}</b><small>${WTYPE[w.type]}</small></div><button type="button" class="x" id="wdX">✕</button></div>
+   <div class="sh-bal">${rp(walletBal(w))}</div>
+   <div class="sh-sum"><div><small>Masuk bulan ini</small><b class="up">+${rp(inn)}</b></div><div><small>Keluar bulan ini</small><b class="dn">−${rp(out)}</b></div></div>
+   <div class="seg2"><button type="button" data-wf="all" class="${wdFilter==='all'?'on':''}">Semua</button><button type="button" data-wf="in" class="${wdFilter==='in'?'on':''}">Masuk</button><button type="button" data-wf="out" class="${wdFilter==='out'?'on':''}">Keluar</button></div>
+   ${all.length? all.slice(0,60).map(rowW).join('') : '<div class="sh-empty">Belum ada transaksi di dompet ini.</div>'}
+   <p class="sh-hint">Sentuh transaksi untuk mengubah atau menghapus.</p>`;
+  $('wDetail').hidden=false;
+  $('wdX').onclick=()=>{ $('wDetail').hidden=true; wdId=null; };
+  $('wdBox').querySelectorAll('[data-wf]').forEach(b=>b.onclick=()=>openWalletDetail(id,b.dataset.wf));
+}
+$('wDetail').onclick=e=>{ if(e.target.id==='wDetail'){ $('wDetail').hidden=true; wdId=null; } };
+
+// ubah / hapus transaksi
+let editId=null;
+function fillOpts(sel,items,val){ sel.innerHTML=items.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(''); if(val!=null) sel.value=val; }
+function catOpts(type){ return Object.keys(type==='in'?INC:CATS).map(c=>[c,((type==='in'?INC:CATS)[c].ic)+' '+c]); }
+function walletOpts(){ return WALLETS.map(w=>[w.id,w.ic+' '+w.name]); }
+function openEdit(id){ const t=TX.find(x=>x.id===id); if(!t) return; editId=id; const f=$('txForm'); const mv=t.type==='move';
+  $('txNormal').style.display=mv?'none':''; $('txCatRow').style.display=mv?'none':''; $('txMoveRow').style.display=mv?'':'none';
+  f.a.value=t.amt.toLocaleString('id-ID'); f.dt.value=t.date;
+  if(mv){ fillOpts(f.fr,walletOpts(),t.from); fillOpts(f.to,walletOpts(),t.to); }
+  else { f.ty.value=t.type; f.d.value=t.desc; fillOpts(f.c,catOpts(t.type),t.cat); fillOpts(f.w,walletOpts(),t.wallet); }
+  const del=$('txDel'); del.classList.remove('sure'); del.textContent='Hapus';
+  $('txEdit').hidden=false; pop('Mau diubah? ✏️'); setMood('think',2500); }
+function closeEdit(){ $('txEdit').hidden=true; editId=null; }
+$('txX').onclick=closeEdit; $('txCancel').onclick=closeEdit; $('txEdit').onclick=e=>{ if(e.target.id==='txEdit') closeEdit(); };
+$('txForm').querySelectorAll('input[name=ty]').forEach(r=>r.onchange=()=>{ const f=$('txForm'); fillOpts(f.c,catOpts(f.ty.value)); });
+function afterChange(){ render(); if(wdId) openWalletDetail(wdId); }
+$('txForm').onsubmit=e=>{ e.preventDefault(); const t=TX.find(x=>x.id===editId); if(!t) return closeEdit(); const f=e.target;
+  const raw=f.a.value.trim(); let amt=/^[\d.,]+$/.test(raw)?parseInt(raw.replace(/[.,]/g,''),10):((parseAmount(raw.toLowerCase())||{}).amt||0);
+  if(!amt||amt<=0){ f.a.focus(); return; }
+  t.amt=amt; if(f.dt.value) t.date=f.dt.value;
+  if(t.type==='move'){ if(f.fr.value===f.to.value){ f.to.focus(); return; } t.from=f.fr.value; t.to=f.to.value; t.desc=`${W(t.from).name} → ${W(t.to).name}`; t.cat=W(t.to).type==='invest'?'Investasi':'Pindah dana'; }
+  else { t.type=f.ty.value; t.desc=(f.d.value.trim()||t.desc).slice(0,40); t.cat=f.c.value; t.wallet=f.w.value; }
+  closeEdit(); afterChange(); lastUser=Date.now();
+  say(['Siap, sudah diperbaiki ✓', t.type==='move'?`${t.desc} ${rp(t.amt)}.`:`${t.desc} sekarang ${rp(t.amt)} · ${t.cat} · ${W(t.wallet).name}.`],{mood:'happy',short:'Diperbaiki ✓',hold:3000}); };
+$('txDel').onclick=()=>{ const del=$('txDel'); if(!del.classList.contains('sure')){ del.classList.add('sure'); del.textContent='Yakin hapus?'; return; }
+  const k=TX.findIndex(x=>x.id===editId); if(k<0) return closeEdit(); const t=TX.splice(k,1)[0]; closeEdit(); afterChange(); lastUser=Date.now();
+  say([`${t.desc} ${rp(t.amt)} dihapus 🗑️`],{mood:'normal',short:'Dihapus 🗑️',hold:2500}); };
 
 // dompet baru
 function openWallet(){ const m=$('wModal'); $('wForm').reset(); m.hidden=false; setTimeout(()=>$('wForm').n.focus(),50); }

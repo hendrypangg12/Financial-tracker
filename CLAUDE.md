@@ -209,6 +209,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   "+ Dompet baru" (nama, jenis Bank/E-wallet/Tunai/Investasi, saldo sekarang), transaksi menyebut dompet ("bensin 50rb pakai
   gopay", default bank pertama), pindah dana & investasi dari chat, Sisa saldo = dompet non-investasi, baris "Investasi ·
   Kekayaan", tanya "saldo semua dompet". Di app asli butuh field baru `wallet` per transaksi + `wallets[]` di data user.
+  13 Okt: DETAIL DOMPET + EDIT MANUAL (permintaan bos: "AI kalau salah bisa edit manual"): ketuk kartu dompet → lembar detail
+  (saldo, masuk/keluar bulan ini, filter Semua/Masuk/Keluar, daftar transaksi termasuk pindah dana). Ketuk transaksi mana pun
+  (beranda, tab Transaksi, detail dompet, atau tombol "✏️ Ubah" di kartu catatan Ruvi) → form ubah: jenis, keterangan, jumlah,
+  tanggal, kategori, dompet (pindah dana: dari/ke) + Hapus (konfirmasi 2x). Ruvi: "Diperbaiki ✓" / "Dihapus 🗑️".
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
