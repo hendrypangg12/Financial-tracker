@@ -195,6 +195,13 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   setelah ~50–100 pembeli. Semua desain + video + keputusan di `design/ruvi/` (README.md). BELUM diimplementasi di app;
   rencana: rilis 1.4.2 dulu → terapkan di web berstock.id → Android build berikutnya. ChatGPT laptop belum push 1.4.2.
 
+- 🎮 13 Okt: DEMO WEB INTERAKTIF Ruvi → `demo-ruvi.html` (berstock.id/demo-ruvi.html, noindex, tidak di-link dari mana pun).
+  Satu file vanilla JS, data contoh di memori (tidak tersimpan, tanpa AI/kredit): dashboard kaca gelap (saldo, arus kas,
+  donut kategori, transaksi), tab Transaksi/Laporan/Target & budget, panel Ruvi (animasi + 8 ekspresi, teks diketik,
+  mulut bergerak), parser multi-transaksi ("kopi 28rb, bakso 25rb kemarin", rb/k/jt), jawaban terhitung (boros di mana,
+  bisa nabung berapa, banding bulan lalu, target), reaksi budget (≥85% kasih tips, ≥100% khawatir), mic & kamera simulasi,
+  tombol "Ruvi diam dulu", Ruvi menyapa duluan + maks 2 tips. HP: panel Ruvi jadi layar penuh lewat tombol "Catat ke Ruvi".
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 
