@@ -201,6 +201,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   mulut bergerak), parser multi-transaksi ("kopi 28rb, bakso 25rb kemarin", rb/k/jt), jawaban terhitung (boros di mana,
   bisa nabung berapa, banding bulan lalu, target), reaksi budget (≥85% kasih tips, ≥100% khawatir), mic & kamera simulasi,
   tombol "Ruvi diam dulu", Ruvi menyapa duluan + maks 2 tips. HP: panel Ruvi jadi layar penuh lewat tombol "Catat ke Ruvi".
+  13 Okt lanjutan (permintaan bos "simple kayak Rolly"): di beranda HP Ruvi besar di tengah + gelembung PENDEK saja
+  (emoji/2–3 kata: "Hai Budi! 👋", "Hemat 19% 👍", "Lewat budget 😬"), teks lengkap hanya di layar chat (titik merah di
+  tombol "Catat ke Ruvi" kalau ada pesan baru). Interaksi: mata ikut jari, sentuh kartu/kategori/transaksi/streak → ekspresi
+  + gelembung pendek, sambutan tiap tab, tidur setelah 45 dtk, ketuk Ruvi = reaksi. Rencana: `design/ruvi/RENCANA-PERUBAHAN-TOTAL.md`.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.

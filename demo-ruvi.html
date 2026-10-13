@@ -153,26 +153,25 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
 [data-ruvi]:active,.txrow:active,.cats div:active{transform:scale(.985)}
 .rtoast{display:none}
 @media (max-width:900px){
-  .rtoast{display:block;position:fixed;left:16px;right:16px;bottom:160px;z-index:21;padding:11px 14px;border-radius:18px 18px 18px 6px;font-size:13.5px;line-height:1.45;opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s;pointer-events:none;background:rgba(20,28,50,.88)}
-  .rtoast.show{opacity:1;transform:none}
+  .rtoast{display:block;position:fixed;left:50%;bottom:156px;z-index:21;padding:9px 16px;border-radius:99px;font-size:15px;font-weight:700;white-space:nowrap;color:#0f1d2b;opacity:0;transform:translate(-50%,10px);transition:opacity .25s,transform .25s;pointer-events:none;background:rgba(255,255,255,.93);border:0;box-shadow:0 8px 22px rgba(0,0,0,.3)}
+  .rtoast.show{opacity:1;transform:translate(-50%,0)}
   .rtoast b{color:var(--mint);font-size:11.5px;display:block;margin-bottom:2px}
   body.ruvi-open .rtoast{display:none}
 }
-/* Ruvi di beranda (HP) */
+/* Ruvi di beranda (HP): simpel, robot + gelembung pendek */
 .ruvi-hero{display:none}
 @media (max-width:900px){
-  .ruvi-hero{display:flex;align-items:center;gap:12px;border-radius:24px;padding:12px 14px 12px 6px;margin-bottom:14px;background:linear-gradient(135deg,rgba(45,212,191,.16),rgba(129,140,248,.14));border:1px solid rgba(255,255,255,.14)}
-  .rh-bot{flex:0 0 108px;width:108px;height:142px;position:relative}
-  .rh-bot svg{width:108px;height:142px;overflow:visible}
-  .rh-bot:after{content:"Ketuk aku";position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--mint);opacity:.8;white-space:nowrap}
-  .rh-right{flex:1;min-width:0}
-  .rh-bubble{position:relative;min-height:62px;padding:11px 13px;border-radius:18px 18px 18px 6px;font-size:14px;line-height:1.45;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);white-space:pre-wrap}
-  .rh-mood{font-size:11.5px;font-weight:700;color:var(--mint);margin:0 0 6px 2px}
-  .rh-actions{display:flex;gap:6px;margin-top:9px;overflow-x:auto;scrollbar-width:none;margin-right:-14px;padding-right:14px}.rh-actions::-webkit-scrollbar{display:none}
-  .rh-actions button{flex:0 0 auto;white-space:nowrap}
-  .rh-actions button{font-size:12px;font-weight:700;padding:7px 11px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
-  .rh-actions button.pri{background:linear-gradient(135deg,var(--mint),var(--indigo));color:#06101c;border:0}
+  .ruvi-hero{display:block;margin:-4px 0 6px}
+  .rh-wrap{position:relative;height:196px;display:flex;justify-content:center}
+  .rh-bot{width:146px;height:192px}
+  .rh-bot svg{width:146px;height:192px;overflow:visible}
+  .rh-pop{position:absolute;left:calc(50% + 44px);top:10px;max-width:calc(50% - 50px);padding:8px 13px;line-height:1.25;white-space:normal !important;border-radius:18px 18px 18px 6px;font-size:14.5px;font-weight:700;color:#0f1d2b;background:rgba(255,255,255,.93);box-shadow:0 8px 22px rgba(0,0,0,.25);transform-origin:0 100%}
+  .rh-pop.pop{animation:popin .38s cubic-bezier(.2,1.5,.4,1)}
+  .fab{position:fixed}
+  .fab .badge{display:none;position:absolute;top:8px;left:40px;width:11px;height:11px;border-radius:50%;background:#fb7185;box-shadow:0 0 0 3px rgba(10,15,30,.9)}
+  .fab.has-new .badge{display:block}
 }
+@keyframes popin{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -215,18 +214,10 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
   </div>
 
   <section class="view on" id="v-home">
-   <div class="ruvi-hero" id="ruviHero">
+   <div class="ruvi-hero" id="ruviHero"><div class="rh-wrap">
     <button class="rh-bot" id="rhBot" aria-label="Sapa Ruvi"><svg viewBox="40 0 220 330"><use href="#botg"/></svg></button>
-    <div class="rh-right">
-     <div class="rh-mood" id="rhMood">Ruvi · Asisten keuangan AI-mu</div>
-     <div class="rh-bubble" id="rhBubble">…</div>
-     <div class="rh-actions">
-      <button class="pri" data-hq="open">💬 Ngobrol</button>
-      <button data-hq="bulan ini aku boros di mana?">✨ Boros di mana?</button>
-      <button data-hq="bisa nabung berapa bulan ini?">💰 Nabung berapa?</button>
-     </div>
-    </div>
-   </div>
+    <div class="rh-pop" id="rhBubble">Hai! 👋</div>
+   </div></div>
    <div class="kpis">
     <div class="card hero" id="kBal" data-ruvi="balance"><div class="lbl">SISA SALDO <span class="tag">Semua dompet</span></div><div class="big" id="balance">–</div><div class="delta up" id="balDelta">–</div>
      <svg width="100%" height="44" viewBox="0 0 300 44" preserveAspectRatio="none" id="spark"></svg></div>
@@ -313,7 +304,7 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
  </aside>
 </div>
 
-<button class="fab glass" id="fab"><svg viewBox="70 0 160 330"><use href="#botg"/></svg>Catat ke Ruvi</button>
+<button class="fab glass" id="fab"><svg viewBox="70 0 160 330"><use href="#botg"/></svg>Catat ke Ruvi<span class="badge"></span></button>
 <div class="rtoast glass" id="rtoast" aria-live="polite"></div>
 <nav class="tabbar glass" id="tabbar">
  <button data-view="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/></svg>Beranda</button>
@@ -420,7 +411,7 @@ function greet(){ const h=new Date().getHours(); return h<11?'Selamat pagi':h<15
 let curView='home'; function go(v){ const changed=v!==curView; curView=v; if(changed && window.__tabComment) window.__tabComment(v); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v)); document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===v)); }
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
-const panel=$('ruvi'); $('fab').onclick=()=>{ panel.classList.add('open'); document.body.classList.add('ruvi-open'); setTimeout(()=>$('inp').focus(),350); }; $('close').onclick=()=>{ panel.classList.remove('open'); document.body.classList.remove('ruvi-open'); };
+const panel=$('ruvi'); $('fab').onclick=()=>{ $('fab').classList.remove('has-new'); panel.classList.add('open'); document.body.classList.add('ruvi-open'); setTimeout(()=>$('inp').focus(),350); }; $('close').onclick=()=>{ panel.classList.remove('open'); document.body.classList.remove('ruvi-open'); };
 
 // ---------- Ruvi: animasi ----------
 const FACES=['normal','happy','wink','heart','think','worry','listen','sleep'];
@@ -431,10 +422,10 @@ let ptrX=0, ptrY=0, lastPtr=-1e9, lastAct=performance.now(), eyeX=0, eyeY=0;
 function visibleBot(){ if(document.body.classList.contains('ruvi-open')||window.innerWidth>900) return $('bot'); const h=$('rhBot'); const r=h.getBoundingClientRect(); if(curView==='home' && r.bottom>0 && r.top<innerHeight) return h; return $('fab'); }
 const onPtr=e=>{ const p=e.touches?e.touches[0]:e; if(!p) return; ptrX=p.clientX; ptrY=p.clientY; lastPtr=performance.now(); };
 addEventListener('pointermove',onPtr,{passive:true}); addEventListener('pointerdown',onPtr,{passive:true}); addEventListener('touchmove',onPtr,{passive:true});
-addEventListener('pointerdown',()=>{ lastAct=performance.now(); if(mood==='sleep' && !talking){ say(['Eh, aku ketiduran 😅','Ada yang bisa aku bantu?'],{mood:'happy',hold:3000}); } },{passive:true});
+addEventListener('pointerdown',()=>{ lastAct=performance.now(); if(mood==='sleep' && !talking){ say(['Eh, aku ketiduran 😅','Ada yang bisa aku bantu?'],{mood:'happy',hold:3000,short:'Eh, aku bangun! 😅'}); } },{passive:true});
 addEventListener('keydown',()=>{ lastAct=performance.now(); });
-let toastT; function toast(html,done){ const el=$('rtoast'); if(window.innerWidth>900||document.body.classList.contains('ruvi-open')) return; const r=$('rhBot').getBoundingClientRect(); if(curView==='home' && r.bottom>60 && r.top<innerHeight-80){ el.classList.remove('show'); return; } el.innerHTML='<b>Ruvi</b>'+html; el.classList.add('show'); clearTimeout(toastT); if(done) toastT=setTimeout(()=>el.classList.remove('show'),5000); }
-function setMood(m,hold=4500){ mood=m; moodAt=performance.now(); $('ruviMood').textContent=MOOD[m]; $('rhMood').textContent='Ruvi · '+MOOD[m]; clearTimeout(setMood.t); if(hold) setMood.t=setTimeout(()=>{ if(!talking) setMood('normal',0); else setMood.t=setTimeout(()=>setMood('normal',0),2000); },hold); }
+let toastT; function toast(txt,done){ const el=$('rtoast'); if(window.innerWidth>900||document.body.classList.contains('ruvi-open')) return; const r=$('rhBot').getBoundingClientRect(); if(curView==='home' && r.bottom>60 && r.top<innerHeight-80){ el.classList.remove('show'); return; } el.textContent=txt; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2800); }
+function setMood(m,hold=4500){ mood=m; moodAt=performance.now(); $('ruviMood').textContent=MOOD[m]; clearTimeout(setMood.t); if(hold) setMood.t=setTimeout(()=>{ if(!talking) setMood('normal',0); else setMood.t=setTimeout(()=>setMood('normal',0),2000); },hold); }
 function hand(id,x,y,r){ $(id).setAttribute('transform',`translate(${x} ${y}) rotate(${r})`); }
 function frame(now){
   const t=(now-t0)/1000, L=(now-moodAt)/1000, k=mood;
@@ -479,20 +470,28 @@ requestAnimationFrame(frame);
 const msgs=$('msgs'); const heroB=$('rhBubble'); let queue=Promise.resolve();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function bubble(cls,html){ const d=document.createElement('div'); d.className='b '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
-function say(lines,{mood:m='normal',extra='',hold=4500}={}){
+const EMO={normal:'👋',happy:'🎉',wink:'😉',heart:'🥰',think:'🤔',worry:'😬',listen:'🎧',sleep:'Zzz…'};
+function pop(txt){ heroB.textContent=txt; heroB.classList.remove('pop'); void heroB.offsetWidth; heroB.classList.add('pop'); toast(txt); }
+const quiet=()=>window.innerWidth<=900 && !document.body.classList.contains('ruvi-open');
+function say(lines,{mood:m='normal',extra='',hold=4500,short=null}={}){
   queue=queue.then(async()=>{
-    setMood(m,0);
+    setMood(m,0); pop(short||EMO[m]);
+    if(quiet()){ // di beranda HP: cukup ekspresi + gelembung pendek, teks lengkap masuk chat
+      talking=true; await sleep(700); talking=false;
+      lines.forEach((txt,n)=>bubble('bot',esc(txt)+(n===lines.length-1?extra:''))); $('fab').classList.add('has-new');
+      setMood(m,hold); return;
+    }
     for(let n=0;n<lines.length;n++){
       const el=bubble('bot',''); const txt=lines[n]; talking=true;
-      for(let c=1;c<=txt.length;c++){ const h=esc(txt.slice(0,c))+'<span class="caret"></span>'; el.innerHTML=h; heroB.innerHTML=h; toast(h); msgs.scrollTop=msgs.scrollHeight; await sleep(txt[c-1]===' '?18:26); }
-      el.innerHTML=esc(txt)+(n===lines.length-1?extra:''); heroB.innerHTML=esc(txt); toast(esc(txt),true); talking=false; msgs.scrollTop=msgs.scrollHeight;
+      for(let c=1;c<=txt.length;c++){ el.innerHTML=esc(txt.slice(0,c))+'<span class="caret"></span>'; msgs.scrollTop=msgs.scrollHeight; await sleep(txt[c-1]===' '?18:26); }
+      el.innerHTML=esc(txt)+(n===lines.length-1?extra:''); talking=false; msgs.scrollTop=msgs.scrollHeight;
       if(n<lines.length-1) await sleep(420);
     }
     setMood(m,hold);
   });
   return queue;
 }
-async function thinking(ms=900){ await queue; setMood('think',0); const ty=document.createElement('div'); ty.className='typing'; ty.innerHTML='<i></i><i></i><i></i>'; msgs.appendChild(ty); heroB.innerHTML='<span style="color:var(--soft)">Ruvi sedang berpikir…</span>'; msgs.scrollTop=msgs.scrollHeight; await sleep(ms); ty.remove(); }
+async function thinking(ms=900){ await queue; setMood('think',0); const ty=document.createElement('div'); ty.className='typing'; ty.innerHTML='<i></i><i></i><i></i>'; msgs.appendChild(ty); pop('🤔'); msgs.scrollTop=msgs.scrollHeight; await sleep(ms); ty.remove(); }
 
 // ---------- parser transaksi ----------
 function parseAmount(s){ const m=[...s.matchAll(/(\d+(?:[.,]\d+)*)\s*(rb|ribu|k|jt|juta)?\b/gi)]; if(!m.length) return null; const x=m[m.length-1]; let num=x[1]; const unit=(x[2]||'').toLowerCase(); if(unit){ num=parseFloat(num.replace(',','.')); } else { num=parseFloat(num.replace(/[.,](?=\d{3}\b)/g,'').replace(',','.')); } if(unit==='rb'||unit==='ribu'||unit==='k') num*=1e3; if(unit==='jt'||unit==='juta') num*=1e6; if(!unit && num<1000) num*=1000; return {amt:Math.round(num), raw:x[0]}; }
@@ -549,46 +548,45 @@ $('mic').onclick=async()=>{ const b=$('mic'); if(b.classList.contains('rec-on'))
 $('cam').onclick=async()=>{ await queue; const live=bubble('sys','📷 Membaca foto struk… (demo)'); setMood('think',0); await sleep(1500); live.remove(); handle('indomaret 86.500','struk'); };
 
 // Ruvi di beranda: ketuk = bereaksi, tombol cepat
-const POKE=[['Hehe, geli! 😄 Aku di sini kok.','happy'],['Mau catat apa? Ketik saja, misalnya "bakso 25rb".','normal'],['Psst… Jajan & Kopi bulan ini hampir habis budget-nya 😉','wink'],['Kamu rajin banget catat keuangan. Aku suka! 🥰','heart'],['Aku lagi mikirin cara biar kamu bisa nabung lebih banyak 🤔','think']];
-let pokeN=0, pokeBusy=false;
-$('rhBot').onclick=async()=>{ if(pokeBusy) return; pokeBusy=true; lastUser=Date.now(); const [line,m]=POKE[pokeN++%POKE.length]; await say([line],{mood:m,hold:3500}); pokeBusy=false; };
-document.querySelectorAll('[data-hq]').forEach(b=>b.onclick=()=>{ $('fab').click(); if(b.dataset.hq!=='open') setTimeout(()=>handle(b.dataset.hq),380); });
+const POKE=[['Hehe 😄','happy'],['Hai! 👋','normal'],['😉','wink'],['🥰','heart'],['Hmm… 🤔','think']];
+let pokeN=0, pokeAt=0;
+$('rhBot').onclick=()=>{ const now=Date.now(); if(now-pokeAt<700) return; pokeAt=now; lastUser=now; const [txt,m]=POKE[pokeN++%POKE.length]; pop(txt); setMood(m,2600); };
 
 // komentar Ruvi saat bagian layar disentuh
 let lastComment=0;
-function comment(lines,m){ const now=Date.now(); if(now-lastComment<1800) return; lastComment=now; lastUser=now; say(lines,{mood:m,hold:4000}); }
+function comment(lines,m,sh){ const now=Date.now(); if(now-lastComment<1500) return; lastComment=now; lastUser=now; say(lines,{mood:m,hold:4000,short:sh}); }
 document.addEventListener('click',e=>{
   if(e.target.closest('button')&&!e.target.closest('[data-ruvi]')) return;
   const {i,o}=totals(MK), p=totals(PMK);
-  const tx=e.target.closest('[data-tx]'); if(tx){ const t=TX.find(x=>x.id===+tx.dataset.tx); if(t){ const share=t.type==='out'?Math.round(t.amt/Math.max(1,o)*100):0; comment(t.type==='in'?[`${t.desc}: masuk ${rp(t.amt)} ${dayLabel(t.date).toLowerCase()}. Mantap! 🎉`]:[`${t.desc} ${rp(t.amt)}, kategori ${t.cat}.`, share>=5?`Itu ${share}% dari pengeluaran bulan ini.`:'Kecil kok, aman 👍'], t.type==='in'?'happy':share>=10?'worry':'normal'); } return; }
-  const ct=e.target.closest('[data-cat]'); if(ct){ const c=ct.dataset.cat, v=sumCat(c,MK), b=BUDGET[c]; const pct=b?Math.round(v/b*100):null; comment([`${c} bulan ini ${rp(v)} (${Math.round(v/Math.max(1,o)*100)}% dari pengeluaran).`, b?(pct>=100?`Sudah lewat budget ${rp(b)} 😬`:pct>=85?`Budget-nya tinggal ${rp(b-v)}, hati-hati ya 😉`:`Masih ${pct}% dari budget, aman.`):'Ini biaya rutin, wajar kok.'], b?(pct>=100?'worry':pct>=85?'wink':'normal'):'normal'); return; }
+  const tx=e.target.closest('[data-tx]'); if(tx){ const t=TX.find(x=>x.id===+tx.dataset.tx); if(t){ const share=t.type==='out'?Math.round(t.amt/Math.max(1,o)*100):0; comment(t.type==='in'?[`${t.desc}: masuk ${rp(t.amt)} ${dayLabel(t.date).toLowerCase()}. Mantap! 🎉`]:[`${t.desc} ${rp(t.amt)}, kategori ${t.cat}.`, share>=5?`Itu ${share}% dari pengeluaran bulan ini.`:'Kecil kok, aman 👍'], t.type==='in'?'happy':share>=10?'worry':'normal', t.type==='in'?`+Rp ${short(t.amt)} 🎉`:`−Rp ${short(t.amt)} ${share>=10?'😬':'👍'}`); } return; }
+  const ct=e.target.closest('[data-cat]'); if(ct){ const c=ct.dataset.cat, v=sumCat(c,MK), b=BUDGET[c]; const pct=b?Math.round(v/b*100):null; comment([`${c} bulan ini ${rp(v)} (${Math.round(v/Math.max(1,o)*100)}% dari pengeluaran).`, b?(pct>=100?`Sudah lewat budget ${rp(b)} 😬`:pct>=85?`Budget-nya tinggal ${rp(b-v)}, hati-hati ya 😉`:`Masih ${pct}% dari budget, aman.`):'Ini biaya rutin, wajar kok.'], b?(pct>=100?'worry':pct>=85?'wink':'normal'):'normal', b?(pct>=100?'Lewat budget 😬':pct>=85?'Hampir habis 😉':'Aman 👍'):'Rutin 👌'); return; }
   const k=e.target.closest('[data-ruvi]'); if(!k) return;
   const net=i-o, po=p.o?Math.round((o-p.o)/p.o*100):0;
-  ({ balance:()=>comment([`Saldo kamu sekarang ${rp(balance())}.`, net>=0?`Bulan ini bertambah ${rp(net)}. Keren! 💪`:`Bulan ini berkurang ${rp(-net)}. Pelan-pelan ya.`], net>=0?'happy':'worry'),
-     income:()=>comment([`Pemasukan bulan ini ${rp(i)}.`, `Mau aku sisihkan 10% (${rp(Math.round(i*0.1))}) buat target?`],'wink'),
-     expense:()=>comment([`Pengeluaran bulan ini ${rp(o)}.`, po<=0?`${Math.abs(po)}% lebih hemat dari bulan lalu sejauh ini 👍`:`Naik ${po}% dari bulan lalu. Aku bantu pantau ya.`], po<=0?'happy':'worry'),
-     flow:()=>comment(['Garis hijau itu saldomu dari hari ke hari.','Lonjakan di awal bulan = gaji masuk. Garis ungu = total pengeluaran yang terus naik.'],'normal'),
-     streak:()=>comment(['6 hari berturut-turut kamu mencatat! 🔥','Besok catat lagi ya, biar genap seminggu.'],'heart') }[k.dataset.ruvi]||(()=>{}))();
+  ({ balance:()=>comment([`Saldo kamu sekarang ${rp(balance())}.`, net>=0?`Bulan ini bertambah ${rp(net)}. Keren! 💪`:`Bulan ini berkurang ${rp(-net)}. Pelan-pelan ya.`], net>=0?'happy':'worry', `Rp ${short(balance())} ${net>=0?'💪':'😬'}`),
+     income:()=>comment([`Pemasukan bulan ini ${rp(i)}.`, `Mau aku sisihkan 10% (${rp(Math.round(i*0.1))}) buat target?`],'wink',`+Rp ${short(i)} 😉`),
+     expense:()=>comment([`Pengeluaran bulan ini ${rp(o)}.`, po<=0?`${Math.abs(po)}% lebih hemat dari bulan lalu sejauh ini 👍`:`Naik ${po}% dari bulan lalu. Aku bantu pantau ya.`], po<=0?'happy':'worry', po<=0?`Hemat ${Math.abs(po)}% 👍`:`Naik ${po}% 😬`),
+     flow:()=>comment(['Garis hijau itu saldomu dari hari ke hari.','Lonjakan di awal bulan = gaji masuk. Garis ungu = total pengeluaran yang terus naik.'],'normal','📈'),
+     streak:()=>comment(['6 hari berturut-turut kamu mencatat! 🔥','Besok catat lagi ya, biar genap seminggu.'],'heart','🔥 6 hari!') }[k.dataset.ruvi]||(()=>{}))();
 });
 const seenTab={};
 window.__tabComment=v=>{ if(seenTab[v]||muted) return; seenTab[v]=1; const {o}=totals(MK);
-  if(v==='tx') comment(['Ini semua catatanmu bulan ini, dikelompokkan per hari.','Sentuh salah satu, nanti aku jelasin.'],'normal');
-  if(v==='report'){ const arr=[]; for(let k=5;k>=1;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); arr.push(totals(monthKey(d)).o); } const avg=arr.reduce((a,b)=>a+b,0)/arr.length; comment([`Rata-rata pengeluaranmu 5 bulan terakhir ${rp(avg)} per bulan.`, o<avg?'Bulan ini sejauh ini masih di bawah rata-rata 👍':'Bulan ini sudah di atas rata-rata, hati-hati ya.'], o<avg?'happy':'worry'); }
-  if(v==='plan'){ const g=GOALS[0]; comment([`Target ${g.n} sudah ${Math.round(g.s/g.t*100)}%.`, `Jajan & Kopi bulan ini ${Math.round(sumCat('Jajan & Kopi',MK)/BUDGET['Jajan & Kopi']*100)}% dari budget. Yang merah artinya lewat.`],'wink'); }
-  if(v==='home') comment(['Selamat datang kembali di beranda! 👋'],'normal');
+  if(v==='tx') comment(['Ini semua catatanmu bulan ini, dikelompokkan per hari.','Sentuh salah satu, nanti aku jelasin.'],'normal','📒');
+  if(v==='report'){ const arr=[]; for(let k=5;k>=1;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); arr.push(totals(monthKey(d)).o); } const avg=arr.reduce((a,b)=>a+b,0)/arr.length; comment([`Rata-rata pengeluaranmu 5 bulan terakhir ${rp(avg)} per bulan.`, o<avg?'Bulan ini sejauh ini masih di bawah rata-rata 👍':'Bulan ini sudah di atas rata-rata, hati-hati ya.'], o<avg?'happy':'worry', o<avg?'Lebih hemat 👍':'Lebih boros 😬'); }
+  if(v==='plan'){ const g=GOALS[0]; comment([`Target ${g.n} sudah ${Math.round(g.s/g.t*100)}%.`, `Jajan & Kopi bulan ini ${Math.round(sumCat('Jajan & Kopi',MK)/BUDGET['Jajan & Kopi']*100)}% dari budget. Yang merah artinya lewat.`],'wink',`Target ${Math.round(g.s/g.t*100)}% 🎯`); }
+  if(v==='home') comment(['Selamat datang kembali di beranda! 👋'],'normal','👋');
 };
 
 // mode diam
-let muted=false; $('mute').onclick=()=>{ muted=!muted; $('mute').classList.toggle('on',muted); $('mute').textContent=muted?'🔕 Ruvi diam dulu':'🔔 Ruvi aktif'; if(!muted) say(['Aku balik lagi! 👋'],{mood:'normal'}); };
+let muted=false; $('mute').onclick=()=>{ muted=!muted; $('mute').classList.toggle('on',muted); $('mute').textContent=muted?'🔕 Ruvi diam dulu':'🔔 Ruvi aktif'; if(!muted) say(['Aku balik lagi! 👋'],{mood:'normal',short:'👋'}); };
 
 // ---------- Ruvi bicara duluan ----------
 render();
 const {i:mi,o:mo}=totals(MK), po=totals(PMK).o;
-setTimeout(()=>{ setMood('normal',0); moodAt=performance.now(); say([`${greet()}, Budi! 👋`, mo<=po?`Bulan ini kamu lebih hemat ${rp(po-mo)} dari bulan lalu sejauh ini. Mau catat apa hari ini?`:`Mau catat apa hari ini? Ketik saja, misalnya "bakso 25rb".`]); },500);
+setTimeout(()=>{ setMood('normal',0); moodAt=performance.now(); say([`${greet()}, Budi! 👋`, mo<=po?`Bulan ini kamu lebih hemat ${rp(po-mo)} dari bulan lalu sejauh ini. Mau catat apa hari ini?`:`Mau catat apa hari ini? Ketik saja, misalnya "bakso 25rb".`],{short:`Hai Budi! 👋`}); },500);
 let tipsGiven=0;
 setInterval(()=>{ if(muted||tipsGiven>=2||Date.now()-lastUser<22000) return; tipsGiven++; lastUser=Date.now();
-  if(tipsGiven===1){ const j=sumCat('Jajan & Kopi',MK); say([`Psst… Jajan & Kopi bulan ini sudah ${rp(j)} dari budget ${rp(BUDGET['Jajan & Kopi'])}.`, 'Mau aku kasih ide biar tetap bisa ngopi tapi hemat? 😉'],{mood:'wink'}); }
-  else say(['Kamu sudah 6 hari berturut-turut catat keuangan. Satu hari lagi jadi seminggu! 🥰'],{mood:'heart'});
+  if(tipsGiven===1){ const j=sumCat('Jajan & Kopi',MK); say([`Psst… Jajan & Kopi bulan ini sudah ${rp(j)} dari budget ${rp(BUDGET['Jajan & Kopi'])}.`, 'Mau aku kasih ide biar tetap bisa ngopi tapi hemat? 😉'],{mood:'wink',short:'Psst… 😉'}); }
+  else say(['Kamu sudah 6 hari berturut-turut catat keuangan. Satu hari lagi jadi seminggu! 🥰'],{mood:'heart',short:'🔥 6 hari!'});
 },5000);
 window.__ruviDemo={handle,TX,answer,parseEntries};
 })();
