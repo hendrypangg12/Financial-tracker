@@ -148,6 +148,16 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
   .tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--soft)}
   .tabbar button.on{color:var(--mint)}
 }
+/* interaksi */
+[data-ruvi],.txrow,.cats div{cursor:pointer;transition:transform .12s}
+[data-ruvi]:active,.txrow:active,.cats div:active{transform:scale(.985)}
+.rtoast{display:none}
+@media (max-width:900px){
+  .rtoast{display:block;position:fixed;left:16px;right:16px;bottom:160px;z-index:21;padding:11px 14px;border-radius:18px 18px 18px 6px;font-size:13.5px;line-height:1.45;opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s;pointer-events:none;background:rgba(20,28,50,.88)}
+  .rtoast.show{opacity:1;transform:none}
+  .rtoast b{color:var(--mint);font-size:11.5px;display:block;margin-bottom:2px}
+  body.ruvi-open .rtoast{display:none}
+}
 /* Ruvi di beranda (HP) */
 .ruvi-hero{display:none}
 @media (max-width:900px){
@@ -201,7 +211,7 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
  <main class="main">
   <div class="head">
    <div><h1 id="hello">Halo, Budi 👋</h1><p id="subhead">Kondisi keuanganmu bulan ini</p></div>
-   <div class="tools" style="display:flex;gap:8px"><span class="chip streak" id="streak">🔥 6 hari beruntun</span><span class="chip glass hide-m" id="monthChip">📅</span></div>
+   <div class="tools" style="display:flex;gap:8px"><span class="chip streak" id="streak" data-ruvi="streak">🔥 6 hari beruntun</span><span class="chip glass hide-m" id="monthChip">📅</span></div>
   </div>
 
   <section class="view on" id="v-home">
@@ -218,13 +228,13 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
     </div>
    </div>
    <div class="kpis">
-    <div class="card hero" id="kBal"><div class="lbl">SISA SALDO <span class="tag">Semua dompet</span></div><div class="big" id="balance">–</div><div class="delta up" id="balDelta">–</div>
+    <div class="card hero" id="kBal" data-ruvi="balance"><div class="lbl">SISA SALDO <span class="tag">Semua dompet</span></div><div class="big" id="balance">–</div><div class="delta up" id="balDelta">–</div>
      <svg width="100%" height="44" viewBox="0 0 300 44" preserveAspectRatio="none" id="spark"></svg></div>
-    <div class="card glass" id="kIn"><div class="lbl">PEMASUKAN <span class="delta up" id="inDelta"></span></div><div class="mid up" id="income">–</div></div>
-    <div class="card glass" id="kOut"><div class="lbl">PENGELUARAN <span class="delta" id="outDelta"></span></div><div class="mid dn" id="expense">–</div></div>
+    <div class="card glass" id="kIn" data-ruvi="income"><div class="lbl">PEMASUKAN <span class="delta up" id="inDelta"></span></div><div class="mid up" id="income">–</div></div>
+    <div class="card glass" id="kOut" data-ruvi="expense"><div class="lbl">PENGELUARAN <span class="delta" id="outDelta"></span></div><div class="mid dn" id="expense">–</div></div>
    </div>
    <div class="row2">
-    <div class="card glass"><div class="ct">Arus kas bulan ini</div><svg width="100%" height="170" viewBox="0 0 600 170" preserveAspectRatio="none" id="flow"></svg>
+    <div class="card glass" data-ruvi="flow"><div class="ct">Arus kas bulan ini</div><svg width="100%" height="170" viewBox="0 0 600 170" preserveAspectRatio="none" id="flow"></svg>
      <div class="legend"><span><i style="background:#2dd4bf"></i>Saldo</span><span><i style="background:#a5b4fc"></i>Pengeluaran kumulatif</span></div></div>
     <div class="card glass"><div class="ct">Ke mana uangmu pergi</div><div class="donut-wrap"><svg width="118" height="118" viewBox="0 0 42 42" id="donut"></svg><div class="cats" id="catList"></div></div></div>
    </div>
@@ -262,7 +272,7 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
      <circle id="core" cx="150" cy="216" r="36" fill="url(#gc)"/>
      <circle cx="150" cy="216" r="15" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2"/>
      <rect x="104" y="86" width="92" height="66" rx="33" fill="url(#gv)"/>
-     <g id="f-normal"><g id="blinkN"><rect x="122.6" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="117.6" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="134.6" cy="109.4" r="3.5" fill="#fff"/><rect x="159.4" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="154.4" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="171.4" cy="109.4" r="3.5" fill="#fff"/></g><path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+     <g id="f-normal"><g id="lookN"><g id="blinkN"><rect x="122.6" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="117.6" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="134.6" cy="109.4" r="3.5" fill="#fff"/><rect x="159.4" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="154.4" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="171.4" cy="109.4" r="3.5" fill="#fff"/></g></g><path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
      <g id="f-happy"><path d="M119.6 121.4 Q131.6 103.4 143.6 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M156.4 121.4 Q168.4 103.4 180.4 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M139 133.8 Q150 147.8 161 133.8 Z" fill="#5eead4"/></g>
      <g id="f-wink"><path d="M119.6 121.4 Q131.6 103.4 143.6 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="159.4" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><circle cx="171.4" cy="109.4" r="3.5" fill="#fff"/><path d="M139 133.8 Q150 147.8 161 133.8 Z" fill="#5eead4"/></g>
      <g id="f-heart"><path d="M131.6 126.4 c-16 -10 -14 -26 0 -18 c14 -8 16 8 0 18z" fill="#fb7185"/><path d="M168.4 126.4 c-16 -10 -14 -26 0 -18 c14 -8 16 8 0 18z" fill="#fb7185"/><path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
@@ -303,7 +313,8 @@ form.inbar{display:flex;gap:8px;padding:0 12px 14px;align-items:center}
  </aside>
 </div>
 
-<button class="fab glass" id="fab"><svg viewBox="80 10 140 300"><use href="#mini"/></svg>Catat ke Ruvi</button>
+<button class="fab glass" id="fab"><svg viewBox="70 0 160 330"><use href="#botg"/></svg>Catat ke Ruvi</button>
+<div class="rtoast glass" id="rtoast" aria-live="polite"></div>
 <nav class="tabbar glass" id="tabbar">
  <button data-view="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/></svg>Beranda</button>
  <button data-view="tx"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h10"/></svg>Transaksi</button>
@@ -395,18 +406,18 @@ function sortTx(a,b){ return b.date.localeCompare(a.date)||b.id-a.id; }
 function dayLabel(d){ if(d===TODAY) return 'Hari ini'; if(d===iso(addDays(today,-1))) return 'Kemarin'; const x=new Date(d+'T12:00'); return x.getDate()+' '+MS[x.getMonth()]; }
 function icon(t){ return t.type==='in' ? (INC[t.cat]||INC['Pemasukan lain']).ic : (CATS[t.cat]||CATS['Lainnya']).ic; }
 const VIA={chat:'💬 Chat Ruvi',suara:'🎤 Suara',struk:'📷 Struk',manual:''};
-function row(t,newId){ return `<div class="txrow ${t.id===newId||(Array.isArray(newId)&&newId.includes(t.id))?'new':''}"><div class="ic">${icon(t)}</div><div class="t"><b>${esc(t.desc)}</b><small>${esc(t.cat)} · ${dayLabel(t.date)}${t.via!=='manual'?`<span class="via ${t.via==='chat'?'ai':''}">${VIA[t.via]}</span>`:''}</small></div><div class="v ${t.type==='in'?'up':'dn'}">${t.type==='in'?'+':'−'}${rp(t.amt)}</div></div>`; }
+function row(t,newId){ return `<div data-tx="${t.id}" class="txrow ${t.id===newId||(Array.isArray(newId)&&newId.includes(t.id))?'new':''}"><div class="ic">${icon(t)}</div><div class="t"><b>${esc(t.desc)}</b><small>${esc(t.cat)} · ${dayLabel(t.date)}${t.via!=='manual'?`<span class="via ${t.via==='chat'?'ai':''}">${VIA[t.via]}</span>`:''}</small></div><div class="v ${t.type==='in'?'up':'dn'}">${t.type==='in'?'+':'−'}${rp(t.amt)}</div></div>`; }
 function smoothPath(pts){ if(!pts.length) return ''; let d='M'+pts[0][0]+' '+pts[0][1]; for(let i=1;i<pts.length;i++){ const [x0,y0]=pts[i-1],[x1,y1]=pts[i]; const cx=(x0+x1)/2; d+=` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`; } return d; }
 function drawSpark(){ const pts=[]; let b=balance()-TX.filter(t=>t.date>iso(addDays(today,-30))).reduce((s,t)=>s+(t.type==='in'?t.amt:-t.amt),0); const vals=[]; for(let k=29;k>=0;k--){ const d=iso(addDays(today,-k)); b+=TX.filter(t=>t.date===d).reduce((s,t)=>s+(t.type==='in'?t.amt:-t.amt),0); vals.push(b);} const mn=Math.min(...vals), mx=Math.max(...vals)||1; vals.forEach((v,k)=>pts.push([k*300/29, 40-36*(v-mn)/((mx-mn)||1)])); const p=smoothPath(pts); $('spark').innerHTML=`<defs><linearGradient id="spg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".45"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient></defs><path d="${p} V44 H0Z" fill="url(#spg)"/><path d="${p}" stroke="#5eead4" stroke-width="2.5" fill="none"/>`; }
 function drawFlow(){ const dim=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), dn=today.getDate(); let bal=balance()-TX.filter(t=>inMonth(t,MK)).reduce((s,t)=>s+(t.type==='in'?t.amt:-t.amt),0), out=0; const A=[],B=[]; for(let d=1; d<=dn; d++){ const ds=iso(new Date(today.getFullYear(),today.getMonth(),d,12)); for(const t of TX) if(t.date===ds){ if(t.type==='in') bal+=t.amt; else {bal-=t.amt; out+=t.amt;} } A.push(bal); B.push(out); } const mx=Math.max(...A,...B,1); const X=d=>(d)*600/(dim-1||1), Y=v=>160-140*v/mx; const pa=smoothPath(A.map((v,k)=>[X(k),Y(v)])), pb=smoothPath(B.map((v,k)=>[X(k),Y(v)])); const lx=X(A.length-1); $('flow').innerHTML=`<defs><linearGradient id="fa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".4"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></linearGradient><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".35"/><stop offset="1" stop-color="#818cf8" stop-opacity="0"/></linearGradient></defs><g stroke="rgba(255,255,255,.06)"><line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="90" x2="600" y2="90"/><line x1="0" y1="140" x2="600" y2="140"/></g><path d="${pa} V170 H0Z" fill="url(#fa)"/><path d="${pa}" stroke="#5eead4" stroke-width="3" fill="none"/><path d="${pb} V170 H0Z" fill="url(#fb)"/><path d="${pb}" stroke="#a5b4fc" stroke-width="2.5" fill="none"/><circle cx="${lx}" cy="${Y(A[A.length-1])}" r="6" fill="#5eead4" stroke="#070b16" stroke-width="3"/>`; }
-function drawDonut(svgId,listId){ const cb=catBreakdown(MK), tot=cb.reduce((s,[,v])=>s+v,0)||1; let off=25, html='<circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>'; cb.slice(0,6).forEach(([c,v])=>{ const pct=v/tot*100; html+=`<circle cx="21" cy="21" r="15.9" fill="none" stroke="${(CATS[c]||CATS.Lainnya).c}" stroke-width="5" stroke-dasharray="${Math.max(pct-1.2,0.5)} ${100-Math.max(pct-1.2,0.5)}" stroke-dashoffset="${off}"/>`; off-=pct; }); html+=`<text x="21" y="20" font-size="3.3" text-anchor="middle" fill="#93a3c4" font-weight="600" font-family="Inter,sans-serif">Keluar</text><text x="21" y="25" font-size="4.6" text-anchor="middle" fill="#e8eefc" font-weight="800" font-family="Inter,sans-serif">${short(tot)}</text>`; $(svgId).innerHTML=html; $(listId).innerHTML=cb.slice(0,5).map(([c,v])=>`<div><span><i class="dot" style="background:${(CATS[c]||CATS.Lainnya).c}"></i>${esc(c)}</span><b>${short(v).replace(/^/,'Rp ')}</b></div>`).join(''); }
+function drawDonut(svgId,listId){ const cb=catBreakdown(MK), tot=cb.reduce((s,[,v])=>s+v,0)||1; let off=25, html='<circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>'; cb.slice(0,6).forEach(([c,v])=>{ const pct=v/tot*100; html+=`<circle cx="21" cy="21" r="15.9" fill="none" stroke="${(CATS[c]||CATS.Lainnya).c}" stroke-width="5" stroke-dasharray="${Math.max(pct-1.2,0.5)} ${100-Math.max(pct-1.2,0.5)}" stroke-dashoffset="${off}"/>`; off-=pct; }); html+=`<text x="21" y="20" font-size="3.3" text-anchor="middle" fill="#93a3c4" font-weight="600" font-family="Inter,sans-serif">Keluar</text><text x="21" y="25" font-size="4.6" text-anchor="middle" fill="#e8eefc" font-weight="800" font-family="Inter,sans-serif">${short(tot)}</text>`; $(svgId).innerHTML=html; $(listId).innerHTML=cb.slice(0,5).map(([c,v])=>`<div data-cat="${esc(c)}"><span><i class="dot" style="background:${(CATS[c]||CATS.Lainnya).c}"></i>${esc(c)}</span><b>${short(v).replace(/^/,'Rp ')}</b></div>`).join(''); }
 function drawBars(){ const vals=[]; for(let k=5;k>=0;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); vals.push([MS[d.getMonth()], totals(monthKey(d)).o]); } const mx=Math.max(...vals.map(v=>v[1]),1); const w=600/6; $('bars').innerHTML='<defs><linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".6"/></linearGradient></defs>'+vals.map(([m,v],k)=>{ const h=140*v/mx; return `<rect x="${k*w+18}" y="${160-h}" width="${w-36}" height="${h}" rx="10" fill="url(#bg1)" opacity="${k===5?1:.6}"/><text x="${k*w+w/2}" y="182" text-anchor="middle" font-size="13" fill="#93a3c4" font-family="Inter,sans-serif">${m}</text><text x="${k*w+w/2}" y="${152-h}" text-anchor="middle" font-size="12" fill="#e8eefc" font-weight="700" font-family="Inter,sans-serif">${short(v)}</text>`; }).join(''); }
 const GOALS=[{n:'HP baru',ic:'📱',t:6000000,s:2400000},{n:'Dana darurat',ic:'🛟',t:24000000,s:9600000},{n:'Liburan Bali',ic:'🏝️',t:5000000,s:1250000}];
 function renderPlan(){ $('goals').innerHTML=GOALS.map(g=>{const p=Math.min(100,Math.round(g.s/g.t*100)); return `<div class="goal"><div class="ic" style="font-size:24px">${g.ic}</div><div class="t"><b>${g.n}</b> <small>· ${p}%</small><div class="bar"><i style="width:${p}%"></i></div><small>${rp(g.s)} dari ${rp(g.t)}</small></div></div>`;}).join(''); $('budgets').innerHTML=Object.entries(BUDGET).map(([c,b])=>{ const u=sumCat(c,MK), p=Math.round(u/b*100); const col=p>=100?'#fb7185':p>=85?'#fbbf24':'linear-gradient(90deg,#2dd4bf,#818cf8)'; return `<div class="bgt"><div class="top"><span>${CATS[c].ic} ${c}</span><span class="${p>=100?'dn':''}">${rp(u)} / ${short(b)}</span></div><div class="bar"><i style="width:${Math.min(p,100)}%;background:${col}"></i></div></div>`; }).join(''); }
 function greet(){ const h=new Date().getHours(); return h<11?'Selamat pagi':h<15?'Selamat siang':h<19?'Selamat sore':'Selamat malam'; }
 
 // ---------- navigasi ----------
-function go(v){ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v)); document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===v)); }
+let curView='home'; function go(v){ const changed=v!==curView; curView=v; if(changed && window.__tabComment) window.__tabComment(v); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v)); document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===v)); }
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 const panel=$('ruvi'); $('fab').onclick=()=>{ panel.classList.add('open'); document.body.classList.add('ruvi-open'); setTimeout(()=>$('inp').focus(),350); }; $('close').onclick=()=>{ panel.classList.remove('open'); document.body.classList.remove('ruvi-open'); };
@@ -416,6 +427,13 @@ const FACES=['normal','happy','wink','heart','think','worry','listen','sleep'];
 const X=['happy','think','worry','heart','sleep','wink','listen'];
 const MOOD={normal:'Asisten keuangan AI-mu',happy:'Lagi senang 😄',wink:'Punya tips 😉',heart:'Bangga sama kamu 🥰',think:'Sedang berpikir…',worry:'Agak khawatir 😬',listen:'Mendengarkan…',sleep:'Istirahat 🌙'};
 let mood='normal', moodAt=0, talking=false; const t0=performance.now();
+let ptrX=0, ptrY=0, lastPtr=-1e9, lastAct=performance.now(), eyeX=0, eyeY=0;
+function visibleBot(){ if(document.body.classList.contains('ruvi-open')||window.innerWidth>900) return $('bot'); const h=$('rhBot'); const r=h.getBoundingClientRect(); if(curView==='home' && r.bottom>0 && r.top<innerHeight) return h; return $('fab'); }
+const onPtr=e=>{ const p=e.touches?e.touches[0]:e; if(!p) return; ptrX=p.clientX; ptrY=p.clientY; lastPtr=performance.now(); };
+addEventListener('pointermove',onPtr,{passive:true}); addEventListener('pointerdown',onPtr,{passive:true}); addEventListener('touchmove',onPtr,{passive:true});
+addEventListener('pointerdown',()=>{ lastAct=performance.now(); if(mood==='sleep' && !talking){ say(['Eh, aku ketiduran 😅','Ada yang bisa aku bantu?'],{mood:'happy',hold:3000}); } },{passive:true});
+addEventListener('keydown',()=>{ lastAct=performance.now(); });
+let toastT; function toast(html,done){ const el=$('rtoast'); if(window.innerWidth>900||document.body.classList.contains('ruvi-open')) return; const r=$('rhBot').getBoundingClientRect(); if(curView==='home' && r.bottom>60 && r.top<innerHeight-80){ el.classList.remove('show'); return; } el.innerHTML='<b>Ruvi</b>'+html; el.classList.add('show'); clearTimeout(toastT); if(done) toastT=setTimeout(()=>el.classList.remove('show'),5000); }
 function setMood(m,hold=4500){ mood=m; moodAt=performance.now(); $('ruviMood').textContent=MOOD[m]; $('rhMood').textContent='Ruvi · '+MOOD[m]; clearTimeout(setMood.t); if(hold) setMood.t=setTimeout(()=>{ if(!talking) setMood('normal',0); else setMood.t=setTimeout(()=>setMood('normal',0),2000); },hold); }
 function hand(id,x,y,r){ $(id).setAttribute('transform',`translate(${x} ${y}) rotate(${r})`); }
 function frame(now){
@@ -434,6 +452,10 @@ function frame(now){
   const cp=k==='think'?1+0.18*Math.sin(t*10):talking?1+0.12*Math.abs(Math.sin(t*15)):1+0.06*Math.sin(t*3);
   $('core').setAttribute('transform',`translate(150 216) scale(${cp}) translate(-150 -216)`);
   $('antGlow').setAttribute('r',16+4*Math.sin(t*4)); $('ant').setAttribute('fill',k==='think'?'#2dd4bf':k==='worry'?'#fb923c':k==='heart'?'#fb7185':'#818cf8');
+  // mata mengikuti jari/kursor
+  { const tgt=visibleBot(); let gx=0, gy=0; if(tgt && now-lastPtr<3500){ const r=tgt.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height*0.33; gx=Math.max(-1,Math.min(1,(ptrX-cx)/160)); gy=Math.max(-1,Math.min(1,(ptrY-cy)/160)); }
+    eyeX+=(gx*6-eyeX)*0.15; eyeY+=(gy*4-eyeY)*0.15; $('lookN').setAttribute('transform',`translate(${eyeX.toFixed(2)} ${eyeY.toFixed(2)})`); }
+  if(!talking && mood!=='sleep' && now-lastAct>45000 && !document.hidden){ setMood('sleep',0); }
   const bph=t%3.4; $('blinkN').setAttribute('transform',`translate(0 116.4) scale(1 ${(bph>3.1&&bph<3.25)?0.1:1}) translate(0 -116.4)`);
   let A=[56,206,20],B=[244,206,-20];
   if(k==='normal'&&L<2.2&&moodAt>0) B=[246,148,-25+22*Math.sin(L*11)];
@@ -462,8 +484,8 @@ function say(lines,{mood:m='normal',extra='',hold=4500}={}){
     setMood(m,0);
     for(let n=0;n<lines.length;n++){
       const el=bubble('bot',''); const txt=lines[n]; talking=true;
-      for(let c=1;c<=txt.length;c++){ const h=esc(txt.slice(0,c))+'<span class="caret"></span>'; el.innerHTML=h; heroB.innerHTML=h; msgs.scrollTop=msgs.scrollHeight; await sleep(txt[c-1]===' '?18:26); }
-      el.innerHTML=esc(txt)+(n===lines.length-1?extra:''); heroB.innerHTML=esc(txt); talking=false; msgs.scrollTop=msgs.scrollHeight;
+      for(let c=1;c<=txt.length;c++){ const h=esc(txt.slice(0,c))+'<span class="caret"></span>'; el.innerHTML=h; heroB.innerHTML=h; toast(h); msgs.scrollTop=msgs.scrollHeight; await sleep(txt[c-1]===' '?18:26); }
+      el.innerHTML=esc(txt)+(n===lines.length-1?extra:''); heroB.innerHTML=esc(txt); toast(esc(txt),true); talking=false; msgs.scrollTop=msgs.scrollHeight;
       if(n<lines.length-1) await sleep(420);
     }
     setMood(m,hold);
@@ -531,6 +553,30 @@ const POKE=[['Hehe, geli! 😄 Aku di sini kok.','happy'],['Mau catat apa? Ketik
 let pokeN=0, pokeBusy=false;
 $('rhBot').onclick=async()=>{ if(pokeBusy) return; pokeBusy=true; lastUser=Date.now(); const [line,m]=POKE[pokeN++%POKE.length]; await say([line],{mood:m,hold:3500}); pokeBusy=false; };
 document.querySelectorAll('[data-hq]').forEach(b=>b.onclick=()=>{ $('fab').click(); if(b.dataset.hq!=='open') setTimeout(()=>handle(b.dataset.hq),380); });
+
+// komentar Ruvi saat bagian layar disentuh
+let lastComment=0;
+function comment(lines,m){ const now=Date.now(); if(now-lastComment<1800) return; lastComment=now; lastUser=now; say(lines,{mood:m,hold:4000}); }
+document.addEventListener('click',e=>{
+  if(e.target.closest('button')&&!e.target.closest('[data-ruvi]')) return;
+  const {i,o}=totals(MK), p=totals(PMK);
+  const tx=e.target.closest('[data-tx]'); if(tx){ const t=TX.find(x=>x.id===+tx.dataset.tx); if(t){ const share=t.type==='out'?Math.round(t.amt/Math.max(1,o)*100):0; comment(t.type==='in'?[`${t.desc}: masuk ${rp(t.amt)} ${dayLabel(t.date).toLowerCase()}. Mantap! 🎉`]:[`${t.desc} ${rp(t.amt)}, kategori ${t.cat}.`, share>=5?`Itu ${share}% dari pengeluaran bulan ini.`:'Kecil kok, aman 👍'], t.type==='in'?'happy':share>=10?'worry':'normal'); } return; }
+  const ct=e.target.closest('[data-cat]'); if(ct){ const c=ct.dataset.cat, v=sumCat(c,MK), b=BUDGET[c]; const pct=b?Math.round(v/b*100):null; comment([`${c} bulan ini ${rp(v)} (${Math.round(v/Math.max(1,o)*100)}% dari pengeluaran).`, b?(pct>=100?`Sudah lewat budget ${rp(b)} 😬`:pct>=85?`Budget-nya tinggal ${rp(b-v)}, hati-hati ya 😉`:`Masih ${pct}% dari budget, aman.`):'Ini biaya rutin, wajar kok.'], b?(pct>=100?'worry':pct>=85?'wink':'normal'):'normal'); return; }
+  const k=e.target.closest('[data-ruvi]'); if(!k) return;
+  const net=i-o, po=p.o?Math.round((o-p.o)/p.o*100):0;
+  ({ balance:()=>comment([`Saldo kamu sekarang ${rp(balance())}.`, net>=0?`Bulan ini bertambah ${rp(net)}. Keren! 💪`:`Bulan ini berkurang ${rp(-net)}. Pelan-pelan ya.`], net>=0?'happy':'worry'),
+     income:()=>comment([`Pemasukan bulan ini ${rp(i)}.`, `Mau aku sisihkan 10% (${rp(Math.round(i*0.1))}) buat target?`],'wink'),
+     expense:()=>comment([`Pengeluaran bulan ini ${rp(o)}.`, po<=0?`${Math.abs(po)}% lebih hemat dari bulan lalu sejauh ini 👍`:`Naik ${po}% dari bulan lalu. Aku bantu pantau ya.`], po<=0?'happy':'worry'),
+     flow:()=>comment(['Garis hijau itu saldomu dari hari ke hari.','Lonjakan di awal bulan = gaji masuk. Garis ungu = total pengeluaran yang terus naik.'],'normal'),
+     streak:()=>comment(['6 hari berturut-turut kamu mencatat! 🔥','Besok catat lagi ya, biar genap seminggu.'],'heart') }[k.dataset.ruvi]||(()=>{}))();
+});
+const seenTab={};
+window.__tabComment=v=>{ if(seenTab[v]||muted) return; seenTab[v]=1; const {o}=totals(MK);
+  if(v==='tx') comment(['Ini semua catatanmu bulan ini, dikelompokkan per hari.','Sentuh salah satu, nanti aku jelasin.'],'normal');
+  if(v==='report'){ const arr=[]; for(let k=5;k>=1;k--){ const d=new Date(today.getFullYear(),today.getMonth()-k,1); arr.push(totals(monthKey(d)).o); } const avg=arr.reduce((a,b)=>a+b,0)/arr.length; comment([`Rata-rata pengeluaranmu 5 bulan terakhir ${rp(avg)} per bulan.`, o<avg?'Bulan ini sejauh ini masih di bawah rata-rata 👍':'Bulan ini sudah di atas rata-rata, hati-hati ya.'], o<avg?'happy':'worry'); }
+  if(v==='plan'){ const g=GOALS[0]; comment([`Target ${g.n} sudah ${Math.round(g.s/g.t*100)}%.`, `Jajan & Kopi bulan ini ${Math.round(sumCat('Jajan & Kopi',MK)/BUDGET['Jajan & Kopi']*100)}% dari budget. Yang merah artinya lewat.`],'wink'); }
+  if(v==='home') comment(['Selamat datang kembali di beranda! 👋'],'normal');
+};
 
 // mode diam
 let muted=false; $('mute').onclick=()=>{ muted=!muted; $('mute').classList.toggle('on',muted); $('mute').textContent=muted?'🔕 Ruvi diam dulu':'🔔 Ruvi aktif'; if(!muted) say(['Aku balik lagi! 👋'],{mood:'normal'}); };
