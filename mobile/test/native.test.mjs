@@ -84,11 +84,26 @@ test('Play paywall prevents a second charged plan from overlapping active access
     return {context,listeners,calls,elements,buttons};
   };
   const expiresAt=new Date(Date.now()+7*86400000).toISOString();
-  const pass=await render({plan:'trial',activatedBy:'google-play',expiresAt});
-  assert.deepEqual(pass.buttons.map(button=>button.disabled),[false,true,true]);
+  const freeTrial=Object.freeze({plan:'free_trial',activatedBy:'account-bootstrap',expiresAt});
+  const upgrade=await render(freeTrial);
+  assert.deepEqual(upgrade.buttons.map(button=>button.disabled),[false,false,false]);
+  assert.match(upgrade.elements['play-plan-status'].textContent,/Uji Coba Gratis/);
+  assert.match(upgrade.elements['play-plan-status'].textContent,/ditagih segera/);
+  assert.doesNotMatch(upgrade.elements['play-plan-status'].textContent,/setelah paket ini berakhir/);
+  assert.equal(upgrade.context.currentProfile,freeTrial,'rendering upgrade does not change the existing entitlement');
+  for(const plan of ['trial','starter','monthly','annual']){
+    const pass=await render({plan,activatedBy:'google-play',expiresAt});
+    assert.deepEqual(pass.buttons.map(button=>button.disabled),[false,true,true],`${plan} paid access remains protected`);
+  }
+  for(const plan of ['lifetime','pro']){
+    const permanent=await render({plan,expiresAt});
+    assert.deepEqual(permanent.buttons.map(button=>button.disabled),[true,true,true],`${plan} cannot buy another plan`);
+  }
   const subscription=await render({plan:'monthly',activatedBy:'google-play-subscription',expiresAt});
   assert.deepEqual(subscription.buttons.map(button=>button.disabled),[true,true,true]);
   assert.equal(subscription.elements['play-manage'].hidden,false);
+  const independentSubscription=await render({plan:'free_trial',expiresAt,googlePlaySubscriptionLedger:{entries:[{status:'active',providerExpiry:expiresAt}]}});
+  assert.deepEqual(independentSubscription.buttons.map(button=>button.disabled),[true,true,true],'an active subscription overrides the free-trial upgrade exception');
   const expired=await render({plan:'trial',activatedBy:'google-play',expiresAt:'2020-01-01T00:00:00.000Z'});
   assert.deepEqual(expired.buttons.map(button=>button.disabled),[false,false,false]);
   // Profile can change after rendering; the click handler checks the current profile again.
@@ -97,6 +112,43 @@ test('Play paywall prevents a second charged plan from overlapping active access
   await expired.listeners.click({target:{closest:selector=>selector==='[data-play-product]'?clicked:null}});
   assert.equal(purchases,0);
   assert.ok(expired.calls.some(row=>row[0]==='toast'&&row[1].includes('tumpang tindih')));
+});
+
+test('free-trial upgrades to monthly and annual still require server-applied entitlement',async()=>{
+  for(const productId of ['beruang_monthly_subscription','beruang_annual_subscription']){
+    for(const accepted of [false,true]){
+      const operations=[];
+      const trial=Object.freeze({plan:'free_trial',activatedBy:'account-bootstrap',expiresAt:new Date(Date.now()+2*86400000).toISOString()});
+      const paid={plan:productId==='beruang_monthly_subscription'?'monthly':'annual',expiresAt:'2099-01-01T00:00:00.000Z'};
+      const purchase={productId,purchaseToken:'subscription-test-token'};
+      const billing={purchase:async options=>{operations.push(['purchase',options]);return purchase;},restorePurchases:async()=>({purchases:[]})};
+      const {context,listeners,calls}=sandbox({PlayBilling:billing},true);
+      context.currentUser={uid:'trial-user'};
+      context.currentProfile=trial;
+      context.isPro=profile=>Date.parse(profile?.expiresAt)>Date.now();
+      context.crypto=globalThis.crypto;
+      context.TextEncoder=TextEncoder;
+      context.authenticatedHeaders=async()=>({Authorization:'Bearer test'});
+      context.fetch=async(url,options)=>{
+        operations.push(['verify',url,JSON.parse(options.body)]);
+        assert.equal(context.currentProfile,trial,'checkout does not grant paid access before server confirmation');
+        return {ok:true,json:async()=>accepted?{entitlementApplied:true}:{entitlementApplied:false,error:'Entitlement belum diterapkan.'}};
+      };
+      context.refreshUserProfile=async()=>{operations.push(['refresh']);context.currentProfile=paid;return paid;};
+      context.setupProGating=profile=>operations.push(['gating',profile]);
+      const button={dataset:{playProduct:productId},disabled:false};
+      await listeners.click({target:{closest:selector=>selector==='[data-play-product]'?button:null}});
+      assert.equal(operations[0][0],'purchase',`${productId} checkout is allowed from a free trial`);
+      assert.equal(operations[0][1].productId,productId);
+      assert.equal(operations[0][1].obfuscatedAccountId,createHash('sha256').update('trial-user').digest('hex'));
+      assert.deepEqual(operations[1],['verify','https://berstock-bot.hendrypangg12.workers.dev/api/google-play/verify',purchase]);
+      assert.equal(context.currentProfile,accepted?paid:trial);
+      assert.equal(operations.some(operation=>operation[0]==='refresh'),accepted);
+      assert.equal(operations.some(operation=>operation[0]==='gating'),accepted);
+      assert.equal(calls.some(call=>call[0]==='toast'&&call[2]==='success'),accepted);
+      assert.equal(calls.some(call=>call[0]==='toast'&&call[2]==='error'),!accepted);
+    }
+  }
 });
 test('subscription restore retries after a verification failure and refreshes again after six hours',async()=>{
   let restores=0,verified=0,now=Date.now(),failFirst=true;
