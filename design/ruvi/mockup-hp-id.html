@@ -1,0 +1,205 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#0b0f19;font-family:Inter,system-ui,-apple-system,"SF Pro Display",sans-serif;color:#0f1d2b}
+.row{display:flex;gap:48px;padding:56px 60px 64px;justify-content:center}
+.cap{color:#e6eefc;font-size:22px;font-weight:700;margin:0 0 16px 8px;letter-spacing:-.3px}
+.cap small{display:block;font-size:14px;font-weight:500;color:#8fa3c4;margin-top:2px}
+.phone{width:390px;height:844px;border-radius:54px;position:relative;overflow:hidden;box-shadow:0 0 0 11px #1a1f2b,0 0 0 13px #3a4253,0 40px 80px rgba(0,0,0,.55)}
+.bg{position:absolute;inset:0;background:linear-gradient(160deg,#e7fbf6 0%,#eef3ff 45%,#f6efff 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.85}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:5}
+.status{position:relative;z-index:4;height:54px;display:flex;justify-content:space-between;align-items:center;padding:6px 34px 0;font-size:16px;font-weight:700}
+.content{position:relative;z-index:2}
+.glass{background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);box-shadow:0 8px 32px rgba(31,45,90,.10),inset 0 1px 0 rgba(255,255,255,.9)}
+.glass-dark{background:rgba(16,24,40,.55);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(24px) saturate(160%);color:#fff;box-shadow:0 12px 32px rgba(16,24,40,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:6px 20px 0}
+.pill{padding:9px 14px;border-radius:99px;font-size:14px;font-weight:650}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#0d7d6c}
+.hero{position:relative;height:150px;display:flex;justify-content:center;align-items:flex-end}
+.say{position:absolute;right:16px;top:4px;border-radius:20px 20px 20px 6px;padding:9px 14px;font-size:14.5px;font-weight:600}
+.glow{position:absolute;bottom:8px;width:110px;height:24px;border-radius:50%;background:radial-gradient(#5eead4,transparent 70%);opacity:.7;filter:blur(6px)}
+.bal{margin:10px 18px 0;border-radius:30px;padding:20px 22px 18px}
+.bh{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:600;color:#45607a}
+.m{padding:6px 11px;border-radius:99px;font-size:12.5px;font-weight:700;color:#0f1d2b}
+.v{font-size:36px;font-weight:800;letter-spacing:-1.4px;margin:6px 0 4px}
+.d{font-size:13.5px;font-weight:700;color:#0f9f7a}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.split>div{border-radius:20px;padding:11px 13px}
+.split small{display:block;font-size:12px;color:#5c7088;font-weight:600}
+.split b{font-size:18px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sec{margin:18px 24px 10px;font-size:15.5px;font-weight:750;display:flex;justify-content:space-between}
+.sec span{color:#0d9488;font-size:13.5px;font-weight:700}
+.tx{display:flex;align-items:center;gap:12px;margin:0 18px 9px;border-radius:22px;padding:11px 14px}
+.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:rgba(255,255,255,.7)}
+.tx .t{flex:1}.tx b{display:block;font-size:14.5px}.tx small{font-size:12.5px;color:#5c7088}
+.amt{font-weight:800;font-size:14.5px}
+.in{color:#0f9f7a}.out{color:#e5484d}
+.fab{position:absolute;z-index:6;left:50%;transform:translateX(-50%);bottom:104px;white-space:nowrap;border-radius:99px;padding:16px 26px;font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:10px}
+.fab i{font-style:normal;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#5eead4,#818cf8);display:grid;place-items:center;font-size:18px;font-weight:900;color:#0b1320}
+.tabbar{position:absolute;z-index:6;left:16px;right:16px;bottom:22px;height:66px;border-radius:33px;display:flex;justify-content:space-around;align-items:center;font-size:11px;font-weight:650;color:#5c7088;text-align:center}
+.tabbar div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabbar .on{color:#0d9488}
+.tabbar .on .ti{background:rgba(13,148,136,.14)}
+.ti{width:44px;height:28px;border-radius:14px;display:grid;place-items:center}
+.ti svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* chat */
+.chead{display:flex;justify-content:space-between;align-items:center;padding:4px 18px}
+.circle{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:600}
+.who{display:flex;flex-direction:column;align-items:center}
+.who b{font-size:15px}.who small{font-size:12px;color:#0f9f7a;font-weight:650}
+.msgs{padding:10px 16px;display:flex;flex-direction:column;gap:10px}
+.b{max-width:80%;padding:11px 15px;font-size:14.5px;line-height:1.45}
+.b.bot{border-radius:22px 22px 22px 7px;align-self:flex-start}
+.b.me{border-radius:22px 22px 7px 22px;align-self:flex-end;color:#fff;background:linear-gradient(135deg,#0d9488,#6366f1);box-shadow:0 8px 20px rgba(79,70,229,.25)}
+.rec{border-radius:22px;padding:12px 14px}
+.rec .h{display:flex;justify-content:space-between;font-size:11.5px;font-weight:750;color:#5c7088;letter-spacing:.4px;margin-bottom:8px}
+.rec .r{display:flex;align-items:center;gap:12px}
+.rec .r b{display:block;font-size:15px}.rec small{font-size:12.5px;color:#5c7088}
+.rec .a{margin-left:auto;font-weight:800;font-size:16px}
+.acts{display:flex;gap:6px;margin-top:10px}
+.acts span{font-size:12px;font-weight:700;color:#0f1d2b;padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9)}
+.chips{position:absolute;z-index:6;left:14px;right:0;bottom:104px;display:flex;gap:8px;overflow:hidden}
+.chips span{white-space:nowrap;font-size:13px;font-weight:600;padding:8px 13px;border-radius:99px}
+.inbar{position:absolute;z-index:6;left:14px;right:14px;bottom:30px;display:flex;gap:8px;align-items:center}
+.inbar .f{flex:1;border-radius:99px;padding:16px 18px;color:#6b7f95;font-size:14.5px}
+.inbar .c{width:54px;height:54px;border-radius:50%;display:grid;place-items:center}
+.inbar .c svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* report */
+.ring{display:flex;align-items:center;gap:18px;margin:12px 18px 0;border-radius:30px;padding:20px}
+.legend{flex:1;font-size:13px}
+.legend div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.6)}
+.legend div:last-child{border:0}
+.legend b{font-weight:700}
+.bars{margin:12px 18px 0;border-radius:30px;padding:18px 20px}
+.bars .ttl{font-size:14px;font-weight:750;margin-bottom:14px;display:flex;justify-content:space-between}
+.bars .ttl span{font-size:12px;color:#5c7088;font-weight:600}
+.cols{display:flex;align-items:flex-end;gap:12px;height:120px}
+.col{flex:1;height:100%;justify-content:flex-end;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:#5c7088;font-weight:600}
+.col i{width:100%;border-radius:10px 10px 6px 6px;background:linear-gradient(180deg,rgba(99,102,241,.75),rgba(94,234,212,.75));display:block}
+.col.now i{background:linear-gradient(180deg,#6366f1,#14b8a6);box-shadow:0 6px 16px rgba(99,102,241,.35)}
+.ai{margin:12px 18px 0;border-radius:26px;padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
+.ai p{font-size:13.5px;line-height:1.5}
+.ai b{display:block;font-size:13px;margin-bottom:2px;color:#a5f3e4}
+</style></head><body>
+
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <radialGradient id="gb" cx="35%" cy="25%" r="85%"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#eef3fb"/><stop offset="1" stop-color="#d9e2f0"/></radialGradient>
+  <linearGradient id="ge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+  <linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2540"/><stop offset="1" stop-color="#0b1222"/></linearGradient>
+  <symbol id="beru" viewBox="30 0 250 300"><defs>
+ <linearGradient id="p99b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".78"/><stop offset=".55" stop-color="#818cf8" stop-opacity=".16"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".30"/></linearGradient>
+ <radialGradient id="p99c" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#5eead4"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></radialGradient>
+ <linearGradient id="p99v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2a48"/><stop offset="1" stop-color="#0a1020"/></linearGradient>
+ <linearGradient id="p99a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+</defs><ellipse cx="150" cy="316" rx="58" ry="9" fill="#2dd4bf" opacity=".28"/><line x1="150" y1="36" x2="150" y2="60" stroke="rgba(255,255,255,.75)" stroke-width="3"/><circle cx="150" cy="30" r="8" fill="#818cf8"/><circle cx="150" cy="30" r="16" fill="#818cf8" opacity=".25"/><rect x="88" y="58" width="124" height="230" rx="62" fill="url(#p99b)" stroke="rgba(255,255,255,.85)" stroke-width="2"/><g stroke="#5eead4" stroke-opacity=".35" stroke-width="1.5" fill="none"><path d="M150 232 V262 M150 232 l-24 18 M150 232 l24 18"/></g><circle cx="150" cy="216" r="36" fill="url(#p99c)" opacity=".9"/><circle cx="150" cy="216" r="15" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2"/><rect x="104.0" y="86" width="92" height="66" rx="33.0" fill="url(#p99v)"/><rect x="122.6" y="102.36" width="18" height="28" rx="9" fill="#5eead4"/><rect x="117.6" y="97.36" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="134.6" cy="109.36" r="3.5" fill="#fff"/><rect x="159.4" y="102.36" width="18" height="28" rx="9" fill="#5eead4"/><rect x="154.4" y="97.36" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="171.4" cy="109.36" r="3.5" fill="#fff"/><path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/><ellipse cx="125.6" cy="134.36" rx="9" ry="5" fill="#fb7185" opacity=".55"/><ellipse cx="174.4" cy="134.36" rx="9" ry="5" fill="#fb7185" opacity=".55"/><path d="M108 84 Q116 66 136 62" stroke="#fff" stroke-opacity=".85" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="56" cy="206" rx="15" ry="22" fill="url(#p99b)" stroke="rgba(255,255,255,.85)" stroke-width="2" transform="rotate(20 56 206)"/><ellipse cx="246" cy="150" rx="15" ry="22" fill="url(#p99b)" stroke="rgba(255,255,255,.85)" stroke-width="2" transform="rotate(-25 246 150)"/><path d="M268 126 q8 6 6 16 M276 116 q12 10 9 26" stroke="#818cf8" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/></symbol>
+ </defs>
+</svg>
+
+<div class="row">
+
+<!-- 1 HOME -->
+<div><p class="cap">Beranda<small>Saldo jelas, satu tombol untuk mencatat</small></p>
+<div class="phone"><div class="bg"></div>
+ <div class="blob" style="width:260px;height:260px;background:#5eead4;left:-80px;top:120px"></div>
+ <div class="blob" style="width:240px;height:240px;background:#a5b4fc;right:-90px;top:300px"></div>
+ <div class="blob" style="width:220px;height:220px;background:#f0abfc;left:40px;bottom:-60px;opacity:.55"></div>
+ <div class="island"></div>
+ <div class="status"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+ <div class="content">
+  <div class="top"><span class="pill glass">🔥 5 hari beruntun</span><div class="av glass">B</div></div>
+  <div class="hero"><div class="glow"></div><svg width="140" height="158"><use href="#beru"/></svg><div class="say glass">Halo Budi! 👋</div></div>
+  <div class="bal glass">
+   <div class="bh"><span>Sisa saldo</span><span class="m glass">Oktober ▾</span></div>
+   <div class="v">Rp 13.994.000</div>
+   <div class="d">▲ Rp 6.997.000 bulan ini</div>
+   <div class="split"><div class="glass"><small><span class="dot" style="background:#10b981"></span>Masuk</small><b>Rp 9,7jt</b></div><div class="glass"><small><span class="dot" style="background:#f43f5e"></span>Keluar</small><b>Rp 2,7jt</b></div></div>
+  </div>
+  <div class="sec">Terakhir dicatat <span>Semua</span></div>
+  <div class="tx glass"><div class="ic">🍜</div><div class="t"><b>Bakso</b><small>Makan · Hari ini</small></div><div class="amt out">−25rb</div></div>
+  <div class="tx glass"><div class="ic">💼</div><div class="t"><b>Gaji</b><small>Gaji · Kemarin</small></div><div class="amt in">+8jt</div></div>
+ </div>
+ <div class="fab glass-dark"><i>+</i>Catat ke Ruvi</div>
+ <div class="tabbar glass">
+  <div class="on"><span class="ti"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/></svg></span>Beranda</div>
+  <div><span class="ti"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h10"/></svg></span>Transaksi</div>
+  <div><span class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></span>Rencana</div>
+  <div><span class="ti"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Laporan</div>
+ </div>
+</div></div>
+
+<!-- 2 CHAT -->
+<div><p class="cap">Ngobrol dengan Ruvi<small>Ketik, bicara, atau foto struk</small></p>
+<div class="phone"><div class="bg" style="background:linear-gradient(170deg,#eef3ff,#e9fbf6 60%,#f6efff)"></div>
+ <div class="blob" style="width:260px;height:260px;background:#a5b4fc;right:-90px;top:60px"></div>
+ <div class="blob" style="width:240px;height:240px;background:#5eead4;left:-90px;top:420px"></div>
+ <div class="island"></div>
+ <div class="status"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+ <div class="content">
+  <div class="chead"><div class="circle glass">‹</div>
+   <div class="who"><svg width="58" height="60"><use href="#beru"/></svg><b>Ruvi</b><small>● Siap membantu</small></div>
+   <div class="circle glass" style="font-size:16px">⋯</div></div>
+  <div class="msgs">
+   <div class="b bot glass">Halo Budi! Mau catat apa hari ini? 🐻</div>
+   <div class="b me">gaji 8jt, bakso 25rb</div>
+   <div class="b bot glass">Siap, 2 transaksi dicatat ✨ Pengeluaran makan minggu ini Rp 245rb, masih di bawah rata-ratamu 👍</div>
+   <div class="rec glass"><div class="h"><span>✓ PEMASUKAN</span><span>Sel, 13 Okt</span></div>
+    <div class="r"><div class="ic">💼</div><div><b>Gaji</b><small>gaji</small></div><div class="a in">+Rp 8.000.000</div></div></div>
+   <div class="rec glass"><div class="h"><span>✓ PENGELUARAN</span><span>Sel, 13 Okt</span></div>
+    <div class="r"><div class="ic">🍜</div><div><b>Makan</b><small>bakso</small></div><div class="a out">−Rp 25.000</div></div>
+    <div class="acts"><span>✏️ Ubah</span><span>🔁 Jadikan rutin</span></div></div>
+  </div>
+ </div>
+ <div class="chips"><span class="glass">✨ Bulan ini boros di mana?</span><span class="glass">🎯 Target</span><span class="glass">📊 Ringkasan</span></div>
+ <div class="inbar"><div class="f glass">bensin 50rb, kopi 28k…</div>
+  <div class="c glass-dark"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+  <div class="c glass-dark"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></div></div>
+</div></div>
+
+<!-- 3 REPORT -->
+<div><p class="cap">Laporan<small>Ke mana uangmu pergi, dibaca Ruvi</small></p>
+<div class="phone"><div class="bg" style="background:linear-gradient(170deg,#f3efff,#eef6ff 50%,#e8fbf6)"></div>
+ <div class="blob" style="width:250px;height:250px;background:#f0abfc;left:-90px;top:140px;opacity:.6"></div>
+ <div class="blob" style="width:260px;height:260px;background:#5eead4;right:-100px;top:420px"></div>
+ <div class="island"></div>
+ <div class="status"><span>9:41</span><span>●●● ⌔ ▮</span></div>
+ <div class="content">
+  <div class="top" style="padding-top:10px"><b style="font-size:30px;letter-spacing:-1px">Oktober</b><span class="pill glass">Bulan ini ▾</span></div>
+  <div class="ring glass">
+   <svg width="132" height="132" viewBox="0 0 42 42">
+    <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="5"/>
+    <circle cx="21" cy="21" r="15.9" fill="none" stroke="#14b8a6" stroke-width="5" stroke-dasharray="40 60" stroke-dashoffset="25" stroke-linecap="round"/>
+    <circle cx="21" cy="21" r="15.9" fill="none" stroke="#6366f1" stroke-width="5" stroke-dasharray="24 76" stroke-dashoffset="-17" stroke-linecap="round"/>
+    <circle cx="21" cy="21" r="15.9" fill="none" stroke="#f472b6" stroke-width="5" stroke-dasharray="16 84" stroke-dashoffset="-43" stroke-linecap="round"/>
+    <circle cx="21" cy="21" r="15.9" fill="none" stroke="#fbbf24" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="-61" stroke-linecap="round"/>
+    <text x="21" y="20" font-size="3.4" text-anchor="middle" fill="#5c7088" font-weight="600" font-family="Inter,sans-serif">Keluar</text>
+    <text x="21" y="25.5" font-size="5" text-anchor="middle" fill="#0f1d2b" font-weight="800" font-family="Inter,sans-serif">2,7jt</text>
+   </svg>
+   <div class="legend">
+    <div><span><span class="dot" style="background:#14b8a6"></span>Tempat tinggal</span><b>40%</b></div>
+    <div><span><span class="dot" style="background:#6366f1"></span>Makan</span><b>24%</b></div>
+    <div><span><span class="dot" style="background:#f472b6"></span>Belanja</span><b>16%</b></div>
+    <div><span><span class="dot" style="background:#fbbf24"></span>Transport</span><b>10%</b></div>
+   </div>
+  </div>
+  <div class="bars glass"><div class="ttl">Pengeluaran 6 bulan <span>rata-rata Rp 3,1jt</span></div>
+   <div class="cols">
+    <div class="col"><i style="height:70%"></i>Mei</div><div class="col"><i style="height:88%"></i>Jun</div>
+    <div class="col"><i style="height:62%"></i>Jul</div><div class="col"><i style="height:78%"></i>Agu</div>
+    <div class="col"><i style="height:66%"></i>Sep</div><div class="col now"><i style="height:52%"></i>Okt</div>
+   </div></div>
+  <div class="ai glass-dark"><svg width="44" height="46" style="flex:0 0 auto"><use href="#beru"/></svg>
+   <p><b>Kata Ruvi</b>Bulan ini kamu 13% lebih hemat dari rata-rata. Makan di luar paling banyak, coba batasi Rp 600rb sampai akhir bulan.</p></div>
+ </div>
+ <div class="tabbar glass">
+  <div><span class="ti"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/></svg></span>Beranda</div>
+  <div><span class="ti"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h10"/></svg></span>Transaksi</div>
+  <div><span class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></span>Rencana</div>
+  <div class="on"><span class="ti"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Laporan</div>
+ </div>
+</div></div>
+
+</div></body></html>
