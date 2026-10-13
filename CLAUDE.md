@@ -205,6 +205,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   (emoji/2–3 kata: "Hai Budi! 👋", "Hemat 19% 👍", "Lewat budget 😬"), teks lengkap hanya di layar chat (titik merah di
   tombol "Catat ke Ruvi" kalau ada pesan baru). Interaksi: mata ikut jari, sentuh kartu/kategori/transaksi/streak → ekspresi
   + gelembung pendek, sambutan tiap tab, tidur setelah 45 dtk, ketuk Ruvi = reaksi. Rencana: `design/ruvi/RENCANA-PERUBAHAN-TOTAL.md`.
+  13 Okt: + DOMPET (permintaan bos, contoh Rolly "New wallet"): kartu saldo per dompet (BCA/GoPay/Tunai/Reksadana) di beranda,
+  "+ Dompet baru" (nama, jenis Bank/E-wallet/Tunai/Investasi, saldo sekarang), transaksi menyebut dompet ("bensin 50rb pakai
+  gopay", default bank pertama), pindah dana & investasi dari chat, Sisa saldo = dompet non-investasi, baris "Investasi ·
+  Kekayaan", tanya "saldo semua dompet". Di app asli butuh field baru `wallet` per transaksi + `wallets[]` di data user.
 
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.

@@ -22,6 +22,7 @@ Desain & keputusan maskot: `design/ruvi/README.md`
 | Tab Transaksi | **Transaksi** (per tanggal, cari, ubah/hapus) |
 | Tab Rekap / Laporan | **Laporan** (6 bulan, kategori, "Kata Ruvi") |
 | Tab Rencana (hutang-piutang, target) | **Target & budget** (+ budget per kategori — fitur baru) |
+| Aset/Kekayaan (Setup Dana Awal) | **Dompet** (fitur baru, permintaan bos 13 Okt): kartu saldo per bank/e-wallet/tunai/investasi di beranda, "+ Dompet baru", pindah dana ("pindah 500rb dari bca ke gopay", "top up gopay", "beli reksadana 1jt"), investasi terpisah dari uang harian + total kekayaan |
 | AI Akuntan (tombol melayang) | Menyatu di panel Ruvi |
 | Peringatan "Perlu dicek", panduan "Mulai di sini" | Disampaikan Ruvi sebagai pesan |
 | Telegram, tagihan rutin, Setup Dana Awal, kategori custom (Codex), backup, Admin | Tetap, dipindah ke menu Profil/Pengaturan |
