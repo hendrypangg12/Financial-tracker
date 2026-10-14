@@ -1,0 +1,130 @@
+Browser tab: 12, Title: "Ruvy id tambah", URL: "http://127.0.0.1:8767/store-id-5.html".
+1 AXWebArea Ruvy id tambah, URL: 127.0.0.1:8767/store-id-5.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Cukup ketik. Langsung catat., Value: 1
+			6 text Cukup ketik.
+			7 text Langsung catat.
+		8 text Catat transaksi harian dengan beberapa kata.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=id&view=tambah
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Akun, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Dompetmu, Value: 2
+						18 text Dompetmu
+					19 button Atur dompet
+					20 container Description: Pilih dompet, ID: ruvy-wallet-strip
+						21 checkbox IDR Dompet utama IDR 9.875.000, Value: 1
+							22 text IDR
+							23 text Dompet utama
+							24 text IDR 9.875.000
+						25 checkbox USD Travel USD 2.563,00, Value: 0
+							26 text USD
+							27 text Travel
+							28 text USD 2.563,00
+						29 button Dompet baru
+							30 text Dompet baru
+					31 text Saldo ditampilkan per dompet. Tidak ada konversi kurs otomatis.
+					32 container tab-tambah
+						33 heading Tambah Transaksi, Value: 1
+							34 text Tambah Transaksi
+						35 heading 💬 Cara tercepat: ketik saja, Value: 3
+							36 text 💬 Cara tercepat: ketik saja
+						37 text Jumlah dan kategori dikenali otomatis.
+						38 container Contoh
+							39 button bakso 25rb
+							40 button bensin 50rb
+							41 button gaji 8jt
+							42 button kopi 28k kemarin
+						43 container chat-form
+							44 text field (settable) chat-input
+							45 button Catat
+						46 text ATAU ISI MANUAL
+						47 container Pilih cara mencatat transaksi
+							48 button Pengeluaran
+								49 text Pengeluaran
+							50 button Pemasukan
+								51 text Pemasukan
+							52 button Foto struk
+								53 text Foto struk
+						54 container quick-form-panel
+							55 heading Detail Transaksi, Value: 3
+								56 text Detail Transaksi
+							57 container form-transaksi
+								58 container
+									59 text Nominal (IDR)
+									60 text field (settable) Nominal (IDR)
+								61 container
+									62 text Deskripsi
+									63 text field (settable) Deskripsi
+								64 container
+									65 text Kategori
+									66 pop up button (collapsed, settable) Kategori, Value: Hunian, Secondary Actions: Expand
+										67 menu
+											68 (selected) Hunian
+											69 Tabungan & Investasi
+											70 Pendidikan & Anak
+											71 Belanja Dapur
+											72 Konsumsi Makan
+											73 Kesehatan
+											74 Transportasi
+											75 Lifestyle & Self-care
+											76 Hiburan & Rekreasi
+											77 Internet & Komunikasi
+											78 Utang & Pinjaman
+								79 container
+									80 text Sub Kategori
+									81 pop up button (collapsed, settable) Sub Kategori, Value: KPR & cicilan mobil, Secondary Actions: Expand
+										82 menu
+											83 (selected) KPR & cicilan mobil
+											84 Listrik & air
+											85 Perawatan rumah
+								86 button (collapsed) ＋ Tambah kategori pengeluaran, ID: transaction-category-create-summary, Secondary Actions: Expand
+									87 text ＋ Tambah kategori pengeluaran
+								88 button (collapsed) Opsi lanjutan, Secondary Actions: Expand
+									89 text Opsi lanjutan
+								90 button Simpan Transaksi
+						91 container receipt-panel
+							92 heading 🧾 Input via Struk, Value: 3
+								93 text 🧾 Input via Struk
+							94 text Tempel teks ATAU upload foto struk (auto OCR).
+							95 text 📷 Ambil Foto
+							96 text 🖼️ Pilih dari Galeri
+							97 button 📷 Ambil Foto, ID: struk-photo-camera
+							98 button 🖼️ Pilih dari Galeri, ID: struk-photo-gallery
+							99 text atau tempel teks di bawah ↓
+							100 text entry area (settable) struk-text
+							101 container
+								102 text Tanggal struk 
+								103 date field (settable) Tanggal struk, Value: 2026-10-14, ID: struk-date
+									104 container
+										105 stepper
+										106 stepper
+										107 stepper
+									108 pop up button Show date picker Show date picker
+							109 button Parse Struk, ID: btn-parse-struk
+						110 heading 🔁 Tagihan Rutin, Value: 3
+							111 text 🔁 Tagihan Rutin
+						112 text Belum ada tagihan rutin. Centang "Jadikan tagihan rutin" pas nambah pengeluaran (kost, cicilan, langganan).
+				113 container bottom-nav
+					114 button Beranda
+						115 image
+						116 text Beranda
+					117 button Transaksi
+						118 image
+						119 text Transaksi
+					120 button Alat keuangan
+						121 image
+						122 text Alat keuangan
+					123 button Pengaturan
+						124 image
+						125 text Pengaturan
+				126 button Tambah transaksi
+		127 text Data contoh · Tanpa konversi mata uang otomatis
+
+The focused UI element is 1 AXWebArea Ruvy id tambah, URL: 127.0.0.1:8767/store-id-5.html

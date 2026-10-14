@@ -1,0 +1,130 @@
+Browser tab: 12, Title: "Ruvy en tambah", URL: "http://127.0.0.1:8767/store-en-5.html".
+1 AXWebArea Ruvy en tambah, URL: 127.0.0.1:8767/store-en-5.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Just type. Keep track., Value: 1
+			6 text Just type.
+			7 text Keep track.
+		8 text Record everyday transactions in a few words.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=en&view=tambah
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Account, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Your wallets, Value: 2
+						18 text Your wallets
+					19 button Wallet settings
+					20 container Description: Choose wallet, ID: ruvy-wallet-strip
+						21 checkbox IDR Main wallet IDR 9,875,000, Value: 0
+							22 text IDR
+							23 text Main wallet
+							24 text IDR 9,875,000
+						25 checkbox USD Travel USD 2,563.00, Value: 1
+							26 text USD
+							27 text Travel
+							28 text USD 2,563.00
+						29 button New wallet
+							30 text New wallet
+					31 text Balances are shown per wallet. No automatic exchange-rate conversion.
+					32 container tab-tambah
+						33 heading Add transaction, Value: 1
+							34 text Add transaction
+						35 heading 💬 The quickest way: just type, Value: 3
+							36 text 💬 The quickest way: just type
+						37 text Amount and category are detected automatically.
+						38 container Examples
+							39 button coffee USD 3.50
+							40 button fuel USD 30
+							41 button salary USD 2500
+							42 button coffee USD 3.50 yesterday
+						43 container chat-form
+							44 text field (settable) chat-input
+							45 button Record
+						46 text OR ENTER MANUALLY
+						47 container Choose how to record
+							48 button Expenses
+								49 text Expenses
+							50 button Income
+								51 text Income
+							52 button Receipt photo
+								53 text Receipt photo
+						54 container quick-form-panel
+							55 heading Transaction details, Value: 3
+								56 text Transaction details
+							57 container form-transaksi
+								58 container
+									59 text Amount (USD)
+									60 text field (settable) Amount (USD)
+								61 container
+									62 text Description
+									63 text field (settable) Description
+								64 container
+									65 text Category
+									66 pop up button (collapsed, settable) Category, Value: Housing, Secondary Actions: Expand
+										67 menu
+											68 (selected) Housing
+											69 Savings & investments
+											70 Education & children
+											71 Groceries
+											72 Dining
+											73 Healthcare
+											74 Transport
+											75 Lifestyle & self-care
+											76 Entertainment & leisure
+											77 Internet & communication
+											78 Debt & loans
+								79 container
+									80 text Subcategory
+									81 pop up button (collapsed, settable) Subcategory, Value: Mortgage & vehicle payments, Secondary Actions: Expand
+										82 menu
+											83 (selected) Mortgage & vehicle payments
+											84 Electricity & water
+											85 Home maintenance
+								86 button (collapsed) ＋ Tambah kategori pengeluaran, ID: transaction-category-create-summary, Secondary Actions: Expand
+									87 text ＋ Tambah kategori pengeluaran
+								88 button (collapsed) More options, Secondary Actions: Expand
+									89 text More options
+								90 button Save transaction
+						91 container receipt-panel
+							92 heading 🧾 Record from a receipt, Value: 3
+								93 text 🧾 Record from a receipt
+							94 text Paste text or upload a receipt photo (OCR).
+							95 text 📷 Take photo
+							96 text 🖼️ Choose from gallery
+							97 button 📷 Take photo, ID: struk-photo-camera
+							98 button 🖼️ Choose from gallery, ID: struk-photo-gallery
+							99 text or paste the text below ↓
+							100 text entry area (settable) struk-text
+							101 container
+								102 text Receipt date 
+								103 date field (settable) Receipt date, Value: 2026-10-14, ID: struk-date
+									104 container
+										105 stepper
+										106 stepper
+										107 stepper
+									108 pop up button Show date picker Show date picker
+							109 button Read receipt, ID: btn-parse-struk
+						110 heading 🔁 Recurring bills, Value: 3
+							111 text 🔁 Recurring bills
+						112 text No recurring bills yet. Select "Make recurring" when adding an expense such as rent, instalments or subscriptions.
+				113 container bottom-nav
+					114 button Home
+						115 image
+						116 text Home
+					117 button Transactions
+						118 image
+						119 text Transactions
+					120 button Money tools
+						121 image
+						122 text Money tools
+					123 button Settings
+						124 image
+						125 text Settings
+				126 button Add transaction
+		127 text Sample data · No automatic currency conversion
+
+The focused UI element is 1 AXWebArea Ruvy en tambah, URL: 127.0.0.1:8767/store-en-5.html

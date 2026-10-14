@@ -1,0 +1,64 @@
+Browser tab: 12, Title: "Ruvy id rencana", URL: "http://127.0.0.1:8767/store-id-4.html".
+1 AXWebArea Ruvy id rencana, URL: 127.0.0.1:8767/store-id-4.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Langkah kecil. Tujuan lebih jelas., Value: 1
+			6 text Langkah kecil.
+			7 text Tujuan lebih jelas.
+		8 text Tabungan, utang, dan laporan dalam satu tempat.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=id&view=rencana
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Akun, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Dompetmu, Value: 2
+						18 text Dompetmu
+					19 button Atur dompet
+					20 container Description: Pilih dompet, ID: ruvy-wallet-strip
+						21 checkbox IDR Dompet utama IDR 9.875.000, Value: 1
+							22 text IDR
+							23 text Dompet utama
+							24 text IDR 9.875.000
+						25 checkbox USD Travel USD 2.563,00, Value: 0
+							26 text USD
+							27 text Travel
+							28 text USD 2.563,00
+						29 button Dompet baru
+							30 text Dompet baru
+					31 text Saldo ditampilkan per dompet. Tidak ada konversi kurs otomatis.
+					32 container tab-rencana
+						33 heading Alat keuangan, Value: 1
+							34 text Alat keuangan
+						35 text Tujuan, kewajiban, dan laporan dalam satu tempat.
+						36 button Hutang & Piutang Pantau kewajiban, pinjaman, dan jatuh tempo. Belum ada catatan
+							37 text Hutang & Piutang
+							38 text Pantau kewajiban, pinjaman, dan jatuh tempo.
+							39 text Belum ada catatan
+						40 button Target Keuangan Susun target menabung dan lihat progresnya. Belum ada target
+							41 text Target Keuangan
+							42 text Susun target menabung dan lihat progresnya.
+							43 text Belum ada target
+						44 button Laporan Lihat pola pemasukan dan pengeluaran per dompet.
+							45 text Laporan
+							46 text Lihat pola pemasukan dan pengeluaran per dompet.
+				47 container bottom-nav
+					48 button Beranda
+						49 image
+						50 text Beranda
+					51 button Transaksi
+						52 image
+						53 text Transaksi
+					54 button Alat keuangan
+						55 image
+						56 text Alat keuangan
+					57 button Pengaturan
+						58 image
+						59 text Pengaturan
+				60 button Tambah transaksi
+		61 text Data contoh · Tanpa konversi mata uang otomatis
+
+The focused UI element is 1 AXWebArea Ruvy id rencana, URL: 127.0.0.1:8767/store-id-4.html

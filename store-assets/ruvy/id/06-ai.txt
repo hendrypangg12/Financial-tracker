@@ -1,0 +1,116 @@
+Browser tab: 12, Title: "Ruvy id ai", URL: "http://127.0.0.1:8767/store-id-6.html".
+1 AXWebArea Ruvy id ai, URL: 127.0.0.1:8767/store-id-6.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Kenalan dengan Ruvy AI., Value: 1
+			6 text Kenalan dengan
+			7 text Ruvy AI.
+		8 text Tanyakan pola dari catatan keuanganmu.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=id&view=ai
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Akun, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Dompetmu, Value: 2
+						18 text Dompetmu
+					19 button Atur dompet
+					20 container Description: Pilih dompet, ID: ruvy-wallet-strip
+						21 checkbox IDR Dompet utama IDR 9.875.000, Value: 1
+							22 text IDR
+							23 text Dompet utama
+							24 text IDR 9.875.000
+						25 checkbox USD Travel USD 2.563,00, Value: 0
+							26 text USD
+							27 text Travel
+							28 text USD 2.563,00
+						29 button Dompet baru
+							30 text Dompet baru
+					31 text Saldo ditampilkan per dompet. Tidak ada konversi kurs otomatis.
+					32 container ruvy-home
+						33 container
+							34 heading Halo, Alex, Value: 1, ID: ruvy-greeting
+								35 text Halo, Alex
+							36 button Description: Sapa Ruvy, ID: ruvy-robot
+							37 text Kenali uangmu, satu catatan setiap hari.
+						38 container Ringkasan dompet
+							39 text Saldo dompet
+							40 text IDR 9.875.000
+							41 pop up button (collapsed, settable) Description: Bulan laporan, Value: Oktober, ID: ruvy-period-month, Secondary Actions: Expand
+								42 menu
+									43 Januari
+									44 Februari
+									45 Maret
+									46 April
+									47 Mei
+									48 Juni
+									49 Juli
+									50 Agustus
+									51 September
+									52 (selected) Oktober
+									53 November
+									54 Desember
+							55 pop up button (collapsed, settable) Description: Tahun laporan, Value: 2026, ID: ruvy-period-year, Secondary Actions: Expand
+								56 menu
+									57 (selected) 2026
+							58 text ↙ Pemasukan
+							59 text IDR 7.500.000
+							60 text ↗ Pengeluaran
+							61 text IDR 25.000
+							62 text Perubahan bersih bulan ini
+							63 text IDR 7.475.000
+						64 button ＋ Catat transaksi
+						65 button Tanya Ruvy ✧
+						66 heading Aktivitas terbaru, Value: 2
+							67 text Aktivitas terbaru
+						68 button Lihat semua →
+						69 container ruvy-recent
+							70 button Kopi pagi 14 Okt 2026 −IDR 25.000
+								71 text Kopi pagi
+								72 text 14 Okt 2026
+								73 text −IDR 25.000
+							74 button Gaji Oktober 12 Okt 2026 +IDR 7.500.000
+								75 text Gaji Oktober
+								76 text 12 Okt 2026
+								77 text +IDR 7.500.000
+				78 container ai-chat-panel
+					79 button Description: Kembali ke Ringkasan, ID: ai-chat-back
+						80 text ←
+						81 text Kembali ke Ringkasan
+					82 text Ruvy
+					83 text Asisten AI · memahami data keuanganmu
+					84 button Description: Tutup, ID: ai-chat-close
+					85 container ai-chat-body
+						86 container ai-greeting
+							87 text 🐻 Ruvy
+							88 text Halo! Saya Ruvy, asisten yang membantu membaca data keuanganmu. Tanyakan pengeluaran, target menabung, atau cara mengatur anggaran.
+						89 container ai-chips
+							90 button 📊 Cek pengeluaran bulan ini
+							91 button 💡 Saran hemat
+							92 button 🔄 Bandingkan bulan lalu
+							93 button 🎯 Kategori terbesar
+					94 container ai-chat-form
+						95 text field (settable) ai-chat-input
+						96 button Description: Kirim, ID: ai-chat-send
+							97 image
+					98 text 💎 Pro • 30 query/hari
+				99 container bottom-nav
+					100 button Beranda
+						101 image
+						102 text Beranda
+					103 button Transaksi
+						104 image
+						105 text Transaksi
+					106 button Alat keuangan
+						107 image
+						108 text Alat keuangan
+					109 button Pengaturan
+						110 image
+						111 text Pengaturan
+				112 button Tambah transaksi
+		113 text Fitur AI memerlukan paket berbayar. Data contoh.
+
+The focused UI element is 95 text field (settable) ai-chat-input

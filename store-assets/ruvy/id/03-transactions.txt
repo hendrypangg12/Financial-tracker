@@ -1,0 +1,111 @@
+Browser tab: 12, Title: "Ruvy id transaksi", URL: "http://127.0.0.1:8767/store-id-3.html".
+1 AXWebArea Ruvy id transaksi, URL: 127.0.0.1:8767/store-id-3.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Setiap catatan. Mudah ditemukan., Value: 1
+			6 text Setiap catatan.
+			7 text Mudah ditemukan.
+		8 text Tinjau pemasukan dan pengeluaran per dompet.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=id&view=transaksi
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Akun, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Dompetmu, Value: 2
+						18 text Dompetmu
+					19 button Atur dompet
+					20 container Description: Pilih dompet, ID: ruvy-wallet-strip
+						21 checkbox IDR Dompet utama IDR 9.875.000, Value: 1
+							22 text IDR
+							23 text Dompet utama
+							24 text IDR 9.875.000
+						25 checkbox USD Travel USD 2.563,00, Value: 0
+							26 text USD
+							27 text Travel
+							28 text USD 2.563,00
+						29 button Dompet baru
+							30 text Dompet baru
+					31 text Saldo ditampilkan per dompet. Tidak ada konversi kurs otomatis.
+					32 container tab-transaksi
+						33 heading Daftar Transaksi, Value: 1
+							34 text Daftar Transaksi
+						35 search text field (settable) trx-search
+						36 pop up button (collapsed, settable) Value: Semua jenis, ID: trx-filter-jenis, Secondary Actions: Expand
+							37 menu
+								38 (selected) Semua jenis
+								39 Pemasukan
+								40 Pengeluaran
+						41 pop up button (collapsed, settable) Value: October, ID: trx-filter-month, Secondary Actions: Expand
+							42 menu
+								43 Semua bulan
+								44 January
+								45 February
+								46 March
+								47 April
+								48 May
+								49 June
+								50 July
+								51 August
+								52 September
+								53 (selected) October
+								54 November
+								55 December
+						56 pop up button (collapsed, settable) Value: 2026, ID: trx-filter-year, Secondary Actions: Expand
+							57 menu
+								58 Semua tahun
+								59 2021
+								60 2022
+								61 2023
+								62 2024
+								63 2025
+								64 (selected) 2026
+								65 2027
+						66 table
+							67 container trx-body
+								68 row
+									69 cell
+										70 text HARI INI −Rp 25.000
+								71 row
+									72 cell
+										73 text Kopi pagi
+									74 cell
+										75 text − Rp 25.000
+									76 cell
+										77 text Minuman/jajan
+									78 cell
+										79 button Edit
+										80 button Hapus
+								81 row
+									82 cell
+										83 text 12 OKT 2026 +Rp 7.500.000
+								84 row
+									85 cell
+										86 text Gaji Oktober
+									87 cell
+										88 text +Rp 7.500.000
+									89 cell
+										90 text Gaji bulanan
+									91 cell
+										92 button Edit
+										93 button Hapus
+				94 container bottom-nav
+					95 button Beranda
+						96 image
+						97 text Beranda
+					98 button Transaksi
+						99 image
+						100 text Transaksi
+					101 button Alat keuangan
+						102 image
+						103 text Alat keuangan
+					104 button Pengaturan
+						105 image
+						106 text Pengaturan
+				107 button Tambah transaksi
+		108 text Data contoh · Tanpa konversi mata uang otomatis
+
+The focused UI element is 1 AXWebArea Ruvy id transaksi, URL: 127.0.0.1:8767/store-id-3.html

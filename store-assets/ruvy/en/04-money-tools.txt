@@ -1,0 +1,64 @@
+Browser tab: 12, Title: "Ruvy en rencana", URL: "http://127.0.0.1:8767/store-en-4.html".
+1 AXWebArea Ruvy en rencana, URL: 127.0.0.1:8767/store-en-4.html
+	2 container
+		3 image
+		4 text Ruvy
+		5 heading Small steps. Clearer goals., Value: 1
+			6 text Small steps.
+			7 text Clearer goals.
+		8 text Keep savings, debt and reports in one place.
+		9 container Ruvy app
+			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=en&view=rencana
+				11 container
+					12 image Ruvy
+					13 text Ruvy
+					14 button 🙂, Help: Account, ID: user-menu-btn
+						15 text 🙂
+				16 container
+					17 heading Your wallets, Value: 2
+						18 text Your wallets
+					19 button Wallet settings
+					20 container Description: Choose wallet, ID: ruvy-wallet-strip
+						21 checkbox IDR Main wallet IDR 9,875,000, Value: 0
+							22 text IDR
+							23 text Main wallet
+							24 text IDR 9,875,000
+						25 checkbox USD Travel USD 2,563.00, Value: 1
+							26 text USD
+							27 text Travel
+							28 text USD 2,563.00
+						29 button New wallet
+							30 text New wallet
+					31 text Balances are shown per wallet. No automatic exchange-rate conversion.
+					32 container tab-rencana
+						33 heading Money tools, Value: 1
+							34 text Money tools
+						35 text Goals, obligations and reports in one place.
+						36 button Debts & receivables Track what you owe, what others owe you, and due dates. No records yet
+							37 text Debts & receivables
+							38 text Track what you owe, what others owe you, and due dates.
+							39 text No records yet
+						40 button Savings goals Set savings goals and track your progress. No goals yet
+							41 text Savings goals
+							42 text Set savings goals and track your progress.
+							43 text No goals yet
+						44 button Reports Review income and expense patterns by wallet.
+							45 text Reports
+							46 text Review income and expense patterns by wallet.
+				47 container bottom-nav
+					48 button Home
+						49 image
+						50 text Home
+					51 button Transactions
+						52 image
+						53 text Transactions
+					54 button Money tools
+						55 image
+						56 text Money tools
+					57 button Settings
+						58 image
+						59 text Settings
+				60 button Add transaction
+		61 text Sample data · No automatic currency conversion
+
+The focused UI element is 1 AXWebArea Ruvy en rencana, URL: 127.0.0.1:8767/store-en-4.html
