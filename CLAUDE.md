@@ -188,6 +188,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 📦 14 Okt: Codex push branch terpisah `codex/beruang-1-4-7-trial-upgrade` (13 Okt 16:45) → DI-MERGE ke branch ini.
+  Isi: Android 1.4.7 / versionCode 13; paywall Play tidak lagi memblokir user UJI COBA GRATIS yang mau beli paket
+  (sebelumnya dianggap "paket masih aktif" → bulanan/tahunan ditolak). Server (google-play.js) memang tidak memblokir trial.
+  Tes: mobile 26 lolos, bot 60 lolos. Build AAB 1.4.7 masih harus dibuat di laptop bos.
 - 🤝 14 Okt: bos MENYERAHKAN lanjutan pekerjaan ke ChatGPT laptop. File serah terima: `SERAH-TERIMA-CHATGPT-RUVI.txt`
   (status demo Ruvi, 4 keputusan tertunda, audit Codex 1.4.6, aturan keamanan). Kalau Claude dipakai lagi: git pull dulu,
   cek commit ChatGPT sebelum lanjut.

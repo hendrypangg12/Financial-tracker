@@ -47,6 +47,10 @@ SELESAI (hanya di DEMO demo-ruvi.html, BELUM di aplikasi asli):
 - Detail dompet (masuk/keluar + filter) dan UBAH/HAPUS transaksi manual (kalau AI salah).
 - Label "hari beruntun"/streak DIHAPUS atas permintaan bos. JANGAN dipakai lagi.
 
+UPDATE 14 Okt: branch Codex codex/beruang-1-4-7-trial-upgrade (Android 1.4.7 / versionCode 13,
+user uji coba gratis bisa langsung beli paket) SUDAH DIGABUNG ke claude/financial-tracking-app-QUmrz.
+Jangan kerja di branch codex lagi. Build AAB 1.4.7 dari branch claude/financial-tracking-app-QUmrz.
+
 BELUM DIKERJAKAN:
 - Memindahkan tampilan demo ke aplikasi asli (app.html) -> lihat RENCANA-PERUBAHAN-TOTAL.md.
 - Audit kode Codex versi Android 1.4.6 / versionCode 12 (push 2-8 Okt: kategori custom,
