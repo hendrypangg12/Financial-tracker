@@ -46,6 +46,7 @@
     if(hasActivePlaySubscription(profile))return 'Langganan Google Play masih aktif. Paket tambahan dapat tumpang tindih; kelola langganan yang ada dulu.';
     if(!active)return '';
     if(['lifetime','pro'].includes(profile.plan))return 'Akun ini sudah memiliki akses tanpa batas waktu.';
+    if(profile.plan==='free_trial')return '';
     if(productId!=='beruang_access_7d')return 'Paket saat ini masih aktif. Langganan baru ditagih segera dan tidak menambah sisa hari paket ini. Pilih setelah paket berakhir.';
     return '';
   }
@@ -61,6 +62,7 @@
     const activeSubscription=hasActivePlaySubscription(profile);
     status.textContent=activeSubscription?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Kelola langganan Google Play sebelum membeli paket lain.`:
       active&&['lifetime','pro'].includes(profile.plan)?'Akun ini sudah memiliki akses tanpa batas waktu. Pembelian paket tambahan tidak diperlukan.':
+      active&&profile.plan==='free_trial'?`Paket saat ini: Uji Coba Gratis · aktif${end?` sampai ${end}`:''}. Anda bisa membeli paket sekarang. Paket berbayar dimulai dan ditagih segera setelah pembelian; sisa uji coba gratis tidak menambah masa langganan.`:
       active?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Akses 7 Hari dapat ditambahkan; langganan baru tersedia setelah paket ini berakhir.`:
       'Belum ada paket aktif. Pilih paket di bawah; harga akan mengikuti yang ditampilkan Google Play.';
     const manage=document.getElementById('play-manage');
