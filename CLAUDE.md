@@ -188,6 +188,40 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🤝 14 Okt: bos MENYERAHKAN lanjutan pekerjaan ke ChatGPT laptop. File serah terima: `SERAH-TERIMA-CHATGPT-RUVI.txt`
+  (status demo Ruvi, 4 keputusan tertunda, audit Codex 1.4.6, aturan keamanan). Kalau Claude dipakai lagi: git pull dulu,
+  cek commit ChatGPT sebelum lanjut.
+
+- 🤖 1–13 Okt: KOMPETITOR "Rolly" (Rolly AI Pty Ltd, Australia; input chat → AI kategorikan; maskot robot) bikin bos
+  ingin BerUang modern ala Rolly. Juga ditemukan pesaing lokal "Pang" (com.pang.mobile, solo dev Yogyakarta, fitur mirip).
+  KEPUTUSAN: maskot AI bernama **Ruvi** (robot Kapsul Kaca versi A), ekspresi berubah sesuai keadaan user, komunikatif
+  TEKS SAJA (tanpa suara), UI gaya kaca/glassmorphism. Saran Claude: jual Indonesia dulu, siap 2 bahasa, internasional
+  setelah ~50–100 pembeli. Semua desain + video + keputusan di `design/ruvi/` (README.md). BELUM diimplementasi di app;
+  rencana: rilis 1.4.2 dulu → terapkan di web berstock.id → Android build berikutnya. ChatGPT laptop belum push 1.4.2.
+
+- 🎮 13 Okt: DEMO WEB INTERAKTIF Ruvi → `demo-ruvi.html` (berstock.id/demo-ruvi.html, noindex, tidak di-link dari mana pun).
+  Satu file vanilla JS, data contoh di memori (tidak tersimpan, tanpa AI/kredit): dashboard kaca gelap (saldo, arus kas,
+  donut kategori, transaksi), tab Transaksi/Laporan/Target & budget, panel Ruvi (animasi + 8 ekspresi, teks diketik,
+  mulut bergerak), parser multi-transaksi ("kopi 28rb, bakso 25rb kemarin", rb/k/jt), jawaban terhitung (boros di mana,
+  bisa nabung berapa, banding bulan lalu, target), reaksi budget (≥85% kasih tips, ≥100% khawatir), mic & kamera simulasi,
+  tombol "Ruvi diam dulu", Ruvi menyapa duluan + maks 2 tips. HP: panel Ruvi jadi layar penuh lewat tombol "Catat ke Ruvi".
+  13 Okt lanjutan (permintaan bos "simple kayak Rolly"): di beranda HP Ruvi besar di tengah + gelembung PENDEK saja
+  (emoji/2–3 kata: "Hai Budi! 👋", "Hemat 19% 👍", "Lewat budget 😬"), teks lengkap hanya di layar chat (titik merah di
+  tombol "Catat ke Ruvi" kalau ada pesan baru). Interaksi: mata ikut jari, sentuh kartu/kategori/transaksi/streak → ekspresi
+  + gelembung pendek, sambutan tiap tab, tidur setelah 45 dtk, ketuk Ruvi = reaksi. Rencana: `design/ruvi/RENCANA-PERUBAHAN-TOTAL.md`.
+  13 Okt: + DOMPET (permintaan bos, contoh Rolly "New wallet"): kartu saldo per dompet (BCA/GoPay/Tunai/Reksadana) di beranda,
+  "+ Dompet baru" (nama, jenis Bank/E-wallet/Tunai/Investasi, saldo sekarang), transaksi menyebut dompet ("bensin 50rb pakai
+  gopay", default bank pertama), pindah dana & investasi dari chat, Sisa saldo = dompet non-investasi, baris "Investasi ·
+  Kekayaan", tanya "saldo semua dompet". Di app asli butuh field baru `wallet` per transaksi + `wallets[]` di data user.
+  13 Okt: DETAIL DOMPET + EDIT MANUAL (permintaan bos: "AI kalau salah bisa edit manual"): ketuk kartu dompet → lembar detail
+  (saldo, masuk/keluar bulan ini, filter Semua/Masuk/Keluar, daftar transaksi termasuk pindah dana). Ketuk transaksi mana pun
+  (beranda, tab Transaksi, detail dompet, atau tombol "✏️ Ubah" di kartu catatan Ruvi) → form ubah: jenis, keterangan, jumlah,
+  tanggal, kategori, dompet (pindah dana: dari/ke) + Hapus (konfirmasi 2x). Ruvi: "Diperbaiki ✓" / "Dihapus 🗑️".
+  13 Okt: TEMA TERANG + GELAP (permintaan bos): default ikut pengaturan perangkat (prefers-color-scheme), tombol ☀️/🌙 di atas,
+  pilihan disimpan localStorage `ruvi-theme`; warna lewat CSS var (`html[data-theme=light]`), grafik pakai var --c1/--c2/--grid.
+  → Keputusan #1 rencana perubahan total: tema ikut perangkat + bisa diganti manual.
+  13 Okt: label "🔥 hari beruntun" (streak) DIHAPUS dari demo atas permintaan bos ("ga perlu"); jangan dipakai di versi baru.
+
 Masih terbuka: ikon di listing Play Store masih mascot lama (beruang kacamata); blocker keamanan di
 `BERUANG-RELEASE-REVIEW.md` (Firestore Rules produksi, otoritas aktivasi Pro di server) belum dikonfirmasi selesai.
 

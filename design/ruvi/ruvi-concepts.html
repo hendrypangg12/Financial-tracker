@@ -1,0 +1,184 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#060912;font-family:Inter,system-ui,-apple-system,sans-serif;color:#e8eefc;-webkit-font-smoothing:antialiased}
+.wrap{position:relative;width:1680px;padding:48px 56px 56px;overflow:hidden}
+.aur{position:absolute;border-radius:50%;filter:blur(110px);opacity:.45}
+h1{position:relative;font-size:44px;letter-spacing:-1.2px}
+.sub{position:relative;color:#93a3c4;font-size:18px;margin:6px 0 30px}
+.grid{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.card{border-radius:30px;padding:18px 20px 22px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(20px)}
+.stage{height:360px;border-radius:22px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+ background:radial-gradient(circle at 50% 45%,rgba(45,212,191,.16),transparent 60%),linear-gradient(180deg,#0b1222,#070b16)}
+.stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(circle at 50% 55%,#000,transparent 75%)}
+.num{position:absolute;top:14px;left:16px;font-size:13px;font-weight:800;color:#5eead4;letter-spacing:1px;z-index:2}
+.rec{position:absolute;top:12px;right:14px;font-size:12px;font-weight:800;color:#06101c;background:linear-gradient(90deg,#2dd4bf,#818cf8);padding:5px 10px;border-radius:99px;z-index:2}
+h2{font-size:24px;margin:16px 0 4px;letter-spacing:-.5px}
+p{font-size:14.5px;line-height:1.55;color:#a8b5d1}
+.tags{margin-top:10px}.tags span{display:inline-block;font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);margin:3px 4px 0 0;color:#dbe4f7}
+</style></head><body>
+<div class="wrap">
+ <i class="aur" style="width:600px;height:600px;background:#0d9488;left:-150px;top:-200px"></i>
+ <i class="aur" style="width:560px;height:560px;background:#4f46e5;right:-120px;top:500px"></i>
+ <h1>Ruvi — 6 konsep robot futuristik</h1>
+ <p class="sub">Badan kaca, inti bercahaya, terlihat pintar. Semua bisa dianimasikan dengan kode (ringan, tajam di semua layar).</p>
+ <div class="grid">
+
+ <!-- 1 ORB -->
+ <div class="card"><div class="stage"><span class="num">01</span>
+  <svg width="300" height="330" viewBox="0 0 300 330">
+   <defs>
+    <radialGradient id="o1" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".45" stop-color="#a5f3fc" stop-opacity=".16"/><stop offset="1" stop-color="#6366f1" stop-opacity=".22"/></radialGradient>
+    <radialGradient id="o1c" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#5eead4" stop-opacity=".9"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="o1r" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+   </defs>
+   <ellipse cx="150" cy="306" rx="70" ry="10" fill="url(#o1c)" opacity=".5"/>
+   <ellipse cx="150" cy="150" rx="138" ry="30" fill="none" stroke="url(#o1r)" stroke-width="3" opacity=".55" transform="rotate(-14 150 150)"/>
+   <circle cx="150" cy="150" r="98" fill="url(#o1)" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/>
+   <circle cx="150" cy="168" r="58" fill="url(#o1c)" opacity=".35"/>
+   <rect x="92" y="122" width="116" height="62" rx="31" fill="#08101f" opacity=".85"/>
+   <rect x="114" y="138" width="22" height="30" rx="11" fill="#5eead4"/><rect x="164" y="138" width="22" height="30" rx="11" fill="#5eead4"/>
+   <rect x="110" y="134" width="30" height="38" rx="15" fill="#5eead4" opacity=".18"/><rect x="160" y="134" width="30" height="38" rx="15" fill="#5eead4" opacity=".18"/>
+   <path d="M86 92 Q110 70 150 66" stroke="#fff" stroke-opacity=".7" stroke-width="6" fill="none" stroke-linecap="round"/>
+   <g transform="rotate(-14 150 150)"><clipPath id="o1front"><rect x="0" y="150" width="300" height="60"/></clipPath>
+    <ellipse cx="150" cy="150" rx="138" ry="30" fill="none" stroke="url(#o1r)" stroke-width="3.5" clip-path="url(#o1front)"/></g>
+   <circle cx="282" cy="126" r="7" fill="#a78bfa"/><circle cx="282" cy="126" r="14" fill="#a78bfa" opacity=".25"/>
+  </svg></div>
+  <h2>Orb Cahaya</h2><p>Bola kaca melayang dengan wajah layar dan cincin orbit. Kesan "AI murni" seperti asisten di film sci-fi. Paling mudah dijadikan ikon aplikasi.</p>
+  <div class="tags"><span>Sangat futuristik</span><span>Ikon kuat</span><span>Tanpa tangan</span></div></div>
+
+ <!-- 2 GLASS POD -->
+ <div class="card"><div class="stage"><span class="num">02</span><span class="rec">⭐ REKOMENDASI</span>
+  <svg width="300" height="330" viewBox="0 0 300 330">
+   <defs>
+    <linearGradient id="p2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset=".5" stop-color="#c7d2fe" stop-opacity=".14"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".22"/></linearGradient>
+    <radialGradient id="p2c" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fef3c7"/><stop offset=".35" stop-color="#5eead4"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="p2v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2540"/><stop offset="1" stop-color="#070b16"/></linearGradient>
+   </defs>
+   <ellipse cx="150" cy="312" rx="56" ry="9" fill="#5eead4" opacity=".3"/>
+   <line x1="150" y1="30" x2="150" y2="52" stroke="rgba(255,255,255,.6)" stroke-width="3"/>
+   <circle cx="150" cy="24" r="8" fill="#a78bfa"/><circle cx="150" cy="24" r="16" fill="#a78bfa" opacity=".25"/>
+   <rect x="88" y="50" width="124" height="236" rx="62" fill="url(#p2)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+   <g stroke="#5eead4" stroke-opacity=".35" stroke-width="1.5" fill="none"><path d="M150 230 V262 M150 230 l-26 18 M150 230 l26 18"/><circle cx="124" cy="248" r="3" fill="#5eead4"/><circle cx="176" cy="248" r="3" fill="#5eead4"/></g>
+   <circle cx="150" cy="214" r="40" fill="url(#p2c)" opacity=".85"/>
+   <circle cx="150" cy="214" r="18" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2"/>
+   <rect x="104" y="80" width="92" height="64" rx="32" fill="url(#p2v)"/>
+   <rect x="122" y="98" width="16" height="26" rx="8" fill="#5eead4"/><rect x="162" y="98" width="16" height="26" rx="8" fill="#5eead4"/>
+   <path d="M140 132 Q150 138 160 132" stroke="#5eead4" stroke-width="3" fill="none" stroke-linecap="round"/>
+   <path d="M102 76 Q112 60 134 56" stroke="#fff" stroke-opacity=".75" stroke-width="5" fill="none" stroke-linecap="round"/>
+   <ellipse cx="58" cy="200" rx="15" ry="22" fill="url(#p2)" stroke="rgba(255,255,255,.55)" stroke-width="1.5" transform="rotate(20 58 200)"/>
+   <ellipse cx="242" cy="190" rx="15" ry="22" fill="url(#p2)" stroke="rgba(255,255,255,.55)" stroke-width="1.5" transform="rotate(-30 242 190)"/>
+  </svg></div>
+  <h2>Kapsul Kaca</h2><p>Badan kapsul transparan dengan inti energi yang terlihat menyala di dalam dada, wajah layar, dan tangan melayang. Ramah seperti Rolly, tapi jauh lebih canggih.</p>
+  <div class="tags"><span>Pintar + ramah</span><span>Inti bisa "berdenyut"</span><span>Cocok di HP</span></div></div>
+
+ <!-- 3 HUMANOID -->
+ <div class="card"><div class="stage"><span class="num">03</span>
+  <svg width="300" height="340" viewBox="0 0 300 340">
+   <defs>
+    <linearGradient id="h3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#b8c3d6"/></linearGradient>
+    <linearGradient id="h3g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset="1" stop-color="#818cf8" stop-opacity=".2"/></linearGradient>
+    <radialGradient id="h3c" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ecfeff"/><stop offset=".4" stop-color="#2dd4bf"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></radialGradient>
+    <linearGradient id="h3v" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b1222"/><stop offset=".5" stop-color="#1e293b"/><stop offset="1" stop-color="#0b1222"/></linearGradient>
+    <linearGradient id="h3j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></linearGradient>
+   </defs>
+   <!-- hologram card -->
+   <g transform="translate(212 118) rotate(-8)"><rect width="74" height="52" rx="9" fill="#2dd4bf" fill-opacity=".12" stroke="#5eead4" stroke-opacity=".7"/><path d="M8 40 L22 30 L34 34 L48 18 L66 12" stroke="#5eead4" stroke-width="2.5" fill="none"/><text x="8" y="14" font-size="9" fill="#a5f3fc" font-family="Inter,sans-serif" font-weight="700">+13%</text></g>
+   <!-- legs -->
+   <rect x="128" y="226" width="18" height="62" rx="9" fill="url(#h3)"/><rect x="154" y="226" width="18" height="62" rx="9" fill="url(#h3)"/>
+   <ellipse cx="137" cy="292" rx="14" ry="7" fill="url(#h3)"/><ellipse cx="163" cy="292" rx="14" ry="7" fill="url(#h3)"/>
+   <path d="M126 298 L148 298 L140 330 L134 330Z" fill="url(#h3j)" opacity=".7"/><path d="M152 298 L174 298 L166 330 L160 330Z" fill="url(#h3j)" opacity=".7"/>
+   <!-- arms -->
+   <rect x="92" y="138" width="16" height="74" rx="8" fill="url(#h3)" transform="rotate(10 100 140)"/>
+   <rect x="196" y="120" width="16" height="66" rx="8" fill="url(#h3)" transform="rotate(-55 196 130)"/>
+   <circle cx="214" cy="150" r="9" fill="url(#h3)"/>
+   <!-- torso -->
+   <path d="M108 132 Q150 118 192 132 L182 222 Q150 236 118 222Z" fill="url(#h3)"/>
+   <path d="M122 142 Q150 134 178 142 L172 200 Q150 210 128 200Z" fill="url(#h3g)" stroke="rgba(255,255,255,.7)"/>
+   <circle cx="150" cy="172" r="22" fill="url(#h3c)"/>
+   <circle cx="150" cy="172" r="9" fill="none" stroke="#fff" stroke-width="1.6"/>
+   <!-- neck+head -->
+   <rect x="142" y="110" width="16" height="16" rx="5" fill="#94a3b8"/>
+   <ellipse cx="150" cy="78" rx="46" ry="44" fill="url(#h3g)" stroke="rgba(255,255,255,.75)" stroke-width="1.5"/>
+   <ellipse cx="150" cy="82" rx="36" ry="32" fill="url(#h3)"/>
+   <rect x="116" y="70" width="68" height="26" rx="13" fill="url(#h3v)"/>
+   <rect x="128" y="79" width="16" height="7" rx="3.5" fill="#5eead4"/><rect x="156" y="79" width="16" height="7" rx="3.5" fill="#5eead4"/>
+   <path d="M120 50 Q136 38 156 38" stroke="#fff" stroke-opacity=".8" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </svg></div>
+  <h2>Humanoid Ramping</h2><p>Robot berbadan penuh dengan helm kaca, visor bercahaya, dan inti energi di dada. Kakinya melayang dengan jet cahaya, dan ia memegang grafik hologram. Paling "pintar" dan premium.</p>
+  <div class="tags"><span>Full body</span><span>Premium</span><span>Butuh ruang lebih</span></div></div>
+
+ <!-- 4 HOLOGRAM -->
+ <div class="card"><div class="stage"><span class="num">04</span>
+  <svg width="300" height="330" viewBox="0 0 300 330">
+   <defs>
+    <linearGradient id="g4" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5eead4" stop-opacity=".45"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></linearGradient>
+    <linearGradient id="g4b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#67e8f9" stop-opacity=".55"/><stop offset="1" stop-color="#a78bfa" stop-opacity=".25"/></linearGradient>
+    <pattern id="scan" width="4" height="6" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#ecfeff" opacity=".22"/></pattern>
+   </defs>
+   <path d="M90 300 L210 300 L250 60 L50 60Z" fill="url(#g4)" opacity=".5"/>
+   <ellipse cx="150" cy="302" rx="78" ry="14" fill="#0e1a2e" stroke="#5eead4" stroke-width="2"/>
+   <ellipse cx="150" cy="298" rx="60" ry="9" fill="#5eead4" opacity=".55"/>
+   <g opacity=".95">
+    <path d="M86 270 Q90 200 122 186 L178 186 Q210 200 214 270Z" fill="url(#g4b)" stroke="#67e8f9" stroke-width="1.5"/>
+    <rect x="96" y="70" width="108" height="104" rx="48" fill="url(#g4b)" stroke="#67e8f9" stroke-width="1.5"/>
+    <rect x="96" y="70" width="108" height="104" rx="48" fill="url(#scan)"/>
+    <path d="M86 270 Q90 200 122 186 L178 186 Q210 200 214 270Z" fill="url(#scan)"/>
+    <rect x="112" y="102" width="76" height="42" rx="21" fill="#0b1222" opacity=".7"/>
+    <rect x="126" y="114" width="14" height="18" rx="7" fill="#ecfeff"/><rect x="160" y="114" width="14" height="18" rx="7" fill="#ecfeff"/>
+    <circle cx="150" cy="226" r="16" fill="none" stroke="#ecfeff" stroke-width="2"/><text x="150" y="232" font-size="15" font-weight="800" text-anchor="middle" fill="#ecfeff" font-family="Inter,sans-serif">$</text>
+   </g>
+   <g fill="#a5f3fc" font-family="monospace" font-size="11" opacity=".7"><text x="34" y="110">01</text><text x="246" y="150">Rp</text><text x="40" y="200">+8jt</text><text x="236" y="230">%</text></g>
+  </svg></div>
+  <h2>Hologram</h2><p>Ruvi muncul sebagai proyeksi hologram dari piringan cahaya, lengkap dengan garis pindai dan angka melayang. Sangat sci-fi dan cocok untuk tema gelap.</p>
+  <div class="tags"><span>Paling sci-fi</span><span>Tema gelap</span><span>Kurang "imut"</span></div></div>
+
+ <!-- 5 DRONE -->
+ <div class="card"><div class="stage"><span class="num">05</span>
+  <svg width="300" height="330" viewBox="0 0 300 330">
+   <defs>
+    <radialGradient id="d5" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></radialGradient>
+    <linearGradient id="d5g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".18"/></linearGradient>
+    <linearGradient id="d5b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5eead4" stop-opacity=".7"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></linearGradient>
+   </defs>
+   <path d="M122 212 L178 212 L214 312 L86 312Z" fill="url(#d5b)" opacity=".35"/>
+   <g transform="translate(150 296)"><rect x="-34" y="-22" width="68" height="30" rx="6" fill="none" stroke="#5eead4" stroke-opacity=".7"/><path d="M-26 0 L-12 -10 L2 -4 L22 -16" stroke="#5eead4" stroke-width="2" fill="none"/></g>
+   <line x1="96" y1="130" x2="56" y2="104" stroke="#cbd5e1" stroke-width="7" stroke-linecap="round"/>
+   <line x1="204" y1="130" x2="244" y2="104" stroke="#cbd5e1" stroke-width="7" stroke-linecap="round"/>
+   <ellipse cx="56" cy="98" rx="42" ry="10" fill="url(#d5g)" stroke="rgba(255,255,255,.5)"/><ellipse cx="244" cy="98" rx="42" ry="10" fill="url(#d5g)" stroke="rgba(255,255,255,.5)"/>
+   <circle cx="56" cy="98" r="6" fill="#a78bfa"/><circle cx="244" cy="98" r="6" fill="#a78bfa"/>
+   <ellipse cx="150" cy="148" rx="70" ry="64" fill="url(#d5)"/>
+   <rect x="102" y="118" width="96" height="54" rx="27" fill="#0b1222"/>
+   <path d="M118 146 Q128 134 138 146" stroke="#5eead4" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M162 146 Q172 134 182 146" stroke="#5eead4" stroke-width="5" fill="none" stroke-linecap="round"/>
+   <circle cx="150" cy="202" r="10" fill="#5eead4"/><circle cx="150" cy="202" r="18" fill="#5eead4" opacity=".25"/>
+   <path d="M98 112 Q114 92 140 88" stroke="#fff" stroke-opacity=".8" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </svg></div>
+  <h2>Drone Pendamping</h2><p>Drone mungil dengan baling-baling kaca dan wajah layar. Ia memancarkan grafik dari bawah badannya, seperti sedang menunjukkan laporan. Lincah dan beda dari yang lain.</p>
+  <div class="tags"><span>Unik</span><span>Lincah</span><span>Animasi seru</span></div></div>
+
+ <!-- 6 CRYSTAL -->
+ <div class="card"><div class="stage"><span class="num">06</span>
+  <svg width="300" height="330" viewBox="0 0 300 330">
+   <defs>
+    <linearGradient id="c6a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0e7ff" stop-opacity=".75"/><stop offset="1" stop-color="#818cf8" stop-opacity=".35"/></linearGradient>
+    <linearGradient id="c6b" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ccfbf1" stop-opacity=".7"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".3"/></linearGradient>
+    <linearGradient id="c6c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5d0fe" stop-opacity=".55"/><stop offset="1" stop-color="#a78bfa" stop-opacity=".3"/></linearGradient>
+    <radialGradient id="c6g" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#a78bfa"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+   </defs>
+   <ellipse cx="150" cy="306" rx="60" ry="9" fill="#a78bfa" opacity=".3"/>
+   <polygon points="150,36 214,74 214,150 150,188 86,150 86,74" fill="url(#c6a)" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+   <polygon points="150,36 214,74 150,112" fill="url(#c6b)"/><polygon points="86,150 150,188 150,112" fill="url(#c6c)"/>
+   <rect x="106" y="94" width="88" height="40" rx="20" fill="#0b1222" opacity=".88"/>
+   <rect x="122" y="109" width="20" height="9" rx="4.5" fill="#c4b5fd"/><rect x="158" y="109" width="20" height="9" rx="4.5" fill="#c4b5fd"/>
+   <polygon points="150,198 196,226 188,270 150,288 112,270 104,226" fill="url(#c6a)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+   <circle cx="150" cy="242" r="22" fill="url(#c6g)"/>
+   <polygon points="66,196 84,186 90,214 72,226" fill="url(#c6b)" stroke="rgba(255,255,255,.5)"/>
+   <polygon points="234,196 216,186 210,214 228,226" fill="url(#c6b)" stroke="rgba(255,255,255,.5)"/>
+   <path d="M98 70 L140 46" stroke="#fff" stroke-opacity=".8" stroke-width="4" stroke-linecap="round"/>
+  </svg></div>
+  <h2>Kristal Prisma</h2><p>Kepala dan badan dari kristal bersegi yang memantulkan cahaya, dengan inti ungu bersinar. Elegan dan sangat beda, kesannya "kecerdasan tingkat tinggi".</p>
+  <div class="tags"><span>Elegan</span><span>Paling unik</span><span>Agak dingin</span></div></div>
+
+ </div>
+</div></body></html>

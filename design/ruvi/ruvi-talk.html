@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{width:720px;height:900px;overflow:hidden;font-family:Inter,system-ui,-apple-system,sans-serif}
+.stage{position:relative;width:720px;height:900px;overflow:hidden;background:linear-gradient(160deg,#e6fbf6 0%,#eef1ff 55%,#f6efff 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.7}
+.title{position:absolute;top:40px;left:0;right:0;text-align:center;color:#0f1d2b}
+.title b{font-size:34px;letter-spacing:-1px}.title small{display:block;font-size:17px;color:#5c7088;margin-top:4px}
+#bubble{position:absolute;left:50%;top:118px;transform:translateX(-50%);width:560px;min-height:64px;padding:15px 22px;border-radius:24px 24px 24px 8px;font-size:21px;line-height:1.4;font-weight:600;color:#0f1d2b;white-space:normal;
+ background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.95);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(31,45,90,.12)}
+svg.bot{position:absolute;left:50%;top:250px;width:420px;height:476px;margin-left:-210px}
+.label{position:absolute;bottom:40px;left:0;right:0;text-align:center}
+.label span{display:inline-block;padding:12px 24px;border-radius:99px;font-size:21px;font-weight:750;color:#0d7d6c;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.95)}
+.label small{display:block;margin-top:10px;font-size:16.5px;color:#5c7088}
+.user{position:absolute;right:44px;bottom:150px;padding:13px 20px;border-radius:22px 22px 6px 22px;font-size:20px;font-weight:650;color:#fff;background:linear-gradient(135deg,#0d9488,#6366f1);box-shadow:0 10px 24px rgba(79,70,229,.3);opacity:0}
+.user small{display:block;font-size:12.5px;font-weight:600;opacity:.8;margin-bottom:2px}
+.caret{display:inline-block;width:2px;height:22px;background:#0d9488;margin-left:2px;vertical-align:-4px}
+</style></head><body>
+<div class="stage">
+ <div class="blob" style="width:320px;height:320px;background:#5eead4;left:-110px;top:260px"></div>
+ <div class="blob" style="width:320px;height:320px;background:#a5b4fc;right:-120px;top:420px"></div>
+ <div class="title" style="top:30px"><b>Ngobrol sehari dengan Ruvi</b><small>Ruvi bicara duluan, bereaksi, kasih saran</small></div>
+ <div id="bubble">Hai! Aku Ruvi 👋</div>
+ <svg class="bot" viewBox="0 0 300 340">
+  <defs>
+   <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".8"/><stop offset=".55" stop-color="#818cf8" stop-opacity=".16"/><stop offset="1" stop-color="#2dd4bf" stop-opacity=".30"/></linearGradient>
+   <radialGradient id="gc" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#5eead4"/><stop offset="1" stop-color="#5eead4" stop-opacity="0"/></radialGradient>
+   <linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2a48"/><stop offset="1" stop-color="#0a1020"/></linearGradient>
+   <radialGradient id="gs" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2dd4bf" stop-opacity=".45"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse id="shadow" cx="150" cy="322" rx="62" ry="10" fill="url(#gs)"/>
+  <g id="bot">
+   <!-- listen rings -->
+   <g id="x-listen"><circle class="ring" cx="150" cy="150" r="120" fill="none" stroke="#2dd4bf" stroke-width="3"/><circle class="ring" cx="150" cy="150" r="120" fill="none" stroke="#818cf8" stroke-width="3"/><circle class="ring" cx="150" cy="150" r="120" fill="none" stroke="#2dd4bf" stroke-width="2"/></g>
+   <!-- antenna -->
+   <line x1="150" y1="36" x2="150" y2="60" stroke="rgba(255,255,255,.8)" stroke-width="3"/>
+   <circle id="antGlow" cx="150" cy="30" r="16" fill="#818cf8" opacity=".25"/><circle id="ant" cx="150" cy="30" r="8" fill="#818cf8"/>
+   <!-- body -->
+   <rect x="88" y="58" width="124" height="230" rx="62" fill="url(#gb)" stroke="rgba(255,255,255,.9)" stroke-width="2"/>
+   <g stroke="#5eead4" stroke-opacity=".35" stroke-width="1.5" fill="none"><path d="M150 232 V262 M150 232 l-24 18 M150 232 l24 18"/></g>
+   <circle id="core" cx="150" cy="216" r="36" fill="url(#gc)"/>
+   <circle id="coreRing" cx="150" cy="216" r="15" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2"/>
+   <rect x="104" y="86" width="92" height="66" rx="33" fill="url(#gv)"/>
+   <!-- faces -->
+   <g id="f-normal"><g id="blinkN">
+     <rect x="122.6" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="117.6" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="134.6" cy="109.4" r="3.5" fill="#fff"/>
+     <rect x="159.4" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><rect x="154.4" y="97.4" width="28" height="38" rx="14" fill="#5eead4" opacity=".18"/><circle cx="171.4" cy="109.4" r="3.5" fill="#fff"/></g>
+     <path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+   <g id="f-happy"><path d="M119.6 121.4 Q131.6 103.4 143.6 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M156.4 121.4 Q168.4 103.4 180.4 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M139 133.8 Q150 147.8 161 133.8 Z" fill="#5eead4"/></g>
+   <g id="f-wink"><path d="M119.6 121.4 Q131.6 103.4 143.6 121.4" stroke="#5eead4" stroke-width="6" fill="none" stroke-linecap="round"/>
+     <rect x="159.4" y="102.4" width="18" height="28" rx="9" fill="#5eead4"/><circle cx="171.4" cy="109.4" r="3.5" fill="#fff"/><path d="M139 133.8 Q150 147.8 161 133.8 Z" fill="#5eead4"/></g>
+   <g id="f-heart"><path d="M131.6 126.4 c-16 -10 -14 -26 0 -18 c14 -8 16 8 0 18z" fill="#fb7185"/><path d="M168.4 126.4 c-16 -10 -14 -26 0 -18 c14 -8 16 8 0 18z" fill="#fb7185"/><path d="M140 135.8 Q150 143.8 160 135.8" stroke="#5eead4" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+   <g id="f-think"><rect x="128" y="100" width="14" height="20" rx="7" fill="#5eead4"/><rect x="165" y="100" width="14" height="20" rx="7" fill="#5eead4"/><circle cx="137" cy="105" r="3" fill="#fff"/><circle cx="174" cy="105" r="3" fill="#fff"/><path d="M143 139 L157 137" stroke="#5eead4" stroke-width="3.5" stroke-linecap="round"/></g>
+   <g id="f-worry"><path d="M120 100 L140 106" stroke="#5eead4" stroke-width="4" stroke-linecap="round"/><path d="M180 100 L160 106" stroke="#5eead4" stroke-width="4" stroke-linecap="round"/><ellipse cx="131.6" cy="118" rx="8" ry="10" fill="#5eead4"/><ellipse cx="168.4" cy="118" rx="8" ry="10" fill="#5eead4"/><path d="M138 140 q6 -6 12 0 q6 6 12 0" stroke="#5eead4" stroke-width="3.2" fill="none" stroke-linecap="round"/></g>
+   <g id="f-listen"><rect x="120.6" y="99.4" width="22" height="32" rx="11" fill="#5eead4"/><rect x="157.4" y="99.4" width="22" height="32" rx="11" fill="#5eead4"/><circle cx="134.6" cy="107.4" r="4" fill="#fff"/><circle cx="171.4" cy="107.4" r="4" fill="#fff"/>
+     <g id="eq" transform="translate(134 134)"><rect class="bar" x="0" y="0" width="5" height="12" rx="2.5" fill="#5eead4"/><rect class="bar" x="8" y="0" width="5" height="12" rx="2.5" fill="#818cf8"/><rect class="bar" x="16" y="0" width="5" height="12" rx="2.5" fill="#5eead4"/><rect class="bar" x="24" y="0" width="5" height="12" rx="2.5" fill="#818cf8"/></g></g>
+   <g id="f-sleep"><path d="M120.6 118 Q131.6 124 142.6 118" stroke="#5eead4" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M157.4 118 Q168.4 124 179.4 118" stroke="#5eead4" stroke-width="4.5" fill="none" stroke-linecap="round"/><ellipse cx="150" cy="139" rx="4" ry="4.5" fill="#5eead4"/></g>
+   <linearGradient id="gvU" gradientUnits="userSpaceOnUse" x1="0" y1="86" x2="0" y2="152"><stop offset="0" stop-color="#1f2a48"/><stop offset="1" stop-color="#0a1020"/></linearGradient>
+   <g id="mTalk"><rect x="134" y="128" width="32" height="20" fill="url(#gvU)"/><ellipse id="mOpen" cx="150" cy="138.5" rx="8" ry="4" fill="#5eead4"/></g>
+   <g id="cheeks"><ellipse cx="125.6" cy="134.4" rx="9" ry="5" fill="#fb7185" opacity=".55"/><ellipse cx="174.4" cy="134.4" rx="9" ry="5" fill="#fb7185" opacity=".55"/></g>
+   <path d="M108 84 Q116 66 136 62" stroke="#fff" stroke-opacity=".9" stroke-width="5" fill="none" stroke-linecap="round"/>
+   <!-- hands -->
+   <g id="hL"><ellipse cx="0" cy="0" rx="15" ry="22" fill="url(#gb)" stroke="rgba(255,255,255,.9)" stroke-width="2"/></g>
+   <g id="hR"><ellipse cx="0" cy="0" rx="15" ry="22" fill="url(#gb)" stroke="rgba(255,255,255,.9)" stroke-width="2"/></g>
+   <!-- extras -->
+   <g id="x-wave"><path d="M270 118 q8 6 6 16 M279 108 q12 10 9 26" stroke="#818cf8" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+   <g id="x-happy"><path class="sp" d="M42 70 l5 12 l12 5 l-12 5 l-5 12 l-5 -12 l-12 -5 l12 -5z" fill="#a78bfa"/><path class="sp" d="M258 60 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z" fill="#fbbf24"/><path class="sp" d="M262 262 l4 9 l9 4 l-9 4 l-4 9 l-4 -9 l-9 -4 l9 -4z" fill="#2dd4bf"/><path class="sp" d="M34 250 l4 9 l9 4 l-9 4 l-4 9 l-4 -9 l-9 -4 l9 -4z" fill="#f472b6"/></g>
+   <g id="x-think"><circle class="dt" cx="198" cy="40" r="6" fill="#5eead4"/><circle class="dt" cx="218" cy="28" r="7" fill="#818cf8"/><circle class="dt" cx="242" cy="16" r="8" fill="#5eead4"/></g>
+   <g id="x-worry"><path id="drop" d="M206 92 q-10 15 0 22 q10 -7 0 -22z" fill="#7dd3fc"/></g>
+   <g id="x-heart"><path class="hf" d="M60 120 c-12 -8 -11 -20 0 -14 c11 -6 12 6 0 14z" fill="#fb7185"/><path class="hf" d="M244 110 c-14 -9 -13 -23 0 -16 c13 -7 14 7 0 16z" fill="#fb7185"/><path class="hf" d="M256 196 c-10 -7 -9 -17 0 -12 c9 -5 10 5 0 12z" fill="#f472b6"/></g>
+   <g id="x-sleep" font-family="Inter,sans-serif" font-weight="800" fill="#818cf8"><text class="z" x="200" y="70" font-size="18">z</text><text class="z" x="216" y="52" font-size="24">z</text><text class="z" x="236" y="30" font-size="30">Z</text></g>
+   <g id="x-wink"><circle cx="0" cy="0" r="16" fill="#fbbf24" stroke="#f59e0b" stroke-width="3"/><text x="0" y="6" font-size="15" font-weight="900" text-anchor="middle" fill="#92400e" font-family="Inter,sans-serif">$</text></g>
+  </g>
+ </svg>
+ <div class="user" id="user"><small>Kamu</small><span id="utext"></span></div>
+ <div class="label"><span id="lbl">Menyapa</span><small id="sub">Saat aplikasi dibuka</small></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const FACES=['normal','happy','wink','heart','think','worry','listen','sleep'];
+const XS=['wave','happy','think','worry','heart','sleep','wink','listen'];
+const CPS=24; // huruf per detik
+const STEPS=[
+ {k:'wave', f:'normal',lbl:'Pagi: menyapa duluan',sub:'Ruvi membuka obrolan saat aplikasi dibuka',lines:['Selamat pagi, Budi! ☀️','Kemarin kamu hemat Rp 40rb dari biasanya lho. Lanjut catat hari ini?']},
+ {k:'listen',f:'listen',lbl:'Mendengarkan',sub:'User mencatat lewat chat / suara',user:'bakso 25rb',lines:[],hold:1.4},
+ {k:'think',f:'think',lbl:'Berpikir',sub:'Ruvi memproses catatan',lines:[],hold:0.9},
+ {k:'wave2',f:'normal',lbl:'Bereaksi + konteks',sub:'Bukan cuma "dicatat", tapi kasih gambaran',lines:['Siap, dicatat! 🍜','Makan minggu ini Rp 245rb, masih di bawah rata-ratamu. Aman!']},
+ {k:'wink',f:'wink',lbl:'Kasih tips',sub:'Ruvi menawarkan bantuan tanpa diminta',lines:['Psst… ada 3 langganan streaming aktif.','Mau aku cek mana yang jarang kamu pakai? 😉']},
+ {k:'happy',f:'happy',lbl:'Ikut senang',sub:'Saat ada pemasukan',user:'gaji 8jt',lines:['Gaji masuk! 🎉','Mau sisihkan 10% (Rp 800rb) ke target HP baru?']},
+ {k:'worry',f:'worry',lbl:'Mengingatkan dengan halus',sub:'Pengeluaran lewat budget',lines:['Hmm, jajan bulan ini Rp 610rb, budget-nya 600rb 😬','Besok coba bawa bekal, yuk? Aku bantu pantau.']},
+ {k:'heart',f:'heart',lbl:'Memuji',sub:'User konsisten mencatat',lines:['7 hari berturut-turut kamu rajin catat! 🥰','Aku bangga sama kamu, Budi.']},
+ {k:'sleep',f:'sleep',lbl:'Malam: pamit',sub:'Menutup hari dengan ringkasan',lines:['Hari ini keluar Rp 87rb, masuk Rp 8jt. Lengkap!','Selamat istirahat ya 🌙'],tail:1.2},
+];
+// hitung jadwal
+let T=0; for(const st of STEPS){ st.start=T; let t=0; st.userAt=st.user?0.2:null; if(st.user) t+=1.3; st.sched=[]; for(const ln of st.lines){ const d=ln.length/CPS; st.sched.push({ln,a:t,b:t+d}); t+=d+0.9; } st.dur=Math.max(t,0)+(st.hold||0)+(st.tail||0); T+=st.dur; }
+window.TOTAL=T; window.S=STEPS;
+function hand(id,x,y,r){$(id).setAttribute('transform',`translate(${x} ${y}) rotate(${r})`);}
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+window.render=function(t,forceIdx){
+ let i=0; if(forceIdx!=null){i=forceIdx; t=STEPS[i].start+STEPS[i].dur-0.3;} else {for(;i<STEPS.length-1;i++){if(t<STEPS[i].start+STEPS[i].dur)break;}}
+ const st=STEPS[i], L=t-st.start, kk=st.k==='wave2'?'wave':st.k, k=st.k;
+ FACES.forEach(f=>$('f-'+f).style.display=(f===st.f)?'':'none');
+ XS.forEach(x=>$('x-'+x).style.display=(x===kk && k!=='wave2')?'':'none');
+ $('cheeks').style.display=['normal','happy','wink','heart'].includes(st.f)?'':'none';
+ $('lbl').textContent=st.lbl; $('sub').textContent=st.sub;
+ // user chip
+ const u=$('user'); if(st.user){ $('utext').textContent=st.user; const p=Math.min(1,Math.max(0,(L-0.2)/0.3)); u.style.opacity=p; u.style.transform=`translateY(${12*(1-p)}px)`; } else u.style.opacity=0;
+ // bubble typing
+ let shown='', talking=false, cur=null;
+ for(const s of st.sched){ if(L>=s.a){ cur=s; } }
+ if(cur){ const n=Math.min(cur.ln.length, Math.floor((L-cur.a)*CPS)); shown=cur.ln.slice(0,n); talking=n<cur.ln.length; }
+ const b=$('bubble');
+ if(st.sched.length===0 && k==='think'){ b.innerHTML='<span style="color:#5c7088">Ruvi sedang berpikir…</span>'; b.style.opacity=1; }
+ else if(st.sched.length===0){ b.style.opacity=0; }
+ else { b.style.opacity=cur?1:0; b.innerHTML=esc(shown)+(talking?'<span class="caret"></span>':''); }
+ // mouth talking
+ const canTalk=['normal','happy','wink','worry','heart'].includes(st.f);
+ $('mTalk').style.display=(talking&&canTalk)?'':'none';
+ $('mOpen').setAttribute('ry', 2+5*Math.abs(Math.sin(t*15)));
+ $('mOpen').setAttribute('rx', 7+2*Math.abs(Math.sin(t*9)));
+ // float & body
+ const slow=k==='sleep'?0.5:1;
+ let fy=-9*Math.sin(t*2.1*slow), fr=0, sx=1, sy=1;
+ if(k==='happy'){fy=-20*Math.abs(Math.sin(L*4.6)); sy=1+0.04*Math.cos(L*9.2); sx=2-sy;}
+ if(k==='worry'){fr=3*Math.sin(L*10);}
+ if(k==='think'){fr=-5+2*Math.sin(L*2);}
+ if(k==='sleep' && L>st.dur-1.6){fr=6;}
+ if(talking){ fr+=2*Math.sin(t*5); }
+ $('bot').setAttribute('transform',`translate(150 300) rotate(${fr}) scale(${sx} ${sy}) translate(-150 -300) translate(0 ${fy})`);
+ $('shadow').setAttribute('transform',`translate(150 322) scale(${1+fy/90}) translate(-150 -322)`);
+ const cp=k==='think'?1+0.18*Math.sin(L*10):talking?1+0.12*Math.abs(Math.sin(t*15)):1+0.06*Math.sin(t*3);
+ $('core').setAttribute('transform',`translate(150 216) scale(${cp}) translate(-150 -216)`);
+ $('core').style.opacity=(k==='sleep'&&!talking)?0.55:1;
+ $('antGlow').setAttribute('r',16+4*Math.sin(t*4)); $('ant').setAttribute('fill',k==='think'?'#2dd4bf':k==='worry'?'#fb923c':k==='heart'?'#fb7185':'#818cf8');
+ const bph=(t%3.2); const bl=(bph>2.9&&bph<3.05)?0.1:1;
+ $('blinkN').setAttribute('transform',`translate(0 116.4) scale(1 ${bl}) translate(0 -116.4)`);
+ // sleep face only at end
+ if(k==='sleep' && L<st.dur-1.6){ $('f-sleep').style.display='none'; $('f-normal').style.display=''; $('x-sleep').style.display='none'; $('cheeks').style.display=''; $('mTalk').style.display=talking?'':'none'; }
+ // hands
+ let L1=[56,206,20],R1=[244,206,-20];
+ if(k==='wave'){R1=[246,148,-25+22*Math.sin(L*11)];}
+ if(k==='wave2'||talking){ R1=[242,190+4*Math.sin(t*6),-30+8*Math.sin(t*6)]; }
+ if(k==='happy'){const bb=14*Math.sin(L*9.2); L1=[60,138+bb*0.4,30+bb]; R1=[240,138+bb*0.4,-30-bb];}
+ if(k==='think'){R1=[214,156,-60];}
+ if(k==='listen'){L1=[62,186,30];R1=[238,186,-30];}
+ if(k==='worry'){L1=[58,200,10];R1=[242,200,-10];}
+ if(k==='sleep'){L1=[62,214,35];R1=[238,214,-35];}
+ if(k==='wink'){R1=[244,200,-20];}
+ hand('hL',...L1); hand('hR',...R1);
+ if(k==='wink'){$('x-wink').setAttribute('transform',`translate(250 ${166+3*Math.sin(L*5)}) rotate(${10*Math.sin(L*3)})`);}
+ document.querySelectorAll('#x-listen .ring').forEach((r,j)=>{const ph=((L+j*0.45)%1.35)/1.35; r.setAttribute('transform',`translate(150 150) scale(${0.55+0.75*ph}) translate(-150 -150)`); r.style.opacity=0.8*(1-ph);});
+ document.querySelectorAll('#eq .bar').forEach((bb,j)=>{const h=0.35+0.65*Math.abs(Math.sin(L*9+j*1.3)); bb.setAttribute('transform',`translate(0 ${12*(1-h)/2}) scale(1 ${h})`);});
+ document.querySelectorAll('#x-think .dt').forEach((d,j)=>{const v=Math.max(0,Math.sin(L*5-j*0.9)); d.style.opacity=0.3+0.7*v; d.setAttribute('transform',`translate(0 ${-6*v})`);});
+ document.querySelectorAll('#x-happy .sp').forEach((d,j)=>{const ph=((L*1.2+j*0.25)%1); const bx=d.getBBox(); const cx=bx.x+bx.width/2, cy=bx.y+bx.height/2; d.setAttribute('transform',`translate(${cx} ${cy}) scale(${0.3+ph}) rotate(${ph*90}) translate(${-cx} ${-cy})`); d.style.opacity=ph<0.15?ph/0.15:1-(ph-0.15)/0.85;});
+ { const ph=(L%1.4)/1.4; $('drop').setAttribute('transform',`translate(0 ${30*ph})`); $('drop').style.opacity=ph<0.2?ph*5:1-(ph-0.2)/0.8; }
+ document.querySelectorAll('#x-heart .hf').forEach((d,j)=>{const ph=((L*0.8+j*0.33)%1); d.setAttribute('transform',`translate(0 ${-30*ph})`); d.style.opacity=ph<0.2?ph*5:1-(ph-0.2)/0.8;});
+ document.querySelectorAll('#x-sleep .z').forEach((d,j)=>{const ph=((L*0.7+j*0.33)%1); d.setAttribute('transform',`translate(${8*ph} ${-14*ph})`); d.style.opacity=ph<0.2?ph*5:1-(ph-0.2)/0.8;});
+ $('x-wave').style.opacity=0.4+0.6*Math.abs(Math.sin(L*5.5));
+};
+render(0);
+</script>
+</body></html>
