@@ -32,14 +32,14 @@ function renderTransaksi() {
     if (last && last.tanggal === t.tanggal) last.items.push(t);
     else groups.push({ tanggal: t.tanggal, items: [t] });
   }
-  const row = (t) => `
+  const row = (t) => appHtml`
     <tr class="trx-row">
       <td data-label="Tanggal">${formatTanggal(t.tanggal)}</td>
       <td data-label="Deskripsi" class="trx-desc">${escapeHtml(t.deskripsi || '-')}</td>
-      <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${t.jenis}</span></td>
+      <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${typeof t === 'object' ? window.t(t.jenis) : t.jenis}</span></td>
       <td class="num trx-amount" data-label="Jumlah"><b class="${t.jenis === 'pemasukan' ? 'money-income' : 'money-expense money-negative'}">${t.jenis === 'pemasukan' ? '+' : ''}${formatRupiah(t.jumlah)}</b></td>
-      <td data-label="Sub Kategori">${escapeHtml(t.subKategori || '-')}</td>
-      <td data-label="Kategori">${escapeHtml(t.kategori || '-')}</td>
+      <td data-label="Sub Kategori">${escapeHtml(categoryDisplayName(t.subKategori || '-', t.jenis, t.kategori))}</td>
+      <td data-label="Kategori">${escapeHtml(categoryDisplayName(t.kategori || '-', t.jenis))}</td>
       <td data-label="Alokasi">${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
       <td class="row-actions" data-label="Aksi">
         <button class="icon-btn" data-edit="${t.id}" title="Edit" aria-label="Edit">✏️</button>
@@ -48,7 +48,7 @@ function renderTransaksi() {
     </tr>`;
   tbody.innerHTML = groups.map(g => {
     const net = g.items.reduce((sum, t) => sum + (t.jenis === 'pemasukan' ? 1 : -1) * (+t.jumlah || 0), 0);
-    const label = g.tanggal === today ? 'Hari ini' : g.tanggal === yest ? 'Kemarin' : formatTanggal(g.tanggal);
+    const label = g.tanggal === today ? window.t('Hari ini') : g.tanggal === yest ? window.t('Kemarin') : formatTanggal(g.tanggal);
     const netHtml = `<span class="${net >= 0 ? 'money-income' : 'money-expense'}">${net >= 0 ? '+' : '\u2212'}${formatRupiah(Math.abs(net))}</span>`;
     return `<tr class="trx-date-row"><td colspan="8"><span>${label}</span>${netHtml}</td></tr>` + g.items.map(row).join('');
   }).join('');
