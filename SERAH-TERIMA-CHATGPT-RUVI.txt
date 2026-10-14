@@ -1,0 +1,101 @@
+SERAH TERIMA PEKERJAAN KE CHATGPT — BerUang x Ruvi (dibuat 14 Oktober 2026)
+=========================================================================
+
+Halo ChatGPT. Mulai sekarang kamu melanjutkan pekerjaan yang sebelumnya dikerjakan
+Claude untuk Hendry (pemilik BerUang, non-teknis, bahasa Indonesia santai, panggil "bos").
+Baca SEMUA bagian ini dulu sebelum menyentuh kode.
+
+------------------------------------------------------------------------
+1. LANGKAH PERTAMA (WAJIB)
+------------------------------------------------------------------------
+  git clone https://github.com/hendrypangg12/financial-tracker
+  cd financial-tracker
+  git checkout claude/financial-tracking-app-QUmrz
+  git pull
+
+Lalu baca berurutan:
+  a) CLAUDE.md                              -> riwayat lengkap, keputusan bos, status produksi
+  b) design/ruvi/README.md                  -> keputusan maskot Ruvi
+  c) design/ruvi/RENCANA-PERUBAHAN-TOTAL.md -> rencana kerja (fase 0-7)
+  d) demo-ruvi.html                         -> ACUAN TAMPILAN yang sudah disetujui bos
+     Live: https://berstock.id/demo-ruvi.html
+
+------------------------------------------------------------------------
+2. KONTEKS SINGKAT
+------------------------------------------------------------------------
+- BerUang = aplikasi catat keuangan + AI Akuntan.
+  Web/PWA: https://berstock.id/app.html | Android: id.berstock.beruang (Capacitor, folder mobile/)
+- Kode: vanilla HTML/CSS/JS, TANPA framework. File utama app.html, styles.css, js/*.js, sw.js
+- Backend: Cloudflare Worker "berstock-bot" (folder bot/), auto-deploy lewat GitHub Actions
+  setiap push ke bot/**. Firebase project: ber-uang-735b3.
+- Website berstock.id = GitHub Pages dari branch claude/financial-tracking-app-QUmrz.
+  ARTINYA: setiap push ke branch ini LANGSUNG TAYANG ke user. Uji dulu sebelum push.
+- Paket: trial gratis 2 hari TANPA AI (lalu terkunci total / hard paywall),
+  Akses 7 Hari Rp10rb (sekali bayar), Bulanan Rp50rb & Tahunan Rp299rb (langganan Google Play
+  auto-renew). JANGAN tawarkan lifetime.
+
+------------------------------------------------------------------------
+3. STATUS PEKERJAAN TERAKHIR (Claude, 13 Okt)
+------------------------------------------------------------------------
+SELESAI (hanya di DEMO demo-ruvi.html, BELUM di aplikasi asli):
+- Maskot AI "Ruvi" (robot kapsul kaca versi A), 8 ekspresi, mata ikut jari, tidur setelah 45 dtk,
+  teks SAJA (tanpa suara).
+- Gaya kaca (glassmorphism), tema terang + gelap (ikut HP + tombol ☀️/🌙, localStorage ruvi-theme).
+- Beranda HP: Ruvi besar + gelembung PENDEK (emoji / 2-3 kata). Teks panjang hanya di layar chat.
+- Parser multi-transaksi ("kopi 28rb, bakso 25rb kemarin"), jawaban terhitung (boros di mana, dll).
+- Dompet: saldo per bank/e-wallet/tunai/investasi, "+ Dompet baru", pindah dana, investasi terpisah.
+- Detail dompet (masuk/keluar + filter) dan UBAH/HAPUS transaksi manual (kalau AI salah).
+- Label "hari beruntun"/streak DIHAPUS atas permintaan bos. JANGAN dipakai lagi.
+
+BELUM DIKERJAKAN:
+- Memindahkan tampilan demo ke aplikasi asli (app.html) -> lihat RENCANA-PERUBAHAN-TOTAL.md.
+- Audit kode Codex versi Android 1.4.6 / versionCode 12 (push 2-8 Okt: kategori custom,
+  migrasi saldo awal, notifikasi Play, refund). Tes otomatis lolos (bot 60, mobile 25),
+  tapi ISINYA BELUM DIPERIKSA. Periksa terutama migrasi saldo awal & refund sebelum rilis Production.
+- Tes beli Google Play di emulator (bos TIDAK punya HP Android -> pakai emulator Android Studio
+  image Google Play + License testing).
+- Isi saldo Anthropic (console.anthropic.com, akun hendrypangg12@icloud.com) -> AI 503 kalau habis.
+- Play Console Data safety: tambah "App activity / App interactions" (analitik, tidak ditautkan).
+
+------------------------------------------------------------------------
+4. KEPUTUSAN YANG MASIH DITUNGGU DARI BOS (tanya dulu, jangan menebak)
+------------------------------------------------------------------------
+1. Budget per kategori dimasukkan? (saran Claude: ya)
+2. Kalimat yang tidak terbaca parser boleh pakai model AI kecil yang lebih murah (paket berbayar saja)?
+3. Ikon aplikasi diganti wajah Ruvi? Nama tetap "BerUang"?
+4. Pakai saklar "Coba tampilan baru" dulu (aman) atau langsung ganti semua?
+
+------------------------------------------------------------------------
+5. URUTAN KERJA YANG DISARANKAN
+------------------------------------------------------------------------
+Fase 0: audit Codex 1.4.6 -> rilis Production -> tes beli -> saldo Anthropic.
+Fase 1-4: pindahkan demo ke app.html bertahap (di balik saklar kalau bos setuju).
+  - DATA & SERVER JANGAN DIUBAH. Data baru (wallet per transaksi, wallets[], budget)
+    ditambah sebagai field BARU, data lama harus tetap terbaca.
+  - Pakai parser & kategori yang sudah ada (js/parser.js), bukan bikin ulang.
+Fase 5: uji di web (bos pakai iPhone) -> build Android -> Internal Testing -> Production 10%.
+
+------------------------------------------------------------------------
+6. ATURAN KERJA & KEAMANAN (WAJIB)
+------------------------------------------------------------------------
+1. Commit HANYA ke branch claude/financial-tracking-app-QUmrz. Jangan push ke main,
+   jangan buat Pull Request kecuali bos minta. Selalu "git pull" sebelum mulai, push setelah selesai.
+2. Repo ini PUBLIK: jangan commit keystore, file JSON service account, password, atau API key.
+3. Jangan minta bos mengetik password Google/Cloudflare/Play ke chat. Bos login sendiri.
+4. Secret hanya di Cloudflare tipe "Secret", di akun icloud (hendrypangg12@icloud.com,
+   Account ID 55dcdad9595a282a448413e8167a21bf). Akun Cloudflare gmail TIDAK dipakai.
+5. Jangan ubah ID KV di bot/wrangler.toml:
+   BOT_DATA = 9ca47054eecf4b25b9714b1555b80d6b
+   BOT_AUTH = 59016f42dc314b02ba508cf5025cd09f
+6. Jangan hapus file yang ada (terms.html, video .mp4, store-assets/, design/ruvi/, demo-ruvi.html).
+7. Jangan ganti model AI di kode tanpa diskusi dengan bos.
+8. Setiap ubah file JS/CSS: naikkan ?v= di app.html DAN CACHE_VERSION di sw.js
+   (kalau tidak, user tetap dapat versi lama).
+9. Setiap container CSS yang punya display:flex/grid/block WAJIB punya
+   [hidden]{display:none !important} (bug ini sudah kena 5x).
+10. Jangan klaim "AI belajar dari kebiasaanmu" — yang benar "AI membaca data keuanganmu sendiri".
+11. Catat setiap keputusan/perubahan penting di CLAUDE.md (bagian paling atas), lalu commit.
+12. Jalankan tes sebelum push: cd bot && npm test ; cd mobile && pnpm test (kalau tersedia).
+
+Selesai membaca? Mulai dengan menanyakan 4 keputusan di bagian 4 ke bos,
+lalu kerjakan Fase 0 (audit Codex 1.4.6).

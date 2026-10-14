@@ -188,6 +188,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🤝 14 Okt: bos MENYERAHKAN lanjutan pekerjaan ke ChatGPT laptop. File serah terima: `SERAH-TERIMA-CHATGPT-RUVI.txt`
+  (status demo Ruvi, 4 keputusan tertunda, audit Codex 1.4.6, aturan keamanan). Kalau Claude dipakai lagi: git pull dulu,
+  cek commit ChatGPT sebelum lanjut.
+
 - 🤖 1–13 Okt: KOMPETITOR "Rolly" (Rolly AI Pty Ltd, Australia; input chat → AI kategorikan; maskot robot) bikin bos
   ingin BerUang modern ala Rolly. Juga ditemukan pesaing lokal "Pang" (com.pang.mobile, solo dev Yogyakarta, fitur mirip).
   KEPUTUSAN: maskot AI bernama **Ruvi** (robot Kapsul Kaca versi A), ekspresi berubah sesuai keadaan user, komunikatif
