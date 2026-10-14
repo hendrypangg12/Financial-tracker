@@ -54,7 +54,7 @@ function isDismissed(category) {
 }
 
 function detectSpendingAnomalies() {
-  if (!state || !Array.isArray(state.transactions) || state.transactions.length < 10) return [];
+  if (!state || !Array.isArray(getFinancialState().transactions) || getFinancialState().transactions.length < 10) return [];
 
   const now = new Date();
   const thisWeekStart = now.getTime() - ONE_WEEK_MS;
@@ -62,7 +62,7 @@ function detectSpendingAnomalies() {
 
   // Group by kategori
   const byCat = {};
-  for (const tx of state.transactions) {
+  for (const tx of getFinancialState().transactions) {
     if (tx.jenis !== 'pengeluaran') continue;
     const cat = (tx.kategori || 'Lainnya').trim();
     const txTime = new Date(tx.tanggal).getTime();

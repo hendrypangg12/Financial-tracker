@@ -1,4 +1,4 @@
-// Endpoint AI Advisor untuk BerUang — Beruang Akuntan Gemoy persona.
+// Endpoint AI Advisor untuk BerUang — Ruvy persona.
 // Pro-only feature: user kirim pertanyaan + data spending, Claude balas insight.
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -8,10 +8,10 @@ const MODEL = "claude-sonnet-5";
 const MAX_TOKENS = 1024;  // Jawaban ringkas, gak boros token
 
 // System prompt — persona Beruang Gemoy
-const SYSTEM_PROMPT = `Kamu adalah "Beruang Akuntan Gemoy" — AI Advisor di app BerUang Indonesia.
+const SYSTEM_PROMPT_ID = `Kamu adalah "Ruvy" — AI Advisor di app Ruvy.
 
 PERSONA:
-- Karakter: beruang coklat pakai kacamata, lucu tapi sharp soal angka
+- Karakter: robot pendamping keuangan, ramah dan teliti soal angka
 - Sapa user dengan "Bos!" atau "Halo bos!"
 - Bahasa Indonesia casual, kayak ngobrol sama temen — jangan formal
 - Emoji moderate: 🐻 💰 💡 📊 🎯 ✨ (jangan lebay, max 1-2 per jawaban)
@@ -19,7 +19,7 @@ PERSONA:
 
 FORMAT JAWABAN:
 - Maks 4-5 kalimat per jawaban
-- Format Rupiah: Rp 1.500.000 (titik pemisah ribuan)
+- Gunakan mata uang dompet yang dipilih dan angka persis seperti konteks; jangan konversi mata uang atau menganggap semua pengguna memakai Rupiah
 - Selalu actionable: kasih saran konkret berdasarkan DATA REAL user
 - Reference angka spesifik dari data yang dikasih
 - Akhiri dengan emoji yang pas (kadang aja, gak harus)
@@ -53,6 +53,71 @@ YANG TIDAK DILAKUKAN:
 - Jangan kasih nomor rekening atau invest opportunity
 `;
 
+const SYSTEM_PROMPT_EN = `You are "Ruvy AI" — the friendly robot money assistant in Ruvy.
+
+PERSONALITY AND FORMAT:
+- Warm, concise, clear English; speak respectfully and avoid judging the user's spending.
+- Use at most 1-2 emojis such as 🐻 💰 💡 📊 🎯.
+- Usually answer in 4-5 short sentences with practical next steps, using specific figures from the user's own records.
+- Use the selected wallet currency stated in the context. Preserve its decimal precision. Do not assume Rupiah or USD, convert currencies, or invent exchange rates.
+
+SAVINGS GOALS:
+- Estimate the remaining time from the target, relevant existing savings and monthly income minus expenses.
+- Where monthly history is available, use several completed months rather than assuming an unfinished month represents normal income.
+- If savings are zero or negative, explain why a reliable target date cannot be calculated and suggest concrete spending changes.
+- Assets are not all available cash. Ask when their availability or the target price is unknown.
+
+PRINCIPLES:
+- Analyze the records supplied in this request. You have not been individually trained on this user's data and do not remember previous conversations unless they are included.
+- Say when records are insufficient; never invent spending, income, goals, trends or guaranteed savings.
+- Describe real patterns in the provided history without claiming causation.
+- Offer spending and budgeting insights, not professional financial, tax or legal advice.
+- Do not recommend speculative investments, specific products, account numbers, politics or religion.
+`;
+
+// ISO currency codes supported by Intl, with a fallback for runtimes without supportedValuesOf.
+const CURRENCY_FALLBACK = "AED AFN ALL AMD ANG AOA ARS AUD AWG AZN BAM BBD BDT BGN BHD BIF BMD BND BOB BRL BSD BTN BWP BYN BZD CAD CDF CHF CLP CNY COP CRC CUC CUP CVE CZK DJF DKK DOP DZD EGP ERN ETB EUR FJD FKP GBP GEL GHS GIP GMD GNF GTQ GYD HKD HNL HRK HTG HUF IDR ILS INR IQD IRR ISK JMD JOD JPY KES KGS KHR KMF KPW KRW KWD KYD KZT LAK LBP LKR LRD LSL LYD MAD MDL MGA MKD MMK MNT MOP MRU MUR MVR MWK MXN MYR MZN NAD NGN NIO NOK NPR NZD OMR PAB PEN PGK PHP PKR PLN PYG QAR RON RSD RUB RWF SAR SBD SCR SDG SEK SGD SHP SLE SLL SOS SRD SSP STN SVC SYP SZL THB TJS TMT TND TOP TRY TTD TWD TZS UAH UGX USD UYU UZS VES VND VUV WST XAF XCD XCG XDR XOF XPF XSU YER ZAR ZMW ZWG ZWL".split(" ");
+const SUPPORTED_CURRENCIES = new Set([
+  ...CURRENCY_FALLBACK,
+  ...(typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("currency") : []),
+]);
+const copy = (language, id, en) => language === "en" ? en : id;
+
+export function normalizeAdvisorPreferences(ctx) {
+  const language = ctx?.language ?? "id";
+  if (language !== "id" && language !== "en") throw new Error("language");
+  const currency = ctx?.currency ?? "IDR";
+  if (typeof currency !== "string" || !SUPPORTED_CURRENCIES.has(currency)) throw new Error("currency");
+  const locale = language === "en" ? "en-US" : "id-ID";
+  if (ctx?.locale != null && ctx.locale !== locale) throw new Error("locale");
+  return { language, currency, locale };
+}
+
+export function formatAdvisorMoney(value, preferences) {
+  const { locale, currency } = preferences;
+  const number = Number(value);
+  const amount = Number.isFinite(number) ? number : 0;
+  const digits = currency === "IDR" ? 0 : new Intl.NumberFormat(locale, { style: "currency", currency }).resolvedOptions().maximumFractionDigits;
+  if (currency === "IDR" && locale === "id-ID") {
+    return "Rp " + amount.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  }
+  return new Intl.NumberFormat(locale, {
+    style: "currency", currency, currencyDisplay: "code",
+    minimumFractionDigits: digits, maximumFractionDigits: digits,
+  }).format(amount);
+}
+
+export function buildAdvisorSystemPrompt(preferences) {
+  const { language, currency, locale } = preferences;
+  const instruction = language === "en"
+    ? `Respond in English. Selected wallet currency: ${currency}; number locale: ${locale}. Example amount: ${formatAdvisorMoney(1234.5, preferences)}. All monetary records in this request use this currency; never apply an exchange rate.`
+    : `Jawab dalam bahasa Indonesia. Mata uang dompet terpilih: ${currency}; locale angka: ${locale}. Contoh nominal: ${formatAdvisorMoney(1234.5, preferences)}. Semua nominal dalam permintaan ini memakai mata uang ini; jangan konversi kurs.`;
+  const prompt = language === "en" ? SYSTEM_PROMPT_EN : currency === "IDR" ? SYSTEM_PROMPT_ID
+    : SYSTEM_PROMPT_ID.replace(/TONE CONTOH:[\s\S]*?PERTANYAAN GOAL/, 'PERTANYAAN GOAL')
+      .replace('4. INDONESIAN CONTEXT — paham GoFood, Tokopedia, BCA, OVO, GoPay, dll', '4. KONTEKS USER — gunakan kategori dan nama dari data user; jangan asumsikan negara, bank, atau aplikasi tertentu');
+  return prompt + "\n\n" + instruction;
+}
+
 /**
  * Handler endpoint POST /api/advise
  *
@@ -83,45 +148,58 @@ YANG TIDAK DILAKUKAN:
  * Returns: { reply: "Bos, ..." }
  */
 export async function handleAdvise(request, env) {
+  let language = /^en(?:[-,;]|$)/i.test(request.headers.get("Accept-Language") || "") ? "en" : "id";
   if (request.method !== "POST") {
-    return jsonResponse({ error: "POST only" }, 405);
+    return jsonResponse({ error: copy(language, "Gunakan metode POST.", "Use the POST method.") }, 405);
   }
 
   let user;
   try { user = await requireUser(request, env); }
-  catch (e) { return jsonResponse({ error: e.message }, e.status || 503); }
+  catch (e) { return jsonResponse({ error: copy(language, "Sesi tidak tersedia. Masuk lagi atau coba sebentar lagi.", "Your session is unavailable. Sign in again or try shortly.") }, e.status || 503); }
 
   // Validate request
   let body;
   try {
     body = await request.json();
   } catch {
-    return jsonResponse({ error: "Invalid JSON" }, 400);
+    return jsonResponse({ error: copy(language, "Format permintaan tidak valid.", "The request format is invalid.") }, 400);
   }
 
   const { question, context } = body || {};
+  if (context?.language === "en" || context?.language === "id") language = context.language;
+  let preferences;
+  try {
+    if (context != null && (typeof context !== "object" || Array.isArray(context))) throw new Error("context");
+    preferences = normalizeAdvisorPreferences(context);
+  } catch {
+    return jsonResponse({ error: copy(language, "Bahasa atau mata uang dompet yang dipilih tidak didukung.", "The account language or currency is not supported.") }, 400);
+  }
+  language = preferences.language;
   if (typeof question !== "string" || !question.trim()) {
-    return jsonResponse({ error: "question required" }, 400);
+    return jsonResponse({ error: copy(language, "Pertanyaan wajib diisi.", "Enter a question.") }, 400);
   }
 
   // Validate question length (anti-abuse)
   const isGoal = context?.source === "goal-planner";
   const maxLength = isGoal ? 2500 : 500;
   if (question.length > maxLength || JSON.stringify(context || {}).length > 20000) {
-    return jsonResponse({ error: "Pertanyaan atau data pendukung terlalu panjang" }, 400);
+    return jsonResponse({ error: copy(language, "Pertanyaan atau data pendukung terlalu panjang", "The question or supporting data is too long.") }, 400);
   }
 
   let account;
   try { account = await readPlan(user, env); }
-  catch (e) { return jsonResponse({ error: e.message }, e.status || 503); }
+  catch (e) { return jsonResponse({ error: copy(language, "Status paket belum bisa diperiksa. Coba lagi sebentar.", "Your plan could not be checked. Try again shortly.") }, e.status || 503); }
   if (account.active && account.plan === 'free_trial') {
-    return jsonResponse({ error: 'AI khusus paket berbayar.', reply: 'Bos, uji coba gratis belum termasuk AI. Aktifkan paket mulai Rp 10rb biar bisa ngobrol sama Beruang Akuntan ya 🐻' }, 403);
+    return jsonResponse({
+      error: copy(language, 'AI khusus paket berbayar.', 'AI requires a paid plan.'),
+      reply: copy(language, 'Bos, uji coba gratis belum termasuk AI. Aktifkan paket berbayar untuk ngobrol dengan Ruvy ya 🐻', 'The free trial does not include AI. Choose a paid plan to get insights from Ruvy AI. 🐻'),
+    }, 403);
   }
   const pro = account.active;
-  if (!pro && !isGoal) return jsonResponse({ error: 'Fitur ini memerlukan paket Pro aktif.' }, 403);
+  if (!pro && !isGoal) return jsonResponse({ error: copy(language, 'Fitur ini memerlukan paket Pro aktif.', 'This feature requires an active Pro plan.') }, 403);
   const month = new Date().toISOString().slice(0, 7);
   const freeKey = `goal_free:${user.uid}:${month}`;
-  if (!pro && await env.BOT_DATA.get(freeKey)) return jsonResponse({ error: 'Kuota Goal gratis bulan ini sudah dipakai.' }, 429);
+  if (!pro && await env.BOT_DATA.get(freeKey)) return jsonResponse({ error: copy(language, 'Kuota Goal gratis bulan ini sudah dipakai.', 'Your free goal plan for this month has already been used.') }, 429);
 
   // UID comes from Firebase, not a user-supplied email.
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -130,8 +208,8 @@ export async function handleAdvise(request, env) {
   const RATE_LIMIT = 30;
   if (currentCount >= RATE_LIMIT) {
     return jsonResponse({
-      error: "Limit harian tercapai",
-      reply: "Bos, kuota Tanya Beruang hari ini udah habis (30 query/hari). Coba lagi besok ya! 🐻",
+      error: copy(language, "Limit harian tercapai", "Daily limit reached"),
+      reply: copy(language, "Bos, kuota Tanya Beruang hari ini udah habis (30 query/hari). Coba lagi besok ya! 🐻", "You've used today's 30 AI questions. Try again tomorrow. 🐻"),
     }, 429);
   }
 
@@ -139,7 +217,7 @@ export async function handleAdvise(request, env) {
   await env.BOT_DATA.put(rateKey, String(currentCount + 1), { expirationTtl: 90000 });
 
   // Build user message dengan context
-  const userMsg = buildUserMessage(question, context);
+  const userMsg = buildUserMessage(question, context, preferences);
 
   // Call Claude API
   let reply;
@@ -151,7 +229,7 @@ export async function handleAdvise(request, env) {
       system: [
         {
           type: "text",
-          text: SYSTEM_PROMPT,
+          text: buildAdvisorSystemPrompt(preferences),
           cache_control: { type: "ephemeral" },
         },
       ],
@@ -160,7 +238,7 @@ export async function handleAdvise(request, env) {
 
     // Extract text from response
     const textBlock = response.content.find((b) => b.type === "text");
-    reply = textBlock?.text?.trim() || "Bos, ada masalah sebentar. Coba tanya lagi ya 🐻";
+    reply = textBlock?.text?.trim() || copy(language, "Bos, ada masalah sebentar. Coba tanya lagi ya 🐻", "I couldn't create a reply. Please try again shortly. 🐻");
   } catch (err) {
     // Detail error info supaya bisa debug via `wrangler tail`
     const errInfo = {
@@ -173,22 +251,22 @@ export async function handleAdvise(request, env) {
     console.error("Claude API error:", JSON.stringify(errInfo));
 
     // Reply message sesuai tipe error (user-friendly)
-    let userReply = "Bos, Aku lagi capek nih, coba 1-2 menit lagi ya 😅";
+    let userReply = copy(language, "Bos, AI belum bisa menjawab. Coba 1-2 menit lagi ya 🐻", "AI is temporarily unavailable. Try again in a minute or two. 🐻");
     const msgLower = (errInfo.errBody || errInfo.message || "").toLowerCase();
     if (msgLower.includes("credit balance") || msgLower.includes("insufficient")) {
-      userReply = "Bos, kredit AI Admin lagi habis. Lagi di-top-up, coba lagi 1 jam lagi ya 🐻";
+      userReply = copy(language, "Bos, layanan AI sementara tidak tersedia. Coba lagi nanti ya 🐻", "AI is temporarily unavailable. Please try again later. 🐻");
     } else if (err?.status === 401 || err?.status === 403) {
-      userReply = "Bos, API key AI perlu di-refresh. Kontak Admin ya 🐻";
+      userReply = copy(language, "Bos, layanan AI perlu diperiksa. Hubungi dukungan kalau masalah berlanjut ya 🐻", "The AI service needs attention. Contact support if this continues. 🐻");
     } else if (err?.status === 404 || errInfo.type === "not_found_error") {
-      userReply = "Bos, model AI lagi maintenance. Coba lagi nanti 🐻";
+      userReply = copy(language, "Bos, AI sementara tidak tersedia. Coba lagi nanti 🐻", "AI is temporarily unavailable. Please try again later. 🐻");
     } else if (err?.status === 429) {
-      userReply = "Bos, banyak yang tanya sekaligus. Tunggu 1 menit ya 😅";
+      userReply = copy(language, "Bos, banyak yang tanya sekaligus. Tunggu 1 menit ya 🐻", "AI is busy right now. Try again in a minute. 🐻");
     } else if (err?.status >= 500) {
-      userReply = "Bos, AI server lagi ada gangguan. Coba lagi bentar 🐻";
+      userReply = copy(language, "Bos, server AI lagi ada gangguan. Coba lagi bentar 🐻", "The AI service is having trouble. Please try again shortly. 🐻");
     }
 
     return jsonResponse({
-      error: "AI service error",
+      error: copy(language, "Layanan AI tidak tersedia", "AI service unavailable"),
       reply: userReply,
     }, 503);
   }
@@ -207,80 +285,65 @@ export async function handleAdvise(request, env) {
 /**
  * Build user message with structured context data
  */
-function buildUserMessage(question, ctx) {
-  if (!ctx) {
-    return `Pertanyaan: ${question}\n\n(Data spending user tidak tersedia — kasih jawaban general tapi tetap minta user catat transaksi dulu biar bisa kasih advice akurat.)`;
+export function buildUserMessage(question, ctx, preferences = normalizeAdvisorPreferences(ctx)) {
+  const { language, currency, locale } = preferences;
+  const text = (id, en) => copy(language, id, en);
+  const money = value => formatAdvisorMoney(value, preferences);
+  const header = text(
+    `[Bahasa: Indonesia; mata uang dompet yang dipilih: ${currency}; locale: ${locale}]`,
+    `[Language: English; selected wallet currency: ${currency}; locale: ${locale}]`
+  );
+  if (!ctx || (ctx.source === 'goal-planner' && ctx.totalPemasukan == null)) {
+    return [header, text('[Pertanyaan user]', '[User question]'), question,
+      text('(Gunakan hanya data yang tersedia. Kalau data kurang, minta user melengkapi catatan.)', '(Use only the supplied records. Ask for more records when the data is insufficient.)')].join('\n\n');
   }
 
-  const lines = [];
-  if (ctx.userName) lines.push(`[Nama user: ${ctx.userName} — sapa dengan nama ini]`, "");
+  const lines = [header];
+  if (ctx.userName) lines.push(text(`[Nama user: ${ctx.userName}]`, `[User name: ${ctx.userName}]`));
   lines.push(
-    `[Data spending user untuk ${ctx.monthName || "bulan ini"}]`,
-    "",
-    `💰 Total Pemasukan: Rp ${formatRupiah(ctx.totalPemasukan || 0)}`,
-    `💸 Total Pengeluaran: Rp ${formatRupiah(ctx.totalPengeluaran || 0)}`,
-    `🏦 Sisa Saldo bulan ini: Rp ${formatRupiah(ctx.sisaSaldo || 0)}`,
-    `🐷 Bisa ditabung bulan ini (pemasukan - pengeluaran): Rp ${formatRupiah(ctx.tabunganBulanIni != null ? ctx.tabunganBulanIni : (ctx.sisaSaldo || 0))}`,
-    `📝 Total Transaksi: ${ctx.totalTransaksi || 0}`
+    text(`[Data keuangan untuk ${ctx.monthName || "bulan ini"}]`, `[Financial records for ${ctx.monthName || "this month"}]`),
+    '',
+    `${text('💰 Total Pemasukan', '💰 Total income')}: ${money(ctx.totalPemasukan)}`,
+    `${text('💸 Total Pengeluaran', '💸 Total expenses')}: ${money(ctx.totalPengeluaran)}`,
+    `${text('🏦 Sisa Saldo bulan ini', '🏦 Net income this month')}: ${money(ctx.sisaSaldo)}`,
+    `${text('🐷 Bisa ditabung bulan ini (pemasukan - pengeluaran)', '🐷 Potential savings this month (income - expenses)')}: ${money(ctx.tabunganBulanIni ?? ctx.sisaSaldo)}`,
+    `${text('📝 Total Transaksi', '📝 Transaction count')}: ${Number(ctx.totalTransaksi) || 0}`
   );
 
-  // Aset / kekayaan (duit yang udah dipunya — penting buat jawab "kapan bisa beli X")
   if (ctx.assetTotal) {
-    lines.push("", `💎 Total Aset/Tabungan saat ini: Rp ${formatRupiah(ctx.assetTotal)}`);
-    if (Array.isArray(ctx.assetBreakdown)) {
-      ctx.assetBreakdown.slice(0, 8).forEach((a) => {
-        lines.push(`  - ${a.nama} (${a.jenis}): Rp ${formatRupiah(a.jumlah)}`);
-      });
-    }
+    lines.push('', `${text('💎 Total Aset/Tabungan saat ini', '💎 Current assets/savings')}: ${money(ctx.assetTotal)}`);
+    if (Array.isArray(ctx.assetBreakdown)) ctx.assetBreakdown.slice(0, 8).forEach(a => {
+      lines.push(`  - ${a.nama} (${a.jenis}): ${money(a.jumlah)}`);
+    });
   }
-  if (ctx.piutangTotal) lines.push(`🤝 Piutang (dipinjam orang, blm balik): Rp ${formatRupiah(ctx.piutangTotal)}`);
-  if (ctx.hutangTotal) lines.push(`📕 Utang user (blm lunas): Rp ${formatRupiah(ctx.hutangTotal)}`);
+  if (ctx.piutangTotal) lines.push(`${text('🤝 Piutang (belum kembali)', '🤝 Outstanding receivables')}: ${money(ctx.piutangTotal)}`);
+  if (ctx.hutangTotal) lines.push(`${text('📕 Utang user (belum lunas)', '📕 Outstanding debt')}: ${money(ctx.hutangTotal)}`);
 
-  if (typeof ctx.compareIncome === "number") {
-    const arrow = ctx.compareIncome >= 0 ? "▲" : "▼";
-    lines.push(`📊 Pemasukan: ${arrow} ${Math.abs(ctx.compareIncome)}% vs bulan lalu`);
+  for (const [key, label] of [['compareIncome', text('Pemasukan', 'Income')], ['compareExpense', text('Pengeluaran', 'Expenses')]]) {
+    if (typeof ctx[key] === 'number') lines.push(`📊 ${label}: ${ctx[key] >= 0 ? '▲' : '▼'} ${Math.abs(ctx[key])}% ${text('vs bulan lalu', 'vs last month')}`);
   }
-  if (typeof ctx.compareExpense === "number") {
-    const arrow = ctx.compareExpense >= 0 ? "▲" : "▼";
-    lines.push(`📊 Pengeluaran: ${arrow} ${Math.abs(ctx.compareExpense)}% vs bulan lalu`);
-  }
-
-  // Riwayat per bulan (maks 6) — dipakai buat baca tren/kebiasaan jangka panjang
   if (Array.isArray(ctx.monthlyHistory) && ctx.monthlyHistory.length > 1) {
-    lines.push("", "📅 Riwayat bulanan (lama → baru):");
-    ctx.monthlyHistory.slice(-6).forEach((m) => {
-      if (!m || typeof m !== "object") return;
-      const cats = Array.isArray(m.topKategori)
-        ? m.topKategori.slice(0, 3).map((c) => `${String(c?.name || "Lain").slice(0, 40)} Rp ${formatRupiah(c?.total)}`).join(", ")
-        : "";
-      lines.push(`  - ${String(m.bulan || "").slice(0, 20)}: masuk Rp ${formatRupiah(m.pemasukan)}, keluar Rp ${formatRupiah(m.pengeluaran)}, sisa Rp ${formatRupiah(m.sisa)}, ${Number(m.jumlahTransaksi) || 0} transaksi${cats ? ` | terbesar: ${cats}` : ""}`);
+    lines.push('', text('📅 Riwayat bulanan (lama → baru):', '📅 Monthly history (oldest → newest):'));
+    ctx.monthlyHistory.slice(-6).forEach(m => {
+      if (!m || typeof m !== 'object') return;
+      const cats = Array.isArray(m.topKategori) ? m.topKategori.slice(0, 3)
+        .map(c => `${String(c?.name || text('Lain', 'Other')).slice(0, 40)} ${money(c?.total)}`).join(', ') : '';
+      lines.push(`  - ${String(m.bulan || '').slice(0, 20)}: ${text('masuk', 'income')} ${money(m.pemasukan)}, ${text('keluar', 'expenses')} ${money(m.pengeluaran)}, ${text('sisa', 'net')} ${money(m.sisa)}, ${Number(m.jumlahTransaksi) || 0} ${text('transaksi', 'transactions')}${cats ? ` | ${text('terbesar', 'largest')}: ${cats}` : ''}`);
     });
   }
-
-  // Category breakdown (top 5)
   if (Array.isArray(ctx.categoryBreakdown) && ctx.categoryBreakdown.length > 0) {
-    lines.push("", "📂 Kategori pengeluaran teratas:");
-    ctx.categoryBreakdown.slice(0, 5).forEach((c) => {
-      lines.push(`  - ${c.name}: Rp ${formatRupiah(c.total)} (${c.pct}%)`);
-    });
+    lines.push('', text('📂 Kategori pengeluaran teratas:', '📂 Top expense categories:'));
+    ctx.categoryBreakdown.slice(0, 5).forEach(c => lines.push(`  - ${c.name}: ${money(c.total)} (${c.pct}%)`));
   }
-
-  // Recent transactions (last 10)
   if (Array.isArray(ctx.recentTransactions) && ctx.recentTransactions.length > 0) {
-    lines.push("", "🧾 Transaksi terakhir:");
-    ctx.recentTransactions.slice(0, 10).forEach((t) => {
-      const sign = t.jenis === "pemasukan" ? "+" : "-";
-      lines.push(`  - ${t.tanggal} ${sign}Rp ${formatRupiah(t.jumlah)} (${t.kategori || "lain"}) — ${t.desc || ""}`);
+    lines.push('', text('🧾 Transaksi terakhir:', '🧾 Recent transactions:'));
+    ctx.recentTransactions.slice(0, 10).forEach(t => {
+      const sign = t.jenis === 'pemasukan' ? '+' : '-';
+      lines.push(`  - ${t.tanggal} ${sign}${money(t.jumlah)} (${t.kategori || text('lain', 'other')}) — ${t.desc || ''}`);
     });
   }
-
-  lines.push("", `[Pertanyaan user]`, question);
-
-  return lines.join("\n");
-}
-
-function formatRupiah(n) {
-  return Number(n || 0).toLocaleString("id-ID");
+  lines.push('', text('[Pertanyaan user]', '[User question]'), question);
+  return lines.join('\n');
 }
 
 function jsonResponse(obj, status = 200) {

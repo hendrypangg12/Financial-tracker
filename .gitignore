@@ -2,3 +2,6 @@
 # not tracked on this branch — hide from git status to silence noise.
 beruang-crm/
 .wrangler/
+outputs/
+firestore-debug.log
+firebase-debug.log

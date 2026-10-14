@@ -5,7 +5,7 @@ function renderTransaksi() {
   const mSel = document.getElementById('trx-filter-month').value;
   const ySel = document.getElementById('trx-filter-year').value;
 
-  let list = [...state.transactions].sort((a, b) => b.tanggal.localeCompare(a.tanggal));
+  let list = [...getFinancialState().transactions].sort((a, b) => b.tanggal.localeCompare(a.tanggal));
   if (jenis) list = list.filter(t => t.jenis === jenis);
   if (mSel !== '' && mSel !== 'all') list = list.filter(t => parseISO(t.tanggal).getMonth() === +mSel);
   if (ySel !== '' && ySel !== 'all') list = list.filter(t => parseISO(t.tanggal).getFullYear() === +ySel);
@@ -179,11 +179,11 @@ function deleteSub(jenis, cat, sub) {
   showToast('Sub kategori dihapus');
 }
 
-function fillSelect(sel, items, placeholder) {
+function fillSelect(sel, items, placeholder, kind, parent) {
   if (!sel) return;
   const cur = sel.value;
   sel.innerHTML = (placeholder ? `<option value="">${placeholder}</option>` : '') +
-    items.map(i => `<option value="${escapeHtml(i)}">${escapeHtml(i)}</option>`).join('');
+    items.map(i => `<option value="${escapeHtml(i)}">${escapeHtml(kind && typeof categoryDisplayName === 'function' ? categoryDisplayName(i,kind,parent) : i)}</option>`).join('');
   if (items.includes(cur)) sel.value = cur;
 }
 
@@ -194,7 +194,7 @@ function fillSubCategoriSelects() {
   const katEl = document.querySelector('#form-transaksi select[name="kategori"]');
   if (katEl) {
     // Form tambah: pilih Kategori dulu, lalu Sub Kategori di dalamnya.
-    fillSelect(katEl, Object.keys(state.categories[jenis] || {}));
+    fillSelect(katEl, Object.keys(state.categories[jenis] || {}), '', jenis);
     fillFormSubsForKategori();
   } else {
     fillSelect(subEl, allSubs(jenis).map(x => x.sub));
@@ -214,11 +214,11 @@ function fillEditSubcategories() {
   const subSelect = form.querySelector('[name="subKategori"]');
   const allocationSelect = form.querySelector('[name="alokasi"]');
   const selectedCategory = categorySelect.value;
-  fillSelect(categorySelect, Object.keys(categories));
+  fillSelect(categorySelect, Object.keys(categories), '', jenis);
   if (Object.prototype.hasOwnProperty.call(categories, selectedCategory)) categorySelect.value = selectedCategory;
   const info = categories[categorySelect.value] || {};
   const selectedSub = subSelect.value;
-  fillSelect(subSelect, info.subs || []);
+  fillSelect(subSelect, info.subs || [], '', jenis, categorySelect.value);
   if ((info.subs || []).includes(selectedSub)) subSelect.value = selectedSub;
   if (allocationSelect) allocationSelect.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
 }
@@ -239,7 +239,7 @@ function fillFormSubsForKategori() {
   const jenis = form.querySelector('[name="jenis"]').value;
   const kat = form.querySelector('[name="kategori"]').value;
   const info = (state.categories[jenis] || {})[kat] || {};
-  fillSelect(form.querySelector('[name="subKategori"]'), info.subs || []);
+  fillSelect(form.querySelector('[name="subKategori"]'), info.subs || [], '', jenis, kat);
   const alok = form.querySelector('[name="alokasi"]');
   if (alok) alok.value = jenis === 'pengeluaran' ? (info.alokasi || '') : '';
 }
@@ -260,23 +260,23 @@ function renderPlanHub() {
   const hutEl = document.getElementById('plan-stat-hutang');
   const goalEl = document.getElementById('plan-stat-goal');
   if (hutEl) {
-    const active = (state.hutangs || []).filter(h => !h.lunas);
+    const active = (getFinancialState().hutangs || []).filter(h => !h.lunas);
     const piutang = active.filter(h => h.jenis === 'piutang').reduce((s, h) => s + (Number(h.nominal) || 0), 0);
     const hutang = active.filter(h => h.jenis === 'hutang').reduce((s, h) => s + (Number(h.nominal) || 0), 0);
     const today = todayISO();
     const overdue = active.filter(h => h.jatuhTempo && h.jatuhTempo < today).length;
     hutEl.innerHTML = active.length
-      ? `<span class="money-expense">Hutang ${formatRupiah(hutang)}</span><span class="money-income">Piutang ${formatRupiah(piutang)}</span>${overdue ? `<span class="plan-hub-warn">${overdue} lewat jatuh tempo</span>` : ''}`
-      : '<span class="plan-hub-muted">Belum ada catatan</span>';
+      ? appHtml`<span class="money-expense">Hutang ${formatRupiah(hutang)}</span><span class="money-income">Piutang ${formatRupiah(piutang)}</span>${overdue ? appHtml`<span class="plan-hub-warn">${overdue} lewat jatuh tempo</span>` : ''}`
+      : appHtml`<span class="plan-hub-muted">Belum ada catatan</span>`;
   }
   if (goalEl) {
-    const goals = (state.goals || []).filter(g => g.status !== 'completed');
+    const goals = (getFinancialState().goals || []).filter(g => g.status !== 'completed');
     if (!goals.length) {
-      goalEl.innerHTML = '<span class="plan-hub-muted">Belum ada target</span>';
+      goalEl.innerHTML = appHtml`<span class="plan-hub-muted">Belum ada target</span>`;
     } else {
       const g = goals[0];
       const pct = g.targetAmount > 0 ? Math.min(100, Math.round((Number(g.currentSaving) || 0) / g.targetAmount * 100)) : 0;
-      goalEl.innerHTML = `<span class="plan-hub-goal"><span>${escapeHtml(g.nama || 'Target')} · ${pct}%</span><span class="plan-hub-bar"><i style="width:${pct}%"></i></span></span>${goals.length > 1 ? `<span class="plan-hub-muted">+${goals.length - 1} target lain</span>` : ''}`;
+      goalEl.innerHTML = appHtml`<span class="plan-hub-goal"><span>${escapeHtml(g.nama || 'Target')} · ${pct}%</span><span class="plan-hub-bar"><i style="width:${pct}%"></i></span></span>${goals.length > 1 ? `<span class="plan-hub-muted">+${goals.length - 1} target lain</span>` : ''}`;
     }
   }
 }

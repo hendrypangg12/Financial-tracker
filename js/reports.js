@@ -4,7 +4,7 @@
   const signedMoney = (amount, expense) => `${expense ? '\u2212' : ''}${formatRupiah(Math.abs(Number(amount) || 0))}`;
 
   function reportData(scope) {
-    let transactions = (state.transactions || []).filter(t => !isOpeningBalanceTransaction(t));
+    let transactions = (getFinancialState().transactions || []).filter(t => !isOpeningBalanceTransaction(t));
     let label = 'Akumulasi Semua Data';
     if (scope === 'month') {
       transactions = transactions.filter(t => {
@@ -16,7 +16,8 @@
     transactions.sort((a, b) => String(a.tanggal).localeCompare(String(b.tanggal)));
     const income = transactions.filter(t => t.jenis === 'pemasukan').reduce((s, t) => s + (Number(t.jumlah) || 0), 0);
     const expense = transactions.filter(t => t.jenis === 'pengeluaran').reduce((s, t) => s + (Number(t.jumlah) || 0), 0);
-    return { label, transactions, income, expense, net: income - expense };
+    label = (typeof getActiveWallet === 'function' ? getActiveWallet().name + ' · ' + getAccountCurrency() + ' · ' : '') + label;
+    return { label, transactions, income: roundMoney(income), expense: roundMoney(expense), net: roundMoney(income - expense) };
   }
 
   function selectedScope() {
@@ -35,7 +36,7 @@
   }
 
   function filename(r, ext) {
-    return `BerUang-Laporan-${r.label.replace(/\s+/g, '-')}.${ext}`;
+    return `Ruvy-Laporan-${r.label.replace(/\s+/g, '-')}.${ext}`;
   }
 
   function reportRows(r) {
@@ -48,7 +49,7 @@
     if (!popup) { showToast('Izinkan pop-up untuk membuat PDF', 'error'); return; }
     popup.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(filename(r, 'pdf'))}</title><style>
       body{font:13px Arial,sans-serif;color:#2f2118;margin:28px}h1{margin:0 0 4px}.meta{color:#766658;margin-bottom:18px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{border:1px solid #ddd;padding:12px;border-radius:8px}.box small{display:block;color:#777;margin-bottom:6px}.income{color:#2f7d32}.expense{color:#c0392b}table{width:100%;border-collapse:collapse}th,td{padding:8px 6px;border-bottom:1px solid #ddd;text-align:left}th:last-child,td:last-child{text-align:right}@media print{body{margin:12mm}.no-print{display:none}}
-    </style></head><body><h1>BerUang</h1><div class="meta">Laporan Keuangan · ${esc(r.label)} · dibuat ${esc(new Date().toLocaleString('id-ID'))}</div>
+    </style></head><body><h1>Ruvy</h1><div class="meta">Laporan Keuangan · ${esc(r.label)} · dibuat ${esc(new Date().toLocaleString('id-ID'))}</div>
     <div class="summary"><div class="box"><small>Pemasukan</small><b class="income">${formatRupiah(r.income)}</b></div><div class="box"><small>Pengeluaran</small><b class="expense">${signedMoney(r.expense,true)}</b></div><div class="box"><small>Saldo bersih</small><b class="${r.net >= 0 ? 'income' : 'expense'}">${signedMoney(r.net,r.net < 0)}</b></div></div>
     <table><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Kategori</th><th>Subkategori</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${reportRows(r) || '<tr><td colspan="6">Belum ada transaksi</td></tr>'}</tbody></table>
     <script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
@@ -57,7 +58,7 @@
 
   function exportExcel() {
     const r = reportData(selectedScope());
-    const rows = [['Laporan BerUang', r.label], [], ['Ringkasan', 'Nominal'], ['Pemasukan', r.income], ['Pengeluaran', -r.expense], ['Saldo bersih', r.net], [], ['Tanggal','Deskripsi','Kategori','Subkategori','Jenis','Nominal']];
+    const rows = [['Laporan Ruvy', r.label], [], ['Ringkasan', 'Nominal'], ['Pemasukan', r.income], ['Pengeluaran', -r.expense], ['Saldo bersih', r.net], [], ['Tanggal','Deskripsi','Kategori','Subkategori','Jenis','Nominal']];
     r.transactions.forEach(t => rows.push([t.tanggal, t.deskripsi || '', t.kategori || '', t.subKategori || '', t.jenis, t.jenis === 'pengeluaran' ? -(Number(t.jumlah)||0) : (Number(t.jumlah)||0)]));
     const csv = '\ufeff' + rows.map(row => row.map(value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`).join(';')).join('\r\n');
     downloadBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), filename(r, 'csv'));
@@ -69,7 +70,7 @@
     const width = 1080, rowH = 54, height = 430 + shown.length * rowH + (r.transactions.length > 20 ? 55 : 0);
     const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
     const c = canvas.getContext('2d'); c.fillStyle = '#fbf7ef'; c.fillRect(0,0,width,height);
-    c.fillStyle='#3e2d21'; c.font='bold 46px Arial'; c.fillText('BerUang',60,72); c.font='26px Arial'; c.fillStyle='#806d5c'; c.fillText(`Laporan Keuangan · ${r.label}`,60,112);
+    c.fillStyle='#3e2d21'; c.font='bold 46px Arial'; c.fillText('Ruvy',60,72); c.font='26px Arial'; c.fillStyle='#806d5c'; c.fillText(`Laporan Keuangan · ${r.label}`,60,112);
     const cards = [[r.income,'Pemasukan','#2f7d32',false],[r.expense,'Pengeluaran','#c0392b',true],[r.net,'Saldo bersih',r.net>=0?'#2f7d32':'#c0392b',r.net<0]];
     cards.forEach((x,i)=>{const left=60+i*330;c.fillStyle='#fff';c.fillRect(left,150,300,120);c.fillStyle='#806d5c';c.font='20px Arial';c.fillText(x[1],left+18,185);c.fillStyle=x[2];c.font='bold 28px Arial';c.fillText(signedMoney(x[0],x[3]),left+18,232);});
     c.fillStyle='#3e2d21'; c.font='bold 24px Arial'; c.fillText(`Detail transaksi (${r.transactions.length})`,60,325);
@@ -78,7 +79,7 @@
     canvas.toBlob(async blob => {
       const name = filename(r,'png');
       const file = new File([blob], name, {type:'image/png'});
-      if (navigator.share && navigator.canShare?.({files:[file]})) { try { await navigator.share({title:`Laporan BerUang ${r.label}`,files:[file]}); return; } catch(e) { if(e.name==='AbortError') return; } }
+      if (navigator.share && navigator.canShare?.({files:[file]})) { try { await navigator.share({title:`Laporan Ruvy ${r.label}`,files:[file]}); return; } catch(e) { if(e.name==='AbortError') return; } }
       downloadBlob(blob,name);
     }, 'image/png');
   }

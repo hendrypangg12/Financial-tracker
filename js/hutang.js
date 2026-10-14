@@ -1,10 +1,10 @@
-// Module: Hutang & Piutang Personal (BerUang)
+// Module: Hutang & Piutang Personal (Ruvy)
 
 function renderHutang() {
   const filterJenis = document.getElementById('hutang-filter-jenis')?.value || 'all';
   const filterStatus = document.getElementById('hutang-filter-status')?.value || 'aktif';
 
-  const all = state.hutangs || [];
+  const all = getFinancialState().hutangs || [];
 
   // Summary calculations (semua data)
   const piutangs = all.filter(h => h.jenis === 'piutang' && !h.lunas);
@@ -101,7 +101,7 @@ function renderHutang() {
 
   wrap.querySelectorAll('[data-act]').forEach(btn => btn.onclick = () => {
     const id = btn.dataset.id;
-    const h = state.hutangs.find(x => x.id === id);
+    const h = getFinancialState().hutangs.find(x => x.id === id);
     if (!h) return;
     const act = btn.dataset.act;
     if (act === 'lunas') {

@@ -1,8 +1,8 @@
 // Bootstrap & event handlers
 
 // Helper format ribuan utk SEMUA input uang (class .money-input)
-function parseMoney(v) { return Number(String(v == null ? '' : v).replace(/[^\d]/g, '')) || 0; }
-function fmtThousands(v) { const d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? Number(d).toLocaleString('id-ID') : ''; }
+function parseMoney(v) { return parseMoneyInput(v); }
+function fmtThousands(v) { return formatMoneyInput(v); }
 let moneyInputBound = false;
 function bindMoneyInputs() {
   if (moneyInputBound) return;
@@ -41,6 +41,9 @@ function renderAll() {
   renderRekap();
   if (typeof renderPlanHub === 'function') renderPlanHub();
   renderKategori();
+  if (typeof renderRuvy === 'function') renderRuvy();
+  if (typeof refreshAccountPreferencesUI === 'function') refreshAccountPreferencesUI();
+  if (typeof applyAppLanguage === 'function') applyAppLanguage();
 }
 
 function syncTransactionCategoryCreateUI() {
@@ -70,11 +73,11 @@ function fillMonthYearSelectors() {
 function fillTrxFilters() {
   const m = document.getElementById('trx-filter-month');
   const y = document.getElementById('trx-filter-year');
-  m.innerHTML = `<option value="all">Semua bulan</option>` + MONTHS.map((mm, i) => `<option value="${i}">${mm}</option>`).join('');
+  m.innerHTML = appHtml`<option value="all">Semua bulan</option>` + MONTHS.map((mm, i) => `<option value="${i}">${mm}</option>`).join('');
   const thisYear = new Date().getFullYear();
   const years = [];
   for (let yy = thisYear - 5; yy <= thisYear + 1; yy++) years.push(yy);
-  y.innerHTML = `<option value="all">Semua tahun</option>` + years.map(yy => `<option value="${yy}">${yy}</option>`).join('');
+  y.innerHTML = appHtml`<option value="all">Semua tahun</option>` + years.map(yy => `<option value="${yy}">${yy}</option>`).join('');
   m.value = state.selectedMonth;
   y.value = state.selectedYear;
 }
@@ -84,7 +87,7 @@ function attachEvents() {
   function switchToTab(tabName) {
     const target = document.getElementById('tab-' + tabName);
     if (!target) return;
-    const navName = ['hutang', 'goal'].includes(tabName) ? 'rencana' : tabName;
+    const navName = ['hutang', 'goal', 'rekap'].includes(tabName) ? 'rencana' : tabName;
     document.querySelectorAll('.tab').forEach(b => {
       b.classList.remove('active');
       b.setAttribute('aria-selected', 'false');
@@ -106,6 +109,7 @@ function attachEvents() {
     // Haptic feedback (Android only)
     if (typeof haptic === 'function') haptic(8);
     // Re-render based on tab
+    if (typeof renderRuvy === 'function') renderRuvy();
     if (tabName === 'dashboard') renderDashboard();
     if (tabName === 'transaksi') renderTransaksi();
     if (tabName === 'hutang' && typeof renderHutang === 'function') renderHutang();
@@ -150,7 +154,8 @@ function attachEvents() {
   // Target
   document.getElementById('btn-save-target').onclick = () => {
     const v = parseMoney(document.getElementById('input-target').value);
-    state.target = v; saveState(); renderDashboard();
+    if (v == null || v < 0) { showToast(preferenceMessage('Nominal tidak valid.', 'Invalid amount.'), 'error'); return; }
+    getFinancialState().target = v; saveState(); renderDashboard();
     showToast('Target disimpan', 'success');
   };
 
@@ -334,7 +339,7 @@ function attachEvents() {
     const date = document.getElementById('struk-date').value || todayISO();
     const res = parseStruk(text, date);
     if (res.error) { renderManualFallback(text, date, res.error); return; }
-    strukPreview.innerHTML = `
+    strukPreview.innerHTML = appHtml`
       <div style="margin-bottom:8px"><b>${escapeHtml(res.deskripsi)}</b> · ${formatTanggal(res.tanggal)}</div>
       <table>
         <thead><tr><th>Item</th><th style="text-align:right">Jumlah</th></tr></thead>
@@ -382,7 +387,7 @@ function attachEvents() {
     const initialTotal = prefill.total || '';
     const initialDesc = prefill.desc || firstLine.slice(0, 80);
 
-    strukPreview.innerHTML = `
+    strukPreview.innerHTML = appHtml`
       <div style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:10px;border-radius:10px;margin-bottom:10px">
         ⚠️ ${escapeHtml(errMsg)}<br>
         <small>Lihat preview foto di atas lalu isi / koreksi di bawah ini.</small>
@@ -574,7 +579,7 @@ function attachEvents() {
 }
 
 function openEditModal(id) {
-  const t = state.transactions.find(x => x.id === id);
+  const t = getFinancialState().transactions.find(x => x.id === id);
   if (!t) return;
   const form = document.getElementById('form-edit');
   form.querySelector('[name="id"]').value = t.id;
@@ -719,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateUserMenu(user, profile);
       // Setup gating UI untuk free user
       setupProGating(profile);
-      // Init AI Advisor (FAB Beruang Akuntan) — backend /api/advise LIVE (28 Mei 2026)
+      // Init AI Advisor (FAB Ruvy) — backend /api/advise LIVE (28 Mei 2026)
       if (typeof initAIAdvisor === 'function') {
         initAIAdvisor();
         if (typeof showAIFab === 'function') showAIFab();
@@ -1166,7 +1171,7 @@ function setupAuthUI() {
     btnOpenKategori.onclick = (e) => {
       e.stopPropagation();
       if (dropdown) dropdown.hidden = true;
-      switchToTab('kategori');
+      window.switchBeruangTab('kategori');
     };
   }
 
@@ -1175,7 +1180,7 @@ function setupAuthUI() {
     btnDeleteAccount.onclick = async (e) => {
       e.stopPropagation();
       dropdown.hidden = true;
-      const typed = prompt('Penghapusan ini menghapus profil BerUang, catatan keuangan, koneksi Telegram, dan data AI. Data transaksi pembayaran minimum dapat disimpan untuk rekonsiliasi.\n\nKetik HAPUS AKUN untuk melanjutkan.');
+      const typed = prompt('Penghapusan ini menghapus profil Ruvy, catatan keuangan, koneksi Telegram, dan data AI. Data transaksi pembayaran minimum dapat disimpan untuk rekonsiliasi.\n\nKetik HAPUS AKUN untuk melanjutkan.');
       if (typed !== 'HAPUS AKUN') return;
       btnDeleteAccount.disabled = true;
       try {
@@ -1195,8 +1200,8 @@ function setupAuthUI() {
           }
         }
         alert(result.sharedAccountRetained
-          ? 'Penghapusan BerUang sedang diproses. Login bersama untuk produk Berstock lain tetap dipertahankan.'
-          : 'Penghapusan akun dan data BerUang sedang diproses.');
+          ? 'Penghapusan Ruvy sedang diproses. Login bersama untuk produk Berstock lain tetap dipertahankan.'
+          : 'Penghapusan akun dan data Ruvy sedang diproses.');
         await fbAuth.signOut();
         window.location.reload();
       } catch (error) {
@@ -1301,7 +1306,7 @@ function updateUserMenu(user, profile) {
   const email = document.getElementById('user-email');
   const plan = document.getElementById('user-plan');
   if (user.photoURL && avatar) {
-    avatar.innerHTML = `<img src="${user.photoURL}" alt="" />`;
+    avatar.innerHTML = appHtml`<img src="${user.photoURL}" alt="" />`;
   } else if (avatar) {
     const initial = (user.displayName || user.email || '?')[0].toUpperCase();
     avatar.textContent = initial;
@@ -1356,7 +1361,7 @@ function warnAccessEndingSoon(profile, timedPlanActive) {
   const key = 'beruang-expiry-warn:' + (currentUser?.uid || '') + ':' + new Date().toISOString().slice(0, 10);
   try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (_) {}
   const msg = profile?.plan === 'free_trial'
-    ? '⏳ Uji coba gratis berakhir besok. Pilih paket supaya BerUang tetap bisa dipakai — data kamu tetap aman.'
+    ? '⏳ Uji coba gratis berakhir besok. Pilih paket supaya Ruvy tetap bisa dipakai — data kamu tetap aman.'
     : '⏳ Paket kamu berakhir besok dan tidak diperpanjang otomatis. Perpanjang supaya aplikasi tidak terkunci.';
   setTimeout(() => showToast(msg, 'info'), 1500);
 }
@@ -1432,7 +1437,7 @@ function showProGate(featureName, description) {
   const modal = document.createElement('div');
   modal.id = 'pro-gate-modal';
   modal.className = 'pro-gate-overlay';
-  modal.innerHTML = `
+  modal.innerHTML = appHtml`
     <div class="pro-gate-card">
       <div class="pro-gate-icon">🔒</div>
       <h2>Fitur Pro: ${featureName}</h2>
@@ -1527,7 +1532,7 @@ function setupPWAInstallBanner() {
       e.preventDefault();
       __pwaDeferredPrompt = e;
       banner.hidden = false;
-      title.textContent = 'Install BerUang';
+      title.textContent = 'Install Ruvy';
       desc.textContent = 'Fullscreen mode + login persistent';
       cta.textContent = 'Install';
     });

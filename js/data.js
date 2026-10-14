@@ -29,6 +29,12 @@ const DEFAULT_CATEGORIES = {
 // Pemetaan kata kunci -> sub kategori (untuk chat parser)
 // PENTING: urutan rule = priority. Rule yang lebih spesifik harus di atas.
 const KEYWORD_MAP = [
+  // English aliases keep the stored Indonesian category/subcategory identifiers stable.
+  { re: /\b(?:i\s+)?(?:paid|repaid|paying)\s+(?:my\s+)?(?:debt|loan|installment)\b|\bloan repayment\b/i, jenis: 'pengeluaran', sub: 'Bayar utang' },
+  { re: /\b(?:lent|loaned)\s+(?:money|cash|to)\b/i, jenis: 'pengeluaran', sub: 'Pinjaman keluar' },
+  { re: /\b(?:repaid me|debt repayment received|received repayment)\b/i, jenis: 'pemasukan', sub: 'Pelunasan piutang' },
+  { re: /\b(?:borrowed|received (?:a )?loan|loan received)\b/i, jenis: 'pemasukan', sub: 'Pinjaman cair' },
+  { re: /\b(?:transfer from|received transfer|incoming transfer)\b/i, jenis: 'pemasukan', sub: 'Transfer masuk' },
   // ==== UTANG & PIUTANG (priority paling tinggi karena ambigu) ====
   // "saya/aku/gue bayar utang" -> pengeluaran (saya yang bayar)
   { re: /\b(saya|aku|gue|gw|kami|kita)\s+bayar\s+(utang|hutang|pinjaman|cicilan)\b/i, jenis: 'pengeluaran', sub: 'Bayar utang' },
@@ -48,46 +54,46 @@ const KEYWORD_MAP = [
   { re: /\b[a-z]+\s+(kasih|ngasih|kasi)\s+(duit|uang|dana|fulus)\b/i, jenis: 'pemasukan', sub: 'Transfer masuk' },
 
   // ==== Pemasukan biasa ====
-  { re: /\b(gaji)\b/i, jenis: 'pemasukan', sub: 'Gaji bulanan' },
+  { re: /\b(gaji|salary|paycheck|wages)\b/i, jenis: 'pemasukan', sub: 'Gaji bulanan' },
   { re: /\b(bonus|thr)\b/i, jenis: 'pemasukan', sub: 'Bonus/THR' },
-  { re: /\b(afiliasi|komisi)\b/i, jenis: 'pemasukan', sub: 'Komisi afiliasi/digital' },
-  { re: /\b(dividen|deviden)\b/i, jenis: 'pemasukan', sub: 'Dividen saham' },
-  { re: /\b(sewa\s*(rumah|kos)|uang kos)\b/i, jenis: 'pemasukan', sub: 'Hasil sewa rumah/kos' },
-  { re: /\b(jualan|laku|online shop|olshop)\b/i, jenis: 'pemasukan', sub: 'Pemasukan toko/online shop' },
+  { re: /\b(afiliasi|komisi|commission|affiliate)\b/i, jenis: 'pemasukan', sub: 'Komisi afiliasi/digital' },
+  { re: /\b(dividen|deviden|dividends?)\b/i, jenis: 'pemasukan', sub: 'Dividen saham' },
+  { re: /\b(sewa\s*(rumah|kos)|uang kos|rental income|rent received)\b/i, jenis: 'pemasukan', sub: 'Hasil sewa rumah/kos' },
+  { re: /\b(jualan|laku|online shop|olshop|sales income|sale proceeds)\b/i, jenis: 'pemasukan', sub: 'Pemasukan toko/online shop' },
   { re: /\b(freelance|proyek|honor)\b/i, jenis: 'pemasukan', sub: 'Hasil freelance' },
-  { re: /\b(hadiah|undian|menang)\b/i, jenis: 'pemasukan', sub: 'Hadiah' },
+  { re: /\b(hadiah|undian|menang|gift|prize)\b/i, jenis: 'pemasukan', sub: 'Hadiah' },
   { re: /\b(refund|pengembalian)\b/i, jenis: 'pemasukan', sub: 'Pengembalian uang' },
   { re: /\b(bunga|interest)\b/i, jenis: 'pemasukan', sub: 'Bunga tabungan' },
   // Pengeluaran
-  { re: /\b(kpr|cicilan|kredit rumah|kredit mobil|kredit motor)\b/i, jenis: 'pengeluaran', sub: 'KPR & cicilan mobil' },
-  { re: /\b(listrik|pln|pdam|tagihan air)\b/i, jenis: 'pengeluaran', sub: 'Listrik & air' },
+  { re: /\b(kpr|cicilan|kredit rumah|kredit mobil|kredit motor|mortgage|rent|installment)\b/i, jenis: 'pengeluaran', sub: 'KPR & cicilan mobil' },
+  { re: /\b(listrik|pln|pdam|tagihan air|electricity|water bill|utilities)\b/i, jenis: 'pengeluaran', sub: 'Listrik & air' },
   { re: /\b(cat rumah|perawatan rumah|servis ac|baygon|baigon|obat nyamuk|racun serangga|pembasmi serangga|pestisida|pembersih rumah|detergen|deterjen)\b/i, jenis: 'pengeluaran', sub: 'Perawatan rumah' },
-  { re: /\b(reksa\s*dana|reksadana|saham)\b/i, jenis: 'pengeluaran', sub: 'Investasi reksa dana/saham' },
+  { re: /\b(reksa\s*dana|reksadana|saham|stocks?|mutual funds?)\b/i, jenis: 'pengeluaran', sub: 'Investasi reksa dana/saham' },
   { re: /\b(emas|antam|logam mulia)\b/i, jenis: 'pengeluaran', sub: 'Investasi emas' },
-  { re: /\b(les|kursus|bimbel|privat)\b/i, jenis: 'pengeluaran', sub: 'Les privat/kursus' },
-  { re: /\b(buku|seragam|alat tulis|atk)\b/i, jenis: 'pengeluaran', sub: 'Buku & perlengkapan sekolah' },
-  { re: /\b(indomaret|alfamart|supermarket|hypermart|giant|superindo|transmart)\b/i, jenis: 'pengeluaran', sub: 'Belanja bulanan supermarket' },
+  { re: /\b(les|kursus|bimbel|privat|tuition|course|school fees)\b/i, jenis: 'pengeluaran', sub: 'Les privat/kursus' },
+  { re: /\b(buku|seragam|alat tulis|atk|books?|stationery|school supplies)\b/i, jenis: 'pengeluaran', sub: 'Buku & perlengkapan sekolah' },
+  { re: /\b(indomaret|alfamart|supermarket|hypermart|giant|superindo|transmart|groceries|grocery)\b/i, jenis: 'pengeluaran', sub: 'Belanja bulanan supermarket' },
   { re: /\b(sayur|lauk|buah|pasar|ikan|daging)\b/i, jenis: 'pengeluaran', sub: 'Belanja sayur/lauk/buah' },
-  { re: /\b(bubur|sarapan)\b/i, jenis: 'pengeluaran', sub: 'Makan pagi bubur' },
-  { re: /\b(bakso|soto|nasi|mie|ayam|rendang|padang|warteg|resto|restoran|cafe|café|makan|gofood|grabfood|shopeefood)\b/i, jenis: 'pengeluaran', sub: 'Makan keluarga di luar' },
-  { re: /\b(kopi|teh|jus|boba|es krim|snack|jajan|minuman|minum)\b/i, jenis: 'pengeluaran', sub: 'Minuman/jajan' },
+  { re: /\b(bubur|sarapan|breakfast)\b/i, jenis: 'pengeluaran', sub: 'Makan pagi bubur' },
+  { re: /\b(bakso|soto|nasi|mie|ayam|rendang|padang|warteg|resto|restoran|cafe|café|makan|gofood|grabfood|shopeefood|restaurant|dinner|lunch|meal|food)\b/i, jenis: 'pengeluaran', sub: 'Makan keluarga di luar' },
+  { re: /\b(kopi|teh|jus|boba|es krim|snack|jajan|minuman|minum|coffee|tea|juice|drinks?|ice cream)\b/i, jenis: 'pengeluaran', sub: 'Minuman/jajan' },
   { re: /\b(bpjs|dokter|rumah sakit|klinik|kesehatan)\b/i, jenis: 'pengeluaran', sub: 'BPJS/Kesehatan' },
-  { re: /\b(obat|apotek|apotik)\b/i, jenis: 'pengeluaran', sub: 'Obat & Apotek' },
-  { re: /\b(bensin|pertamax|pertalite|solar|dex|bbm|pom|spbu|shell)\b/i, jenis: 'pengeluaran', sub: 'BBM/bensin' },
+  { re: /\b(obat|apotek|apotik|medicine|pharmacy)\b/i, jenis: 'pengeluaran', sub: 'Obat & Apotek' },
+  { re: /\b(bensin|pertamax|pertalite|solar|dex|bbm|pom|spbu|shell|petrol|fuel|gasoline)\b/i, jenis: 'pengeluaran', sub: 'BBM/bensin' },
   { re: /\b(servis|bengkel|oli|ganti ban|tune up)\b/i, jenis: 'pengeluaran', sub: 'Servis motor/mobil' },
-  { re: /\b(parkir|tol|e-toll|etoll)\b/i, jenis: 'pengeluaran', sub: 'Parkir & Tol' },
-  { re: /\b(baju|kaos|celana|sepatu|tas|fashion|pakaian|jilbab)\b/i, jenis: 'pengeluaran', sub: 'Fashion/pakaian' },
+  { re: /\b(parkir|tol|e-toll|etoll|parking|toll|bus|taxi|train fare)\b/i, jenis: 'pengeluaran', sub: 'Parkir & Tol' },
+  { re: /\b(baju|kaos|celana|sepatu|tas|fashion|pakaian|jilbab|clothes|clothing|shoes)\b/i, jenis: 'pengeluaran', sub: 'Fashion/pakaian' },
   { re: /\b(gas|lpg|elpiji)\b/i, jenis: 'pengeluaran', sub: 'Gas/LPG' },
-  { re: /\b(salon|potong rambut|spa|skincare)\b/i, jenis: 'pengeluaran', sub: 'Salon & perawatan' },
-  { re: /\b(bioskop|film|xxi|cgv|teater)\b/i, jenis: 'pengeluaran', sub: 'Nonton bioskop/teater' },
+  { re: /\b(salon|potong rambut|spa|skincare|haircut)\b/i, jenis: 'pengeluaran', sub: 'Salon & perawatan' },
+  { re: /\b(bioskop|film|xxi|cgv|teater|cinema|movie|theatre|theater)\b/i, jenis: 'pengeluaran', sub: 'Nonton bioskop/teater' },
   { re: /\b(netflix|spotify|youtube premium|disney|hbo|vidio|prime|langganan|streaming)\b/i, jenis: 'pengeluaran', sub: 'Langganan streaming' },
-  { re: /\b(liburan|wisata|hotel|tiket pesawat|kereta api)\b/i, jenis: 'pengeluaran', sub: 'Liburan' },
+  { re: /\b(liburan|wisata|hotel|tiket pesawat|kereta api|holiday|vacation|flight)\b/i, jenis: 'pengeluaran', sub: 'Liburan' },
   { re: /\b(internet|wifi|indihome|tv kabel|first media|biznet)\b/i, jenis: 'pengeluaran', sub: 'Internet & TV kabel' },
-  { re: /\b(pulsa|paket data|kuota)\b/i, jenis: 'pengeluaran', sub: 'Pulsa & Paket Data' },
+  { re: /\b(pulsa|paket data|kuota|mobile data|phone bill)\b/i, jenis: 'pengeluaran', sub: 'Pulsa & Paket Data' },
 ];
 
 // Kata kunci pemasukan umum (fallback)
-const INCOME_HINTS = /\b(terima|dapat|masuk|pemasukan|income|pendapatan|cair)\b/i;
+const INCOME_HINTS = /\b(terima|dapat|masuk|pemasukan|income|pendapatan|cair|received|earned|earnings)\b/i;
 
 const STORAGE_KEY = 'financial-tracker-v1';
 

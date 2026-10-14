@@ -12,7 +12,7 @@ function renderGreeting() {
   const nama = (state.userName || '').trim();
   if (!nama) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `Halo, <b>${escapeHtmlDash(nama)}</b> 👋`;
+  el.innerHTML = appHtml`Halo, <b>${escapeHtmlDash(nama)}</b> 👋`;
 }
 
 function renderSubscriptionSummary() {
@@ -39,17 +39,17 @@ function renderSubscriptionSummary() {
   else detail = 'Belum ada paket aktif. Pilih paket untuk membuka fitur Pro.';
 
   el.hidden = false;
-  el.innerHTML = `<div class="subscription-summary-copy"><span class="subscription-summary-label">PAKET AKUN</span><strong>${planName}${active ? ' · Aktif' : ''}</strong><small>${detail}</small></div><button type="button" class="subscription-summary-action" id="subscription-summary-action">Paket &amp; pembayaran <span aria-hidden="true">→</span></button>`;
+  el.innerHTML = appHtml`<div class="subscription-summary-copy"><span class="subscription-summary-label">PAKET AKUN</span><strong>${planName}${active ? ' · Aktif' : ''}</strong><small>${detail}</small></div><button type="button" class="subscription-summary-action" id="subscription-summary-action">Paket &amp; pembayaran <span aria-hidden="true">→</span></button>`;
   el.querySelector('#subscription-summary-action').onclick = () => showScreen('paywall');
 }
 
 function renderStartingBalancePrompt() {
   const el = document.getElementById('starting-balance-reminder');
   if (!el) return;
-  const complete = state.startingBalance?.completed === true;
+  const complete = getFinancialState().startingBalance?.completed === true;
   el.hidden = complete;
   if (complete) return;
-  el.innerHTML = `<div><b>Langkah pertama: setup dana awal</b><span>Masukkan saldo rekening, e-wallet, dan tunai agar ringkasanmu akurat. Kamu belum bisa mencatat transaksi sebelum memilih saldo atau Rp0.</span></div><button type="button" id="starting-balance-reminder-action">Setup sekarang →</button>`;
+  el.innerHTML = appHtml`<div><b>Langkah pertama: setup dana awal</b><span>Masukkan saldo rekening, e-wallet, dan tunai agar ringkasanmu akurat. Kamu belum bisa mencatat transaksi sebelum memilih saldo atau Rp0.</span></div><button type="button" id="starting-balance-reminder-action">Setup sekarang →</button>`;
   el.querySelector('#starting-balance-reminder-action').onclick = () => window.openOnboardingManual?.();
 }
 
@@ -66,11 +66,11 @@ function renderStartGuide() {
     dismissed = localStorage.getItem('beruang-guide-dismissed:' + uid) === '1';
     aiSeen = localStorage.getItem('beruang-guide-ai:' + uid) === '1';
   } catch (_) {}
-  const realTx = (state.transactions || []).filter(t => t.kategori !== 'Saldo Awal').length;
+  const realTx = (getFinancialState().transactions || []).filter(t => t.kategori !== 'Saldo Awal').length;
   const aiPaid = typeof hasAIAccess === 'function' && typeof currentProfile !== 'undefined' && hasAIAccess(currentProfile);
   const steps = [
     { id: 'tx', done: realTx > 0, title: 'Catat transaksi pertama', desc: 'Cukup ketik, misalnya "bakso 25rb"' },
-    { id: 'ai', done: aiSeen, title: aiPaid ? 'Tanya AI Akuntan' : 'Kenalan dengan AI Akuntan',
+    { id: 'ai', done: aiSeen, title: aiPaid ? 'Tanya Ruvy AI' : 'Kenalan dengan Ruvy AI',
       desc: aiPaid ? 'Coba: "Bulan ini aku boros di mana?"' : 'Asisten keuangan pribadi, di paket berbayar' },
     { id: 'tg', done: typeof tgIsLinked === 'function' && tgIsLinked(), title: 'Sambungkan Telegram',
       desc: 'Catat lewat chat + pengingat tagihan' },
@@ -80,7 +80,7 @@ function renderStartGuide() {
   // User lama (sudah banyak catatan) tidak perlu panduan.
   if (dismissed || doneCount === steps.length || realTx >= 30) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `
+  el.innerHTML = appHtml`
     <div class="start-guide-head">
       <div><b>Mulai di sini</b><span>${doneCount} dari ${steps.length} selesai</span></div>
       <button type="button" class="start-guide-close" aria-label="Tutup panduan">×</button>
@@ -121,7 +121,7 @@ function renderStartGuide() {
 function renderAssets() {
   const el = document.getElementById('dash-assets');
   if (!el) return;
-  const assets = state.assets || [];
+  const assets = getFinancialState().assets || [];
   if (!assets.length) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
   const total = (typeof assetsTotal === 'function') ? assetsTotal() : assets.reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
@@ -133,7 +133,7 @@ function renderAssets() {
       <span style="font-weight:700;color:#4a3328;">${formatRupiah(Number(a.jumlah) || 0)}</span>
       <button data-id="${a.id}" title="Hapus" style="flex:0 0 auto;border:none;background:#f7ede0;color:#b91c1c;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:16px;">×</button>
     </li>`).join('');
-  el.innerHTML = `
+  el.innerHTML = appHtml`
     <div class="panel">
       <div class="panel-head">
         <h3>💎 Aset / Kekayaan</h3>
@@ -158,7 +158,7 @@ function escapeHtmlDash(s) {
 function renderHutangSummary() {
   const el = document.getElementById('dash-hutang');
   if (!el) return;
-  const all = state.hutangs || [];
+  const all = getFinancialState().hutangs || [];
   const piutang = all.filter(h => h.jenis === 'piutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
   const hutang = all.filter(h => h.jenis === 'hutang' && !h.lunas).reduce((s, h) => s + (Number(h.nominal) || 0), 0);
   if (piutang === 0 && hutang === 0) { el.hidden = true; el.innerHTML = ''; return; }
@@ -166,7 +166,7 @@ function renderHutangSummary() {
   const net = piutang - hutang;
   const netColor = net >= 0 ? 'var(--income)' : 'var(--expense)';
   const netStr = (net < 0 ? '-' : '') + formatRupiah(Math.abs(net)).replace(/^Rp\s*/, 'Rp ');
-  el.innerHTML = `
+  el.innerHTML = appHtml`
     <div class="panel">
       <div class="panel-head">
         <h3>💸 Hutang &amp; Piutang</h3>
@@ -198,7 +198,7 @@ function renderDashboard() {
   const prev = addMonths(m, y, -1);
   const trxPrev = getCashflowTransactionsFor(prev.m, prev.y);
 
-  const hasTransactions = Array.isArray(state.transactions) && state.transactions.some(t => !isOpeningBalanceTransaction(t));
+  const hasTransactions = Array.isArray(getFinancialState().transactions) && getFinancialState().transactions.some(t => !isOpeningBalanceTransaction(t));
   const emptyState = document.getElementById('dashboard-empty-state');
   const overview = document.getElementById('dashboard-overview');
   const moreAction = document.getElementById('dashboard-more-action');
@@ -271,11 +271,11 @@ function sumBy(trx, jenis) {
 // Semua transaksi sampai akhir bulan dipakai supaya saldo bulan lalu terbawa.
 function balanceThrough(month, year) {
   const cutoff = new Date(year, month + 1, 1).getTime();
-  const setup = state.startingBalance?.completed === true ? state.startingBalance : null;
+  const setup = getFinancialState().startingBalance?.completed === true ? getFinancialState().startingBalance : null;
   const startDate = setup?.date ? parseISO(setup.date).getTime() : null;
   const initial = setup && startDate != null && !Number.isNaN(startDate) && startDate < cutoff
     ? Math.max(0, Number(setup.amount) || 0) : 0;
-  return (state.transactions || []).reduce((total, transaction) => {
+  return (getFinancialState().transactions || []).reduce((total, transaction) => {
     if (isOpeningBalanceTransaction(transaction)) return total;
     const date = parseISO(transaction.tanggal);
     if (!(date instanceof Date) || Number.isNaN(date.getTime()) || date.getTime() >= cutoff) return total;
@@ -355,10 +355,10 @@ function renderMiniReports(trx, trxPrev, income, expense, balance) {
     else items.push({ type: 'bad', text: `📉 Saldo turun ${formatRupiah(-delta)} dari bulan lalu.` });
   }
 
-  if (state.target && expense > state.target) {
-    items.push({ type: 'bad', text: `🎯 Pengeluaran melewati target ${formatRupiah(state.target)}.` });
-  } else if (state.target) {
-    items.push({ type: 'info', text: `🎯 Sisa budget: ${formatRupiah(state.target - expense)}.` });
+  if (getFinancialState().target && expense > getFinancialState().target) {
+    items.push({ type: 'bad', text: `🎯 Pengeluaran melewati target ${formatRupiah(getFinancialState().target)}.` });
+  } else if (getFinancialState().target) {
+    items.push({ type: 'info', text: `🎯 Sisa budget: ${formatRupiah(getFinancialState().target - expense)}.` });
   }
 
   const topExp = Object.entries(groupBy(trx.filter(t => t.jenis === 'pengeluaran'), 'subKategori'))
@@ -501,9 +501,9 @@ function renderAlokasi(trx) {
   fillAlokasi('list-kebutuhan', buckets.Kebutuhan);
   fillAlokasi('list-keinginan', buckets.Keinginan);
   fillAlokasi('list-investasi', buckets.Investasi);
-  document.getElementById('total-kebutuhan').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Kebutuhan)}</span>`;
-  document.getElementById('total-keinginan').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Keinginan)}</span>`;
-  document.getElementById('total-investasi').innerHTML = `<span class="money-expense">−${formatRupiah(totals.Investasi)}</span>`;
+  document.getElementById('total-kebutuhan').innerHTML = appHtml`<span class="money-expense">−${formatRupiah(totals.Kebutuhan)}</span>`;
+  document.getElementById('total-keinginan').innerHTML = appHtml`<span class="money-expense">−${formatRupiah(totals.Keinginan)}</span>`;
+  document.getElementById('total-investasi').innerHTML = appHtml`<span class="money-expense">−${formatRupiah(totals.Investasi)}</span>`;
 }
 
 function fillAlokasi(id, items) {
@@ -522,7 +522,7 @@ function renderBudgetRings(trx) {
     const a = t.alokasi || findCategoryForSub(t.subKategori, 'pengeluaran').alokasi;
     if (totals[a] != null) totals[a] += +t.jumlah;
   }
-  const target = state.target || 0;
+  const target = getFinancialState().target || 0;
   document.getElementById('target-bulan').textContent = formatRupiah(target);
   document.getElementById('input-target').value = (typeof fmtThousands === 'function') ? fmtThousands(target) : (target || '');
 
@@ -547,14 +547,14 @@ function drawRing(id, used, budget, color, pctId) {
 function renderSixMonth(m, y) {
   const rows = [];
   const selectedIndex = y * 12 + m;
-  const transactionIndexes = (state.transactions || [])
+  const transactionIndexes = (getFinancialState().transactions || [])
     .filter(t => !isOpeningBalanceTransaction(t))
     .map(t => parseISO(t.tanggal))
     .filter(d => d instanceof Date && !Number.isNaN(d.getTime()))
     .map(d => d.getFullYear() * 12 + d.getMonth())
     .filter(index => index <= selectedIndex);
-  if (state.startingBalance?.completed && state.startingBalance.date) {
-    const start = parseISO(state.startingBalance.date);
+  if (getFinancialState().startingBalance?.completed && getFinancialState().startingBalance.date) {
+    const start = parseISO(getFinancialState().startingBalance.date);
     if (!Number.isNaN(start.getTime())) transactionIndexes.push(start.getFullYear() * 12 + start.getMonth());
   }
   const firstIndex = transactionIndexes.length ? Math.min(...transactionIndexes) : selectedIndex;
@@ -575,7 +575,7 @@ function renderSixMonth(m, y) {
     <td>${r.count}</td>
   </tr>`).join('');
   const avg = (k) => rows.reduce((s, r) => s + r[k], 0) / rows.length;
-  document.getElementById('six-month-foot').innerHTML = `<tr>
+  document.getElementById('six-month-foot').innerHTML = appHtml`<tr>
     <td>RATA-RATA</td>
     <td class="money-income">${formatRupiah(avg('inc'))}</td>
     <td class="money-expense">−${formatRupiah(avg('exp'))}</td>

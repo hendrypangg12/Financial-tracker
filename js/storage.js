@@ -1,14 +1,19 @@
+function getFinancialState(walletId) {
+  return typeof getWalletLedger === 'function' ? getWalletLedger(walletId) : state;
+}
 // Store each account separately; retain the old unscoped cache for manual recovery.
 let activeStorageKey = STORAGE_KEY;
 function storageKey() { return activeStorageKey; }
 function selectUserStorage(uid) {
   activeStorageKey = STORAGE_KEY + ':' + uid;
   for (const key of ['transactions', 'hutangs', 'assets', 'recurring', 'goals']) state[key] = [];
-  state.userName = ''; state.target = 0; state.startingBalance = null;
+  state.userName = ''; state.target = 0; state.startingBalance = null; state.wallets = []; state.walletData = {};
+  state.preferences = { language: typeof getDeviceLanguage === 'function' ? getDeviceLanguage() : 'id', currency: 'IDR', currencyLocked: false };
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
 }
 // Storage & state
 const state = {
+  wallets: [], walletData: {},
   transactions: [],
   hutangs: [], // hutang & piutang personal
   assets: [],  // aset/dana awal (rekening, investasi) — info kekayaan, TIDAK masuk cashflow
@@ -16,6 +21,7 @@ const state = {
   goals: [], // 🎯 AI Goal Planner — target nabung dengan AI plan (v1.0.2)
   userName: '', // nama panggilan user (dari onboarding) — buat sapaan
   startingBalance: null, // { amount, date, completed } — baseline kas, bukan pemasukan
+  preferences: { language: typeof getDeviceLanguage === 'function' ? getDeviceLanguage() : 'id', currency: 'IDR', currencyLocked: false },
   categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
   target: 0,
   selectedMonth: new Date().getMonth(),
@@ -28,6 +34,9 @@ function loadState() {
     const raw = localStorage.getItem(storageKey());
     if (!raw) return;
     const data = JSON.parse(raw);
+    // Validate before applying any amounts; an unknown currency must not become IDR.
+    state.preferences = typeof normalizePreferences === 'function' ? normalizePreferences(data.preferences) : (data.preferences || { language: 'id', currency: 'IDR', currencyLocked: false });
+    if (typeof validateWalletState === 'function') Object.assign(state, validateWalletState(data));
     if (data.transactions) state.transactions = data.transactions;
     if (data.hutangs) state.hutangs = data.hutangs;
     if (Array.isArray(data.assets)) state.assets = data.assets;
@@ -37,6 +46,7 @@ function loadState() {
     if (data.startingBalance && typeof data.startingBalance === 'object') state.startingBalance = data.startingBalance;
     if (data.categories) state.categories = data.categories;
     if (data.target != null) state.target = data.target;
+    if (typeof lockWalletCurrencies === 'function') lockWalletCurrencies();
   } catch (e) {
     console.warn('Gagal memuat data:', e);
   }
@@ -44,7 +54,9 @@ function loadState() {
 
 function saveState() {
   try {
+    if (typeof lockWalletCurrencies === 'function') lockWalletCurrencies();
     localStorage.setItem(storageKey(), JSON.stringify({
+      wallets: state.wallets, walletData: state.walletData,
       transactions: state.transactions,
       hutangs: state.hutangs,
       assets: state.assets,
@@ -52,6 +64,7 @@ function saveState() {
       goals: state.goals,
       userName: state.userName,
       startingBalance: state.startingBalance,
+      preferences: state.preferences,
       categories: state.categories,
       target: state.target,
     }));
@@ -64,23 +77,29 @@ function saveState() {
   }
 }
 
-function addTransaction(t) {
+function addTransaction(t, walletId) {
+  const ledger = getFinancialState(walletId);
+  if (typeof validWalletAmount === 'function') {
+    const currency = walletId ? getWallets().find(w => w.id === walletId)?.currency : getAccountCurrency();
+    if (!currency || !validWalletAmount(t.jumlah, currency) || t.jumlah <= 0) throw new Error('Invalid transaction amount');
+  }
   t.id = t.id || uid();
-  state.transactions.push(t);
+  ledger.transactions.push(t);
   saveState();
   if (typeof trackTxMilestones === 'function') trackTxMilestones();
 }
 
 function updateTransaction(id, patch) {
-  const i = state.transactions.findIndex(t => t.id === id);
+  const i = getFinancialState().transactions.findIndex(t => t.id === id);
   if (i >= 0) {
-    state.transactions[i] = { ...state.transactions[i], ...patch };
+    if (patch.jumlah !== undefined && typeof validWalletAmount === 'function' && (!validWalletAmount(patch.jumlah, getAccountCurrency()) || patch.jumlah <= 0)) throw new Error('Invalid transaction amount');
+    getFinancialState().transactions[i] = { ...getFinancialState().transactions[i], ...patch };
     saveState();
   }
 }
 
 function deleteTransaction(id) {
-  state.transactions = state.transactions.filter(t => t.id !== id);
+  getFinancialState().transactions = getFinancialState().transactions.filter(t => t.id !== id);
   saveState();
 }
 
@@ -151,11 +170,15 @@ function renameCustomCategory(jenis, oldName, rawName) {
       if (item.kategori === oldName) item.kategori = newName;
     });
   }
+  for (const ledger of Object.values(state.walletData || {})) {
+    for (const transaction of ledger.transactions || []) if (transaction.jenis === jenis && transaction.kategori === oldName) transaction.kategori = newName;
+    if (jenis === 'pengeluaran') for (const item of ledger.recurring || []) if (item.kategori === oldName) item.kategori = newName;
+  }
   return { ok: true, oldName, name: newName };
 }
 
 function getTransactionsFor(month, year) {
-  return state.transactions.filter(t => {
+  return getFinancialState().transactions.filter(t => {
     const d = parseISO(t.tanggal);
     return d.getMonth() === month && d.getFullYear() === year;
   });
@@ -173,6 +196,7 @@ function getCashflowTransactionsFor(month, year) {
 function exportData() {
   const data = {
     exportedAt: new Date().toISOString(),
+    wallets: state.wallets, walletData: state.walletData,
     transactions: state.transactions,
     hutangs: state.hutangs,
     assets: state.assets,
@@ -180,6 +204,7 @@ function exportData() {
     goals: state.goals,
     userName: state.userName,
     startingBalance: state.startingBalance,
+    preferences: state.preferences,
     categories: state.categories,
     target: state.target,
   };
@@ -195,18 +220,25 @@ function exportData() {
 function importData(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
         const data = JSON.parse(reader.result);
+        const incoming = typeof normalizePreferences === 'function' ? normalizePreferences(data.preferences) : { language: 'id', currency: 'IDR' };
+        if (incoming.currency !== 'IDR') throw new Error('A legacy non-IDR backup must be migrated into its own wallet, not relabelled as Rupiah.');
+        const wallets = typeof validateWalletState === 'function' ? validateWalletState(data) : { wallets: [], walletData: {} };
+        Object.assign(state, wallets);
+        state.preferences = { ...incoming, language: state.preferences?.language || incoming.language };
         if (Array.isArray(data.transactions)) state.transactions = data.transactions;
         if (Array.isArray(data.hutangs)) state.hutangs = data.hutangs;
         if (Array.isArray(data.assets)) state.assets = data.assets;
         if (Array.isArray(data.recurring)) state.recurring = data.recurring;
+        state.goals = Array.isArray(data.goals) ? data.goals : [];
         if (typeof data.userName === 'string') state.userName = data.userName;
         // A legacy backup has no baseline. Do not retain the previous account's
         // baseline when its transactions are replaced by imported history.
         state.startingBalance = data.startingBalance && typeof data.startingBalance === 'object'
           ? data.startingBalance : null;
+        if (typeof selectWallet === 'function') selectWallet('legacy');
         if (typeof migrateLegacyStartingBalance === 'function') migrateLegacyStartingBalance();
         if (data.categories) state.categories = data.categories;
         if (data.target != null) state.target = data.target;
@@ -220,6 +252,9 @@ function importData(file) {
 }
 
 function resetAll() {
+  // Clearing records is not permission to relabel an account's historical currency.
+  const preferences = state.preferences;
+  state.wallets = []; state.walletData = {}; state.goals = [];
   state.transactions = [];
   state.hutangs = [];
   state.assets = [];
@@ -228,6 +263,7 @@ function resetAll() {
   state.startingBalance = null;
   state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
   state.target = 0;
+  state.preferences = preferences;
   saveState();
 }
 
@@ -237,15 +273,15 @@ function resetAll() {
 // ============================================================
 function addAsset(a) {
   a.id = a.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
-  state.assets.push(a);
+  getFinancialState().assets.push(a);
   saveState();
 }
 function deleteAsset(id) {
-  state.assets = state.assets.filter(x => x.id !== id);
+  getFinancialState().assets = getFinancialState().assets.filter(x => x.id !== id);
   saveState();
 }
 function assetsTotal() {
-  return (state.assets || []).reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
+  return (getFinancialState().assets || []).reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
 }
 
 // ============================================================
@@ -255,16 +291,16 @@ function assetsTotal() {
 // ============================================================
 function addRecurring(r) {
   r.id = r.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
-  state.recurring.push(r);
+  getFinancialState().recurring.push(r);
   saveState();
 }
 function deleteRecurring(id) {
-  state.recurring = state.recurring.filter(x => x.id !== id);
+  getFinancialState().recurring = getFinancialState().recurring.filter(x => x.id !== id);
   saveState();
 }
 function recurringPostedThisMonth(id, ym) {
   const m = ym || new Date().toISOString().slice(0, 7);
-  return state.transactions.some(t => t.recurringId === id && t.recurringMonth === m);
+  return getFinancialState().transactions.some(t => t.recurringId === id && t.recurringMonth === m);
 }
 
 // ============================================================
@@ -277,20 +313,20 @@ function addHutang(h) {
   h.id = h.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
   h.tanggalCatat = h.tanggalCatat || todayISO();
   h.lunas = h.lunas || false;
-  state.hutangs.push(h);
+  getFinancialState().hutangs.push(h);
   saveState();
 }
 
 function updateHutang(id, patch) {
-  const i = state.hutangs.findIndex(x => x.id === id);
+  const i = getFinancialState().hutangs.findIndex(x => x.id === id);
   if (i >= 0) {
-    state.hutangs[i] = { ...state.hutangs[i], ...patch };
+    getFinancialState().hutangs[i] = { ...getFinancialState().hutangs[i], ...patch };
     saveState();
   }
 }
 
 function deleteHutang(id) {
-  state.hutangs = state.hutangs.filter(x => x.id !== id);
+  getFinancialState().hutangs = getFinancialState().hutangs.filter(x => x.id !== id);
   saveState();
 }
 
@@ -299,7 +335,7 @@ function markHutangLunas(id) {
 }
 
 function markHutangBelumLunas(id) {
-  const h = state.hutangs.find(x => x.id === id);
+  const h = getFinancialState().hutangs.find(x => x.id === id);
   if (h) {
     h.lunas = false;
     delete h.tanggalLunas;

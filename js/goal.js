@@ -1,21 +1,44 @@
 // ============================================================
 // AI GOAL PLANNER — set target nabung, AI bantu plan
 // ============================================================
-// State: state.goals[] — array of goal objects
+// State: getFinancialState().goals[] — array of goal objects
 // Goal struct: { id, nama, targetAmount, deadline, currentSaving,
 //                aiPlan, monthlyTarget, createdAt, updatedAt, status }
-// AI: pakai endpoint /api/advise yang udah live (reuse Beruang Akuntan)
+// AI: pakai endpoint /api/advise yang udah live (reuse Ruvy)
 
 const GOAL_AI_ENDPOINT = "https://berstock-bot.hendrypangg12.workers.dev/api/advise";
+let goalAIError = '';
+
+function goalText(id, en) {
+  return typeof getAppLanguage === 'function' && getAppLanguage() === 'en' ? en : id;
+}
+
+function goalPreferences() {
+  return {
+    language: typeof getAppLanguage === 'function' ? getAppLanguage() : 'id',
+    locale: typeof getAppLocale === 'function' ? getAppLocale() : 'id-ID',
+    currency: typeof getAccountCurrency === 'function' ? getAccountCurrency() : 'IDR',
+  };
+}
+
+function goalMoneyPrecision(value, roundUp = false) {
+  const factor = 10 ** (typeof getCurrencyDigits === 'function' ? getCurrencyDigits() : 0);
+  return (roundUp ? Math.ceil(Number(value) * factor - 1e-9) : Math.round(Number(value) * factor)) / factor;
+}
+
+function parseGoalAmount(input) {
+  const result = typeof parseMoneyInput === 'function' ? parseMoneyInput(input) : Number(input);
+  return Number.isFinite(result) ? result : null;
+}
 
 // ============ DATA ============
 
 function getGoals() {
-  return state.goals || [];
+  return getFinancialState().goals || [];
 }
 
 function addGoal(g) {
-  if (!state.goals) state.goals = [];
+  if (!getFinancialState().goals) getFinancialState().goals = [];
   const goal = {
     id: 'goal_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
     nama: g.nama,
@@ -27,20 +50,20 @@ function addGoal(g) {
     updatedAt: new Date().toISOString(),
     status: 'active',
   };
-  state.goals.push(goal);
+  getFinancialState().goals.push(goal);
   saveState();
   renderGoals();
   return goal;
 }
 
 function deleteGoal(id) {
-  state.goals = (state.goals || []).filter(g => g.id !== id);
+  getFinancialState().goals = (getFinancialState().goals || []).filter(g => g.id !== id);
   saveState();
   renderGoals();
 }
 
 function updateGoalSaving(id, newSaving) {
-  const g = (state.goals || []).find(x => x.id === id);
+  const g = (getFinancialState().goals || []).find(x => x.id === id);
   if (!g) return;
   g.currentSaving = Number(newSaving) || 0;
   g.updatedAt = new Date().toISOString();
@@ -53,7 +76,7 @@ function updateGoalSaving(id, newSaving) {
 
 function computeMonthsLeft(deadline) {
   const now = new Date();
-  const d = new Date(deadline);
+  const d = parseISO(deadline);
   if (isNaN(d)) return 1;
   const ms = d.getTime() - now.getTime();
   return Math.max(1, Math.ceil(ms / (1000 * 60 * 60 * 24 * 30)));
@@ -64,7 +87,7 @@ function computeMonthlyTarget(goal) {
   const current = Number(goal.currentSaving) || 0;
   const remaining = Math.max(0, target - current);
   const months = computeMonthsLeft(goal.deadline);
-  return Math.ceil(remaining / months);
+  return goalMoneyPrecision(remaining / months, true);
 }
 
 function computeProgress(goal) {
@@ -82,10 +105,10 @@ function computeMonthlyAvg(jenis) {
     const checkDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const m = checkDate.getMonth();
     const y = checkDate.getFullYear();
-    const txs = (state.transactions || []).filter(t => {
+    const txs = (getFinancialState().transactions || []).filter(t => {
       if (isOpeningBalanceTransaction(t)) return false;
       if (!t.tanggal) return false;
-      const td = new Date(t.tanggal);
+      const td = parseISO(t.tanggal);
       return td.getMonth() === m && td.getFullYear() === y && t.jenis === jenis;
     });
     const sum = txs.reduce((s, t) => s + (Number(t.jumlah) || 0), 0);
@@ -94,7 +117,7 @@ function computeMonthlyAvg(jenis) {
       monthsWithData++;
     }
   }
-  return monthsWithData > 0 ? Math.round(total / monthsWithData) : 0;
+  return monthsWithData > 0 ? goalMoneyPrecision(total / monthsWithData) : 0;
 }
 
 function getTopExpenseCategories(limit) {
@@ -102,10 +125,10 @@ function getTopExpenseCategories(limit) {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  for (const t of (state.transactions || [])) {
+  for (const t of (getFinancialState().transactions || [])) {
     if (t.jenis !== 'pengeluaran') continue;
-    if (new Date(t.tanggal) < sixMonthsAgo) continue;
-    const cat = (t.kategori || 'Lainnya').trim();
+    if (parseISO(t.tanggal) < sixMonthsAgo) continue;
+    const cat = (t.kategori || goalText('Lainnya', 'Other')).trim();
     byCat[cat] = (byCat[cat] || 0) + (Number(t.jumlah) || 0);
   }
   return Object.entries(byCat)
@@ -116,9 +139,8 @@ function getTopExpenseCategories(limit) {
 
 // ============ AI PLAN GENERATION ============
 
-async function generateAIPlan(goal) {
-  if (!goal) return null;
-
+function buildGoalRequest(goal) {
+  const preferences = goalPreferences();
   const recentIncome = computeMonthlyAvg('pemasukan');
   const recentExpense = computeMonthlyAvg('pengeluaran');
   const topCats = getTopExpenseCategories(3);
@@ -126,20 +148,21 @@ async function generateAIPlan(goal) {
   const monthsLeft = computeMonthsLeft(goal.deadline);
 
   const catSummary = topCats.length > 0
-    ? topCats.map(c => `${c.kategori} (Rp ${c.total.toLocaleString('id-ID')})`).join(', ')
-    : 'belum ada data';
+    ? topCats.map(c => `${c.kategori} (${formatRpGoal(c.total)})`).join(', ')
+    : goalText('belum ada data', 'no records yet');
 
-  const question = `Saya butuh plan saving untuk goal ini:
+  const question = goalText(`Saya butuh rencana menabung untuk target ini:
 
 Goal: ${goal.nama}
-Target: Rp ${Number(goal.targetAmount).toLocaleString('id-ID')}
-Deadline: ${goal.deadline} (${monthsLeft} bulan dari sekarang)
-Saving sekarang: Rp ${Number(goal.currentSaving).toLocaleString('id-ID')}
-Butuh nabung: Rp ${monthlyTarget.toLocaleString('id-ID')}/bulan
+Mata uang: ${preferences.currency} (jangan konversi kurs)
+Target: ${formatRpGoal(goal.targetAmount)}
+Deadline: ${formatDateID(goal.deadline)} (${monthsLeft} bulan dari sekarang)
+Tabungan sekarang: ${formatRpGoal(goal.currentSaving)}
+Butuh nabung: ${formatRpGoal(monthlyTarget)}/bulan
 
 Pola keuangan saya 3 bulan terakhir:
-- Income rata-rata: Rp ${recentIncome.toLocaleString('id-ID')}/bulan
-- Expense rata-rata: Rp ${recentExpense.toLocaleString('id-ID')}/bulan
+- Income rata-rata: ${formatRpGoal(recentIncome)}/bulan
+- Expense rata-rata: ${formatRpGoal(recentExpense)}/bulan
 - Top expense (6 bulan): ${catSummary}
 
 Sebagai Akuntan AI, kasih plan saving lengkap dengan:
@@ -148,23 +171,58 @@ Sebagai Akuntan AI, kasih plan saving lengkap dengan:
 3. Total potential saving per bulan kalau saran dijalanin
 4. 1 kalimat encouraging closing
 
-Format: bahasa casual Indonesia, max 150 kata, pakai emoji.`;
+Format: bahasa casual Indonesia, max 150 kata, pakai emoji. Jangan membuat angka tabungan yang tidak didukung data.`, `Please make a savings plan for this goal:
+
+Goal: ${goal.nama}
+Account currency: ${preferences.currency} (do not convert currencies)
+Target: ${formatRpGoal(goal.targetAmount)}
+Deadline: ${formatDateID(goal.deadline)} (${monthsLeft} months from now)
+Current savings: ${formatRpGoal(goal.currentSaving)}
+Required savings: ${formatRpGoal(monthlyTarget)}/month
+
+My recorded pattern over the last 3 completed months:
+- Average income: ${formatRpGoal(recentIncome)}/month
+- Average expenses: ${formatRpGoal(recentExpense)}/month
+- Largest expense categories over 6 months: ${catSummary}
+
+Give a concise plan in clear English, at most 150 words:
+1. Is the goal realistic, difficult or currently not achievable? Explain briefly.
+2. Three concrete spending changes based on my records.
+3. Estimated monthly savings only where the records support the estimate.
+4. One encouraging closing sentence.
+Use occasional emojis and say when records are insufficient. Do not invent savings or assume they are guaranteed.`);
+
+  return { question, context: {
+    ...(typeof buildAdvisorContext === 'function' ? buildAdvisorContext() : {}),
+    ...preferences,
+    source: 'goal-planner',
+  } };
+}
+
+async function generateAIPlan(goal) {
+  if (!goal) return null;
+  goalAIError = '';
+  const { question, context } = buildGoalRequest(goal);
 
   const email = (typeof currentUser !== "undefined" && currentUser?.email) || "anonymous@local";
 
   try {
     const res = await fetch(GOAL_AI_ENDPOINT, {
       method: "POST",
-      headers: await authenticatedHeaders(),
-      body: JSON.stringify({ email, question, context: { source: 'goal-planner' } }),
+      headers: { ...await authenticatedHeaders(), 'Accept-Language': context.language },
+      body: JSON.stringify({ email, question, context }),
     });
-    if (!res.ok) throw new Error(`Gateway HTTP ${res.status}`);
     const data = await res.json();
+    if (!res.ok) {
+      goalAIError = data.reply || data.error || goalText('AI belum tersedia, coba lagi nanti.', 'AI is unavailable. Please try again later.');
+      return null;
+    }
     if (data.reply) return data.reply;
-    if (data.error) throw new Error(data.error);
+    if (data.error) goalAIError = data.error;
     return null;
   } catch (e) {
     console.error('[goal-ai]', e);
+    goalAIError = goalText('Koneksi AI gagal. Periksa internet dan coba lagi.', 'AI connection failed. Check your internet and try again.');
     return null;
   }
 }
@@ -177,13 +235,13 @@ function escGoal(s) {
 
 function formatDateID(iso) {
   if (!iso) return '-';
-  const d = new Date(iso);
+  const d = parseISO(iso);
   if (isNaN(d)) return iso;
-  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(goalPreferences().locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function formatRpGoal(n) {
-  return 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
+  return formatRupiah(n);
 }
 
 function renderGoals() {
@@ -195,10 +253,10 @@ function renderGoals() {
     container.innerHTML = `
       <div class="goal-empty">
         <div class="goal-empty-emoji">🎯</div>
-        <h3>Belum ada goal saving</h3>
-        <p>Set target nabung pertama lu — Beruang AI bantu buat plan konkret.</p>
+        <h3>${goalText('Belum ada goal saving', 'No savings goals yet')}</h3>
+        <p>${goalText('Set target nabung pertama lu — Beruang AI bantu buat plan konkret.', 'Set your first savings goal and get a plan from Ruvy AI.')}</p>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:8px;">
-          Contoh: beli iPhone, DP rumah, liburan Bali, dana darurat
+          ${goalText('Contoh: beli iPhone, DP rumah, liburan Bali, dana darurat', 'Examples: a new phone, home deposit, vacation or emergency fund')}
         </p>
       </div>
     `;
@@ -216,7 +274,7 @@ function renderGoals() {
       <div class="goal-card ${isCompleted ? 'goal-completed' : ''}" data-id="${escGoal(g.id)}">
         <div class="goal-header">
           <div class="goal-title">${isCompleted ? '🎉 ' : '🎯 '}${escGoal(g.nama)}</div>
-          <button class="goal-delete" data-id="${escGoal(g.id)}" aria-label="Hapus" title="Hapus goal">×</button>
+          <button class="goal-delete" data-id="${escGoal(g.id)}" aria-label="${goalText('Hapus', 'Delete')}" title="${goalText('Hapus goal', 'Delete goal')}">×</button>
         </div>
         <div class="goal-amounts">
           <div class="goal-amt-box">
@@ -224,7 +282,7 @@ function renderGoals() {
             <div class="goal-amt-value">${formatRpGoal(g.targetAmount)}</div>
           </div>
           <div class="goal-amt-box">
-            <div class="goal-amt-label">Sekarang</div>
+            <div class="goal-amt-label">${goalText('Sekarang', 'Current')}</div>
             <div class="goal-amt-value goal-amt-current">${formatRpGoal(g.currentSaving)}</div>
           </div>
         </div>
@@ -232,16 +290,16 @@ function renderGoals() {
           <div class="goal-progress-bar">
             <div class="goal-progress-fill" style="width:${progress}%"></div>
           </div>
-          <div class="goal-progress-label">${progress}% · sisa ${formatRpGoal(remaining)}</div>
+          <div class="goal-progress-label">${progress}% · ${goalText('sisa', 'remaining')} ${formatRpGoal(remaining)}</div>
         </div>
         <div class="goal-meta">
           <div class="goal-meta-row">
             <span class="goal-meta-ic">📅</span>
-            <span>Deadline: <b>${formatDateID(g.deadline)}</b> (${monthsLeft} bulan lagi)</span>
+            <span>${goalText('Deadline', 'Due')}: <b>${formatDateID(g.deadline)}</b> (${monthsLeft} ${goalText('bulan lagi', 'months left')})</span>
           </div>
           <div class="goal-meta-row">
             <span class="goal-meta-ic">💰</span>
-            <span>Nabung: <b>${formatRpGoal(monthly)}/bulan</b></span>
+            <span>${goalText('Nabung', 'Save')}: <b>${formatRpGoal(monthly)}/${goalText('bulan', 'month')}</b></span>
           </div>
         </div>
         ${g.aiPlan ? `
@@ -249,17 +307,17 @@ function renderGoals() {
             <div class="goal-ai-header">
               <span class="goal-ai-emoji">🐻</span>
               <span>Beruang AI Plan</span>
-              <button class="goal-ai-regen" data-id="${escGoal(g.id)}" title="Generate ulang">↻</button>
+              <button class="goal-ai-regen" data-id="${escGoal(g.id)}" title="${goalText('Generate ulang', 'Regenerate')}">↻</button>
             </div>
             <div class="goal-ai-body">${escGoal(g.aiPlan).replace(/\n/g, '<br>')}</div>
           </div>
         ` : `
           <button class="btn btn-primary goal-gen-btn" data-id="${escGoal(g.id)}">
-            ✨ Generate Plan AI
+            ${goalText('✨ Generate Plan AI', '✨ Create AI Plan')}
           </button>
         `}
         <button class="btn btn-ghost goal-update-btn" data-id="${escGoal(g.id)}">
-          📝 Update saving sekarang
+          ${goalText('📝 Update saving sekarang', '📝 Update current savings')}
         </button>
       </div>
     `;
@@ -268,15 +326,15 @@ function renderGoals() {
   // Wire actions
   container.querySelectorAll('.goal-delete').forEach(btn => {
     btn.onclick = () => {
-      const goal = state.goals.find(g => g.id === btn.dataset.id);
+      const goal = getFinancialState().goals.find(g => g.id === btn.dataset.id);
       if (!goal) return;
-      if (confirm(`Hapus goal "${goal.nama}"?`)) deleteGoal(btn.dataset.id);
+      if (confirm(goalText(`Hapus goal "${goal.nama}"?`, `Delete goal "${goal.nama}"?`))) deleteGoal(btn.dataset.id);
     };
   });
 
   container.querySelectorAll('.goal-gen-btn, .goal-ai-regen').forEach(btn => {
     btn.onclick = async () => {
-      const goal = state.goals.find(g => g.id === btn.dataset.id);
+      const goal = getFinancialState().goals.find(g => g.id === btn.dataset.id);
       if (!goal) return;
 
       // Uji coba gratis tidak termasuk AI — arahkan ke paket berbayar
@@ -291,7 +349,7 @@ function renderGoals() {
       const freeUsedThisMonth = parseInt(localStorage.getItem(freeQuotaKey) || '0', 10);
       if (!userIsPro && freeUsedThisMonth >= 1) {
         if (typeof showToast === 'function') {
-          showToast('Kuota gratis bulan ini sudah dipakai. Paket Pro tetap mengikuti batas penggunaan harian.', 'error');
+          showToast(goalText('Kuota gratis bulan ini sudah dipakai. Paket Pro tetap mengikuti batas penggunaan harian.', 'Your free goal plan for this month has been used. Pro plans also have a daily usage limit.'), 'error');
         }
         if (typeof showScreen === 'function') showScreen('paywall');
         return;
@@ -299,7 +357,7 @@ function renderGoals() {
 
       const orig = btn.textContent;
       btn.disabled = true;
-      btn.textContent = '⏳ AI lagi mikir...';
+      btn.textContent = goalText('⏳ AI lagi mikir...', '⏳ Creating your plan...');
 
       const plan = await generateAIPlan(goal);
       if (plan) {
@@ -310,28 +368,30 @@ function renderGoals() {
         }
         saveState();
         renderGoals();
-        if (typeof showToast === 'function') showToast('Plan AI ready! 🎯', 'success');
+        if (typeof showToast === 'function') showToast(goalText('Plan AI ready! 🎯', 'Your AI plan is ready! 🎯'), 'success');
       } else {
         btn.disabled = false;
         btn.textContent = orig;
-        if (typeof showToast === 'function') showToast('AI lagi sibuk, coba lagi nanti', 'error');
+        if (typeof showToast === 'function') showToast(goalAIError || goalText('AI lagi sibuk, coba lagi nanti', 'AI is busy. Please try again later.'), 'error');
       }
     };
   });
 
   container.querySelectorAll('.goal-update-btn').forEach(btn => {
     btn.onclick = () => {
-      const goal = state.goals.find(g => g.id === btn.dataset.id);
+      const goal = getFinancialState().goals.find(g => g.id === btn.dataset.id);
       if (!goal) return;
       const input = prompt(
-        `Saving sekarang untuk "${goal.nama}":\n\nSaat ini: ${formatRpGoal(goal.currentSaving)}\nTarget: ${formatRpGoal(goal.targetAmount)}\n\nMasukkan nominal baru (angka aja):`,
-        String(goal.currentSaving)
+        goalText(`Saving sekarang untuk "${goal.nama}":\n\nSaat ini: ${formatRpGoal(goal.currentSaving)}\nTarget: ${formatRpGoal(goal.targetAmount)}\n\nMasukkan nominal baru:`, `Current savings for "${goal.nama}":\n\nCurrent: ${formatRpGoal(goal.currentSaving)}\nTarget: ${formatRpGoal(goal.targetAmount)}\n\nEnter the new amount:`),
+        Number(goal.currentSaving || 0).toLocaleString(goalPreferences().locale, { useGrouping: false, maximumFractionDigits: typeof getCurrencyDigits === 'function' ? getCurrencyDigits() : 0 })
       );
       if (input === null) return;
-      const num = Number(String(input).replace(/[^\d]/g, ''));
-      if (!isNaN(num) && num >= 0) {
+      const num = parseGoalAmount(input);
+      if (num !== null && num >= 0) {
         updateGoalSaving(goal.id, num);
-        if (typeof showToast === 'function') showToast('Saving updated! 💰', 'success');
+        if (typeof showToast === 'function') showToast(goalText('Saving updated! 💰', 'Savings updated! 💰'), 'success');
+      } else if (typeof showToast === 'function') {
+        showToast(goalText('Nominal tidak valid. Gunakan format mata uang akun.', 'Invalid amount. Use your account currency format.'), 'error');
       }
     };
   });
@@ -346,7 +406,7 @@ function setupGoalForm() {
   if (deadlineInput && !deadlineInput.value) {
     const minDate = new Date();
     minDate.setMonth(minDate.getMonth() + 1);
-    deadlineInput.min = minDate.toISOString().split('T')[0];
+    deadlineInput.min = toISODate(minDate);
   }
 
   form.onsubmit = (e) => {
@@ -355,19 +415,23 @@ function setupGoalForm() {
     const data = Object.fromEntries(fd.entries());
 
     if (!data.nama || !data.nama.trim()) {
-      if (typeof showToast === 'function') showToast('Nama goal wajib diisi', 'error');
+      if (typeof showToast === 'function') showToast(goalText('Nama goal wajib diisi', 'Enter a goal name.'), 'error');
       return;
     }
-    const target = Number(String(data.targetAmount || '').replace(/[^\d]/g, ''));
-    if (!target || target <= 0) {
-      if (typeof showToast === 'function') showToast('Target amount harus lebih dari 0', 'error');
+    const target = parseGoalAmount(data.targetAmount || '');
+    if (target === null || target <= 0) {
+      if (typeof showToast === 'function') showToast(goalText('Target amount harus lebih dari 0', 'Enter a valid target amount greater than zero.'), 'error');
       return;
     }
     if (!data.deadline) {
-      if (typeof showToast === 'function') showToast('Deadline wajib diisi', 'error');
+      if (typeof showToast === 'function') showToast(goalText('Deadline wajib diisi', 'Choose a deadline.'), 'error');
       return;
     }
-    const current = Number(String(data.currentSaving || '0').replace(/[^\d]/g, ''));
+    const current = parseGoalAmount(data.currentSaving || '0');
+    if (current === null || current < 0) {
+      if (typeof showToast === 'function') showToast(goalText('Tabungan sekarang harus berupa nominal valid minimal 0.', 'Enter valid current savings of zero or more.'), 'error');
+      return;
+    }
 
     addGoal({
       nama: data.nama.trim(),
@@ -377,7 +441,7 @@ function setupGoalForm() {
     });
 
     form.reset();
-    if (typeof showToast === 'function') showToast('Goal saving ditambahkan! 🎯', 'success');
+    if (typeof showToast === 'function') showToast(goalText('Goal saving ditambahkan! 🎯', 'Savings goal added! 🎯'), 'success');
   };
 }
 

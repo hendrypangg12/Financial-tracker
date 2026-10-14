@@ -1,7 +1,7 @@
 {
   "id": "id.berstock.beruang",
-  "name": "BerUang — Catatan Keuangan",
-  "short_name": "BerUang",
+  "name": "Ruvy - AI Money Tracker",
+  "short_name": "Ruvy",
   "description": "Catat pemasukan, pengeluaran, hutang, dan target keuangan. Gunakan akun yang sama untuk mengakses catatan di perangkat lain.",
   "start_url": "/app.html",
   "scope": "/",
@@ -11,8 +11,8 @@
     "standalone"
   ],
   "orientation": "portrait",
-  "background_color": "#faf6ef",
-  "theme_color": "#412b23",
+  "background_color": "#f4f7fc",
+  "theme_color": "#f4f7fc",
   "lang": "id",
   "dir": "ltr",
   "categories": [
@@ -23,37 +23,37 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "assets/icons/beruang-wallet-72.png",
+      "src": "assets/icons/ruvy-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/beruang-wallet-96.png",
+      "src": "assets/icons/ruvy-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/beruang-wallet-144.png",
+      "src": "assets/icons/ruvy-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/beruang-wallet-192.png",
+      "src": "assets/icons/ruvy-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/beruang-wallet-512.png",
+      "src": "assets/icons/ruvy-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/beruang-wallet-512.png",
+      "src": "assets/icons/ruvy-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -97,7 +97,7 @@
       "url": "/app.html#tambah",
       "icons": [
         {
-          "src": "assets/icons/beruang-wallet-192.png",
+          "src": "assets/icons/ruvy-192.png",
           "sizes": "192x192"
         }
       ]
@@ -109,7 +109,7 @@
       "url": "/app.html#rekap",
       "icons": [
         {
-          "src": "assets/icons/beruang-wallet-192.png",
+          "src": "assets/icons/ruvy-192.png",
           "sizes": "192x192"
         }
       ]

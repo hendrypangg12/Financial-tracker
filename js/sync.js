@@ -3,9 +3,11 @@ let cloudUnsubscribe = null, cloudPushTimer = null, autoSyncInterval = null;
 let cloudLoadedOnce = false, isApplyingRemote = false, cloudConflict = false;
 let cloudBase = null, cloudOwner = null, cloudWrite = null;
 let pendingCloudSnapshot = null;
-const SYNC_FIELDS = ['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'startingBalance'];
+const SYNC_FIELDS = ['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'userName', 'categories', 'target', 'startingBalance', 'preferences', 'wallets', 'walletData'];
 function syncData(data) {
-  return Object.fromEntries(SYNC_FIELDS.map(k => [k, data[k] ?? (k === 'userName' ? '' : k === 'target' ? 0 : k === 'categories' ? {} : k === 'startingBalance' ? null : [])]));
+  const result = Object.fromEntries(SYNC_FIELDS.map(k => [k, data[k] ?? (k === 'userName' ? '' : k === 'target' ? 0 : k === 'categories' ? {} : k === 'startingBalance' ? null : k === 'preferences' ? { language: 'id', currency: 'IDR' } : k === 'walletData' ? {} : [])]));
+  if (typeof validateWalletState === 'function') Object.assign(result, validateWalletState(result));
+  return result;
 }
 function stableJSON(v) {
   if (Array.isArray(v)) return '[' + v.map(stableJSON).join(',') + ']';
@@ -25,7 +27,8 @@ function mergeSyncData(base, local, remote) {
     conflicts.push(key); return ours;
   };
   for (const key of SYNC_FIELDS) {
-    if (!['transactions', 'hutangs', 'assets', 'recurring', 'goals'].includes(key) ||
+    if (key === 'walletData') { data[key] = mergeWalletMap(b[key], l[key], r[key], choose, conflicts); continue; }
+    if (!['transactions', 'hutangs', 'assets', 'recurring', 'goals', 'wallets'].includes(key) ||
         equal(l[key], r[key]) || equal(l[key], b[key]) || equal(r[key], b[key])) {
       data[key] = choose(b[key], l[key], r[key], key); continue;
     }
@@ -43,7 +46,29 @@ function mergeSyncData(base, local, remote) {
       if (item !== undefined) data[key].push(item);
     }
   }
+  if (typeof validateWalletState === 'function') { try { validateWalletState(data); } catch (_) { conflicts.push('walletData:invalid'); } }
   return { data: JSON.parse(JSON.stringify(data)), conflicts };
+}
+function mergeWalletMap(base, local, remote, choose, conflicts) {
+  const equal = (a, b) => stableJSON(a) === stableJSON(b);
+  const merge = (b, l, r, path) => {
+    if (equal(l,r) || equal(l,b) || equal(r,b)) return choose(b,l,r,path);
+    if (Array.isArray(b) && Array.isArray(l) && Array.isArray(r)) {
+      if (![b,l,r].every(rows => rows.every(row => row && typeof row.id === 'string') && new Set(rows.map(row => row.id)).size === rows.length)) { conflicts.push(path); return l; }
+      const maps=[b,l,r].map(rows=>new Map(rows.map(row=>[row.id,row])));
+      return [...new Set([...maps[2].keys(),...maps[1].keys(),...maps[0].keys()])].map(id=>choose(maps[0].get(id),maps[1].get(id),maps[2].get(id),path+':'+id)).filter(row=>row!==undefined);
+    }
+    if ([b,l,r].every(value => value && typeof value === 'object' && !Array.isArray(value))) {
+      const out={};
+      for (const key of new Set([...Object.keys(b),...Object.keys(l),...Object.keys(r)])) {
+        const value=merge(b[key],l[key],r[key],path+':'+key);
+        if(value!==undefined) out[key]=value;
+      }
+      return out;
+    }
+    return choose(b,l,r,path);
+  };
+  return merge(base,local,remote,'walletData');
 }
 function userDataRef() { return fbDb && currentUser ? fbDb.collection('users').doc(currentUser.uid).collection('data').doc('main') : null; }
 function saveSyncBase(data) {

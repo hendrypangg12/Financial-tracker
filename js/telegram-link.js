@@ -67,7 +67,7 @@ async function pullTelegramInbox() {
         addTransaction({
           id: it.id, tanggal: it.tanggal, jenis: it.jenis, jumlah: Number(it.jumlah) || 0,
           deskripsi: it.deskripsi, subKategori: it.subKategori, kategori: it.kategori, alokasi: it.alokasi || "",
-        });
+        }, "legacy");
         n++;
       });
       if (n) {

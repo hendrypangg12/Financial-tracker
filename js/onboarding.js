@@ -1,26 +1,26 @@
 // Langkah wajib pertama: catat baseline uang cair agar saldo akun tidak dimulai dari angka yang menyesatkan.
 
 function hasStartingBalanceSetup() {
-  return state.startingBalance?.completed === true
-    && Number.isFinite(Number(state.startingBalance.amount))
-    && Number(state.startingBalance.amount) >= 0
-    && typeof state.startingBalance.date === 'string'
-    && /^\d{4}-\d{2}-\d{2}$/.test(state.startingBalance.date);
+  return getFinancialState().startingBalance?.completed === true
+    && Number.isFinite(Number(getFinancialState().startingBalance.amount))
+    && Number(getFinancialState().startingBalance.amount) >= 0
+    && typeof getFinancialState().startingBalance.date === 'string'
+    && /^\d{4}-\d{2}-\d{2}$/.test(getFinancialState().startingBalance.date);
 }
 
 // Versi lama menyimpan dana awal sebagai transaksi pemasukan. Akun yang sudah
 // punya transaksi juga harus mempertahankan saldo historisnya saat upgrade.
 function migrateLegacyStartingBalance() {
   if (hasStartingBalanceSetup()) return false;
-  const openingRows = (state.transactions || []).filter(t => isOpeningBalanceTransaction(t));
-  const existingRows = state.transactions || [];
+  const openingRows = (getFinancialState().transactions || []).filter(t => isOpeningBalanceTransaction(t));
+  const existingRows = getFinancialState().transactions || [];
   if (!existingRows.length) return false;
 
   // Existing accounts already have a transaction history. A zero baseline at
   // their first transaction keeps their cumulative balance unchanged; asking
   // them to enter today's balance would discard all earlier transactions.
   const dates = existingRows.map(t => t.tanggal).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
-  state.startingBalance = {
+  getFinancialState().startingBalance = {
     amount: openingRows.reduce((sum, t) => sum + (Number(t.jumlah) || 0), 0),
     date: dates[0] || todayISO(),
     completed: true,
@@ -90,21 +90,22 @@ function showOnboarding(editing = false) {
   const screen = document.getElementById('onboarding-screen');
   if (!screen) return;
   injectOnbStyles();
-  const existing = editing && hasStartingBalanceSetup() ? Number(state.startingBalance.amount) : '';
-  const amount = existing === '' ? '' : existing.toLocaleString('id-ID');
+  const existing = editing && hasStartingBalanceSetup() ? Number(getFinancialState().startingBalance.amount) : '';
+  const amount = existing === '' ? '' : formatMoneyInput(existing);
   const displayName = state.userName
     || (typeof currentProfile !== 'undefined' && currentProfile && currentProfile.displayName)
     || '';
-  screen.innerHTML = `
+  screen.innerHTML = appHtml`
     <div class="onb-wrap" role="dialog" aria-modal="true" aria-labelledby="onb-title">
       <section class="onb-card">
-        <img class="onb-logo" src="assets/icons/beruang-wallet-192.png" alt="" />
+        <img class="onb-logo" src="assets/icons/ruvy-192.png" alt="" />
         <h1 class="onb-title" id="onb-title">${editing ? 'Ubah Dana Awal' : 'Mulai dengan Dana Awal'}</h1>
         <p class="onb-sub">${editing
-          ? 'Perbaiki angka saldo saat pertama mulai memakai BerUang. Transaksi setelah tanggal setup tetap dihitung seperti biasa.'
+          ? 'Perbaiki angka saldo saat pertama mulai memakai Ruvy. Transaksi setelah tanggal setup tetap dihitung seperti biasa.'
           : 'Sebelum mencatat transaksi, masukkan uang yang tersedia sekarang supaya saldo awal dan laporanmu akurat.'}</p>
-        <label class="onb-field-label" for="onb-starting-amount">${editing ? `Saldo pembuka pada ${state.startingBalance.date}` : 'Total uang tersedia sekarang'}</label>
-        <div class="onb-amount-wrap"><span class="onb-currency">Rp</span><input id="onb-starting-amount" class="onb-amount" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="${amount}" aria-describedby="onb-starting-hint" /></div>
+        ${editing ? '' : '<label class="onb-field-label" for="onb-wallet-currency">' + preferenceMessage('Pilih mata uang dompet pertama','Choose your first wallet currency') + '</label><select id="onb-wallet-currency" class="onb-name">' + getSupportedCurrencies().map(code=>'<option value="'+code+'"'+(code==='IDR'?' selected':'')+'>'+code+'</option>').join('') + '</select>'}
+        <label class="onb-field-label" for="onb-starting-amount">${editing ? `Saldo pembuka pada ${getFinancialState().startingBalance.date}` : 'Total uang tersedia sekarang'}</label>
+        <div class="onb-amount-wrap"><span class="onb-currency" id="onb-currency-label">${getAccountCurrency()}</span><input id="onb-starting-amount" class="onb-amount" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="${amount}" aria-describedby="onb-starting-hint" /></div>
         <small class="onb-hint" id="onb-starting-hint">${editing ? 'Ubah saldo saat pertama mulai mencatat. Jangan isi saldo hari ini jika sudah ada transaksi sesudah tanggal tersebut, karena transaksi itu tetap dihitung.' : 'Jumlahkan saldo di rekening, e-wallet, dan uang tunai. Jangan masukkan investasi, piutang, atau limit kartu kredit. Dana awal hanya menjadi saldo pembuka, bukan pemasukan di laporan.'}</small>
         <input id="onb-nama-user" class="onb-name" type="text" placeholder="Nama panggilan (opsional)" autocomplete="name" value="${escapeHtmlOnboarding(displayName)}" />
         ${editing ? '' : `
@@ -120,18 +121,25 @@ function showOnboarding(editing = false) {
         <p id="onb-error" class="onb-error" role="alert" hidden></p>
         <div class="onb-actions">
           <button type="button" class="onb-primary" id="onb-save">${editing ? 'Simpan perubahan' : 'Simpan dana awal & lanjutkan'}</button>
-          <button type="button" class="onb-zero" id="onb-zero">${editing ? 'Atur saldo ke Rp0' : 'Saya mulai dari Rp0'}</button>
+          <button type="button" class="onb-zero" id="onb-zero">${editing ? 'Atur saldo ke 0' : 'Saya mulai dari 0'}</button>
           ${editing ? '<button type="button" class="onb-cancel" id="onb-cancel">Batal</button>' : ''}
         </div>
-        <p class="onb-foot">${editing ? 'Perubahan hanya memperbaiki angka saldo pembuka.' : 'Isi nominal atau pilih Rp0. Setelah itu kamu langsung masuk ke BerUang.'}</p>
+        <p class="onb-foot">${editing ? 'Perubahan hanya memperbaiki angka saldo pembuka.' : 'Isi nominal atau pilih 0. Setelah itu kamu langsung masuk ke Ruvy.'}</p>
       </section>
     </div>`;
   screen.hidden = false;
 
   const input = document.getElementById('onb-starting-amount');
+  const currencySelect = document.getElementById('onb-wallet-currency');
+  const selectedCurrency = () => currencySelect?.value || getAccountCurrency();
+  const formatAmount = value => {
+    const amount = parseMoneyNumber(String(value).trim(), '', selectedCurrency());
+    return amount === null ? value : new Intl.NumberFormat(getAppLocale(),{maximumFractionDigits:getCurrencyDigits(selectedCurrency())}).format(amount);
+  };
+  if(currencySelect) currencySelect.onchange=()=>{input.value='';document.getElementById('onb-currency-label').textContent=selectedCurrency();input.inputMode=getCurrencyDigits(selectedCurrency())?'decimal':'numeric';};
+
   input.addEventListener('input', () => {
-    const digits = input.value.replace(/[^\d]/g, '');
-    input.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+    input.value = formatAmount(input.value);
     document.getElementById('onb-error').hidden = true;
   });
   screen.querySelectorAll('.onb-add-row').forEach(button => {
@@ -140,8 +148,7 @@ function showOnboarding(editing = false) {
   document.getElementById('onb-add-routine')?.addEventListener('click', appendOnboardingRoutineRow);
   screen.addEventListener('input', event => {
     if (!event.target.matches('.onb-money')) return;
-    const digits = event.target.value.replace(/[^\d]/g, '');
-    event.target.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+    event.target.value = formatAmount(event.target.value);
   });
   if (!editing) {
     appendOnboardingRow('onb-assets', 'Jenis aset');
@@ -150,10 +157,10 @@ function showOnboarding(editing = false) {
     appendOnboardingRoutineRow();
   }
   document.getElementById('onb-save').onclick = () => {
-    const amountValue = Number(input.value.replace(/[^\d]/g, ''));
-    if (!Number.isSafeInteger(amountValue) || amountValue <= 0) {
+    const amountValue = parseMoneyNumber(input.value.trim(), '', selectedCurrency());
+    if (amountValue === null || amountValue <= 0) {
       const error = document.getElementById('onb-error');
-      error.textContent = 'Masukkan saldo lebih dari Rp0, atau pilih tombol “Saya mulai dari Rp0”.';
+      error.textContent = 'Masukkan saldo lebih dari 0, atau pilih tombol “Saya mulai dari 0”.';
       error.hidden = false;
       input.focus();
       return;
@@ -161,7 +168,7 @@ function showOnboarding(editing = false) {
     saveStartingBalance(amountValue);
   };
   document.getElementById('onb-zero').onclick = () => {
-    if (editing && !window.confirm('Ubah saldo awal akun ini menjadi Rp0?')) return;
+    if (editing && !window.confirm('Ubah saldo awal dompet ini menjadi 0?')) return;
     saveStartingBalance(0);
   };
   document.getElementById('onb-cancel')?.addEventListener('click', hideOnboarding);
@@ -220,10 +227,18 @@ function escapeHtmlOnboarding(value) {
 }
 
 function saveStartingBalance(amount) {
-  const existingDate = hasStartingBalanceSetup() ? state.startingBalance.date : '';
+  const chosen = document.getElementById('onb-wallet-currency')?.value;
+  if (chosen && chosen !== 'IDR' && typeof getActiveWalletId === 'function' && getActiveWalletId()==='legacy' && !hasStartingBalanceSetup()) {
+    const result=createWallet({name:preferenceMessage('Dompet utama','Main wallet'),currency:chosen,amount});
+    if(!result.ok){showToast(result.error,'error');return;}
+    state.startingBalance={amount:0,date:todayISO(),completed:true};
+    state.preferences.defaultWalletId=result.id;
+  }
+
+  const existingDate = hasStartingBalanceSetup() ? getFinancialState().startingBalance.date : '';
   const name = (document.getElementById('onb-nama-user')?.value || '').trim();
   if (name) state.userName = name;
-  state.startingBalance = {
+  getFinancialState().startingBalance = {
     amount,
     date: existingDate || todayISO(),
     completed: true,
@@ -233,34 +248,34 @@ function saveStartingBalance(amount) {
   saveState();
   hideOnboarding();
   if (typeof renderAll === 'function') renderAll();
-  if (typeof showToast === 'function') showToast('Dana awal tersimpan. BerUang siap dipakai.', 'success');
+  if (typeof showToast === 'function') showToast('Dana awal tersimpan. Ruvy siap dipakai.', 'success');
 }
 
 function saveOptionalOnboardingData() {
   if (document.getElementById('onb-assets')) {
     document.querySelectorAll('#onb-assets .onb-extra-row').forEach(row => {
-      const amount = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
-      if (Number.isSafeInteger(amount) && amount > 0 && typeof addAsset === 'function') {
+      const amount = parseMoneyInput(row.querySelector('.onb-extra-amount')?.value || '0');
+      if (Number.isFinite(amount) && amount > 0 && typeof addAsset === 'function') {
         addAsset({ jenis: 'investasi', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Aset', jumlah: amount });
       }
     });
     document.querySelectorAll('#onb-receivables .onb-extra-row').forEach(row => {
-      const nominal = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
-      if (Number.isSafeInteger(nominal) && nominal > 0 && typeof addHutang === 'function') {
+      const nominal = parseMoneyInput(row.querySelector('.onb-extra-amount')?.value || '0');
+      if (Number.isFinite(nominal) && nominal > 0 && typeof addHutang === 'function') {
         addHutang({ jenis: 'piutang', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Piutang', nominal, keterangan: 'Setup dana awal' });
       }
     });
     document.querySelectorAll('#onb-debts .onb-extra-row').forEach(row => {
-      const nominal = Number(row.querySelector('.onb-extra-amount')?.value.replace(/[^\d]/g, '') || 0);
-      if (Number.isSafeInteger(nominal) && nominal > 0 && typeof addHutang === 'function') {
+      const nominal = parseMoneyInput(row.querySelector('.onb-extra-amount')?.value || '0');
+      if (Number.isFinite(nominal) && nominal > 0 && typeof addHutang === 'function') {
         addHutang({ jenis: 'hutang', nama: row.querySelector('.onb-extra-name')?.value.trim() || 'Utang', nominal, keterangan: 'Setup dana awal' });
       }
     });
   }
   document.querySelectorAll('#onb-routines .onb-extra-row').forEach(row => {
     const routineName = row.querySelector('.onb-routine-name')?.value.trim();
-    const routineAmount = Number(row.querySelector('.onb-routine-amount')?.value.replace(/[^\d]/g, '') || 0);
-    if (routineName && Number.isSafeInteger(routineAmount) && routineAmount > 0 && typeof addRecurring === 'function') {
+    const routineAmount = parseMoneyInput(row.querySelector('.onb-routine-amount')?.value || '0');
+    if (routineName && Number.isFinite(routineAmount) && routineAmount > 0 && typeof addRecurring === 'function') {
       const category = onboardingRoutineCategory(routineName);
       addRecurring({ nama: routineName, jumlah: routineAmount, hariTagih: Math.min(parseInt(todayISO().slice(8, 10), 10) || 1, 28), kategori: category, subKategori: routineName, alokasi: 'Kebutuhan' });
     }

@@ -2,6 +2,10 @@
 (() => {
   'use strict';
   const production=window.__BERUANG_STORE_BUILD__===true, API='https://berstock-bot.hendrypangg12.workers.dev';
+  document.body?.classList.add(production ? 'ruvy-store-build' : 'ruvy-test-build');
+  const nativeText=value=>typeof window.t==='function'?window.t(value):value;
+  const nativeHtml=value=>value.split(/(<[^>]*>)/g).map(part=>part.startsWith('<')?part:nativeText(part.replace(/&amp;/g,'&'))).join('');
+  const english=()=>typeof window.getAppLanguage==='function'&&window.getAppLanguage()==='en';
   const IDS=['beruang_access_7d','beruang_monthly_subscription','beruang_annual_subscription'];
   const LABELS={beruang_access_7d:'Akses 7 Hari · sekali bayar',beruang_monthly_subscription:'Pro 30 Hari · berulang otomatis',beruang_annual_subscription:'Pro 1 Tahun · berulang otomatis'};
   // registerPlugin berasal dari @capacitor/core (vendor/capacitor.js). Bridge native saja hanya menyediakan
@@ -52,12 +56,12 @@
   }
   async function renderPaywall(){
     const el=document.getElementById('paywall-screen');el.hidden=false;window.trackOnce?.('paywall_view');
-    el.innerHTML='<main class="play-paywall"><h1>Paket &amp; pembayaran</h1><p id="play-plan-status"></p><div id="play-products">Memuat paket…</div><p>30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Paket 7 hari hanya dibayar sekali.</p><a id="play-manage" href="https://play.google.com/store/account/subscriptions?package=id.berstock.beruang" hidden>Kelola langganan di Google Play</a><p><button id="play-restore" type="button">Pulihkan pembelian</button></p><p><button id="play-export" type="button">Unduh backup data</button></p><p><button id="play-logout" type="button">Keluar akun</button></p></main>';
+    el.innerHTML=nativeHtml('<main class="play-paywall"><h1>Paket &amp; pembayaran</h1><p id="play-plan-status"></p><div id="play-products">Memuat paket…</div><p>30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Paket 7 hari hanya dibayar sekali.</p><a id="play-manage" href="https://play.google.com/store/account/subscriptions?package=id.berstock.beruang" hidden>Kelola langganan di Google Play</a><p><button id="play-restore" type="button">Pulihkan pembelian</button></p><p><button id="play-export" type="button">Unduh backup data</button></p><p><button id="play-logout" type="button">Keluar akun</button></p></main>');
     const profile=typeof currentProfile==='undefined'?null:currentProfile;
     const active=profile&&typeof isPro==='function'&&isPro(profile);
     const names={free_trial:'Uji Coba Gratis',trial:'Akses 7 Hari',starter:'Akses 7 Hari',monthly:'Pro Bulanan',annual:'Pro Tahunan',lifetime:'Lifetime',pro:'Pro'};
     const date=profile?.expiresAt?new Date(profile.expiresAt):null;
-    const end=date&&!Number.isNaN(date.getTime())?new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:'numeric'}).format(date):'';
+    const end=date&&!Number.isNaN(date.getTime())?new Intl.DateTimeFormat(english()?'en-US':'id-ID',{day:'numeric',month:'long',year:'numeric'}).format(date):'';
     const status=document.getElementById('play-plan-status');
     const activeSubscription=hasActivePlaySubscription(profile);
     status.textContent=activeSubscription?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Kelola langganan Google Play sebelum membeli paket lain.`:
@@ -65,6 +69,15 @@
       active&&profile.plan==='free_trial'?`Paket saat ini: Uji Coba Gratis · aktif${end?` sampai ${end}`:''}. Anda bisa membeli paket sekarang. Paket berbayar dimulai dan ditagih segera setelah pembelian; sisa uji coba gratis tidak menambah masa langganan.`:
       active?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Akses 7 Hari dapat ditambahkan; langganan baru tersedia setelah paket ini berakhir.`:
       'Belum ada paket aktif. Pilih paket di bawah; harga akan mengikuti yang ditampilkan Google Play.';
+    if(english()) {
+      const plan=nativeText(names[profile?.plan]||'Pro');
+      const until=end?' until '+end:'';
+      status.textContent=activeSubscription?`Current plan: ${plan} · active${until}. Manage your Google Play subscription before buying another plan.`:
+        active&&['lifetime','pro'].includes(profile.plan)?'This account already has unlimited access. No additional plan is needed.':
+        active&&profile.plan==='free_trial'?`Current plan: Free trial · active${until}. A paid plan starts and is charged immediately after purchase; unused trial days are not added to the subscription.`:
+        active?`Current plan: ${plan} · active${until}. You can add a 7-day pass; a new subscription is available after this plan expires.`:
+        'No active plan. Choose a plan below; Google Play displays the price before purchase.';
+    }
     const manage=document.getElementById('play-manage');
     manage.hidden=!activeSubscription;
     try{
@@ -72,18 +85,18 @@
       for(const p of rows){
         const button=document.createElement('button');button.className='play-plan';button.dataset.playProduct=p.productId;button.type='button';
         const blocked=purchaseGuardReason(profile,p.productId);button.disabled=!!blocked;
-        if(blocked)button.title=blocked;
-        const title=document.createElement('strong');title.textContent=LABELS[p.productId]||'Paket BerUang';
-        const price=document.createElement('span');price.textContent=`${p.price}${p.productType==='SUBS'?(p.productId==='beruang_monthly_subscription'?' / bulan':' / tahun'):''}`;
+        if(blocked)button.title=english()?'Manage the active plan before purchasing another.':blocked;
+        const title=document.createElement('strong');title.textContent=nativeText(LABELS[p.productId]||'Ruvy Pro');
+        const price=document.createElement('span');price.textContent=`${p.price}${p.productType==='SUBS'?(p.productId==='beruang_monthly_subscription'?(english()?' / month':' / bulan'):(english()?' / year':' / tahun')):''}`;
         button.append(title,price);container.append(button);
-        if(blocked){const note=document.createElement('small');note.className='play-plan-note';note.textContent=blocked;container.append(note);}
+        if(blocked){const note=document.createElement('small');note.className='play-plan-note';note.textContent=english()?'Manage the active plan before purchasing another.':blocked;container.append(note);}
       }
-      if(!rows.length)container.textContent='Paket belum tersedia untuk akun penguji ini.';
+      if(!rows.length)container.textContent=nativeText('Paket belum tersedia untuk akun penguji ini.');
     }catch(e){document.getElementById('play-products').textContent='Paket belum dapat dimuat: '+e.message;}
   }
   const originalScreen=window.showScreen;window.showScreen=function(which){if(which==='paywall'&&production){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));renderPaywall();syncOwnedSubscriptions();return;}const result=originalScreen(which);if(which==='app')syncOwnedSubscriptions();return result;};
   window.loginGoogle=async()=>{if(!nativeGoogleAuth)throw new Error('Login Google belum dikonfigurasi di versi aplikasi ini.');const result=await nativeGoogleAuth.signInWithGoogle({skipNativeAuth:true});const idToken=result?.credential?.idToken;if(!idToken)throw new Error('Google tidak mengembalikan token login. Coba lagi.');const credential=firebase.auth.GoogleAuthProvider.credential(idToken);await fbAuth.signInWithCredential(credential);};window.createPaymentInvoice=async()=>{throw new Error('Pembelian menggunakan Google Play.');};window.openPaymentModal=()=>window.showScreen('paywall');window.handlePostPaymentRedirect=async()=>{};window.showProGate=()=>window.showScreen('paywall');window.isAdmin=()=>false;
-  window.saveNativeBackup=async(data,filename)=>{const fs=plugin('Filesystem'),share=plugin('Share'),name=filename.replace(/[^a-zA-Z0-9._-]/g,'_'),json=JSON.stringify(data,null,2);await fs.writeFile({path:'backups/'+name,data:json,directory:'DATA',encoding:'utf8',recursive:true});const file=await fs.writeFile({path:'backups/'+name,data:json,directory:'CACHE',encoding:'utf8',recursive:true});await share.share({title:'Backup BerUang',files:[file.uri],dialogTitle:'Simpan backup BerUang'});};
+  window.saveNativeBackup=async(data,filename)=>{const fs=plugin('Filesystem'),share=plugin('Share'),name=filename.replace(/[^a-zA-Z0-9._-]/g,'_'),json=JSON.stringify(data,null,2);await fs.writeFile({path:'backups/'+name,data:json,directory:'DATA',encoding:'utf8',recursive:true});const file=await fs.writeFile({path:'backups/'+name,data:json,directory:'CACHE',encoding:'utf8',recursive:true});await share.share({title:'Backup Ruvy',files:[file.uri],dialogTitle:'Simpan backup Ruvy'});};
   window.exportData=async()=>{try{await window.saveNativeBackup({...syncData(state),exportedAt:new Date().toISOString()},'beruang-'+Date.now()+'.json');}catch(e){showToast('Backup belum diekspor: '+e.message,'error');}};
   const originalFetch=window.fetch.bind(window);window.fetch=function(input,init){const target=new URL(typeof input==='string'?input:input.url,location.href);if(/\/api\/(create-invoice|verify-payment)/.test(target.pathname))return Promise.reject(new Error('Gunakan Google Play.'));return originalFetch(input,init);};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncOwnedSubscriptions();});
@@ -107,5 +120,5 @@
       return true;
     }catch(e){console.warn('In-app review tidak tersedia:',e?.message);return false;}
   };
-  document.addEventListener('DOMContentLoaded',()=>{if(production)return;const b=document.createElement('aside');b.className='mobile-test-banner';b.textContent='BerUang Uji · Gunakan akun khusus tes';document.body.prepend(b);});
+  document.addEventListener('DOMContentLoaded',()=>{if(production)return;const b=document.createElement('aside');b.className='mobile-test-banner';b.textContent='Ruvy Uji · Gunakan akun khusus tes';document.body.prepend(b);});
 })();

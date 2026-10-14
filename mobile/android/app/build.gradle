@@ -26,9 +26,9 @@ android {
         applicationId beruangProduction ? "id.berstock.beruang" : "id.berstock.beruang.dev"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode beruangProduction ? 13 : 1
-        versionName beruangProduction ? "1.4.7" : "0.1.0-test"
-        manifestPlaceholders = [appLabel: beruangProduction ? 'BerUang' : 'BerUang Uji']
+        versionCode beruangProduction ? 14 : 2
+        versionName beruangProduction ? "1.5.0" : "1.5.0-test"
+        manifestPlaceholders = [appLabel: beruangProduction ? 'Ruvy' : 'Ruvy Uji']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

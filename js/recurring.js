@@ -1,5 +1,5 @@
 // Tagihan rutin + Pengingat (#2 & #3)
-// - Tagihan rutin (kost/cicilan/langganan): template di state.recurring[]
+// - Tagihan rutin (kost/cicilan/langganan): template di getFinancialState().recurring[]
 // - Dashboard "🔔 Pengingat": tagihan rutin yg belum dicatat bulan ini (1-tap Catat)
 //   + hutang/piutang yang jatuh tempo / lewat tempo.
 
@@ -7,7 +7,7 @@ function curYM() { return new Date().toISOString().slice(0, 7); }
 
 // Catat 1 tagihan rutin sebagai pengeluaran bulan ini (di-tag biar gak dobel)
 function postRecurring(id) {
-  const r = (state.recurring || []).find(x => x.id === id);
+  const r = (getFinancialState().recurring || []).find(x => x.id === id);
   if (!r) return;
   if (recurringPostedThisMonth(r.id)) return;
   addTransaction({
@@ -32,7 +32,7 @@ function renderReminder() {
   const items = [];
 
   // 1) Tagihan rutin yang belum dicatat bulan ini
-  (state.recurring || []).forEach(r => {
+  (getFinancialState().recurring || []).forEach(r => {
     if (!recurringPostedThisMonth(r.id)) {
       items.push(`
         <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);">
@@ -47,7 +47,7 @@ function renderReminder() {
   });
 
   // 2) Hutang/piutang jatuh tempo (≤7 hari) atau lewat tempo
-  (state.hutangs || []).forEach(h => {
+  (getFinancialState().hutangs || []).forEach(h => {
     if (h.lunas || !h.jatuhTempo) return;
     const days = (typeof hutangDaysToDue === 'function') ? hutangDaysToDue(h) : null;
     if (days === null || days > 7) return;
@@ -70,7 +70,7 @@ function renderReminder() {
 
   if (!items.length) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
-  el.innerHTML = `
+  el.innerHTML = appHtml`
     <div class="panel">
       <div class="panel-head"><h3>🔔 Pengingat</h3><span style="font-size:11px;color:var(--ink-soft);">${items.length} hal perlu perhatian</span></div>
       <ul style="list-style:none;padding:0;margin:2px 0 0;">${items.join('')}</ul>
@@ -87,9 +87,9 @@ function renderReminder() {
 function renderRecurringManager() {
   const el = document.getElementById('recurring-list');
   if (!el) return;
-  const list = state.recurring || [];
+  const list = getFinancialState().recurring || [];
   if (!list.length) {
-    el.innerHTML = `<p style="font-size:13px;color:var(--ink-soft);margin:0;">Belum ada tagihan rutin. Centang "Jadikan tagihan rutin" pas nambah pengeluaran (kost, cicilan, langganan).</p>`;
+    el.innerHTML = appHtml`<p style="font-size:13px;color:var(--ink-soft);margin:0;">Belum ada tagihan rutin. Centang "Jadikan tagihan rutin" pas nambah pengeluaran (kost, cicilan, langganan).</p>`;
     return;
   }
   el.innerHTML = list.map(r => `

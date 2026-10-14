@@ -1,10 +1,32 @@
-// AI Advisor — Beruang Akuntan Gemoy
+// AI Advisor — Ruvy Gemoy
 // Pro-only feature: chat dengan Claude API via Cloudflare Worker
 
 const AI_ADVISOR_ENDPOINT = "https://berstock-bot.hendrypangg12.workers.dev/api/advise";
 
 let aiAdvisorInited = false;
 let aiAdvisorSending = false;
+
+function advisorText(id, en) {
+  return typeof getAppLanguage === 'function' && getAppLanguage() === 'en' ? en : id;
+}
+
+function advisorPreferences() {
+  return {
+    language: typeof getAppLanguage === 'function' ? getAppLanguage() : 'id',
+    locale: typeof getAppLocale === 'function' ? getAppLocale() : 'id-ID',
+    currency: typeof getAccountCurrency === 'function' ? getAccountCurrency() : 'IDR',
+  };
+}
+
+function advisorSuggestion(question) {
+  const suggestions = {
+    'Pengeluaran aku bulan ini gimana?': 'How are my expenses this month?',
+    'Saran hemat buat aku apa?': 'How can I save more based on my records?',
+    'Bandingkan bulan ini sama bulan lalu': 'Compare this month with last month.',
+    'Kategori pengeluaran terbesarku apa?': 'What are my largest expense categories?',
+  };
+  return advisorText(question, suggestions[question] || question);
+}
 
 function initAIAdvisor() {
   if (aiAdvisorInited) return;
@@ -47,6 +69,7 @@ function initAIAdvisor() {
   // Upgrade button — tutup paywall, scroll ke pricing
   paywallUpgrade?.addEventListener("click", () => {
     closePaywall();
+    if (typeof window.showScreen === 'function') { window.showScreen('paywall'); return; }
     // Trigger paywall screen biar bisa upgrade
     if (typeof showPaywallScreen === "function") {
       showPaywallScreen();
@@ -61,7 +84,7 @@ function initAIAdvisor() {
   document.getElementById("ai-chips")?.addEventListener("click", (e) => {
     const chip = e.target.closest(".ai-chip");
     if (!chip) return;
-    const q = chip.dataset.q;
+    const q = advisorSuggestion(chip.dataset.q);
     if (q) {
       input.value = q;
       sendQuestion(q);
@@ -104,6 +127,17 @@ function closeAIChat() {
   document.getElementById("ai-chat-panel").hidden = true;
 }
 
+function resetAdvisorWallet() {
+  closeAIChat();
+  const body = document.getElementById('ai-chat-body');
+  if (!body) return;
+  body.querySelectorAll('.ai-bubble-user, .ai-bubble-bot:not(#ai-greeting), .ai-bubble-typing').forEach(item => item.remove());
+  const chips = document.getElementById('ai-chips');
+  if (chips) chips.style.display = '';
+  const input = document.getElementById('ai-chat-input');
+  if (input) input.value = '';
+}
+
 function openPaywall() {
   markGuideAI();
   if (typeof trackOnce === "function") trackOnce("ai_locked");
@@ -111,9 +145,13 @@ function openPaywall() {
   const sub = document.querySelector("#ai-paywall-modal .ai-paywall-sub");
   if (sub) {
     sub.textContent = typeof isFreeTrial === "function" && isFreeTrial(profile)
-      ? "Uji coba gratis belum termasuk AI. Aktifkan paket mulai Rp 10rb untuk ngobrol dengan Beruang Akuntan."
-      : "AI Advisor 24/7 yang paham data kamu — eksklusif untuk Pro";
+      ? advisorText("Uji coba gratis belum termasuk AI. Aktifkan paket berbayar untuk ngobrol dengan Ruvy.", "The free trial does not include AI. Choose a paid plan to get insights from Ruvy AI.")
+      : advisorText("Insight AI dari catatan keuanganmu — khusus Pro", "AI insights from your financial records — available with Pro");
   }
+  const upgrade = document.getElementById('ai-paywall-upgrade');
+  if (upgrade) upgrade.textContent = advisorText('💎 Lihat Paket Pro', '💎 View Pro Plans');
+  const note = document.querySelector('#ai-paywall-modal .ai-paywall-note');
+  if (note) note.textContent = advisorText('Harga dan rincian paket ditampilkan sebelum pembelian.', 'Prices and plan details are shown before purchase.');
   document.getElementById("ai-paywall-modal").hidden = false;
 }
 function closePaywall() {
@@ -151,7 +189,7 @@ async function sendQuestion(question) {
   try {
     const res = await fetch(AI_ADVISOR_ENDPOINT, {
       method: "POST",
-      headers: await authenticatedHeaders(),
+      headers: { ...await authenticatedHeaders(), 'Accept-Language': advisorPreferences().language },
       body: JSON.stringify({ email, question, context }),
     });
 
@@ -162,22 +200,22 @@ async function sendQuestion(question) {
       appendBubble(data.reply, "bot");
       if (res.ok && typeof trackOnce === "function") trackOnce("ai_ask");
     } else if (data.error) {
-      appendBubble(`Bos, ada error: ${data.error}. Coba lagi ya 🐻`, "bot");
+      appendBubble(data.error, "bot");
     } else {
-      appendBubble("Bos, response gak ke-detect. Coba tanya lagi ya 🐻", "bot");
+      appendBubble(advisorText("Bos, jawaban belum tersedia. Coba tanya lagi ya 🐻", "I couldn't create a reply. Please try again. 🐻"), "bot");
     }
 
     // Update quota info
     if (data.quota) {
       const quotaEl = document.getElementById("ai-quota-info");
       if (quotaEl) {
-        quotaEl.textContent = `💎 Pro • ${data.quota.used}/${data.quota.limit} query hari ini`;
+        quotaEl.textContent = advisorText(`💎 Pro • ${data.quota.used}/${data.quota.limit} pertanyaan hari ini`, `💎 Pro • ${data.quota.used}/${data.quota.limit} questions today`);
       }
     }
   } catch (err) {
     typing.remove();
     appendBubble(
-      "Bos, koneksi error. Cek internet kamu ya, atau coba beberapa menit lagi 🐻",
+      advisorText("Bos, koneksi error. Cek internet kamu ya, atau coba beberapa menit lagi 🐻", "Connection failed. Check your internet or try again in a few minutes. 🐻"),
       "bot"
     );
     console.error("AI Advisor error:", err);
@@ -193,7 +231,7 @@ function appendBubble(text, who) {
   const bubble = document.createElement("div");
   bubble.className = `ai-bubble ai-bubble-${who}`;
   if (who === "bot") {
-    bubble.innerHTML = `<div class="ai-bubble-meta">🐻 Beruang Akuntan</div>` + escapeHtml(text);
+    bubble.innerHTML = `<div class="ai-bubble-meta">${advisorText('🐻 Ruvy', '🐻 Ruvy AI')}</div>` + escapeHtml(text);
   } else {
     bubble.textContent = text;
   }
@@ -211,30 +249,32 @@ function escapeHtml(s) {
  * Build context object dari state app (transaksi user)
  */
 function buildAdvisorContext() {
-  if (typeof state === "undefined" || !state.transactions) return null;
+  if (typeof state === "undefined" || !getFinancialState().transactions) return null;
+
+  const preferences = advisorPreferences();
 
   const now = new Date();
   const curMonth = now.getMonth();
   const curYear = now.getFullYear();
-  const monthName = now.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+  const monthName = now.toLocaleDateString(preferences.locale, { month: "long", year: "numeric" });
 
   // Filter transaksi bulan ini
-  const cashflowTransactions = (state.transactions || []).filter(t => !isOpeningBalanceTransaction(t));
+  const cashflowTransactions = (getFinancialState().transactions || []).filter(t => !isOpeningBalanceTransaction(t));
   const thisMonth = cashflowTransactions.filter((t) => {
-    const d = new Date(t.tanggal);
+    const d = parseISO(t.tanggal);
     return d.getMonth() === curMonth && d.getFullYear() === curYear;
   });
 
   // Filter bulan lalu (untuk comparison)
   const lastMonth = cashflowTransactions.filter((t) => {
-    const d = new Date(t.tanggal);
+    const d = parseISO(t.tanggal);
     const lastMonthYear = curMonth === 0 ? curYear - 1 : curYear;
     const lastMonthIdx = curMonth === 0 ? 11 : curMonth - 1;
     return d.getMonth() === lastMonthIdx && d.getFullYear() === lastMonthYear;
   });
 
   const sumByJenis = (arr, jenis) =>
-    arr.filter((t) => t.jenis === jenis).reduce((sum, t) => sum + (t.jumlah || 0), 0);
+    arr.filter((t) => t.jenis === jenis).reduce((sum, t) => sum + (Number(t.jumlah) || 0), 0);
 
   const totalPemasukan = sumByJenis(thisMonth, "pemasukan");
   const totalPengeluaran = sumByJenis(thisMonth, "pengeluaran");
@@ -251,8 +291,8 @@ function buildAdvisorContext() {
   // Category breakdown (pengeluaran)
   const catMap = {};
   thisMonth.filter((t) => t.jenis === "pengeluaran").forEach((t) => {
-    const cat = t.kategori || "Lain";
-    catMap[cat] = (catMap[cat] || 0) + (t.jumlah || 0);
+    const cat = t.kategori || advisorText('Lain', 'Other');
+    catMap[cat] = (catMap[cat] || 0) + (Number(t.jumlah) || 0);
   });
   const categoryBreakdown = Object.entries(catMap)
     .map(([name, total]) => ({
@@ -265,7 +305,7 @@ function buildAdvisorContext() {
   // Recent transactions (last 10)
   const recentTransactions = thisMonth
     .slice()
-    .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
+    .sort((a, b) => parseISO(b.tanggal) - parseISO(a.tanggal))
     .slice(0, 10)
     .map((t) => ({
       tanggal: t.tanggal,
@@ -276,16 +316,16 @@ function buildAdvisorContext() {
     }));
 
   // Aset / kekayaan (di luar cashflow bulanan)
-  const assets = Array.isArray(state.assets) ? state.assets : [];
+  const assets = Array.isArray(getFinancialState().assets) ? getFinancialState().assets : [];
   const assetTotal = assets.reduce((s, a) => s + (Number(a.jumlah) || 0), 0);
   const assetBreakdown = assets.map((a) => ({
     jenis: a.jenis || "lainnya",
-    nama: a.nama || a.jenis || "Aset",
+    nama: a.nama || a.jenis || advisorText('Aset', 'Asset'),
     jumlah: Number(a.jumlah) || 0,
   }));
 
   // Hutang & piutang (yang belum lunas)
-  const hutangs = Array.isArray(state.hutangs) ? state.hutangs : [];
+  const hutangs = Array.isArray(getFinancialState().hutangs) ? getFinancialState().hutangs : [];
   const piutangTotal = hutangs
     .filter((h) => h.jenis === "piutang" && !h.lunas)
     .reduce((s, h) => s + (Number(h.nominal) || 0), 0);
@@ -299,7 +339,7 @@ function buildAdvisorContext() {
     const ref = new Date(curYear, curMonth - back, 1);
     const m = ref.getMonth(), y = ref.getFullYear();
     const txs = cashflowTransactions.filter((t) => {
-      const d = new Date(t.tanggal);
+      const d = parseISO(t.tanggal);
       return d.getMonth() === m && d.getFullYear() === y;
     });
     if (!txs.length && !monthlyHistory.length) continue; // lewati bulan kosong di awal
@@ -307,11 +347,11 @@ function buildAdvisorContext() {
     const pengeluaran = sumByJenis(txs, "pengeluaran");
     const cats = {};
     txs.filter((t) => t.jenis === "pengeluaran").forEach((t) => {
-      const cat = t.kategori || "Lain";
-      cats[cat] = (cats[cat] || 0) + (t.jumlah || 0);
+      const cat = t.kategori || advisorText('Lain', 'Other');
+      cats[cat] = (cats[cat] || 0) + (Number(t.jumlah) || 0);
     });
     monthlyHistory.push({
-      bulan: ref.toLocaleDateString("id-ID", { month: "short", year: "numeric" }),
+      bulan: ref.toLocaleDateString(preferences.locale, { month: "short", year: "numeric" }),
       pemasukan,
       pengeluaran,
       sisa: pemasukan - pengeluaran,
@@ -322,8 +362,10 @@ function buildAdvisorContext() {
   }
 
   return {
+    ...preferences,
     userName: (state.userName || "").trim() || null,
     monthName,
+    wallet: typeof getActiveWallet === 'function' ? { name: getActiveWallet().name, currency: getAccountCurrency() } : null,
     monthlyHistory,
     totalPemasukan,
     totalPengeluaran,
@@ -355,12 +397,12 @@ function renderAIPromo() {
   el.hidden = false;
   el.innerHTML = `
     <div class="ai-promo-card">
-      <button class="ai-promo-x" aria-label="Tutup">×</button>
-      <img class="ai-promo-emoji" src="assets/icons/beruang-wallet-192.png" alt="" />
+      <button class="ai-promo-x" aria-label="${advisorText('Tutup', 'Close')}">×</button>
+      <img class="ai-promo-emoji" src="assets/icons/ruvy-192.png" alt="" />
       <div class="ai-promo-body">
-        <div class="ai-promo-title">Baru! Tanya <b>Beruang Akuntan</b> 🤖</div>
-        <div class="ai-promo-sub">AI yang ngerti duitmu. Tanya <i>"kapan aku bisa beli HP baru?"</i> atau <i>"pengeluaran mana yang boros?"</i> — dijawab pakai data kamu sendiri.</div>
-        <button class="ai-promo-cta">✨ Coba Sekarang</button>
+        <div class="ai-promo-title">${advisorText('Tanya <b>Ruvy</b> 🤖', 'Ask <b>Ruvy AI</b> 🤖')}</div>
+        <div class="ai-promo-sub">${advisorText('Tanya <i>"kapan aku bisa beli HP baru?"</i> atau <i>"pengeluaran mana yang bisa dikurangi?"</i> — dijawab pakai catatan keuanganmu.', 'Ask <i>"when can I afford a new phone?"</i> or <i>"where could I spend less?"</i> — get insights from your own financial records.')}</div>
+        <button class="ai-promo-cta">${advisorText('✨ Coba Sekarang', '✨ Try Now')}</button>
       </div>
     </div>`;
   const dismiss = () => { try { localStorage.setItem(aiPromoKey(), "1"); } catch (_) {} el.hidden = true; el.innerHTML = ""; };
