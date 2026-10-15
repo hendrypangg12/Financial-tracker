@@ -1,6 +1,7 @@
 // Display translations only. Account data and Indonesian storage keys stay unchanged.
 (function () {
   const EN = {
+    'nama@email.com': 'you@example.com',
     'Belum ada catatan': 'No records yet',
     '＋ Tambah kategori pengeluaran': '＋ Add expense category',
     '＋ Tambah kategori pemasukan': '＋ Add income category',
@@ -60,6 +61,8 @@
     'Pilih Bulan': 'Choose month', 'Pilih Tahun': 'Choose year', 'Pilih bulan': 'Choose month', 'Pilih tahun': 'Choose year',
     'Semua bulan': 'All months', 'Semua tahun': 'All years', 'Semua': 'All', 'Semua Jenis': 'All types', 'Semua jenis': 'All types',
     'Pemasukan': 'Income', 'Pengeluaran': 'Expenses', 'Saldo Awal': 'Opening balance',
+    // Canonical transaction values are stored in Indonesian; translate their display only.
+    'pemasukan': 'Income', 'pengeluaran': 'Expense',
     'Sisa Saldo': 'Available balance', 'Saldo bersih': 'Net balance', 'SISA SALDO': 'AVAILABLE BALANCE',
     'TOTAL PEMASUKAN': 'TOTAL INCOME', 'TOTAL PENGELUARAN': 'TOTAL EXPENSES', 'TOTAL TRANSAKSI': 'TRANSACTIONS',
     'Ringkasan Bulan Ini': 'This month at a glance', 'Riwayat Keuangan Sejak Awal': 'Financial history',

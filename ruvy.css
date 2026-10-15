@@ -127,6 +127,39 @@
 }
 @media(max-height:680px){.ruvy-app #login-screen .ruvy-auth-shell{margin-block:0}.ruvy-auth-top{margin-bottom:14px}.ruvy-auth-welcome{margin-bottom:16px}.ruvy-auth-mascot{width:52px;height:52px;margin-bottom:10px}.ruvy-auth-mascot img{width:44px;height:44px}.ruvy-auth-welcome h1{font-size:24px}}
 
+/* First visit: the same original Ruvy robot, with room to say hello. */
+.ruvy-welcome-panel{text-align:center;padding:0 7px 6px}
+.ruvy-app #login-screen.ruvy-show-welcome .ruvy-auth-top{margin-bottom:12px}
+.ruvy-welcome-hero{position:relative;margin:0 auto 25px;isolation:isolate}
+.ruvy-welcome-hero:before{content:'';position:absolute;z-index:-1;left:50%;top:20px;transform:translateX(-50%);width:245px;height:215px;border-radius:50%;background:radial-gradient(ellipse,rgba(199,223,237,.67),rgba(212,231,239,.2) 58%,transparent 72%);filter:blur(5px);pointer-events:none}
+.ruvy-app #ruvy-welcome-robot{width:220px;height:220px;flex-basis:220px;margin:0 auto 6px;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;touch-action:manipulation}
+.ruvy-app #ruvy-welcome-robot:focus-visible{outline:3px solid #7a9ee3;outline-offset:6px;box-shadow:none}
+#ruvy-welcome-robot .ruvy-robot-body{left:calc(50% - 33px);top:14px;scale:2.3;transform-origin:50% 0%;animation:ruvy-welcome-float 5.8s cubic-bezier(.45,0,.55,1) infinite}
+#ruvy-welcome-robot .ruvy-robot-head{box-shadow:inset 0 2px 6px #fff,0 6px 16px rgba(55,79,118,.11)}
+#ruvy-welcome-robot .ruvy-robot-shadow{left:calc(50% - 45px);bottom:6px;width:90px;height:12px;background:rgba(92,123,157,.16);filter:blur(5px)}
+.ruvy-welcome-tap{margin:0;color:var(--ink-soft);font-size:11px;line-height:1.5;letter-spacing:.01em}
+.ruvy-welcome-panel h1{margin:0 0 12px;color:var(--ink);font-size:34px;font-weight:650;line-height:1.18;letter-spacing:-1.3px;text-wrap:balance}
+.ruvy-welcome-intro{max-width:315px;margin:0 auto;color:var(--ink-soft);font-size:14px;line-height:1.7;text-wrap:pretty}
+.ruvy-welcome-actions{display:grid;gap:8px;margin-top:29px}
+.ruvy-app #login-screen #ruvy-get-started{min-height:52px;border-radius:17px;font-size:14px;font-weight:600;box-shadow:0 8px 22px rgba(56,105,200,.15),inset 0 1px 0 rgba(255,255,255,.16)}
+.ruvy-welcome-sign-in{min-height:44px;width:100%;padding:10px 6px;border:0;border-radius:13px;background:none;color:var(--primary);font-size:12px;font-weight:550;line-height:1.5;cursor:pointer;touch-action:manipulation}
+.ruvy-welcome-sign-in:hover{background:var(--surface-soft)}
+.ruvy-auth-back{display:inline-flex;align-items:center;min-height:44px;margin:-10px 0 8px;padding:8px 10px 8px 0;border:0;border-radius:10px;background:none;color:var(--primary);font-size:12px;font-weight:550;cursor:pointer;touch-action:manipulation}
+.ruvy-auth-back:hover{color:var(--primary-dark)}
+.ruvy-dark .ruvy-welcome-hero:before{background:radial-gradient(ellipse,rgba(73,110,145,.28),rgba(57,89,120,.09) 58%,transparent 72%)}
+#ruvy-welcome-panel[hidden] .ruvy-robot *{animation-play-state:paused!important}
+#login-screen[hidden] #ruvy-welcome-robot *{animation-play-state:paused!important}
+@keyframes ruvy-welcome-float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-3px,0)}}
+@media(max-width:380px),(max-height:680px){
+  .ruvy-welcome-panel{padding-inline:0}.ruvy-welcome-hero{margin-bottom:20px}
+  .ruvy-app #ruvy-welcome-robot{width:190px;height:190px;flex-basis:190px;margin-bottom:4px}
+  #ruvy-welcome-robot .ruvy-robot-body{top:10px;scale:2.05}
+  .ruvy-welcome-hero:before{top:10px;width:220px;height:195px}
+  .ruvy-welcome-panel h1{font-size:30px;margin-bottom:10px}.ruvy-welcome-intro{font-size:13px;line-height:1.65}
+  .ruvy-welcome-actions{margin-top:23px;gap:5px}.ruvy-app #login-screen #ruvy-get-started{min-height:50px}
+  .ruvy-welcome-sign-in{font-size:11px}
+}
+
 /* Wallet choices remain available from every destination. */
 .ruvy-wallets{margin-bottom:19px}
 .ruvy-wallets-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}
@@ -141,6 +174,13 @@
 .ruvy-wallet.selected{background:var(--surface);border-color:#98b9df;box-shadow:inset 0 1px 0 var(--glass-edge),0 3px 12px rgba(64,109,170,.07)}
 .ruvy-wallet.selected strong{color:var(--primary)}
 .ruvy-wallet:hover{background:var(--surface)}
+.ruvy-wallet-item{display:flex;align-items:stretch;flex:0 0 auto;border:1px solid var(--glass-edge);border-radius:18px;background:var(--panel);box-shadow:0 3px 12px rgba(39,62,85,.025);scroll-snap-align:start;transition:background .18s,border-color .18s}
+.ruvy-wallet-item>.ruvy-wallet{border:0;background:transparent;box-shadow:none;scroll-snap-align:none}
+.ruvy-wallet-item.selected{background:var(--surface);border-color:#98b9df;box-shadow:inset 0 1px 0 var(--glass-edge),0 3px 12px rgba(64,109,170,.07)}
+.ruvy-wallet-item.selected strong{color:var(--primary)}
+.ruvy-wallet-edit{display:grid;place-items:center;align-self:center;flex:0 0 44px;width:44px;min-width:44px;min-height:44px;margin-inline-end:4px;padding:0;border:0;border-radius:13px;background:transparent;color:var(--primary);cursor:pointer}
+.ruvy-wallet-edit svg{width:18px;height:18px}
+.ruvy-wallet-edit:hover{background:var(--surface-soft)}
 .ruvy-new-wallet{display:flex;flex-direction:row;min-width:135px;gap:6px;align-items:center;justify-content:center;background:rgba(255,255,255,.25);border:1px dashed rgba(107,139,173,.35)}
 .ruvy-new-wallet>span:first-child{font-size:21px;color:var(--ink-soft)}
 .ruvy-new-wallet strong{color:var(--ink-soft);font-size:11px;font-weight:500}
@@ -268,7 +308,7 @@
 /* Dark, solid and reduced-motion preferences share the layout. */
 .ruvy-app.ruvy-dark{color-scheme:dark;--bg:#141d29;--panel:rgba(34,47,65,.73);--surface:rgba(43,58,77,.82);--surface-soft:rgba(51,72,93,.55);--glass-edge:rgba(169,196,219,.14);--ink:#e7eef6;--ink-soft:#a3b3c5;--line:rgba(149,172,198,.2);--income:#86d7bf;--expense:#f4a6b7;--income-bg:#294a43;--expense-bg:#4b3543;--primary:#9bbbf1;--primary-dark:#b0cbf4;--primary-ink:#1a2d48;--primary-light:#344864;--accent:#86a9d9;--cream-2:#2b3d55;--shadow:0 10px 30px rgba(3,11,21,.12),inset 0 1px 0 rgba(185,210,233,.04);--balance-glass:linear-gradient(118deg,rgba(40,59,79,.93),rgba(37,60,81,.87) 62%,rgba(43,67,82,.86));background:radial-gradient(ellipse at 88% 4%,rgba(60,85,123,.2),transparent 46%),radial-gradient(ellipse at 0 65%,rgba(48,94,86,.12),transparent 48%),var(--bg)}
 .ruvy-dark .topbar{background:rgba(24,35,49,.75)}
-.ruvy-dark .ruvy-wallet.selected{border-color:#6f93bd} .ruvy-dark .ruvy-new-wallet{background:transparent}
+.ruvy-dark :is(.ruvy-wallet.selected,.ruvy-wallet-item.selected){border-color:#6f93bd} .ruvy-dark .ruvy-new-wallet{background:transparent}
 .ruvy-dark .ruvy-balance-symbol{color:#a2bed5} .ruvy-dark .ruvy-robot{background:radial-gradient(ellipse,rgba(90,125,157,.2),transparent 70%)}
 .ruvy-dark .ruvy-robot-shadow{background:#080e1c99} .ruvy-dark .goal-card.goal-completed{background:var(--panel);border-color:#527d71}
 .ruvy-app.ruvy-solid{--panel:#fff;--surface:#fff;--surface-soft:#eaf0f7;--glass-edge:#e2e9f0;--balance-glass:#f8fbfe}
@@ -296,6 +336,7 @@
   .ruvy-app .sync-status{max-width:80px;font-size:9px} .ruvy-app .btn-upgrade-pro{min-height:44px;padding:8px 10px;font-size:10px}
   .ruvy-wallets{margin-bottom:9px} .ruvy-wallets-head{margin-bottom:1px}
   .ruvy-wallet-strip{gap:8px;padding-bottom:7px} .ruvy-wallet{min-width:152px;padding:11px 12px;gap:3px 10px;border-radius:16px}
+  .ruvy-wallet-item{border-radius:16px}
   .ruvy-wallet strong{max-width:133px;font-size:11px} .ruvy-wallet>span:last-child{font-size:10px}
   .ruvy-new-wallet{min-width:109px;gap:4px} .ruvy-new-wallet strong{font-size:10px}
   .ruvy-wallet-note{font-size:9px;line-height:1.45}

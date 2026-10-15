@@ -44,6 +44,37 @@ test('currency cannot be relabelled after financial history, including deleted h
   assert.equal(h.run('getAccountCurrency()'),'USD');
   assert.equal(h.run("updateWallet(getActiveWalletId(),{name:'Travel',currency:'USD'}).ok"),true);
 });
+test('renaming the main wallet survives reload and cloud sync without changing its currency or financial history',()=>{
+  const h=app();
+  h.run("selectUserStorage('wallet-test');state.startingBalance={amount:100000,date:'2026-10-01',completed:true}");
+  h.context.old=tx('main-coffee',25000);h.run('addTransaction(old)');
+  const usd=h.run("createWallet({name:'Travel',currency:'USD',amount:10,date:'2026-10-01'}).id");
+  h.context.other=tx('travel-coffee',1.25);h.run('addTransaction(other)');
+  h.run("selectWallet('legacy')");
+  const before=h.run('JSON.stringify(syncData(state))');
+  assert.equal(h.run("updateWallet('legacy',{name:' BCA ',currency:'IDR'}).ok"),true);
+  assert.equal(h.run('getActiveWallet().name'),'BCA');
+  assert.equal(h.run('getActiveWallet().currency'),'IDR');
+  assert.equal(h.run("walletBalance('legacy')"),75000);
+  const saved=h.run('JSON.stringify(syncData(state))');
+  const original=JSON.parse(before),renamed=JSON.parse(saved);
+  assert.deepEqual(renamed,{...original,preferences:{...original.preferences,mainWalletName:'BCA'}},'Only the wallet display name changes');
+
+  h.run("selectUserStorage('wallet-test');loadState()");
+  assert.equal(h.run('getActiveWallet().name'),'BCA');
+  for(const lang of ['id','en']){
+    h.run('state.preferences.language='+JSON.stringify(lang));
+    assert.equal(h.run('getActiveWallet().name'),'BCA','Custom main-wallet names are never translated');
+  }
+  const second=app();second.context.cloud=JSON.parse(saved);
+  second.run('applyCloud(cloud)');
+  assert.equal(second.run('getActiveWallet().name'),'BCA');
+  assert.equal(second.run('getActiveWallet().currency'),'IDR');
+  assert.equal(second.run("walletBalance('legacy')"),75000);
+  assert.equal(second.run('walletBalance('+JSON.stringify(usd)+')'),8.75);
+  assert.equal(second.run('JSON.stringify(syncData(state))'),saved,'Sync keeps all original ledger amounts and records exactly');
+  assert.equal(second.run("updateWallet('legacy',{name:'BCA',currency:'USD'}).ok"),false,'Renaming cannot relabel the original IDR ledger');
+});
 test('zero-history wallets can choose a new currency; invalid currencies, precision and dates are rejected',()=>{
   const h=app();h.run("createWallet({name:'Empty',currency:'USD',amount:0})");
   assert.equal(h.run("updateWallet(getActiveWalletId(),{name:'Empty',currency:'JPY'}).ok"),true);

@@ -36,11 +36,11 @@ function renderTransaksi() {
     <tr class="trx-row">
       <td data-label="Tanggal">${formatTanggal(t.tanggal)}</td>
       <td data-label="Deskripsi" class="trx-desc">${escapeHtml(t.deskripsi || '-')}</td>
-      <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${typeof t === 'object' ? window.t(t.jenis) : t.jenis}</span></td>
+      <td data-label="Jenis"><span class="pill ${t.jenis === 'pemasukan' ? 'pill-in' : 'pill-out'}">${escapeHtml(window.t(t.jenis))}</span></td>
       <td class="num trx-amount" data-label="Jumlah"><b class="${t.jenis === 'pemasukan' ? 'money-income' : 'money-expense money-negative'}">${t.jenis === 'pemasukan' ? '+' : ''}${formatRupiah(t.jumlah)}</b></td>
       <td data-label="Sub Kategori">${escapeHtml(categoryDisplayName(t.subKategori || '-', t.jenis, t.kategori))}</td>
       <td data-label="Kategori">${escapeHtml(categoryDisplayName(t.kategori || '-', t.jenis))}</td>
-      <td data-label="Alokasi">${t.alokasi ? `<span class="pill pill-alok">${t.alokasi}</span>` : '-'}</td>
+      <td data-label="Alokasi">${t.alokasi ? `<span class="pill pill-alok">${escapeHtml(window.t(t.alokasi))}</span>` : '-'}</td>
       <td class="row-actions" data-label="Aksi">
         <button class="icon-btn" data-edit="${t.id}" title="Edit" aria-label="Edit">✏️</button>
         <button class="icon-btn danger" data-del="${t.id}" title="Hapus" aria-label="Hapus">🗑️</button>
@@ -159,7 +159,7 @@ function renderKatList(jenis) {
   return `<div class="kat-list">` + Object.entries(cats).map(([name, info]) => `
     <div class="kat-group">
       <div class="kat-group-head">
-        <div class="kat-group-title"><h4>${escapeHtml(name)}</h4>${info.alokasi ? `<span class="pill pill-alok">${escapeHtml(info.alokasi)}</span>` : ''}${info.custom ? '<span class="pill pill-custom">Kategori Anda</span>' : ''}</div>
+        <div class="kat-group-title"><h4>${escapeHtml(name)}</h4>${info.alokasi ? `<span class="pill pill-alok">${escapeHtml(window.t(info.alokasi))}</span>` : ''}${info.custom ? '<span class="pill pill-custom">Kategori Anda</span>' : ''}</div>
         ${info.custom ? `<details class="category-rename"><summary>Ubah nama</summary><form data-rename-category data-old-name="${escapeHtml(name)}"><input type="text" name="nama" value="${escapeHtml(name)}" maxlength="40" aria-label="Nama baru untuk ${escapeHtml(name)}" required /><button class="btn btn-small btn-primary" type="submit">Simpan</button></form></details>` : ''}
       </div>
       <ul>

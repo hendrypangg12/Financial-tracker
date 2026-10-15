@@ -6,6 +6,49 @@ function renderRuvyAuthCopy() {
     node.textContent = getAppLanguage() === 'en' ? node.dataset.ruvyEn : node.dataset.ruvyId;
   });
 }
+// A device preference only: never changes account, wallet or authentication state.
+let ruvyWelcomeAccepted = false;
+function hasSeenRuvyWelcome() {
+  if (ruvyWelcomeAccepted) return true;
+  try { return localStorage.getItem('ruvy-welcome-seen-v1') === 'true'; } catch (_) { return false; }
+}
+function setRuvyAuthPane(welcome) {
+  document.getElementById('ruvy-welcome-panel').hidden = !welcome;
+  document.getElementById('ruvy-auth-panel').hidden = welcome;
+  const screen = document.getElementById('login-screen');
+  screen.classList.toggle('ruvy-show-welcome', welcome);
+  if (!welcome) document.getElementById('ruvy-welcome-robot').classList.remove('waving');
+}
+function openRuvyAuthForm(tab = 'register') {
+  ruvyWelcomeAccepted = true;
+  try { localStorage.setItem('ruvy-welcome-seen-v1', 'true'); } catch (_) {}
+  setRuvyAuthPane(false);
+  const button = document.querySelector('.login-tab[data-auth-tab="' + (tab === 'register' ? 'register' : 'login') + '"]');
+  button.click();
+  // Keep the mobile keyboard closed until the user chooses a field.
+  button.focus({ preventScroll: true });
+  document.getElementById('login-screen').scrollTop = 0;
+}
+function waveRuvyWelcome(changeGreeting = true) {
+  const robot = document.getElementById('ruvy-welcome-robot');
+  const reducedMotion = document.body.classList.contains('ruvy-reduce-motion')
+    || (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (!document.hidden && !document.getElementById('login-screen').hidden && !document.getElementById('ruvy-welcome-panel').hidden && !reducedMotion) robot.classList.add('waving');
+  if (changeGreeting) {
+    document.getElementById('ruvy-welcome-greeting').textContent = ruvyText('Senang bertemu kamu!', 'Nice to meet you!');
+    clearTimeout(robot._greetingTimer);
+    robot._greetingTimer = setTimeout(renderRuvyAuthCopy, 3200);
+  }
+}
+function prepareRuvyLoginScreen(entering = true) {
+  if (!entering) return; // Preserve the selected form, fields and errors on retries.
+  const accountWasRecognized = typeof currentUser !== 'undefined' && !!currentUser;
+  const welcome = !accountWasRecognized && !hasSeenRuvyWelcome();
+  setRuvyAuthPane(welcome);
+  renderRuvyAuthCopy();
+  if (welcome) waveRuvyWelcome(false);
+  else document.querySelector('.login-tab[data-auth-tab="login"]').click();
+}
 // Drafts stay in memory, separately for each account, wallet and currency.
 // A wallet switch must never reinterpret an unfinished amount in another currency.
 const ruvyQuickDrafts = new Map();
@@ -102,8 +145,13 @@ function renderRuvy() {
   document.getElementById('ruvy-period-year').innerHTML = [...years].filter(y => Number.isInteger(y) && y >= 1900 && y <= 9999).sort((a,b)=>b-a).map(y=>'<option>'+y+'</option>').join('');
   document.getElementById('ruvy-period-year').value = state.selectedYear;
   const strip = document.getElementById('ruvy-wallet-strip');
-  strip.innerHTML = getWallets().map(w => '<button type="button" class="ruvy-wallet ' + (w.id === wallet.id ? 'selected' : '') + '" data-wallet="' + w.id + '" aria-pressed="' + (w.id === wallet.id) + '"><span class="ruvy-wallet-code">' + w.currency + '</span><strong>' + ruvyEscape(w.name) + '</strong><span>' + ruvyEscape(formatWalletMoney(walletBalance(w.id), w.currency)) + '</span></button>').join('') + '<button class="ruvy-wallet ruvy-new-wallet" type="button" data-new-wallet><span aria-hidden="true">＋</span><strong>' + ruvyText('Dompet baru','New wallet') + '</strong></button>';
+  strip.innerHTML = getWallets().map(w => {
+    const selected = w.id === wallet.id;
+    const editLabel = ruvyEscape(ruvyText('Ubah dompet: ', 'Edit wallet: ') + w.name);
+    return '<div class="ruvy-wallet-item' + (selected ? ' selected' : '') + '"><button type="button" class="ruvy-wallet" data-wallet="' + ruvyEscape(w.id) + '" aria-pressed="' + selected + '"><span class="ruvy-wallet-code">' + w.currency + '</span><strong>' + ruvyEscape(w.name) + '</strong><span>' + ruvyEscape(formatWalletMoney(walletBalance(w.id), w.currency)) + '</span></button><button type="button" class="ruvy-wallet-edit" data-edit-wallet="' + ruvyEscape(w.id) + '" aria-label="' + editLabel + '" title="' + editLabel + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 5 4 4M4 20l4.5-1 12-12a2.8 2.8 0 0 0-4-4l-12 12L4 20Z"/></svg></button></div>';
+  }).join('') + '<button class="ruvy-wallet ruvy-new-wallet" type="button" data-new-wallet><span aria-hidden="true">＋</span><strong>' + ruvyText('Dompet baru','New wallet') + '</strong></button>';
   strip.querySelectorAll('[data-wallet]').forEach(button => button.onclick = () => selectWallet(button.dataset.wallet));
+  strip.querySelectorAll('[data-edit-wallet]').forEach(button => button.onclick = () => openWalletEditor(button.dataset.editWallet));
   strip.querySelector('[data-new-wallet]').onclick = () => openWalletEditor();
   const latest = monthRows.slice().sort((a,b)=>b.tanggal.localeCompare(a.tanggal)).slice(0, 3);
   document.getElementById('ruvy-recent').innerHTML = latest.length ? latest.map(row => '<button class="ruvy-recent-row" type="button" data-transaction="' + ruvyEscape(row.id) + '"><span class="ruvy-tx-icon ' + (row.jenis === 'pemasukan' ? 'income' : 'expense') + '" aria-hidden="true">' + (row.jenis === 'pemasukan' ? '↙' : '↗') + '</span><span class="ruvy-tx-copy"><strong>' + ruvyEscape(row.deskripsi || row.kategori) + '</strong><small>' + ruvyEscape(formatTanggal(row.tanggal)) + '</small></span><b class="' + (row.jenis === 'pemasukan' ? 'money-income' : 'money-expense') + '">' + (row.jenis === 'pemasukan' ? '+' : '−') + ruvyEscape(formatWalletMoney(row.jumlah, wallet.currency)) + '</b></button>').join('') : '<div class="ruvy-empty"><span aria-hidden="true">↗</span><strong>' + ruvyText('Mulai dari satu catatan','Start with one entry') + '</strong><p>' + ruvyText('Catat uang masuk atau keluar. Ruvy membantu melihat polanya.','Record income or an expense. Ruvy helps you see the patterns.') + '</p></div>';
@@ -193,9 +241,20 @@ function initRuvy() {
   document.getElementById('btn-open-preferences').onclick = () => { document.getElementById('user-dropdown').hidden = true; refreshAccountPreferencesUI(); document.getElementById('modal-preferences').hidden = false; };
   const robot = document.getElementById('ruvy-robot');
   robot.onclick = () => waveRuvy(ruvyText('Hai! Mau lihat ke mana uangmu pergi?', 'Hi! Want to see where your money goes?'));
-  const finishWave = event => { if (event.animationName === 'ruvy-wave') robot.classList.remove('waving'); };
-  robot.addEventListener('animationend', finishWave);
-  robot.addEventListener('animationcancel', finishWave);
+  const welcomeRobot = document.getElementById('ruvy-welcome-robot');
+  welcomeRobot.onclick = () => waveRuvyWelcome();
+  document.getElementById('ruvy-get-started').onclick = () => openRuvyAuthForm('register');
+  document.getElementById('ruvy-welcome-sign-in').onclick = () => openRuvyAuthForm('login');
+  document.getElementById('ruvy-auth-back').onclick = () => {
+    setRuvyAuthPane(true); renderRuvyAuthCopy(); waveRuvyWelcome(false);
+    document.getElementById('ruvy-get-started').focus({ preventScroll: true });
+    document.getElementById('login-screen').scrollTop = 0;
+  };
+  for (const animatedRobot of [robot, welcomeRobot]) {
+    const finishWave = event => { if (event.animationName === 'ruvy-wave') animatedRobot.classList.remove('waving'); };
+    animatedRobot.addEventListener('animationend', finishWave);
+    animatedRobot.addEventListener('animationcancel', finishWave);
+  }
   const syncRobotVisibility = () => document.body.classList.toggle('ruvy-paused', document.hidden);
   document.addEventListener('visibilitychange', syncRobotVisibility);
   syncRobotVisibility();

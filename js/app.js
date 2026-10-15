@@ -1004,7 +1004,10 @@ function showScreen(which) {
   document.body.classList.toggle('app-locked', which !== 'app');
   const startup = document.getElementById('startup-screen');
   if (startup) startup.hidden = which !== 'loading';
-  document.getElementById('login-screen').hidden = which !== 'login';
+  const loginScreen = document.getElementById('login-screen');
+  const enteringLogin = loginScreen.hidden;
+  loginScreen.hidden = which !== 'login';
+  if (which === 'login' && typeof prepareRuvyLoginScreen === 'function') prepareRuvyLoginScreen(enteringLogin);
   document.getElementById('paywall-screen').hidden = which !== 'paywall';
   if (which === 'login') detectAuthEnvAndShowTip();
   const menu = document.getElementById('user-menu');
@@ -1401,6 +1404,10 @@ function setupProGating(profile) {
   // Tampilkan status paket aktif dan masa berlakunya di header.
   const trialBadge = document.getElementById('trial-badge');
   if (trialBadge) {
+    const badgeCopy = (id, en) => {
+      trialBadge.dataset.ruvyId = id; trialBadge.dataset.ruvyEn = en;
+      trialBadge.textContent = preferenceMessage(id, en);
+    };
     if (timedPlanActive) {
       const days = daysRemaining(profile);
       trialBadge.hidden = false;
@@ -1411,20 +1418,21 @@ function setupProGating(profile) {
         monthly: '⭐ Pro 30 Hari',
         annual: '👑 Pro Tahunan',
       };
-      trialBadge.innerHTML = days > 1
-        ? `${labels[profile.plan]} · ${days} hari tersisa`
-        : `${labels[profile.plan]} · <b>hari terakhir</b>`;
+      const englishLabels = { free_trial: '🎁 Free trial', trial: '⭐ 7-Day Pass', starter: '⭐ 7-Day Pass', monthly: '⭐ Monthly Pro', annual: '👑 Yearly Pro' };
+      badgeCopy(days > 1 ? `${labels[profile.plan]} · ${days} hari tersisa` : `${labels[profile.plan]} · hari terakhir`,
+        days > 1 ? `${englishLabels[profile.plan]} · ${days} days left` : `${englishLabels[profile.plan]} · last day`);
       trialBadge.classList.toggle('trial-urgent', days <= 2);
       trialBadge.title = profile?.plan === 'free_trial' ? 'Masa uji coba aktif' : 'Ketuk untuk memperpanjang paket';
       trialBadge.onclick = profile?.plan === 'free_trial' ? null : () => showScreen('paywall');
       trialBadge.classList.toggle('is-actionable', profile?.plan !== 'free_trial');
     } else if (userIsPro) {
       trialBadge.hidden = false;
-      trialBadge.innerHTML = '👑 Pro Aktif';
+      badgeCopy('👑 Pro Aktif', '👑 Pro active');
       trialBadge.classList.remove('trial-urgent');
       trialBadge.classList.remove('is-actionable');
       trialBadge.onclick = null;
     } else {
+      delete trialBadge.dataset.ruvyId; delete trialBadge.dataset.ruvyEn;
       trialBadge.hidden = true;
       trialBadge.classList.remove('is-actionable');
       trialBadge.onclick = null;
