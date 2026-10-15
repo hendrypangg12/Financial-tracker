@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html,body{margin:0}
+body{width:1080px;height:1920px;overflow:hidden;position:relative;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#13213a}
+.bg-a{background:linear-gradient(180deg,#e3edfb 0%,#f5f8fd 55%,#dfe9f8 100%)}
+.bg-b{background:#fff}
+.bg-c{background:linear-gradient(180deg,#fff 0%,#eef4fd 100%)}
+.h{position:absolute;left:84px;right:84px;font-weight:900;letter-spacing:-3px;line-height:1.02;font-size:118px}
+.h .b{color:#3869c8}
+.h.center{text-align:center}
+.h small{display:block;font-size:72px;font-weight:700;letter-spacing:-2px;color:#13213a;margin-bottom:6px}
+.phone{position:absolute;width:640px;padding:18px;border-radius:84px;background:#0f1726;box-shadow:0 60px 120px rgba(19,33,58,.28)}
+.phone::before{content:"";position:absolute;top:34px;left:50%;transform:translateX(-50%);width:170px;height:44px;border-radius:30px;background:#0f1726;z-index:2}
+.phone img{display:block;width:100%;border-radius:68px}
+.card{position:absolute;background:#fff;border-radius:34px;box-shadow:0 30px 70px rgba(19,33,58,.18);padding:30px 34px;font-size:30px;border:1px solid #e6edf7}
+.rec .top{display:flex;justify-content:space-between;color:#6b7a8e;font-size:26px}
+.rec .row{display:flex;align-items:center;gap:22px;margin-top:18px}
+.rec .ic{width:74px;height:74px;border-radius:50%;background:#eef3fb;display:grid;place-items:center;font-size:40px}
+.rec b{display:block;font-size:34px}.rec small{color:#6b7a8e;font-size:26px}
+.rec .amt{margin-left:auto;font-weight:800;font-size:36px;color:#b64560}.rec .amt.in{color:#187b68}
+.pill{position:absolute;display:flex;align-items:center;gap:22px;padding:24px 40px 24px 26px;border-radius:999px;background:#fff;border:3px solid #3869c8;box-shadow:0 24px 50px rgba(56,105,200,.22);font-weight:800;font-size:36px;letter-spacing:.5px;text-transform:uppercase;color:#13213a}
+.pill .i{width:78px;height:78px;border-radius:50%;background:#3869c8;color:#fff;display:grid;place-items:center;font-size:40px}
+.bubble{position:absolute;background:#3869c8;color:#fff;font-weight:700;font-size:34px;padding:22px 30px;border-radius:34px 34px 8px 34px;box-shadow:0 20px 40px rgba(56,105,200,.3)}
+.robot{position:absolute}
+.wallet{position:absolute;background:#fff;border-radius:30px;padding:26px 30px;box-shadow:0 26px 60px rgba(19,33,58,.16);border:1px solid #e6edf7;width:330px}
+.wallet .t{display:flex;justify-content:space-between;font-weight:800;font-size:30px}.wallet .t span{font-size:22px;color:#3869c8;background:#e4edfb;padding:4px 12px;border-radius:12px}
+.wallet .v{margin-top:10px;font-size:34px;font-weight:800}
+.blob{position:absolute;border-radius:50%;filter:blur(10px);opacity:.55}
+</style></head><body>
+<div id="root"></div>
+<script>
+const q=new URLSearchParams(location.search), n=q.get('n');
+const P=(img,x,y,w=640,rot=0)=>`<div class="phone" style="left:${x}px;top:${y}px;width:${w}px;transform:rotate(${rot}deg)"><img src="${img}.png"></div>`;
+const rec=(x,y,w,ic,title,sub,amt,inc,label='Expense',date='Thu, Oct 15',rot=0)=>`<div class="card rec" style="left:${x}px;top:${y}px;width:${w}px;transform:rotate(${rot}deg)"><div class="top"><span>Recorded: ${label}</span><span>${date}</span></div><div class="row"><span class="ic">${ic}</span><span><b>${title}</b><small>${sub}</small></span><span class="amt ${inc?'in':''}">${amt}</span></div></div>`;
+const S={
+ '1':{bg:'bg-a',html:`<div class="h" style="top:150px"><small>Meet Ruvy,</small>your money<br><span class="b">buddy.</span></div>
+   <img class="robot" src="robot.png" style="right:60px;top:110px;width:300px;filter:drop-shadow(0 30px 40px rgba(19,33,58,.25))">
+   ${P('home',300,640,640,8)}
+   <div class="wallet" style="left:60px;top:900px;transform:rotate(-5deg)"><div class="t">Everyday<span>USD</span></div><div class="v">$4,221.90</div></div>
+   <div class="wallet" style="left:90px;top:1150px;transform:rotate(-3deg)"><div class="t">Tokyo trip<span>JPY</span></div><div class="v">¥40,950</div></div>
+   ${rec(40,1460,620,'☕','Drinks & snacks','latte · Everyday','−$5.40',false,'Expense','Wed, Oct 14',-3)}`},
+ '2':{bg:'bg-b',html:`${P('chat',220,-420,640,0)}
+   <div class="bubble" style="right:90px;top:1060px">coffee 4.50 🎤</div>
+   ${rec(80,1150,620,'☕','Drinks & snacks','coffee · Everyday','−$4.50',false,'Expense','Thu, Oct 15',-2)}
+   <div class="h center" style="top:1470px">Just type it.<br><span class="b">Ruvy logs it.</span></div>`},
+ '3':{bg:'bg-c',html:`<div class="h center" style="top:130px"><span class="b">Voice, text</span><br>or receipt</div>
+   <div class="pill" style="left:90px;top:520px"><span class="i">🎤</span>Speak to record</div>
+   <div class="pill" style="left:230px;top:680px"><span class="i">📷</span>Snap a receipt</div>
+   <div class="pill" style="left:120px;top:840px"><span class="i">⌨️</span>Or just type</div>
+   ${P('chat',220,1020,640,0)}
+   <img class="robot" src="robot.png" style="left:30px;top:1300px;width:260px;filter:drop-shadow(0 30px 40px rgba(19,33,58,.25))">`},
+ '4':{bg:'bg-a',html:`<div class="h" style="top:150px">Every wallet,<br><span class="b">every currency.</span></div>
+   ${P('jpy',380,520,620,0)}
+   <div class="wallet" style="left:50px;top:640px"><div class="t">Bank account<span>IDR</span></div><div class="v">Rp12.5M</div></div>
+   <div class="wallet" style="left:80px;top:880px;transform:rotate(-3deg)"><div class="t">Everyday<span>USD</span></div><div class="v">$4,221.90</div></div>
+   <div class="wallet" style="left:50px;top:1120px;transform:rotate(2deg)"><div class="t">Savings<span>USD</span></div><div class="v">$4,800.00</div></div>
+   ${rec(60,1420,620,'🍜','Dining out','ramen · Tokyo trip','−¥1,200',false,'Expense','Mon, Oct 12',-2)}
+   <div style="position:absolute;left:84px;right:84px;bottom:60px;text-align:center;font-size:30px;color:#6b7a8e">No hidden conversions. Each wallet keeps its own currency.</div>`},
+ '5':{bg:'bg-b',html:`<div class="h center" style="top:130px">Move money<br><span class="b">between wallets.</span></div>
+   ${P('transfer',220,560,640,0)}
+   <div class="card" style="left:60px;top:1500px;width:520px;transform:rotate(-3deg)"><div style="color:#6b7a8e;font-size:26px">↔ Funds moved</div><div style="font-weight:800;font-size:40px;margin-top:8px">$300.00</div><div style="font-size:28px;margin-top:6px">Everyday → Savings</div></div>
+   <div class="pill" style="right:50px;top:1260px;font-size:30px"><span class="i">✓</span>Not counted as spending</div>`},
+};
+document.body.className=S[n].bg; document.getElementById('root').innerHTML=S[n].html;
+</script></body></html>
