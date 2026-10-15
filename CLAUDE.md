@@ -188,6 +188,15 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🚀 15 Okt (laptop bos, Play Console akun hendryphang12@gmail.com): listing Ruvy ENGLISH (default en-US, ID tetap ada) +
+  build Ruvy 1.5.1 vc15 DIKIRIM REVIEW, rilis 176 negara + rest of world. Produk Play diganti nama: Ruvy Pro Monthly
+  (Rp50rb/USD 2.79), Ruvy Pro Yearly (Rp299rb/USD 16.99), Ruvy 7-Day Pass. Produk lama "Akses BerUang 30 Hari/1 Tahun"
+  dinonaktifkan. Offer `free-trial-3d` (Monthly base plan monthly-30d, tag free-trial, hanya yang belum pernah langganan)
+  status DRAFT — JANGAN diaktifkan sebelum 1.5.2 live.
+  MODEL BISNIS BARU (KEPUTUSAN BOS 15 Okt): tanpa paket 7 hari & tanpa lifetime. Daftar → trial 2 hari TERMASUK AI
+  (5 pertanyaan/hari) → trial Google Play 3 hari (AI 5/hari) → otomatis Bulanan Rp50rb; atau Tahunan Rp299rb.
+  Berbayar: AI 10/hari, model claude-haiku-4-5 (hemat; keputusan bos), maks 600 token.
+  Kode-nya ada di patch laptop `ruvy-trial-3hari.patch` (2 commit, app 1.5.2 vc16, web v74) — BELUM masuk GitHub per 15 Okt sore.
 - 🌍 15 Okt KEPUTUSAN BOS: Ruvy DIJUAL INTERNASIONAL (bukan Indonesia saja). Play listing: English (en-US) jadi bahasa
   DEFAULT, Indonesia sebagai terjemahan; tambah negara di Play Console (saat ini hanya Indonesia). Draf iklan EN gaya Rolly
   di design/ruvy/ads-en/ (5 slide; slide 5 "Ask Ruvy anything", jawaban AI = contoh berlabel "Sample conversation").
