@@ -2,7 +2,7 @@
   if (document.getElementById('suite-launcher')) return;
 
   var products = [
-    { name: 'BerUang', note: 'Keuangan pribadi', status: 'Aplikasi aktif', icon: '🐻', href: '/app.html', tone: 'live' },
+    { name: 'Ruvy', note: 'Keuangan pribadi', status: 'Aplikasi aktif', icon: '🤖', href: '/app.html', tone: 'live' },
     { name: 'BerBisnis', note: 'Kasir, stok, dan profit UMKM', status: 'Trial 3 hari', icon: '🏪', href: '/tokountung/app.html', tone: 'trial' },
     { name: 'Berstock AI', note: 'Asisten stok lewat Telegram', status: 'Info produk', icon: '🤖', href: '/landing-berstock.html', tone: 'preview' },
     { name: 'BerSatu', note: 'Command center multi-agent', status: 'Demo interaktif', icon: '✦', href: '/bersatu-demo.html', tone: 'demo' }

@@ -114,6 +114,7 @@ function detectSpendingAnomalies() {
 
 function getCategoryEmoji(cat) {
   const c = cat.toLowerCase();
+  if (c.includes('kopi') || c.includes('cafe') || c.includes('minum')) return '☕';
   if (c.includes('makan') || c.includes('food') || c.includes('jajan')) return '🍜';
   if (c.includes('transport') || c.includes('bensin') || c.includes('grab') || c.includes('gojek')) return '🚗';
   if (c.includes('belanja') || c.includes('shop')) return '🛍️';

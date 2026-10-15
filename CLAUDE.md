@@ -188,6 +188,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🏠 15 Okt: HOMEPAGE index.html DITULIS ULANG gaya Ruvy (biru kaca, sama dengan app): hero "Catat uang cukup ngobrol"
+  + screenshot ASLI chat Ruvy (assets/ruvy-hero-chat.jpg, ruvy-hero-home.jpg, dirender Playwright), 3 langkah, 6 fitur,
+  catatan "mencatat tidak memakai AI", harga 3 paket, FAQ 6, founder, CTA. Status AI cukup 1 baris kecil
+  (`.ai-status` "Layanan AI sedang dipulihkan sementara") → HAPUS setelah saldo Anthropic diisi. landing.html (EN) belum.
 - 💬 15 Okt KEPUTUSAN BOS: SEMUA INPUT LEWAT RUVY ("ga dobel2 fitur"). Panel Ruvy (`#ai-chat-panel`, js/ai-advisor.js
   `handleRuvyInput()`) = satu-satunya tempat mencatat: kalimat transaksi dicatat LOKAL lewat parser (gratis, tanpa token,
   semua paket termasuk trial; "dari dompet X" didukung); kalimat pertanyaan ("?" atau diawali berapa/apa/gimana/kalau/
