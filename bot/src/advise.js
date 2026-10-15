@@ -4,8 +4,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { requireUser, readPlan } from "./auth.js";
 
-const MODEL = "claude-sonnet-5";
-const MAX_TOKENS = 1024;  // Jawaban ringkas, gak boros token
+const MODEL = "claude-haiku-4-5"; // Haiku: jauh lebih hemat untuk tips keuangan rutin
+const MAX_TOKENS = 600;   // Jawaban ringkas, gak boros token
+const PAID_DAILY_LIMIT = 10;  // pertanyaan AI per hari, paket berbayar
+const TRIAL_DAILY_LIMIT = 5;  // pertanyaan AI per hari, uji coba Google Play 3 hari
 
 // System prompt — persona Beruang Gemoy
 const SYSTEM_PROMPT_ID = `Kamu adalah "Ruvy" — AI Advisor di app Ruvy.
@@ -205,11 +207,14 @@ export async function handleAdvise(request, env) {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const rateKey = `advise_rate:${user.uid}:${today}`;
   const currentCount = parseInt((await env.BOT_DATA.get(rateKey)) || "0", 10);
-  const RATE_LIMIT = 30;
+  // Biaya AI dijaga: uji coba Google Play 5/hari, paket berbayar 10/hari.
+  const RATE_LIMIT = account.playTrial ? TRIAL_DAILY_LIMIT : PAID_DAILY_LIMIT;
   if (currentCount >= RATE_LIMIT) {
     return jsonResponse({
       error: copy(language, "Limit harian tercapai", "Daily limit reached"),
-      reply: copy(language, "Bos, kuota Tanya Beruang hari ini udah habis (30 query/hari). Coba lagi besok ya! 🐻", "You've used today's 30 AI questions. Try again tomorrow. 🐻"),
+      reply: account.playTrial
+        ? copy(language, `Bos, kuota AI uji coba hari ini udah habis (${RATE_LIMIT} pertanyaan/hari). Setelah uji coba berakhir kuotanya naik jadi ${PAID_DAILY_LIMIT}/hari 🐻`, `You've used today's ${RATE_LIMIT} free-trial AI questions. After the trial, the limit rises to ${PAID_DAILY_LIMIT} per day. 🐻`)
+        : copy(language, `Bos, kuota Tanya Ruvy hari ini udah habis (${RATE_LIMIT} pertanyaan/hari). Coba lagi besok ya! 🐻`, `You've used today's ${RATE_LIMIT} AI questions. Try again tomorrow. 🐻`),
     }, 429);
   }
 

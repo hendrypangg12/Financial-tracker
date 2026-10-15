@@ -13,6 +13,26 @@ export const PLAY_SUBSCRIPTIONS = Object.freeze({
   beruang_annual_subscription: { paket: 'annual', days: 365, basePlanId: 'annual-365d' },
 });
 const DAY_MS = 86400000;
+// Ruvy Pro Monthly: 3 hari gratis lewat Google Play, lalu otomatis Rp50.000/bulan.
+export const FREE_TRIAL_OFFER_ID = 'free-trial-3d';
+
+// True only while the line item is still in its free-trial phase. Google keeps
+// offerDetails.offerId after conversion, so offerPhase (or the 3-day window
+// since purchase start as a fallback) decides whether the trial is still running.
+export function isFreeTrialPhase(purchase, line) {
+  if (line?.offerPhase) return !!line.offerPhase.freeTrial;
+  const offer = line?.offerDetails || {};
+  const trialOffer = offer.offerId === FREE_TRIAL_OFFER_ID || (offer.offerTags || []).includes('free-trial');
+  if (!trialOffer) return false;
+  const start = Date.parse(purchase?.startTime || ''), expiry = Date.parse(line?.expiryTime || '');
+  return Number.isFinite(start) && Number.isFinite(expiry) && expiry - start <= 4 * DAY_MS;
+}
+
+// The profile flag that limits AI while the winning entitlement is a Play free trial.
+export function playFreeTrialFlag(entitlement, subscriptionLedger) {
+  if (entitlement?.activatedBy !== 'google-play-subscription') return false;
+  return !!(subscriptionLedger?.entries || []).find(entry => entry.receiptId === entitlement.lastPaymentRef && entry.status === 'active')?.freeTrial;
+}
 
 const profileSnapshot = profile => ({
   plan: profile.plan || 'pending', expiresAt: profile.expiresAt || '',
@@ -204,15 +224,18 @@ export async function applyPlaySubscriptionEntitlement(env, uidValue, productId,
     if (!profile) throw new HttpError(409, 'Profil akun belum tersedia. Silakan login kembali.');
     const base = playBase(profile.data, now);
     const { ledger: oldSubscriptions, needsReview } = await subscriptionLedgerForProfile(db, uid, profile.data);
+    const freeTrial = isFreeTrialPhase(purchase, line);
     const subscriptionLedger = { entries: [...oldSubscriptions.entries.filter(entry => entry.receiptId !== receiptId),
-      { receiptId, productId, providerExpiry: providerExpiry.toISOString(), activatedAt: now.toISOString(), status: 'active' }] };
+      { receiptId, productId, providerExpiry: providerExpiry.toISOString(), activatedAt: now.toISOString(), status: 'active', freeTrial }] };
     const entitlement = combinedPlayEntitlement(base, profile.data.oneTimePurchaseLedger, subscriptionLedger, now.getTime());
     const expiresAt = entitlement.expiresAt;
     const update = { ...entitlement, playEntitlementBase: base, googlePlaySubscriptionLedger: subscriptionLedger,
+      playFreeTrial: playFreeTrialFlag(entitlement, subscriptionLedger),
       ...(needsReview || base.activatedBy === 'google-play-legacy' ? { billingReviewNeeded: true } : {}) };
     const receiptPathExisting = await db.get(receiptPath);
     const receipt = { provider: 'google-play', billingType: 'subscription', productId, orderId: purchase.latestOrderId || '', paket: cfg.paket,
       purchaseTokenHash: tokenHash, subscriptionState: purchase.subscriptionState, autoRenewEnabled: line.autoRenewingPlan?.autoRenewEnabled === true,
+      offerId: line.offerDetails?.offerId || '', freeTrial,
       providerExpiry: providerExpiry.toISOString(), expiresAt, updatedAt: now.toISOString() };
     const mappingValue = { uid, productId, receiptId, updatedAt: now.toISOString() };
     try {
@@ -256,7 +279,7 @@ export async function applyPlayEntitlement(env, uidValue, productId, purchaseTok
     const effective = combinedPlayEntitlement(base, ledger, subscriptionLedger, now.getTime());
     const expiresAt = effective.expiresAt;
     const update = { ...effective, oneTimePurchaseLedger: ledger, playEntitlementBase: base,
-      googlePlaySubscriptionLedger: subscriptionLedger,
+      googlePlaySubscriptionLedger: subscriptionLedger, playFreeTrial: playFreeTrialFlag(effective, subscriptionLedger),
       ...(needsReview || base.activatedBy === 'google-play-legacy' ? { billingReviewNeeded: true } : {}) };
     const receipt = { provider:'google-play', billingType:'one-time', productId, orderId, purchaseTokenHash:tokenHash,
       paket:cfg.paket, status:'active', expiresAt, appliedAt:now.toISOString(),

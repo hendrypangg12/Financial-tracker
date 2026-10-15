@@ -6,8 +6,10 @@
   const nativeText=value=>typeof window.t==='function'?window.t(value):value;
   const nativeHtml=value=>value.split(/(<[^>]*>)/g).map(part=>part.startsWith('<')?part:nativeText(part.replace(/&amp;/g,'&'))).join('');
   const english=()=>typeof window.getAppLanguage==='function'&&window.getAppLanguage()==='en';
-  const IDS=['beruang_access_7d','beruang_monthly_subscription','beruang_annual_subscription'];
-  const LABELS={beruang_access_7d:'Akses 7 Hari · sekali bayar',beruang_monthly_subscription:'Pro 30 Hari · berulang otomatis',beruang_annual_subscription:'Pro 1 Tahun · berulang otomatis'};
+  // Paket dijual: Bulanan (uji coba gratis 3 hari untuk pelanggan baru) & Tahunan. 7-Day Pass tidak dijual lagi;
+  // pembelian lama tetap dipulihkan lewat restorePurchases + verifikasi server.
+  const IDS=['beruang_monthly_subscription','beruang_annual_subscription'];
+  const LABELS={beruang_monthly_subscription:'Pro 30 Hari · berulang otomatis',beruang_annual_subscription:'Pro 1 Tahun · berulang otomatis'};
   // registerPlugin berasal dari @capacitor/core (vendor/capacitor.js). Bridge native saja hanya menyediakan
   // Capacitor.Plugins, jadi tetap ada jalur cadangan supaya adapter ini tidak mati dan paywall tidak kosong.
   const plugin=name=>{const cap=window.Capacitor;if(!cap)return undefined;return typeof cap.registerPlugin==='function'?cap.registerPlugin(name):cap.Plugins?.[name];};
@@ -56,7 +58,7 @@
   }
   async function renderPaywall(){
     const el=document.getElementById('paywall-screen');el.hidden=false;window.trackOnce?.('paywall_view');
-    el.innerHTML=nativeHtml('<main class="play-paywall"><h1>Paket &amp; pembayaran</h1><p id="play-plan-status"></p><div id="play-products">Memuat paket…</div><p>30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Paket 7 hari hanya dibayar sekali.</p><a id="play-manage" href="https://play.google.com/store/account/subscriptions?package=id.berstock.beruang" hidden>Kelola langganan di Google Play</a><p><button id="play-restore" type="button">Pulihkan pembelian</button></p><p><button id="play-export" type="button">Unduh backup data</button></p><p><button id="play-logout" type="button">Keluar akun</button></p></main>');
+    el.innerHTML=nativeHtml('<main class="play-paywall"><h1>Paket &amp; pembayaran</h1><p id="play-plan-status"></p><div id="play-products">Memuat paket…</div><p>30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Uji coba gratis hanya untuk pelanggan baru; batalkan sebelum uji coba berakhir agar tidak ditagih.</p><a id="play-manage" href="https://play.google.com/store/account/subscriptions?package=id.berstock.beruang" hidden>Kelola langganan di Google Play</a><p><button id="play-restore" type="button">Pulihkan pembelian</button></p><p><button id="play-export" type="button">Unduh backup data</button></p><p><button id="play-logout" type="button">Keluar akun</button></p></main>');
     const profile=typeof currentProfile==='undefined'?null:currentProfile;
     const active=profile&&typeof isPro==='function'&&isPro(profile);
     const names={free_trial:'Uji Coba Gratis',trial:'Akses 7 Hari',starter:'Akses 7 Hari',monthly:'Pro Bulanan',annual:'Pro Tahunan',lifetime:'Lifetime',pro:'Pro'};
@@ -67,7 +69,7 @@
     status.textContent=activeSubscription?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Kelola langganan Google Play sebelum membeli paket lain.`:
       active&&['lifetime','pro'].includes(profile.plan)?'Akun ini sudah memiliki akses tanpa batas waktu. Pembelian paket tambahan tidak diperlukan.':
       active&&profile.plan==='free_trial'?`Paket saat ini: Uji Coba Gratis · aktif${end?` sampai ${end}`:''}. Anda bisa membeli paket sekarang. Paket berbayar dimulai dan ditagih segera setelah pembelian; sisa uji coba gratis tidak menambah masa langganan.`:
-      active?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Akses 7 Hari dapat ditambahkan; langganan baru tersedia setelah paket ini berakhir.`:
+      active?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Langganan baru tersedia setelah paket ini berakhir.`:
       'Belum ada paket aktif. Pilih paket di bawah; harga akan mengikuti yang ditampilkan Google Play.';
     if(english()) {
       const plan=nativeText(names[profile?.plan]||'Pro');
@@ -75,7 +77,7 @@
       status.textContent=activeSubscription?`Current plan: ${plan} · active${until}. Manage your Google Play subscription before buying another plan.`:
         active&&['lifetime','pro'].includes(profile.plan)?'This account already has unlimited access. No additional plan is needed.':
         active&&profile.plan==='free_trial'?`Current plan: Free trial · active${until}. A paid plan starts and is charged immediately after purchase; unused trial days are not added to the subscription.`:
-        active?`Current plan: ${plan} · active${until}. You can add a 7-day pass; a new subscription is available after this plan expires.`:
+        active?`Current plan: ${plan} · active${until}. A new subscription is available after this plan expires.`:
         'No active plan. Choose a plan below; Google Play displays the price before purchase.';
     }
     const manage=document.getElementById('play-manage');
@@ -87,7 +89,10 @@
         const blocked=purchaseGuardReason(profile,p.productId);button.disabled=!!blocked;
         if(blocked)button.title=english()?'Manage the active plan before purchasing another.':blocked;
         const title=document.createElement('strong');title.textContent=nativeText(LABELS[p.productId]||'Ruvy Pro');
-        const price=document.createElement('span');price.textContent=`${p.price}${p.productType==='SUBS'?(p.productId==='beruang_monthly_subscription'?(english()?' / month':' / bulan'):(english()?' / year':' / tahun')):''}`;
+        const period=p.productType==='SUBS'?(p.productId==='beruang_monthly_subscription'?(english()?' / month':' / bulan'):(english()?' / year':' / tahun')):'';
+        const trialDays=Number(p.freeTrialDays)||0;
+        const price=document.createElement('span');
+        price.textContent=trialDays>0?(english()?`Free for ${trialDays} days, then ${p.price}${period}`:`Gratis ${trialDays} hari, lalu ${p.price}${period}`):`${p.price}${period}`;
         button.append(title,price);container.append(button);
         if(blocked){const note=document.createElement('small');note.className='play-plan-note';note.textContent=english()?'Manage the active plan before purchasing another.':blocked;container.append(note);}
       }

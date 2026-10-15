@@ -33,7 +33,10 @@ export async function readPlan(user, env) {
   const plan = fields.plan?.stringValue || null;
   const active = plan === 'lifetime' || plan === 'pro' || (['free_trial', 'trial', 'monthly', 'annual', 'starter'].includes(plan)
     && Date.parse(fields.expiresAt?.stringValue || '') > Date.now());
-  return { plan, active };
+  // Google Play free trial (3 hari): AI tetap ada, tapi kuotanya dibatasi di /api/advise.
+  const playTrial = active && fields.playFreeTrial?.booleanValue === true
+    && fields.activatedBy?.stringValue === 'google-play-subscription';
+  return { plan, active, playTrial };
 }
 
 export async function hasProAccess(user, env) {

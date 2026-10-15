@@ -89,10 +89,10 @@ test('English free trial and daily limit remain enforced without any provider ca
 test('daily limit and free goal quota stay keyed by authenticated UID rather than submitted email', async t => {
   mockFetch(t);
   const env = environment();
-  env.data.set('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10), '30');
+  env.data.set('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10), '10');
   const result = await handleAdvise(request({ language: 'en', currency: 'USD' }), env);
   assert.equal(result.status, 429);
-  assert.match((await result.json()).reply, /30 AI questions/);
+  assert.match((await result.json()).reply, /10 AI questions/);
 });
 
 test('paid request forwards English currency context to the shared model and consumes only the verified UID quota', async t => {
@@ -105,7 +105,7 @@ test('paid request forwards English currency context to the shared model and con
   const env = environment();
   const result = await handleAdvise(request({ language: 'en', currency: 'USD', totalPengeluaran: 12.5 }), env);
   assert.equal(result.status, 200);
-  assert.equal(submitted.model, 'claude-sonnet-5');
+  assert.equal(submitted.model, 'claude-haiku-4-5');
   assert.match(submitted.system[0].text, /Selected wallet currency: USD/);
   assert.match(submitted.messages[0].content, /USD\s+12\.50/);
   assert.equal(submitted.messages.length, 1);

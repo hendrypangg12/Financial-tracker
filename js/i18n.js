@@ -20,6 +20,7 @@
     'Kelola langganan di Google Play': 'Manage subscription in Google Play',
     'Paket belum tersedia untuk akun penguji ini.': 'Plans are not available for this tester account.',
     '30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Paket 7 hari hanya dibayar sekali.': 'Monthly and yearly subscriptions renew automatically until cancelled. Manage your subscription in Google Play anytime. The 7-day pass is a one-time payment.',
+    '30 hari dan 1 tahun ditagih otomatis setiap periode sampai dibatalkan. Kelola langganan Google Play kapan saja. Uji coba gratis hanya untuk pelanggan baru; batalkan sebelum uji coba berakhir agar tidak ditagih.': 'Monthly and yearly subscriptions renew automatically until cancelled. Manage your subscription in Google Play anytime. The free trial is for new subscribers only; cancel before it ends to avoid being charged.',
     'Pengaturan dompet': 'Wallet settings', 'Mata uang dompet': 'Wallet currency',
     'Pilih mata uang dompet pertama': 'Choose your first wallet currency',
     'Opsi lanjutan': 'Advanced options', 'Catat': 'Record',

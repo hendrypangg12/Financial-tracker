@@ -1,5 +1,19 @@
 # CLAUDE.md — Konteks Proyek Financial Tracker
 
+## 💳 15 Okt 2026 — Model bisnis baru Ruvy (keputusan bos)
+- TIDAK ADA paket 7 hari & tidak ada lifetime (biaya AI). Paket: **Bulanan Rp50rb (trial gratis 3 hari untuk pelanggan baru,
+  lalu auto-renew)** + **Tahunan Rp299rb (auto-renew)**. Tujuan: semua pembeli masuk tagihan otomatis.
+- Play Console: offer `free-trial-3d` (tag `free-trial`, New customer acquisition, "never had any subscription") di
+  `beruang_monthly_subscription` / base plan `monthly-30d` — status DRAFT. AKTIFKAN hanya setelah build 1.5.2 (vc16) live.
+  Setelah itu nonaktifkan purchase option `access-7d` dan update listing (teks di UPLOAD-GOOGLE-PLAY-RUVY/LISTING-TEXT.txt).
+- Produk lama `beruang_access_30d` / `beruang_access_365d` sudah DINONAKTIFKAN (backend tetap verifikasi pembeli lama).
+- Server: /api/advise pakai `claude-haiku-4-5`, max 600 token, 10 pertanyaan/hari (berbayar), 5/hari selama trial Play
+  (`playFreeTrial` di profil, dihitung di google-play.js `isFreeTrialPhase`/`playFreeTrialFlag`; RTDN renewal mengosongkannya).
+- App: runtime.js hanya jual monthly+annual; PlayBillingPlugin pilih offer `free-trial-3d` kalau eligible, else base plan
+  tanpa offerId; paywall "Gratis 3 hari, lalu Rp50.000 / bulan".
+- Trial 2 hari tanpa AI saat daftar (bootstrap, dipakai juga web) BELUM diubah — tunggu keputusan bos.
+- Bos WAJIB pasang batas pengeluaran di Anthropic Console (Limits) sebagai rem darurat biaya AI.
+
 ## ✅ BerUang LIVE di Google Play Production — dikonfirmasi 25 September 2026 (22:51 WIB)
 
 Screenshot Play Console dari bos: **Production = Active · 8 active devices · 1 country/region (Indonesia)**.

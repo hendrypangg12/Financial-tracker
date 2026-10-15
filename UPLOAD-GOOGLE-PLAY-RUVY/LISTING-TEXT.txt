@@ -42,9 +42,9 @@ YOUR DATA, YOUR CONTROL
 • Request account and data deletion from the app or support
 
 PLANS
-• Free 2-day trial for recording (AI and receipt photos not included)
-• 7-day pass: one-time payment
-• Monthly and yearly subscriptions renew automatically through Google Play until cancelled. Manage or cancel any time in Google Play
+• Monthly plan: 3-day free trial for new subscribers, then renews automatically every month
+• Yearly plan: renews automatically every year
+• Subscriptions renew through Google Play until cancelled. Cancel before the trial ends to avoid being charged. Manage or cancel any time in Google Play
 Prices are shown in your local currency by Google Play before purchase.
 
 Ruvy was previously called BerUang. Existing accounts and records keep working.

@@ -1,7 +1,7 @@
 import { HttpError } from './auth.js';
 import { firestoreAdmin, isContention } from './firebase-admin.js';
 import { scopedServiceToken } from './service-token.js';
-import { PLAY_PRODUCTS, PLAY_SUBSCRIPTIONS, applyPlaySubscriptionEntitlement, combinedPlayEntitlement,
+import { PLAY_PRODUCTS, PLAY_SUBSCRIPTIONS, applyPlaySubscriptionEntitlement, combinedPlayEntitlement, playFreeTrialFlag,
   hashPlayValue, playBase, subscriptionLedgerForProfile } from './google-play.js';
 
 const jwksCache = { keys: null, expiresAt: 0 };
@@ -60,7 +60,7 @@ async function revokeExpiredSubscription(env, mapping, purchase, line) {
         activatedAt: profile.data.activatedAt || now.toISOString(), status: 'ended' }] };
     const entitlement = combinedPlayEntitlement(base, profile.data.oneTimePurchaseLedger, subscriptionLedger, now.getTime());
     const update = { playEntitlementBase: base, googlePlaySubscriptionLedger: subscriptionLedger,
-      ...(playControlled && !permanent ? entitlement : {}),
+      ...(playControlled && !permanent ? { ...entitlement, playFreeTrial: playFreeTrialFlag(entitlement, subscriptionLedger) } : {}),
       ...(needsReview || base.activatedBy === 'google-play-legacy' || !playControlled ? { billingReviewNeeded: true } : {}) };
     writes.unshift(db.write(profilePath, update, profile, true));
     try { await db.commit(writes); return { revoked: playControlled && !permanent && entitlement.plan === 'pending', receiptId: mapping.receiptId }; }

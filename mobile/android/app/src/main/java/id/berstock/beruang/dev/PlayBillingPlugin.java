@@ -12,6 +12,17 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
   private final Map<String, String> productTypes = new HashMap<>();
   private final Map<String, String> offerTokens = new HashMap<>();
   private PluginCall purchaseCall;
+  private static final String FREE_TRIAL_OFFER_ID = "free-trial-3d";
+
+  // ISO-8601 period from Play (P3D, P1W, P1M) to whole days for the paywall label.
+  static int periodDays(String period) {
+    if (period == null) return 0;
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("P(?:(\\d+)Y)?(?:(\\d+)M)?(?:(\\d+)W)?(?:(\\d+)D)?").matcher(period);
+    if (!m.matches()) return 0;
+    int[] unit = {365, 30, 7, 1}; int days = 0;
+    for (int i = 0; i < 4; i++) if (m.group(i + 1) != null) days += Integer.parseInt(m.group(i + 1)) * unit[i];
+    return days;
+  }
 
   @Override public void load() {
     client = BillingClient.newBuilder(getContext()).setListener(this)
@@ -47,13 +58,21 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
           if (BillingClient.ProductType.SUBS.equals(type)) {
             List<ProductDetails.SubscriptionOfferDetails> offers = p.getSubscriptionOfferDetails();
             String expectedBasePlan = "beruang_monthly_subscription".equals(id) ? "monthly-30d" : "annual-365d";
-            ProductDetails.SubscriptionOfferDetails offer = null;
-            if (offers != null) for (ProductDetails.SubscriptionOfferDetails candidate : offers)
-              if (expectedBasePlan.equals(candidate.getBasePlanId())) { offer = candidate; break; }
+            // Play only returns offers this account is eligible for. Prefer the 3-day free trial;
+            // otherwise use the plain base plan (no offerId) so nobody gets an unexpected offer.
+            ProductDetails.SubscriptionOfferDetails offer = null, basePlan = null;
+            if (offers != null) for (ProductDetails.SubscriptionOfferDetails candidate : offers) {
+              if (!expectedBasePlan.equals(candidate.getBasePlanId())) continue;
+              if (FREE_TRIAL_OFFER_ID.equals(candidate.getOfferId())) offer = candidate;
+              else if (candidate.getOfferId() == null && basePlan == null) basePlan = candidate;
+            }
+            if (offer == null) offer = basePlan;
             if (offer == null || offer.getPricingPhases().getPricingPhaseList().isEmpty()) continue;
             List<ProductDetails.PricingPhase> phases = offer.getPricingPhases().getPricingPhaseList();
             ProductDetails.PricingPhase phase = phases.get(phases.size() - 1);
             row.put("price", phase.getFormattedPrice()); offerTokens.put(id, offer.getOfferToken());
+            ProductDetails.PricingPhase first = phases.get(0);
+            if (phases.size() > 1 && first.getPriceAmountMicros() == 0) row.put("freeTrialDays", periodDays(first.getBillingPeriod()));
           } else {
             ProductDetails.OneTimePurchaseOfferDetails offer = p.getOneTimePurchaseOfferDetails();
             if (offer == null) continue;

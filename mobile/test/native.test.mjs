@@ -48,13 +48,19 @@ test('staged bundle loads @capacitor/core before the runtime and never ships an 
   assert.match(stage,/<script src="vendor\/capacitor\.js"><\/script>\\n<script src="mobile-runtime\.js">/);
   assert.doesNotMatch(stage,/<div id="paywall-screen" hidden><\/div>/);
 });
-test('Play paywall separates the one-time 7-day pass from recurring subscriptions',()=>{
-  assert.match(source,/beruang_access_7d/);
-  assert.match(source,/beruang_monthly_subscription/);
-  assert.match(source,/beruang_annual_subscription/);
+test('Play paywall sells only auto-renewing plans and explains the free trial',()=>{
+  assert.match(source,/const IDS=\['beruang_monthly_subscription','beruang_annual_subscription'\]/);
+  assert.doesNotMatch(source,/const IDS=\[[^\]]*beruang_access_7d/);
   assert.match(source,/ditagih otomatis setiap periode sampai dibatalkan/);
-  assert.match(source,/Paket 7 hari hanya dibayar sekali/);
+  assert.match(source,/Uji coba gratis hanya untuk pelanggan baru/);
+  assert.match(source,/Gratis \$\{trialDays\} hari, lalu/);
   assert.match(source,/restorePurchases\(\)/);
+});
+test('billing plugin prefers the 3-day free-trial offer and falls back to the plain base plan',async()=>{
+  const java=await readFile(new URL('../android/app/src/main/java/id/berstock/beruang/dev/PlayBillingPlugin.java',import.meta.url),'utf8');
+  assert.match(java,/FREE_TRIAL_OFFER_ID = "free-trial-3d"/);
+  assert.match(java,/candidate.getOfferId\(\) == null/);
+  assert.match(java,/row.put\("freeTrialDays"/);
 });
 test('Play paywall prevents a second charged plan from overlapping active access',async()=>{
   const products=[

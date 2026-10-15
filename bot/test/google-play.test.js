@@ -350,3 +350,24 @@ test('refund of a receipt without a per-order ledger requires review without gue
   assert.equal(after.billingReviewNeeded, true);
   assert.equal(b.read(`users/u/verifiedPaymentReceipts/${paid.receiptId}`).status, 'voided');
 });
+
+test('Play free-trial offer marks the profile as trial until the first paid renewal', async t => {
+  const b = backend(t), token = 'free-trial-purchase-token-1234567890';
+  const start = new Date().toISOString();
+  const purchase = { latestOrderId: 'GPA.trial', subscriptionState: 'SUBSCRIPTION_STATE_ACTIVE', startTime: start };
+  const trialLine = { expiryTime: new Date(Date.now() + 3 * 86400000).toISOString(), autoRenewingPlan: { autoRenewEnabled: true },
+    offerDetails: { basePlanId: 'monthly-30d', offerId: 'free-trial-3d', offerTags: ['free-trial'] } };
+  await applyPlaySubscriptionEntitlement(b.env, 'u', 'beruang_monthly_subscription', token, purchase, trialLine);
+  assert.equal(b.read('users/u/meta/profile').playFreeTrial, true);
+  assert.equal(b.read('users/u/meta/profile').plan, 'monthly');
+  const paidLine = { ...trialLine, expiryTime: new Date(Date.now() + 33 * 86400000).toISOString(), offerPhase: { basePrice: {} } };
+  await applyPlaySubscriptionEntitlement(b.env, 'u', 'beruang_monthly_subscription', token, purchase, paidLine);
+  assert.equal(b.read('users/u/meta/profile').playFreeTrial, false);
+});
+
+test('a regular monthly subscription is never treated as a free trial', async t => {
+  const b = backend(t), token = 'regular-monthly-token-1234567890';
+  const line = { expiryTime: new Date(Date.now() + 30 * 86400000).toISOString(), offerDetails: { basePlanId: 'monthly-30d' } };
+  await applyPlaySubscriptionEntitlement(b.env, 'u', 'beruang_monthly_subscription', token, { subscriptionState: 'SUBSCRIPTION_STATE_ACTIVE', startTime: new Date().toISOString() }, line);
+  assert.equal(b.read('users/u/meta/profile').playFreeTrial, false);
+});
