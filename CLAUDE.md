@@ -196,6 +196,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   (openEditModal). Dihapus/disembunyikan: form "Catat cepat" beranda (jadi tombol "Catat ke Ruvy"), tombol "Form lengkap"
   & "Tanya Ruvy", tombol "+" (app-fab), chat & panel struk di tab Tambah. Form manual TETAP ada di tab Tambah di balik
   "Isi manual" (link juga di kaki panel Ruvy). Badge "PRO" di tombol Ruvy dihapus. v68, SW ruvy-v68.
+  15 Okt (contoh Rolly dari bos): catatan Ruvy jadi KARTU (`appendRecordedBubble`): "Dicatat: Pengeluaran · Kam, 15 Okt",
+  ikon kategori (getCategoryEmoji), subkategori, deskripsi · dompet, nominal +/− berwarna, ketuk kartu = ubah; didahului
+  kalimat ramah acak (template, BUKAN AI). Pill dompet aktif di atas chat + pemisah "Hari ini". v69, SW ruvy-v69.
+  Belum: tombol mic (Web Speech gratis), "Pindah dana" antar dompet (dompet = buku terpisah, beda mata uang), riwayat chat
+  tersimpan antar sesi.
 - 🤖 14–15 Okt: CHATGPT/CODEX REBRAND → "RUVY" (pakai y; app "Ruvy - AI Money Tracker", 1.5.1 vc15) LANGSUNG di branch ini:
   UI kaca biru, Bahasa Indonesia/English (js/i18n.js), dompet multi mata uang = buku terpisah per dompet
   (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN

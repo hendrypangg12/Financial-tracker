@@ -49,6 +49,9 @@ function initAIAdvisor() {
   fab.addEventListener("click", openAIChat);
   document.querySelectorAll("[data-open-ruvy]").forEach(btn => btn.addEventListener("click", openAIChat));
   document.getElementById("ruvy-receipt-input")?.addEventListener("change", handleRuvyReceipt);
+  document.getElementById("ruvy-chat-wallet")?.addEventListener("click", () => appendBubble(advisorText(
+    "Catatan masuk ke dompet ini kalau tidak disebut. Mau dompet lain? Sebut saja, mis. \"bensin 50rb pakai gopay\".",
+    "Entries go to this wallet unless you name one, e.g. \"fuel 20 using travel\"."), "bot"));
   // Manual form stays available (e.g. to fix what the parser got wrong), tucked in the Tambah tab.
   document.getElementById("ai-chat-manual")?.addEventListener("click", () => {
     closeAIChat();
@@ -151,19 +154,31 @@ function handleRuvyInput(text) {
   }
   sendQuestion(text);
 }
+// Rolly-style receipt of what was saved: a short friendly line + a transaction card.
 function appendRecordedBubble(t, wallet) {
+  const income = t.jenis === "pemasukan";
+  const lines = income
+    ? [advisorText("Uang masuk! 🎉 Sudah aku catat.", "Money in! 🎉 Logged it."), advisorText("Mantap, pemasukan tercatat 💰", "Nice, income recorded 💰")]
+    : [advisorText("Siap, sudah aku catat 👍", "Got it, logged 👍"), advisorText("Tercatat ✅ Lanjut ketik yang lain ya.", "Recorded ✅ Keep them coming."), advisorText("Oke, masuk catatan 📝", "Okay, it's in your records 📝")];
+  appendBubble(lines[Math.floor(Math.random() * lines.length)], "bot");
   const money = typeof formatWalletMoney === "function" ? formatWalletMoney(t.jumlah, wallet.currency) : formatRupiah(t.jumlah);
-  appendBubble(advisorText("✅ Dicatat: ", "✅ Recorded: ") + (t.jenis === "pemasukan" ? "+" : "−") + money + " · " + (t.deskripsi || t.subKategori)
-    + "\n" + t.subKategori + " (" + t.kategori + ") · " + wallet.name + " · " + formatTanggal(t.tanggal), "bot");
-  const bubble = document.getElementById("ai-chat-body").lastElementChild;
-  const edit = document.createElement("button");
-  edit.type = "button"; edit.className = "ai-chip ruvy-edit-chip"; edit.textContent = advisorText("✏️ Ubah", "✏️ Edit");
-  edit.onclick = () => {
+  const icon = income ? "💰" : (typeof getCategoryEmoji === "function" ? getCategoryEmoji((t.kategori || "") + " " + (t.subKategori || "")) : "💸");
+  const day = new Intl.DateTimeFormat(typeof getAppLocale === "function" ? getAppLocale() : "id-ID", { weekday: "short", day: "numeric", month: "short" }).format(new Date(t.tanggal + "T00:00:00"));
+  const card = document.createElement("button");
+  card.type = "button"; card.className = "ruvy-rec-card";
+  card.setAttribute("aria-label", advisorText("Ubah transaksi ini", "Edit this transaction"));
+  card.innerHTML = `<span class="ruvy-rec-top"><span>${advisorText("Dicatat", "Recorded")}: ${income ? advisorText("Pemasukan", "Income") : advisorText("Pengeluaran", "Expense")}</span><span>${escapeHtml(day)}</span></span>`
+    + `<span class="ruvy-rec-row"><span class="ruvy-rec-icon">${icon}</span><span class="ruvy-rec-copy"><b>${escapeHtml(t.subKategori || t.kategori)}</b><small>${escapeHtml(t.deskripsi || "")} · ${escapeHtml(wallet.name)}</small></span>`
+    + `<span class="ruvy-rec-amt ${income ? "in" : "out"}">${income ? "+" : "−"}${escapeHtml(money)}</span></span>`
+    + `<span class="ruvy-rec-edit">${advisorText("✏️ Ketuk untuk ubah", "✏️ Tap to edit")}</span>`;
+  card.onclick = () => {
     closeAIChat();
     if (typeof getActiveWalletId === "function" && getActiveWalletId() !== wallet.id && !selectWallet(wallet.id)) return;
     if (typeof openEditModal === "function") openEditModal(t.id);
   };
-  bubble.appendChild(edit);
+  const body = document.getElementById("ai-chat-body");
+  body.appendChild(card);
+  body.scrollTop = body.scrollHeight;
 }
 // Receipt photo: free on-device OCR (same engine and Pro rule as before), then Ruvy
 // shows the total for confirmation before anything is saved.
@@ -234,6 +249,14 @@ function markGuideAI() {
 
 function openAIChat() {
   markGuideAI();
+  const pill = document.getElementById("ruvy-chat-wallet");
+  if (pill && typeof getActiveWallet === "function") pill.textContent = "💳 " + getActiveWallet().name;
+  const body = document.getElementById("ai-chat-body");
+  if (body && !body.querySelector(".ruvy-day-sep")) {
+    const sep = document.createElement("div");
+    sep.className = "ruvy-day-sep"; sep.textContent = advisorText("Hari ini", "Today");
+    body.insertBefore(sep, body.firstChild);
+  }
   if (typeof trackOnce === "function") trackOnce("ai_open");
   document.getElementById("ai-chat-overlay").hidden = false;
   document.getElementById("ai-chat-panel").hidden = false;
@@ -251,7 +274,7 @@ function resetAdvisorWallet() {
   closeAIChat();
   const body = document.getElementById('ai-chat-body');
   if (!body) return;
-  body.querySelectorAll('.ai-bubble-user, .ai-bubble-bot:not(#ai-greeting), .ai-bubble-typing').forEach(item => item.remove());
+  body.querySelectorAll('.ai-bubble-user, .ai-bubble-bot:not(#ai-greeting), .ai-bubble-typing, .ruvy-rec-card').forEach(item => item.remove());
   const chips = document.getElementById('ai-chips');
   if (chips) chips.style.display = '';
   const input = document.getElementById('ai-chat-input');
