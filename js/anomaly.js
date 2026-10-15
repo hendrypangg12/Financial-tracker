@@ -64,6 +64,7 @@ function detectSpendingAnomalies() {
   const byCat = {};
   for (const tx of getFinancialState().transactions) {
     if (tx.jenis !== 'pengeluaran') continue;
+    if (typeof isTransferTransaction === 'function' && isTransferTransaction(tx)) continue;
     const cat = (tx.kategori || 'Lainnya').trim();
     const txTime = new Date(tx.tanggal).getTime();
     if (isNaN(txTime)) continue;

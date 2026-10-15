@@ -117,3 +117,23 @@ test('money inputs re-group while typing past four digits',()=>{
   assert.equal(h.run("formatMoneyInput('')"),'');
   assert.match(h.run('formatShort(1500000)'),/1,5/);
 });
+test('manual transfer moves balance between wallets without counting as income or expense',()=>{
+  const h=app();h.run("state.preferences={language:'id',currency:'IDR'};state.startingBalance={amount:1000000,date:'2026-10-01',completed:true}");
+  const gopay=h.run("createWallet({name:'GoPay',currency:'IDR',amount:0,date:'2026-10-01'}).id");
+  const usd=h.run("createWallet({name:'Travel',currency:'USD',amount:0,date:'2026-10-01'}).id");
+  h.run("selectWallet('legacy')");
+  let r=h.run(`createTransfer({fromId:'legacy',toId:${JSON.stringify(gopay)},amountOut:250000,date:'2026-10-14'})`);
+  assert.equal(r.ok,true);
+  assert.equal(h.run("walletBalance('legacy')"),750000);
+  assert.equal(h.run('walletBalance('+JSON.stringify(gopay)+')'),250000);
+  assert.equal(h.run("getCashflowTransactionsFor(9,2026).length"),0);
+  r=h.run(`createTransfer({fromId:'legacy',toId:${JSON.stringify(usd)},amountOut:160000,amountIn:10,date:'2026-10-14'})`);
+  assert.equal(r.ok,true);assert.equal(h.run('walletBalance('+JSON.stringify(usd)+')'),10);
+  assert.equal(h.run(`createTransfer({fromId:'legacy',toId:${JSON.stringify(usd)},amountOut:1000,amountIn:1.234})`).ok,false);
+  assert.equal(h.run("createTransfer({fromId:'legacy',toId:'legacy',amountOut:1000}).ok"),false);
+  const id=h.run("state.transactions.find(t=>t.transferPeer==="+JSON.stringify(gopay)+").id");
+  h.run('deleteTransaction('+JSON.stringify(id)+')');
+  assert.equal(h.run('walletBalance('+JSON.stringify(gopay)+')'),0);
+  assert.equal(h.run("walletBalance('legacy')"),840000);
+  h.run('validateWalletState(state)');
+});

@@ -107,6 +107,7 @@ function computeMonthlyAvg(jenis) {
     const y = checkDate.getFullYear();
     const txs = (getFinancialState().transactions || []).filter(t => {
       if (isOpeningBalanceTransaction(t)) return false;
+      if (typeof isTransferTransaction === 'function' && isTransferTransaction(t)) return false;
       if (!t.tanggal) return false;
       const td = parseISO(t.tanggal);
       return td.getMonth() === m && td.getFullYear() === y && t.jenis === jenis;
@@ -127,6 +128,7 @@ function getTopExpenseCategories(limit) {
 
   for (const t of (getFinancialState().transactions || [])) {
     if (t.jenis !== 'pengeluaran') continue;
+    if (typeof isTransferTransaction === 'function' && isTransferTransaction(t)) continue;
     if (parseISO(t.tanggal) < sixMonthsAgo) continue;
     const cat = (t.kategori || goalText('Lainnya', 'Other')).trim();
     byCat[cat] = (byCat[cat] || 0) + (Number(t.jumlah) || 0);

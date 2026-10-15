@@ -4,7 +4,7 @@
   const signedMoney = (amount, expense) => `${expense ? '\u2212' : ''}${formatRupiah(Math.abs(Number(amount) || 0))}`;
 
   function reportData(scope) {
-    let transactions = (getFinancialState().transactions || []).filter(t => !isOpeningBalanceTransaction(t));
+    let transactions = (getFinancialState().transactions || []).filter(t => typeof isCashflowTransaction === 'function' ? isCashflowTransaction(t) : !isOpeningBalanceTransaction(t));
     let label = 'Akumulasi Semua Data';
     if (scope === 'month') {
       transactions = transactions.filter(t => {

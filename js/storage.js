@@ -99,7 +99,15 @@ function updateTransaction(id, patch) {
 }
 
 function deleteTransaction(id) {
+  const row = getFinancialState().transactions.find(t => t.id === id);
   getFinancialState().transactions = getFinancialState().transactions.filter(t => t.id !== id);
+  // A transfer has two halves; deleting one side removes the other so balances stay consistent.
+  if (row?.transferId && typeof getWallets === 'function') {
+    for (const wallet of getWallets()) {
+      const ledger = getWalletLedger(wallet.id);
+      ledger.transactions = ledger.transactions.filter(t => t.transferId !== row.transferId);
+    }
+  }
   saveState();
 }
 
@@ -189,8 +197,15 @@ function isOpeningBalanceTransaction(transaction) {
     || transaction.kategori === 'Saldo Awal' || transaction.subKategori === 'Saldo Awal');
 }
 
+// "Pindah dana" moves money between wallets: it changes balances but is not income or expense.
+function isTransferTransaction(transaction) {
+  return !!transaction && (!!transaction.transferId || transaction.kategori === 'Pindah Dana');
+}
+function isCashflowTransaction(transaction) {
+  return !isOpeningBalanceTransaction(transaction) && !isTransferTransaction(transaction);
+}
 function getCashflowTransactionsFor(month, year) {
-  return getTransactionsFor(month, year).filter(t => !isOpeningBalanceTransaction(t));
+  return getTransactionsFor(month, year).filter(isCashflowTransaction);
 }
 
 function exportData() {

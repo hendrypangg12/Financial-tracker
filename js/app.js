@@ -582,6 +582,11 @@ function attachEvents() {
 function openEditModal(id) {
   const t = getFinancialState().transactions.find(x => x.id === id);
   if (!t) return;
+  // Kedua sisi pindah dana harus tetap sama; ubah = hapus lalu buat ulang.
+  if (t.transferId) {
+    if (confirm(preferenceMessage('Pindah dana tidak bisa diubah. Hapus pindah dana ini (dari kedua dompet)?', 'Transfers cannot be edited. Delete this transfer from both wallets?'))) { deleteTransaction(id); renderAll(); }
+    return;
+  }
   const form = document.getElementById('form-edit');
   form.querySelector('[name="id"]').value = t.id;
   form.querySelector('[name="tanggal"]').value = t.tanggal;

@@ -203,7 +203,14 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   disimpan sebagai id transaksi + dompet lalu dibaca ulang dari data → ikut berubah kalau diedit, hilang kalau dihapus),
   pemisah Hari ini/Kemarin/tanggal. TOMBOL MIC 🎤 = speech-to-text bawaan browser (gratis, tanpa token), mengisi kolom,
   user tetap tekan kirim; disembunyikan kalau tidak didukung (WebView Android biasanya tidak → perlu plugin native nanti).
-  v70, SW ruvy-v70. Belum: "Pindah dana" antar dompet (dompet = buku terpisah, bisa beda mata uang → perlu desain).
+  v70, SW ruvy-v70.
+  15 Okt KEPUTUSAN BOS: PINDAH DANA = FORMULIR MANUAL (tombol "↔ Pindah dana" di panel Ruvy → #modal-transfer).
+  `createTransfer()` (js/wallets.js) = 2 baris berpasangan `transferId` + kategori 'Pindah Dana' (keluar di dompet asal,
+  masuk di dompet tujuan); beda mata uang → user isi "jumlah diterima" (TANPA kurs otomatis). `isTransferTransaction()` /
+  `isCashflowTransaction()` (js/storage.js): pindah dana mengubah saldo tapi TIDAK dihitung pemasukan/pengeluaran
+  (dashboard, rekap, laporan, anomali, goal, konteks AI, laporan mingguan bot). Hapus satu sisi = hapus pasangannya;
+  pindah dana tidak bisa diedit (hapus lalu buat ulang). Ketik "pindah/transfer/top up…" di Ruvy → diarahkan ke formulir.
+  v71, SW ruvy-v71. ⚠️ App Android lama (1.4.x) akan melihat baris 'Pindah Dana' di dompet utama sebagai pengeluaran/pemasukan biasa.
 - 🤖 14–15 Okt: CHATGPT/CODEX REBRAND → "RUVY" (pakai y; app "Ruvy - AI Money Tracker", 1.5.1 vc15) LANGSUNG di branch ini:
   UI kaca biru, Bahasa Indonesia/English (js/i18n.js), dompet multi mata uang = buku terpisah per dompet
   (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN

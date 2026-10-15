@@ -53,6 +53,7 @@ function initAIAdvisor() {
     "Catatan masuk ke dompet ini kalau tidak disebut. Mau dompet lain? Sebut saja, mis. \"bensin 50rb pakai gopay\".",
     "Entries go to this wallet unless you name one, e.g. \"fuel 20 using travel\"."), "bot", false));
   document.getElementById("ruvy-mic")?.addEventListener("click", toggleRuvyMic);
+  initRuvyTransfer();
   // Manual form stays available (e.g. to fix what the parser got wrong), tucked in the Tambah tab.
   document.getElementById("ai-chat-manual")?.addEventListener("click", () => {
     closeAIChat();
@@ -121,6 +122,12 @@ function handleRuvyInput(text) {
   if (aiAdvisorSending) return;
   const input = document.getElementById("ai-chat-input");
   const chips = document.getElementById("ai-chips");
+  if (/^(pindah|pindahkan|transfer|tf|top ?up|isi saldo|mutasi|move)\b/i.test(text.trim())) {
+    appendBubble(text, "user"); input.value = "";
+    appendBubble(advisorText("Untuk pindah dana antar dompet, isi formulir Pindah dana ya.", "To move money between wallets, use the Move funds form."), "bot");
+    document.getElementById("ruvy-transfer-open")?.click();
+    return;
+  }
   if (!looksLikeQuestion(text) && typeof parseChatForWallet === "function") {
     if (document.body.classList.contains("app-locked") || (typeof isAccessLocked === "function" && isAccessLocked())) {
       appendBubble(text, "user"); input.value = "";
@@ -431,7 +438,10 @@ function renderRuvyLog() {
 
 function appendBubble(text, who, persist = true) {
   const body = document.getElementById("ai-chat-body");
-  if (persist) { ensureDaySep(); pushRuvyLog({ t: who === "user" ? "u" : "b", text: String(text).slice(0, 1200) }); }
+  if (persist) {
+    ensureDaySep(); pushRuvyLog({ t: who === "user" ? "u" : "b", text: String(text).slice(0, 1200) });
+    const chips = document.getElementById("ai-chips"); if (chips) chips.style.display = "none";
+  }
   const bubble = document.createElement("div");
   bubble.className = `ai-bubble ai-bubble-${who}`;
   if (who === "bot") {
@@ -463,7 +473,7 @@ function buildAdvisorContext() {
   const monthName = now.toLocaleDateString(preferences.locale, { month: "long", year: "numeric" });
 
   // Filter transaksi bulan ini
-  const cashflowTransactions = (getFinancialState().transactions || []).filter(t => !isOpeningBalanceTransaction(t));
+  const cashflowTransactions = (getFinancialState().transactions || []).filter(t => typeof isCashflowTransaction === 'function' ? isCashflowTransaction(t) : !isOpeningBalanceTransaction(t));
   const thisMonth = cashflowTransactions.filter((t) => {
     const d = parseISO(t.tanggal);
     return d.getMonth() === curMonth && d.getFullYear() === curYear;
@@ -616,6 +626,58 @@ function renderAIPromo() {
     const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
     if (typeof openAIChat === "function") openAIChat();
   };
+}
+
+// ---- Pindah dana (manual form; Ruvy confirms in the chat).
+function initRuvyTransfer() {
+  const modal = document.getElementById("modal-transfer"), form = document.getElementById("form-transfer");
+  if (!modal || !form) return;
+  const close = () => { modal.hidden = true; modal.style.display = "none"; };
+  const err = document.getElementById("transfer-error");
+  const sync = () => {
+    const wallets = getWallets();
+    const from = wallets.find(w => w.id === form.from.value), to = wallets.find(w => w.id === form.to.value);
+    const differ = from && to && from.currency !== to.currency;
+    document.getElementById("transfer-in-field").hidden = !differ;
+    form.amountIn.required = !!differ;
+    document.getElementById("transfer-out-label").textContent = advisorText(differ ? "Jumlah dikirim" : "Jumlah", differ ? "Amount sent" : "Amount") + (from ? " (" + from.currency + ")" : "");
+    document.getElementById("transfer-in-label").textContent = advisorText("Jumlah diterima", "Amount received") + (to ? " (" + to.currency + ")" : "");
+  };
+  document.getElementById("ruvy-transfer-open")?.addEventListener("click", () => {
+    const wallets = getWallets();
+    if (wallets.length < 2) {
+      appendBubble(advisorText("Buat dompet kedua dulu (Beranda → + Dompet baru), lalu pindah dana di sini.", "Create a second wallet first (Home → + New wallet), then move funds here."), "bot", false);
+      return;
+    }
+    const opts = wallets.map(w => `<option value="${escapeHtml(w.id)}">${escapeHtml(w.name)} · ${escapeHtml(w.currency)}</option>`).join("");
+    form.from.innerHTML = opts; form.to.innerHTML = opts;
+    form.from.value = getActiveWalletId();
+    form.to.value = (wallets.find(w => w.id !== form.from.value) || wallets[1]).id;
+    form.amountOut.value = ""; form.amountIn.value = ""; form.note.value = ""; form.date.value = todayISO();
+    err.hidden = true; sync();
+    closeAIChat();
+    modal.hidden = false; modal.style.display = "grid";
+  });
+  form.from.addEventListener("change", sync); form.to.addEventListener("change", sync);
+  document.getElementById("transfer-close").onclick = close;
+  document.getElementById("transfer-cancel").onclick = close;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const wallets = getWallets();
+    const from = wallets.find(w => w.id === form.from.value), to = wallets.find(w => w.id === form.to.value);
+    // Parse each amount in its own wallet's currency.
+    const parseIn = (value, currency) => { walletCurrencyOverride = currency; try { return parseMoneyInput(value); } finally { walletCurrencyOverride = null; } };
+    const amountOut = from ? parseIn(form.amountOut.value, from.currency) : null;
+    const amountIn = to && from && from.currency !== to.currency ? parseIn(form.amountIn.value, to.currency) : amountOut;
+    const res = createTransfer({ fromId: form.from.value, toId: form.to.value, amountOut, amountIn, date: form.date.value, note: form.note.value });
+    if (!res.ok) { err.textContent = res.error; err.hidden = false; return; }
+    close();
+    if (typeof renderAll === "function") renderAll();
+    openAIChat();
+    appendBubble(advisorText("↔ Dana dipindah: ", "↔ Funds moved: ") + formatWalletMoney(res.out.jumlah, res.from.currency) + " · " + res.from.name + " → " + res.to.name
+      + (res.from.currency !== res.to.currency ? " (" + advisorText("diterima ", "received ") + formatWalletMoney(res.inn.jumlah, res.to.currency) + ")" : "")
+      + "\n" + advisorText("Tidak dihitung sebagai pemasukan/pengeluaran.", "Not counted as income or expense."), "bot");
+  });
 }
 
 // ---- Voice input: the browser's own speech-to-text (free, no AI tokens). Hidden where

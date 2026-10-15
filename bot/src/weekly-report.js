@@ -52,7 +52,9 @@ export function computeWeeklySummary(transactions, target, nowMs = Date.now()) {
   const r = weekRanges(nowMs);
   const inRange = (t, a, b) => typeof t.tanggal === "string" && t.tanggal >= a && t.tanggal <= b;
   const num = (v) => Number(v) || 0;
-  const tx = (Array.isArray(transactions) ? transactions : []).filter((t) => t && typeof t.tanggal === "string");
+  // Pindah dana antar dompet dan saldo awal bukan pemasukan/pengeluaran.
+  const tx = (Array.isArray(transactions) ? transactions : []).filter((t) => t && typeof t.tanggal === "string"
+    && !t.transferId && t.kategori !== "Pindah Dana" && t.kategori !== "Saldo Awal" && t.isOpeningBalance !== true);
 
   const thisW = tx.filter((t) => inRange(t, r.thisWeek.from, r.thisWeek.to));
   const lastW = tx.filter((t) => inRange(t, r.lastWeek.from, r.lastWeek.to));

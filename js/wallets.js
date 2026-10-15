@@ -152,6 +152,29 @@ function parseChatForWallet(text, fallbackWallet = getActiveWallet()) {
     return parsed && !parsed.error ? { parsed, wallet } : (parsed || { error: preferenceMessage('Gagal memproses.', 'Could not process this entry.') });
   } finally { walletCurrencyOverride = null; }
 }
+// Manual transfer between wallets (bos 15 Okt: "pindah dana manual aja"). Two linked rows share a
+// transferId: money out of one wallet, money in to the other. Different currencies need the
+// received amount typed by the user; no exchange rate is ever guessed.
+function createTransfer({ fromId, toId, amountOut, amountIn, date = todayISO(), note = '' }) {
+  const wallets = getWallets();
+  const from = wallets.find(w => w.id === fromId), to = wallets.find(w => w.id === toId);
+  if (!from || !to || fromId === toId) return { ok: false, error: preferenceMessage('Pilih dua dompet yang berbeda.', 'Choose two different wallets.') };
+  if (from.currency === to.currency) amountIn = amountOut;
+  if (!(amountOut > 0) || !validWalletAmount(amountOut, from.currency)) return { ok: false, error: preferenceMessage('Jumlah dikirim tidak valid.', 'Invalid amount sent.') };
+  if (!(amountIn > 0) || !validWalletAmount(amountIn, to.currency)) return { ok: false, error: preferenceMessage('Jumlah diterima tidak valid.', 'Invalid amount received.') };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, error: preferenceMessage('Tanggal tidak valid.', 'Invalid date.') };
+  const transferId = 'tf_' + uid().replace(/[^a-z0-9]/gi, '').toLowerCase();
+  const memo = String(note || '').trim().slice(0, 60);
+  const base = { tanggal: date, kategori: 'Pindah Dana', subKategori: 'Pindah Dana', alokasi: '', transferId };
+  const out = { ...base, id: uid(), jenis: 'pengeluaran', jumlah: amountOut, transferPeer: toId,
+    deskripsi: (preferenceMessage('Pindah ke ', 'Transfer to ') + to.name + (memo ? ' · ' + memo : '')).slice(0, 80) };
+  const inn = { ...base, id: uid(), jenis: 'pemasukan', jumlah: amountIn, transferPeer: fromId,
+    deskripsi: (preferenceMessage('Pindah dari ', 'Transfer from ') + from.name + (memo ? ' · ' + memo : '')).slice(0, 80) };
+  getWalletLedger(fromId).transactions.push(out);
+  getWalletLedger(toId).transactions.push(inn);
+  saveState();
+  return { ok: true, from, to, out, inn };
+}
 function formatWalletMoney(amount, currency) {
   return new Intl.NumberFormat(getAppLocale(), { style: 'currency', currency, currencyDisplay: 'code',
     minimumFractionDigits: getCurrencyDigits(currency), maximumFractionDigits: getCurrencyDigits(currency) }).format(amount);

@@ -353,3 +353,9 @@
 @keyframes ruvyPulse{50%{transform:scale(1.08)}}
 @media (prefers-reduced-motion:reduce){.ruvy-mic.listening{animation:none}}
 .ruvy-app .ai-chat-input{min-width:0;flex:1}
+.ruvy-actions-row{display:flex;gap:8px;padding:6px 12px 0;background:var(--surface)}
+.ruvy-actions-row .ai-chip{margin:0;font-size:12px}
+#modal-transfer .transfer-hint{font-size:12px;color:var(--ink-soft);margin:0}
+#modal-transfer .transfer-error{color:var(--expense,#b4415a);font-size:13px;margin:0}
+#modal-transfer [hidden]{display:none!important}
+#modal-transfer{z-index:3000}
