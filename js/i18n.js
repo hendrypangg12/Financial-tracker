@@ -224,6 +224,7 @@
     'Login dulu ya bos': 'Sign in first', 'User belum login': 'You are not signed in',
     'Install ke Home Screen': 'Add to Home Screen', 'Install ke iPhone': 'Add to iPhone Home Screen',
     'Buat fullscreen mode + login persistent': 'Open as a full-screen app', 'Fullscreen mode + login persistent': 'Open as a full-screen app',
+    'bakso 25rb · atau tanya…': 'coffee 4.50 · or ask…', 'Foto struk': 'Receipt photo', 'Bicara': 'Speak',
     'Nanti aja': 'Not now', 'Lainnya': 'More', 'Total': 'Total', 'Total:': 'Total:', 'Tersalin': 'Copied',
     'Januari': 'January', 'Februari': 'February', 'Maret': 'March', 'Mei': 'May', 'Juni': 'June',
     'Juli': 'July', 'Agustus': 'August', 'Oktober': 'October', 'Desember': 'December',
