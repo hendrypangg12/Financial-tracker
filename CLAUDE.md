@@ -193,8 +193,10 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN
   di store-assets/ruvy/. Homepage + listing menulis "Ruvy AI sementara belum tersedia" (saldo Anthropic HABIS —
   pesan "layanan AI sementara tidak tersedia. Coba lagi nanti ya" = credit balance). Firestore Rules produksi SUDAH
-  menerima preferences/wallets/walletData (dites 15 Okt via akun probe, dihapus). Nama Ruvy vs Ruvi & ganti nama app
-  BELUM dikonfirmasi bos ke Claude.
+  menerima preferences/wallets/walletData (dites 15 Okt via akun probe, dihapus).
+  ✅ 15 Okt KEPUTUSAN BOS: nama resmi **RUVY** (pakai y, BUKAN "Ruvi") untuk robot DAN aplikasi
+  ("Ruvy - AI Money Tracker"), menggantikan BerUang di app, web, dan Play Store. Package tetap id.berstock.beruang.
+  File lama design/ruvi/ & demo-ruvi.html masih ejaan "Ruvi" (arsip desain).
   15 Okt Claude audit + FIX: (1) KRITIS: kolom uang tidak bisa diketik ≥10.000 ("2.500"+"0"→"2.5000" invalid) →
   `formatMoneyInput()` mengelompokkan ulang dari digit mentah. (2) `formatShort` IDR kembali 1 desimal ("Rp 1,5 jt").
   (3) FITUR permintaan bos: "bakso 25rb dari dompet utama" / "bensin 50rb pakai gopay" → masuk ke dompet yang disebut
