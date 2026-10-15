@@ -339,12 +339,6 @@ function renderGoals() {
       const goal = getFinancialState().goals.find(g => g.id === btn.dataset.id);
       if (!goal) return;
 
-      // Uji coba gratis tidak termasuk AI — arahkan ke paket berbayar
-      if (typeof isFreeTrial === 'function' && isFreeTrial(currentProfile)) {
-        if (typeof openPaywall === 'function') openPaywall();
-        else if (typeof showScreen === 'function') showScreen('paywall');
-        return;
-      }
       // Check Pro status (Goal Planner is Pro feature, free user get 1 plan/month)
       const userIsPro = typeof hasAIAccess === 'function' && hasAIAccess(currentProfile);
       const freeQuotaKey = `goal-ai-free-${new Date().getFullYear()}-${new Date().getMonth()}`;

@@ -34,7 +34,7 @@
     'atau': 'or', 'Akun': 'Account', 'Bahasa': 'Language', 'Mata uang akun': 'Account currency',
     'Tampilan lebih solid': 'Reduce transparency', 'Pengaturan akun': 'Account settings', 'Bahasa & Mata Uang': 'Language & Currency',
     'Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat': 'Use the same account to sync your records across devices',
-    'Uji coba gratis 2 hari (belum termasuk AI). Harga paket ditampilkan oleh Google Play.': '2-day free trial (AI not included). Plan prices are shown by Google Play.',
+    'Uji coba gratis 2 hari, sudah termasuk AI (5 pertanyaan/hari). Harga paket ditampilkan oleh Google Play.': '2-day free trial, AI included (5 questions per day). Plan prices are shown by Google Play.',
     'Mata uang digunakan untuk semua catatan akun ini. Setelah ada data keuangan, mata uang terkunci agar nilai lama tidak berubah.': 'One currency is used for all records in this account. It locks after financial data is saved to keep existing amounts accurate.',
     'Bahasa mengikuti akun di semua perangkat. Tampilan solid hanya untuk perangkat ini.': 'Language syncs across your account. Reduced transparency applies only to this device.',
     'Memeriksa sinkronisasi…': 'Checking sync…', 'Ringkasan': 'Overview', 'Transaksi': 'Transactions',

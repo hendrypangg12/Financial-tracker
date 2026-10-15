@@ -298,9 +298,7 @@ function openPaywall() {
   const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
   const sub = document.querySelector("#ai-paywall-modal .ai-paywall-sub");
   if (sub) {
-    sub.textContent = typeof isFreeTrial === "function" && isFreeTrial(profile)
-      ? advisorText("Uji coba gratis belum termasuk AI. Aktifkan paket berbayar untuk ngobrol dengan Ruvy.", "The free trial does not include AI. Choose a paid plan to get insights from Ruvy AI.")
-      : advisorText("Insight AI dari catatan keuanganmu — khusus Pro", "AI insights from your financial records — available with Pro");
+    sub.textContent = advisorText("Insight AI dari catatan keuanganmu — khusus Pro", "AI insights from your financial records — available with Pro");
   }
   const upgrade = document.getElementById('ai-paywall-upgrade');
   if (upgrade) upgrade.textContent = advisorText('💎 Lihat Paket Pro', '💎 View Pro Plans');

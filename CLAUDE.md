@@ -11,7 +11,8 @@
   (`playFreeTrial` di profil, dihitung di google-play.js `isFreeTrialPhase`/`playFreeTrialFlag`; RTDN renewal mengosongkannya).
 - App: runtime.js hanya jual monthly+annual; PlayBillingPlugin pilih offer `free-trial-3d` kalau eligible, else base plan
   tanpa offerId; paywall "Gratis 3 hari, lalu Rp50.000 / bulan".
-- Trial 2 hari tanpa AI saat daftar (bootstrap, dipakai juga web) BELUM diubah — tunggu keputusan bos.
+- Trial 2 hari saat daftar SEKARANG TERMASUK AI (keputusan bos 15 Okt), kuota 5/hari (`trialQuota` di advise.js;
+  client `hasAIAccess()` = isPro). Menggantikan aturan 26 Sep "trial tanpa AI". Foto struk Telegram tetap khusus berbayar.
 - Bos WAJIB pasang batas pengeluaran di Anthropic Console (Limits) sebagai rem darurat biaya AI.
 
 ## ✅ BerUang LIVE di Google Play Production — dikonfirmasi 25 September 2026 (22:51 WIB)

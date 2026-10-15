@@ -75,15 +75,15 @@ test('goal-only context does not fabricate zero income or expense records', () =
   assert.doesNotMatch(message, /Total income|Net income/);
 });
 
-test('English free trial and daily limit remain enforced without any provider call or local-price offer', async t => {
+test('English free trial gets the smaller 5-question daily AI quota without a local-price offer', async t => {
   mockFetch(t, 'free_trial');
-  for (const context of [{ language: 'en', currency: 'USD' }, { source: 'goal-planner', language: 'en', currency: 'JPY' }]) {
-    const result = await handleAdvise(request(context), environment());
-    assert.equal(result.status, 403);
-    const response = await result.json();
-    assert.match(response.reply, /free trial does not include AI/i);
-    assert.doesNotMatch(response.reply, /Rp|10rb/);
-  }
+  const env = environment();
+  env.data.set('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10), '5');
+  const result = await handleAdvise(request({ language: 'en', currency: 'USD' }), env);
+  assert.equal(result.status, 429);
+  const response = await result.json();
+  assert.match(response.reply, /5 free-trial AI questions/);
+  assert.doesNotMatch(response.reply, /Rp|10rb/);
 });
 
 test('daily limit and free goal quota stay keyed by authenticated UID rather than submitted email', async t => {

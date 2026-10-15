@@ -191,12 +191,8 @@ export async function handleAdvise(request, env) {
   let account;
   try { account = await readPlan(user, env); }
   catch (e) { return jsonResponse({ error: copy(language, "Status paket belum bisa diperiksa. Coba lagi sebentar.", "Your plan could not be checked. Try again shortly.") }, e.status || 503); }
-  if (account.active && account.plan === 'free_trial') {
-    return jsonResponse({
-      error: copy(language, 'AI khusus paket berbayar.', 'AI requires a paid plan.'),
-      reply: copy(language, 'Bos, uji coba gratis belum termasuk AI. Aktifkan paket berbayar untuk ngobrol dengan Ruvy ya 🐻', 'The free trial does not include AI. Choose a paid plan to get insights from Ruvy AI. 🐻'),
-    }, 403);
-  }
+  // Uji coba (2 hari saat daftar, atau 3 hari Google Play) boleh AI dengan kuota kecil.
+  const trialQuota = account.active && (account.plan === 'free_trial' || account.playTrial);
   const pro = account.active;
   if (!pro && !isGoal) return jsonResponse({ error: copy(language, 'Fitur ini memerlukan paket Pro aktif.', 'This feature requires an active Pro plan.') }, 403);
   const month = new Date().toISOString().slice(0, 7);
@@ -207,12 +203,12 @@ export async function handleAdvise(request, env) {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const rateKey = `advise_rate:${user.uid}:${today}`;
   const currentCount = parseInt((await env.BOT_DATA.get(rateKey)) || "0", 10);
-  // Biaya AI dijaga: uji coba Google Play 5/hari, paket berbayar 10/hari.
-  const RATE_LIMIT = account.playTrial ? TRIAL_DAILY_LIMIT : PAID_DAILY_LIMIT;
+  // Biaya AI dijaga: uji coba 5/hari, paket berbayar 10/hari.
+  const RATE_LIMIT = trialQuota ? TRIAL_DAILY_LIMIT : PAID_DAILY_LIMIT;
   if (currentCount >= RATE_LIMIT) {
     return jsonResponse({
       error: copy(language, "Limit harian tercapai", "Daily limit reached"),
-      reply: account.playTrial
+      reply: trialQuota
         ? copy(language, `Bos, kuota AI uji coba hari ini udah habis (${RATE_LIMIT} pertanyaan/hari). Setelah uji coba berakhir kuotanya naik jadi ${PAID_DAILY_LIMIT}/hari 🐻`, `You've used today's ${RATE_LIMIT} free-trial AI questions. After the trial, the limit rises to ${PAID_DAILY_LIMIT} per day. 🐻`)
         : copy(language, `Bos, kuota Tanya Ruvy hari ini udah habis (${RATE_LIMIT} pertanyaan/hari). Coba lagi besok ya! 🐻`, `You've used today's ${RATE_LIMIT} AI questions. Try again tomorrow. 🐻`),
     }, 429);

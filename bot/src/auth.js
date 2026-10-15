@@ -23,7 +23,7 @@ export async function requireUser(request, env) {
   return { uid: account.localId, email: account.email || '', token, claims };
 }
 
-// AI hanya untuk paket berbayar: uji coba gratis (free_trial) tidak termasuk AI.
+// Semua paket aktif (termasuk free_trial) boleh AI; kuota uji coba dibatasi di /api/advise.
 export async function readPlan(user, env) {
   const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(env.FIREBASE_PROJECT_ID)}/databases/(default)/documents/users/${encodeURIComponent(user.uid)}/meta/profile`;
   const response = await fetch(url, { headers: { Authorization: `Bearer ${user.token}` } });
