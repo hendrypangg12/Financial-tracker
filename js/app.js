@@ -1464,9 +1464,6 @@ function showProGate(featureName, description) {
         <div class="pro-benefit">📅 Unlimited history</div>
       </div>
       <div class="pro-gate-prices">
-        <button class="btn btn-ghost btn-block" data-paket="trial">
-          <b>Akses 7 Hari</b> — Rp 10.000<small>/ 7 hari</small>
-        </button>
         <button class="btn btn-primary btn-block" data-paket="annual">
           <span class="badge">HEMAT 50%</span>
           <b>Tahunan</b> — Rp 299.000<small>/ tahun</small>

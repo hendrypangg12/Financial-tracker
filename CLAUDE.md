@@ -14,6 +14,11 @@
 - Trial 2 hari saat daftar SEKARANG TERMASUK AI (keputusan bos 15 Okt), kuota 5/hari (`trialQuota` di advise.js;
   client `hasAIAccess()` = isPro). Menggantikan aturan 26 Sep "trial tanpa AI". Foto struk Telegram tetap khusus berbayar.
 - Bos WAJIB pasang batas pengeluaran di Anthropic Console (Limits) sebagai rem darurat biaya AI.
+- 15 Okt Claude: patch laptop (2 commit) DIPASANG via git am + tes lolos (bot 70, mobile 46) + DI-PUSH (worker ikut
+  ter-deploy). Lanjutan Claude: paket 7 hari dihapus juga dari paywall WEB (app.html) & modal pro-gate (js/app.js);
+  homepage harga jadi Uji Coba Gratis / Tahunan / Bulanan, AI 10/hari (uji coba 5); terms.html & terms-en.html,
+  landing.html (EN), listing EN (store-assets + UPLOAD-GOOGLE-PLAY-RUVY/LISTING-TEXT.txt) disamakan. Teks PLANS di listing
+  menyebut trial 3 hari → TEMPEL ke Play Console hanya SETELAH offer free-trial-3d aktif.
 
 ## ✅ BerUang LIVE di Google Play Production — dikonfirmasi 25 September 2026 (22:51 WIB)
 

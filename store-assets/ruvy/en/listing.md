@@ -6,7 +6,7 @@ Ruvy - AI Money Tracker
 Short description (78/80):
 Track spending by chatting. Wallets, any currency, AI money tips. Try it free.
 
-Full description (2222/4000):
+Full description (2386/4000):
 
 Ruvy makes tracking money as easy as sending a chat.
 
@@ -22,7 +22,7 @@ ASK RUVY ANYTHING (AI)
 • "Where am I overspending this month?"
 • "Can I save $500 this month?"
 • "Compare this month with last month"
-Ruvy AI reads a summary of your own records and answers in seconds with practical tips. Available on paid plans, up to 30 questions per day. AI answers can be wrong, so double-check important numbers.
+Ruvy AI reads a summary of your own records and answers in seconds with practical tips. Included in the free trial (5 questions per day) and paid plans (10 questions per day). AI answers can be wrong, so double-check important numbers.
 
 EVERY WALLET, EVERY CURRENCY
 • Separate wallets for your bank, e-wallet, cash, savings or a trip abroad
@@ -45,9 +45,10 @@ YOUR DATA, YOUR CONTROL
 • Request account and data deletion from the app or support
 
 PLANS
-• Free 2-day trial for recording (AI and receipt photos not included)
-• 7-day pass: one-time payment
-• Monthly and yearly subscriptions renew automatically through Google Play until cancelled. Manage or cancel any time in Google Play
+• Free 2-day trial when you sign up, AI included (5 questions per day)
+• Monthly plan: 3-day free trial for new subscribers, then renews automatically every month
+• Yearly plan: renews automatically every year
+• Subscriptions renew through Google Play until cancelled. Cancel before the trial ends to avoid being charged. Manage or cancel any time in Google Play
 Prices are shown in your local currency by Google Play before purchase.
 
 Ruvy was previously called BerUang. Existing accounts and records keep working.
