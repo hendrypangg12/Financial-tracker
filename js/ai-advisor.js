@@ -181,7 +181,7 @@ function appendRecordedCard(t, wallet) {
   card.type = "button"; card.className = "ruvy-rec-card";
   card.setAttribute("aria-label", advisorText("Ubah transaksi ini", "Edit this transaction"));
   card.innerHTML = `<span class="ruvy-rec-top"><span>${advisorText("Dicatat", "Recorded")}: ${income ? advisorText("Pemasukan", "Income") : advisorText("Pengeluaran", "Expense")}</span><span>${escapeHtml(day)}</span></span>`
-    + `<span class="ruvy-rec-row"><span class="ruvy-rec-icon">${icon}</span><span class="ruvy-rec-copy"><b>${escapeHtml(t.subKategori || t.kategori)}</b><small>${escapeHtml(t.deskripsi || "")} · ${escapeHtml(wallet.name)}</small></span>`
+    + `<span class="ruvy-rec-row"><span class="ruvy-rec-icon">${icon}</span><span class="ruvy-rec-copy"><b>${escapeHtml(typeof categoryDisplayName === "function" ? (t.subKategori ? categoryDisplayName(t.subKategori, t.jenis, t.kategori) : categoryDisplayName(t.kategori, t.jenis)) : (t.subKategori || t.kategori))}</b><small>${escapeHtml(t.deskripsi || "")} · ${escapeHtml(wallet.name)}</small></span>`
     + `<span class="ruvy-rec-amt ${income ? "in" : "out"}">${income ? "+" : "−"}${escapeHtml(money)}</span></span>`
     + `<span class="ruvy-rec-edit">${advisorText("✏️ Ketuk untuk ubah", "✏️ Tap to edit")}</span>`;
   card.onclick = () => {
@@ -262,6 +262,8 @@ function markGuideAI() {
 
 function openAIChat() {
   markGuideAI();
+  const chatInput = document.getElementById("ai-chat-input");
+  if (chatInput) chatInput.placeholder = advisorText("bakso 25rb · atau tanya…", "coffee 4.50 · or ask…");
   const pill = document.getElementById("ruvy-chat-wallet");
   if (pill && typeof getActiveWallet === "function") pill.textContent = "💳 " + getActiveWallet().name;
   // Re-read every open: picks up edits/deletes and another user's login on this device.
