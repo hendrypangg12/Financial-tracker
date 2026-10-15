@@ -1,0 +1,54 @@
+APP NAME (paste ke kolom App name):
+Ruvy - AI Money Tracker
+
+SHORT DESCRIPTION:
+Track spending by chatting. Wallets, any currency, AI money tips. Try it free.
+
+FULL DESCRIPTION:
+Ruvy makes tracking money as easy as sending a chat.
+
+Type "coffee 4.50" or "salary 3200" and Ruvy records it instantly: amount, category, date and wallet. No long forms, no spreadsheets.
+
+JUST TYPE IT
+• Write entries the way you talk: "groceries 86.20", "taxi 12 yesterday", "rent 900 using bank account"
+• Ruvy picks the category and the wallet for you
+• Every entry appears as a card. Tap it to fix the amount, category, date or wallet
+• Recording works on every plan, including the free trial, and does not use AI credits
+
+ASK RUVY ANYTHING (AI)
+• "Where am I overspending this month?"
+• "Can I save $500 this month?"
+• "Compare this month with last month"
+Ruvy AI reads a summary of your own records and answers in seconds with practical tips. Available on paid plans, up to 30 questions per day. AI answers can be wrong, so double-check important numbers.
+
+EVERY WALLET, EVERY CURRENCY
+• Separate wallets for your bank, e-wallet, cash, savings or a trip abroad
+• Each wallet keeps its own currency: USD, EUR, GBP, SGD, MYR, JPY, IDR and more
+• No hidden exchange-rate guessing. Balances are shown per wallet
+• Move money between wallets without counting it as spending
+
+SNAP A RECEIPT
+Take a photo of a receipt and Ruvy reads the total. Review it before saving. Available on paid plans.
+
+PLAN AND REVIEW
+• Monthly reports: income, expenses, biggest categories, month-to-month comparison
+• Savings goals, debts and receivables, recurring bills
+• Search and filter every transaction
+• English and Bahasa Indonesia
+
+YOUR DATA, YOUR CONTROL
+• Sign in on any device with the same account and your records sync through the cloud
+• Export a backup any time
+• Request account and data deletion from the app or support
+
+PLANS
+• Free 2-day trial for recording (AI and receipt photos not included)
+• 7-day pass: one-time payment
+• Monthly and yearly subscriptions renew automatically through Google Play until cancelled. Manage or cancel any time in Google Play
+Prices are shown in your local currency by Google Play before purchase.
+
+Ruvy was previously called BerUang. Existing accounts and records keep working.
+
+Support: info@berstock.id
+Privacy: https://berstock.id/privacy-en.html
+Terms: https://berstock.id/terms-en.html

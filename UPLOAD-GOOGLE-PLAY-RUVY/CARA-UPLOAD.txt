@@ -1,0 +1,22 @@
+CARA GANTI LISTING GOOGLE PLAY: BerUang -> Ruvy (English)
+=========================================================
+PENTING: lakukan BERSAMAAN dengan upload build Ruvy terbaru (1.5.x). App yang live sekarang
+masih 1.4.7 (tampilan BerUang). Kalau listing diganti duluan, Google bisa menolak karena
+gambar tidak sama dengan aplikasinya.
+
+1. Buka https://play.google.com/console -> pilih aplikasi BerUang.
+2. Menu kiri: Grow users -> Store presence -> Store listings -> Default store listing.
+3. Klik "Manage translations" -> "Change default language" -> pilih English (United States) - en-US.
+   (Kalau ditanya bahasa Indonesia mau dihapus atau disimpan: boleh dihapus, kita pakai English saja.)
+4. Isi dari LISTING-TEXT.txt:
+   - App name            -> Ruvy - AI Money Tracker
+   - Short description   -> (salin)
+   - Full description    -> (salin)
+5. Graphics:
+   - App icon            -> app-icon-512.png
+   - Feature graphic     -> feature-graphic-1024x500.png
+   - Phone screenshots   -> hapus semua gambar lama, upload screenshot-1.png sampai screenshot-5.png (urut)
+6. Klik Save.
+7. Menu kiri: Publishing overview -> Send changes for review.
+
+Setelah review lolos (biasanya 1-3 hari), nama di Play Store berubah jadi "Ruvy - AI Money Tracker".
