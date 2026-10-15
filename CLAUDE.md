@@ -188,6 +188,9 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🌍 15 Okt KEPUTUSAN BOS: Ruvy DIJUAL INTERNASIONAL (bukan Indonesia saja). Play listing: English (en-US) jadi bahasa
+  DEFAULT, Indonesia sebagai terjemahan; tambah negara di Play Console (saat ini hanya Indonesia). Draf iklan EN gaya Rolly
+  di design/ruvy/ads-en/ (5 slide; slide 5 "Ask Ruvy anything", jawaban AI = contoh berlabel "Sample conversation").
 - 🏠 15 Okt: HOMEPAGE index.html DITULIS ULANG gaya Ruvy (biru kaca, sama dengan app): hero "Catat uang cukup ngobrol"
   + screenshot ASLI chat Ruvy (assets/ruvy-hero-chat.jpg, ruvy-hero-home.jpg, dirender Playwright), 3 langkah, 6 fitur,
   catatan "mencatat tidak memakai AI", harga 3 paket, FAQ 6, founder, CTA. Status AI cukup 1 baris kecil
