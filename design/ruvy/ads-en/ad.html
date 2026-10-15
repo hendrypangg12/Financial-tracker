@@ -57,10 +57,16 @@ const S={
    <div class="wallet" style="left:50px;top:1120px;transform:rotate(2deg)"><div class="t">Savings<span>USD</span></div><div class="v">$4,800.00</div></div>
    ${rec(60,1420,620,'🍜','Dining out','ramen · Tokyo trip','−¥1,200',false,'Expense','Mon, Oct 12',-2)}
    <div style="position:absolute;left:84px;right:84px;bottom:60px;text-align:center;font-size:30px;color:#6b7a8e">No hidden conversions. Each wallet keeps its own currency.</div>`},
- '5':{bg:'bg-b',html:`<div class="h center" style="top:130px">Move money<br><span class="b">between wallets.</span></div>
-   ${P('transfer',220,560,640,0)}
-   <div class="card" style="left:60px;top:1500px;width:520px;transform:rotate(-3deg)"><div style="color:#6b7a8e;font-size:26px">↔ Funds moved</div><div style="font-weight:800;font-size:40px;margin-top:8px">$300.00</div><div style="font-size:28px;margin-top:6px">Everyday → Savings</div></div>
-   <div class="pill" style="right:50px;top:1260px;font-size:30px"><span class="i">✓</span>Not counted as spending</div>`},
+ '5':{bg:'bg-c',html:`<div class="h center" style="top:120px">Ask Ruvy<br><span class="b">anything.</span></div>
+   <div style="position:absolute;left:84px;right:84px;top:390px;text-align:center;font-size:36px;line-height:1.4;color:#5d6d82">Your AI money assistant reads your own records and answers in seconds.</div>
+   <div style="position:absolute;left:0;right:0;top:530px;display:flex;justify-content:center;gap:18px">
+     <span class="pill" style="position:static;font-size:26px;padding:16px 26px 16px 16px;gap:14px"><span class="i" style="width:56px;height:56px;font-size:28px">💡</span>Saving tips</span>
+     <span class="pill" style="position:static;font-size:26px;padding:16px 26px 16px 16px;gap:14px"><span class="i" style="width:56px;height:56px;font-size:28px">📊</span>Insights</span>
+     <span class="pill" style="position:static;font-size:26px;padding:16px 26px 16px 16px;gap:14px"><span class="i" style="width:56px;height:56px;font-size:28px">🎯</span>Goals</span>
+   </div>
+   ${P('ai',220,690,640,0)}
+   <img class="robot" src="robot.png" style="left:20px;top:1560px;width:220px;filter:drop-shadow(0 30px 40px rgba(19,33,58,.25))">
+   <div style="position:absolute;left:50%;transform:translateX(-50%);bottom:28px;white-space:nowrap;background:#fff;border-radius:999px;padding:10px 26px;box-shadow:0 10px 30px rgba(19,33,58,.15);font-size:24px;color:#5d6d82;z-index:5">Sample conversation · AI questions on paid plans</div>`},
 };
 document.body.className=S[n].bg; document.getElementById('root').innerHTML=S[n].html;
 </script></body></html>
