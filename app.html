@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=67" />
+  <link rel="stylesheet" href="styles.css?v=68" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -25,7 +25,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-database-compat.js"></script>
-  <link rel="stylesheet" href="ruvy.css?v=67" />
+  <link rel="stylesheet" href="ruvy.css?v=68" />
 </head>
 <body class="app-locked">
   <div id="startup-screen" class="login-screen" role="status" aria-live="polite">
@@ -294,13 +294,17 @@
             <div class="ruvy-cashflow"><div><small data-ruvy-id="↙ Pemasukan" data-ruvy-en="↙ Income">↙ Pemasukan</small><strong class="money-income" id="ruvy-income">—</strong></div><div><small data-ruvy-id="↗ Pengeluaran" data-ruvy-en="↗ Expenses">↗ Pengeluaran</small><strong class="money-expense" id="ruvy-expense">—</strong></div></div>
             <div class="ruvy-net-row"><span data-ruvy-id="Perubahan bersih bulan ini" data-ruvy-en="Net change this month">Perubahan bersih bulan ini</span><b id="ruvy-net">—</b></div>
           </section>
-          <form id="ruvy-quick-form" class="ruvy-quick-entry">
+          <button type="button" class="ruvy-quick-entry ruvy-open-chat" data-open-ruvy>
+            <span class="ruvy-quick-head"><b data-ruvy-id="Catat ke Ruvy" data-ruvy-en="Record with Ruvy">Catat ke Ruvy</b></span>
+            <span class="ruvy-open-chat-hint" data-ruvy-id="Ketik &quot;bakso 25rb&quot; atau foto struk 📷" data-ruvy-en="Type &quot;coffee 4.50&quot; or snap a receipt 📷">Ketik "bakso 25rb" atau foto struk 📷</span>
+          </button>
+          <form id="ruvy-quick-form" class="ruvy-quick-entry" hidden>
             <div class="ruvy-quick-head"><label for="ruvy-quick-input" data-ruvy-id="Catat cepat" data-ruvy-en="Quick entry">Catat cepat</label><span id="ruvy-quick-wallet"></span></div>
             <div class="ruvy-quick-controls"><input id="ruvy-quick-input" data-dynamic-placeholder type="text" placeholder="kopi 25rb" required maxlength="240" autocomplete="off" enterkeyhint="done" aria-describedby="ruvy-quick-hint ruvy-quick-feedback" /><button id="ruvy-quick-submit" type="submit" class="btn btn-primary" data-ruvy-id="Catat" data-ruvy-en="Record">Catat</button></div>
             <small id="ruvy-quick-hint" data-ruvy-id="Satu transaksi. Periksa nominal sebelum mencatat." data-ruvy-en="One transaction. Check the amount before recording.">Satu transaksi. Periksa nominal sebelum mencatat.</small>
             <p id="ruvy-quick-feedback" role="status" aria-live="polite" hidden></p>
           </form>
-          <div class="ruvy-home-actions"><button type="button" class="btn btn-ghost" data-open-tab="tambah" data-ruvy-id="＋ Form lengkap" data-ruvy-en="＋ Full entry form">＋ Form lengkap</button><button type="button" class="btn btn-ghost" data-ruvy-action="ai" data-ruvy-id="Tanya Ruvy ✧" data-ruvy-en="Ask Ruvy ✧">Tanya Ruvy ✧</button></div>
+
         </div>
         <section class="ruvy-activity-card">
           <div class="ruvy-section-head"><h2 data-ruvy-id="Aktivitas terbaru" data-ruvy-en="Recent activity">Aktivitas terbaru</h2><button type="button" data-open-tab="transaksi" data-ruvy-id="Lihat semua →" data-ruvy-en="View all →">Lihat semua →</button></div>
@@ -611,8 +615,13 @@
     <!-- ================= TAMBAH ================= -->
     <section id="tab-tambah" class="tab-panel">
       <div class="page-head"><h1>Tambah Transaksi</h1></div>
-      <!-- CHAT (cara tercepat) -->
-      <div class="panel chat-panel chat-panel-hero">
+      <button type="button" class="panel ruvy-open-chat ruvy-tambah-card" data-open-ruvy>
+        <img src="assets/icons/ruvy-mark.svg" alt="" width="44" height="44" />
+        <span><b data-ruvy-id="Catat ke Ruvy" data-ruvy-en="Record with Ruvy">Catat ke Ruvy</b>
+        <small data-ruvy-id="Ketik &quot;bakso 25rb dari dompet utama&quot; atau kirim foto struk." data-ruvy-en="Type &quot;coffee 4.50&quot; or send a receipt photo.">Ketik "bakso 25rb dari dompet utama" atau kirim foto struk.</small></span>
+      </button>
+      <!-- Chat & struk lama tetap di DOM (dipakai app.js) tapi disembunyikan: input lewat Ruvy. -->
+      <div class="panel chat-panel chat-panel-hero" hidden>
         <div class="panel-head">
           <h3>💬 Cara tercepat: ketik saja</h3>
           <small>Jumlah dan kategori dikenali otomatis.</small>
@@ -630,7 +639,8 @@
         </form>
       </div>
 
-      <p class="quick-entry-caption">Atau isi manual</p>
+      <details class="manual-entry">
+      <summary class="quick-entry-caption" data-ruvy-id="Isi manual" data-ruvy-en="Enter manually">Isi manual</summary>
       <div class="quick-entry-chooser" aria-label="Pilih cara mencatat transaksi">
         <button type="button" class="quick-entry active" data-quick-kind="pengeluaran">
           <span class="quick-entry-icon expense" aria-hidden="true">−</span>
@@ -640,7 +650,7 @@
           <span class="quick-entry-icon income" aria-hidden="true">+</span>
           <span><b>Pemasukan</b><small>Catat uang masuk</small></span>
         </button>
-        <button type="button" class="quick-entry" data-quick-kind="struk">
+        <button type="button" class="quick-entry" data-quick-kind="struk" hidden>
           <span class="quick-entry-icon receipt" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Zm3 5h6m-6 4h6"/></svg>
           </span>
@@ -717,7 +727,7 @@
         </div>
 
         <!-- STRUK -->
-        <div class="panel" id="receipt-panel">
+        <div class="panel" id="receipt-panel" hidden>
           <div class="panel-head">
             <h3>🧾 Input via Struk</h3>
             <small>Tempel teks ATAU upload foto struk (auto OCR).</small>
@@ -744,11 +754,12 @@ TOTAL            86.500"></textarea>
           <div id="struk-preview" class="struk-preview"></div>
         </div>
 
-        <!-- TAGIHAN RUTIN -->
-        <div class="panel">
-          <div class="panel-head"><h3>🔁 Tagihan Rutin</h3></div>
-          <div id="recurring-list"></div>
-        </div>
+      </div>
+      </details>
+      <!-- TAGIHAN RUTIN -->
+      <div class="panel">
+        <div class="panel-head"><h3>🔁 Tagihan Rutin</h3></div>
+        <div id="recurring-list"></div>
       </div>
     </section>
 
@@ -981,9 +992,8 @@ TOTAL            86.500"></textarea>
 
   <!-- ============ BOTTOM NAVIGATION (Mobile/TWA Native Feel) ============ -->
   <!-- ============ AI ADVISOR — Ruvy Gemoy ============ -->
-  <button class="ai-fab" id="ai-fab" aria-label="Tanya Beruang AI Advisor" hidden>
-    <img class="ai-fab-icon" src="assets/icons/ruvy-mark.svg" alt="AI" />
-    <span class="ai-fab-badge">PRO</span>
+  <button class="ai-fab" id="ai-fab" aria-label="Catat atau tanya ke Ruvy" hidden>
+    <img class="ai-fab-icon" src="assets/icons/ruvy-mark.svg" alt="Ruvy" />
   </button>
 
   <div class="ai-chat-overlay" id="ai-chat-overlay" hidden></div>
@@ -998,7 +1008,7 @@ TOTAL            86.500"></textarea>
         <div class="ai-chat-avatar"><img src="assets/icons/ruvy-mark.svg" alt="" /></div>
         <div>
           <div class="ai-chat-title">Ruvy</div>
-          <div class="ai-chat-sub">Asisten AI · memahami data keuanganmu</div>
+          <div class="ai-chat-sub" data-ruvy-id="Catat transaksi · foto struk · tanya keuangan" data-ruvy-en="Record · receipt photo · ask about money">Catat transaksi · foto struk · tanya keuangan</div>
         </div>
       </div>
       <button class="ai-chat-close" id="ai-chat-close" aria-label="Tutup">✕</button>
@@ -1007,12 +1017,13 @@ TOTAL            86.500"></textarea>
     <div class="ai-chat-body" id="ai-chat-body">
       <!-- Greeting awal -->
       <div class="ai-bubble ai-bubble-bot" id="ai-greeting">
-        <div class="ai-bubble-meta">🐻 Ruvy</div>
-        Halo! Saya Ruvy, asisten yang membantu membaca data keuanganmu.
-        Tanyakan pengeluaran, target menabung, atau cara mengatur anggaran.
+        <div class="ai-bubble-meta">🤖 Ruvy</div>
+        <span data-ruvy-id="Halo! Ketik transaksimu, mis. &quot;bakso 25rb dari dompet utama&quot;, atau kirim foto struk 📷. Mau tanya soal keuangan? Ketik pertanyaannya." data-ruvy-en="Hi! Type an entry like &quot;coffee 4.50&quot;, or send a receipt photo 📷. Questions about your money? Just ask.">Halo! Ketik transaksimu, mis. "bakso 25rb dari dompet utama", atau kirim foto struk 📷. Mau tanya soal keuangan? Ketik pertanyaannya.</span>
       </div>
       <!-- Suggestion chips -->
       <div class="ai-chips" id="ai-chips">
+        <button class="ai-chip" data-record="bakso 25rb">🍜 bakso 25rb</button>
+        <button class="ai-chip" data-record="gaji 8jt">💰 gaji 8jt</button>
         <button class="ai-chip" data-q="Pengeluaran aku bulan ini gimana?">📊 Cek pengeluaran bulan ini</button>
         <button class="ai-chip" data-q="Saran hemat buat aku apa?">💡 Saran hemat</button>
         <button class="ai-chip" data-q="Bandingkan bulan ini sama bulan lalu">🔄 Bandingkan bulan lalu</button>
@@ -1021,15 +1032,18 @@ TOTAL            86.500"></textarea>
     </div>
 
     <form class="ai-chat-form" id="ai-chat-form">
+      <label for="ruvy-receipt-input" class="ai-chat-photo" aria-label="Foto struk" title="Foto struk">📷</label>
+      <input type="file" id="ruvy-receipt-input" accept="image/*" class="visually-hidden" />
       <input type="text" class="ai-chat-input" id="ai-chat-input"
-             placeholder="Tanyakan kondisi keuanganmu…" maxlength="500" autocomplete="off" />
+             placeholder="bakso 25rb · atau tanya…" maxlength="500" autocomplete="off" />
       <button type="submit" class="ai-chat-send" id="ai-chat-send" aria-label="Kirim">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
       </button>
     </form>
 
     <div class="ai-chat-foot">
-      <span id="ai-quota-info">💎 Pro • 30 query/hari</span>
+      <button type="button" class="ai-chat-manual" id="ai-chat-manual" data-ruvy-id="Isi manual" data-ruvy-en="Enter manually">Isi manual</button> ·
+      <span id="ai-quota-info" data-ruvy-id="Catat gratis · Tanya AI: paket berbayar, 30/hari" data-ruvy-en="Recording is free · AI questions: paid plans, 30/day">Catat gratis · Tanya AI: paket berbayar, 30/hari</span>
     </div>
   </div>
 
@@ -1072,7 +1086,7 @@ TOTAL            86.500"></textarea>
     </button>
   </nav>
 
-  <button type="button" class="app-fab" data-open-tab="tambah" aria-label="Tambah transaksi">＋</button>
+  <button type="button" class="app-fab" data-open-ruvy aria-label="Catat ke Ruvy">＋</button>
   <footer class="footer">
     🐻 <b>Ruvy</b> · Catet dulu, biar beneran ber-uang<br>
     <small>Saat login, catatan disimpan untuk akun Anda dan disinkronkan ke cloud. Gunakan <b>Unduh Cadangan</b> untuk cadangan pribadi.</small>
@@ -1193,31 +1207,31 @@ TOTAL            86.500"></textarea>
       <div class="modal-actions"><button type="button" id="ruvy-wallet-close" class="btn btn-ghost" data-ruvy-id="Batal" data-ruvy-en="Cancel">Batal</button><button type="submit" class="btn btn-primary" data-ruvy-id="Simpan dompet" data-ruvy-en="Save wallet">Simpan dompet</button></div>
     </form>
   </dialog>
-  <script src="js/data.js?v=67"></script>
-  <script src="js/preferences.js?v=67"></script>
-  <script src="js/i18n.js?v=67"></script>
-  <script src="js/utils.js?v=67"></script>
-  <script src="js/firebase-config.js?v=67"></script>
+  <script src="js/data.js?v=68"></script>
+  <script src="js/preferences.js?v=68"></script>
+  <script src="js/i18n.js?v=68"></script>
+  <script src="js/utils.js?v=68"></script>
+  <script src="js/firebase-config.js?v=68"></script>
   <script>window.PRESENCE_APP = 'beruang';</script>
-  <script src="js/presence.js?v=67"></script>
-  <script src="js/storage.js?v=67"></script>
-  <script src="js/wallets.js?v=67"></script>
-  <script src="js/parser.js?v=67"></script>
-  <script src="js/sync.js?v=67"></script>
-  <script src="js/auth.js?v=67"></script>
-  <script src="js/dashboard.js?v=67"></script>
-  <script src="js/anomaly.js?v=67"></script>
-  <script src="js/pages.js?v=67"></script>
-  <script src="js/reports.js?v=67"></script>
-  <script src="js/admin.js?v=67"></script>
-  <script src="js/hutang.js?v=67"></script>
-  <script src="js/goal.js?v=67"></script>
-  <script src="js/ai-advisor.js?v=67"></script>
-  <script src="js/recurring.js?v=67"></script>
-  <script src="js/telegram-link.js?v=67"></script>
-  <script src="js/onboarding.js?v=67"></script>
-  <script src="js/metrics.js?v=67"></script>
-  <script src="js/ruvy.js?v=67"></script>
-  <script src="js/app.js?v=67"></script>
+  <script src="js/presence.js?v=68"></script>
+  <script src="js/storage.js?v=68"></script>
+  <script src="js/wallets.js?v=68"></script>
+  <script src="js/parser.js?v=68"></script>
+  <script src="js/sync.js?v=68"></script>
+  <script src="js/auth.js?v=68"></script>
+  <script src="js/dashboard.js?v=68"></script>
+  <script src="js/anomaly.js?v=68"></script>
+  <script src="js/pages.js?v=68"></script>
+  <script src="js/reports.js?v=68"></script>
+  <script src="js/admin.js?v=68"></script>
+  <script src="js/hutang.js?v=68"></script>
+  <script src="js/goal.js?v=68"></script>
+  <script src="js/ai-advisor.js?v=68"></script>
+  <script src="js/recurring.js?v=68"></script>
+  <script src="js/telegram-link.js?v=68"></script>
+  <script src="js/onboarding.js?v=68"></script>
+  <script src="js/metrics.js?v=68"></script>
+  <script src="js/ruvy.js?v=68"></script>
+  <script src="js/app.js?v=68"></script>
 </body>
 </html>

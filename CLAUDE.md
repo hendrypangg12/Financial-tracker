@@ -188,6 +188,14 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 💬 15 Okt KEPUTUSAN BOS: SEMUA INPUT LEWAT RUVY ("ga dobel2 fitur"). Panel Ruvy (`#ai-chat-panel`, js/ai-advisor.js
+  `handleRuvyInput()`) = satu-satunya tempat mencatat: kalimat transaksi dicatat LOKAL lewat parser (gratis, tanpa token,
+  semua paket termasuk trial; "dari dompet X" didukung); kalimat pertanyaan ("?" atau diawali berapa/apa/gimana/kalau/
+  saran/…) dikirim ke AI (berbayar saja, trial → paywall). Tombol 📷 di panel = OCR Tesseract di perangkat (GRATIS, tetap
+  khusus paket berbayar seperti sebelumnya) → Ruvy tampilkan total → "Simpan"/"Ubah dulu". Setiap catatan ada "✏️ Ubah"
+  (openEditModal). Dihapus/disembunyikan: form "Catat cepat" beranda (jadi tombol "Catat ke Ruvy"), tombol "Form lengkap"
+  & "Tanya Ruvy", tombol "+" (app-fab), chat & panel struk di tab Tambah. Form manual TETAP ada di tab Tambah di balik
+  "Isi manual" (link juga di kaki panel Ruvy). Badge "PRO" di tombol Ruvy dihapus. v68, SW ruvy-v68.
 - 🤖 14–15 Okt: CHATGPT/CODEX REBRAND → "RUVY" (pakai y; app "Ruvy - AI Money Tracker", 1.5.1 vc15) LANGSUNG di branch ini:
   UI kaca biru, Bahasa Indonesia/English (js/i18n.js), dompet multi mata uang = buku terpisah per dompet
   (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN

@@ -626,6 +626,15 @@ function loadTesseract() {
   });
 }
 
+// Dipakai panel Ruvy: baca teks struk di perangkat (gratis, tanpa AI).
+async function readReceiptPhoto(file, onProgress) {
+  const Tesseract = await loadTesseract();
+  const { data } = await Tesseract.recognize(file, 'ind+eng', {
+    logger: (m) => { if (m.status === 'recognizing text' && onProgress) onProgress(Math.round(m.progress * 100)); },
+  });
+  return (data && data.text) ? data.text.trim() : '';
+}
+
 // Welcome banner: muncul kalau user belum pernah pakai (tidak ada transaksi, belum dismiss)
 function setupWelcomeBanner() {
   const banner = document.getElementById('welcome-banner');

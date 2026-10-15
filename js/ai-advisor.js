@@ -44,15 +44,18 @@ function initAIAdvisor() {
 
   if (!fab) return;
 
-  // Tap FAB → buka chat (kalau Pro) atau paywall (kalau Free)
-  fab.addEventListener("click", () => {
-    const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
-    const userIsPro = typeof hasAIAccess === "function" && hasAIAccess(profile);
-    if (userIsPro) {
-      openAIChat();
-    } else {
-      openPaywall();
-    }
+  // Ruvy is the single place to record: typing and receipt photos work for everyone,
+  // only free-form questions need a paid AI plan (checked when the question is sent).
+  fab.addEventListener("click", openAIChat);
+  document.querySelectorAll("[data-open-ruvy]").forEach(btn => btn.addEventListener("click", openAIChat));
+  document.getElementById("ruvy-receipt-input")?.addEventListener("change", handleRuvyReceipt);
+  // Manual form stays available (e.g. to fix what the parser got wrong), tucked in the Tambah tab.
+  document.getElementById("ai-chat-manual")?.addEventListener("click", () => {
+    closeAIChat();
+    const manual = document.querySelector("#tab-tambah .manual-entry");
+    if (manual) manual.open = true;
+    if (typeof switchBeruangTab === "function") switchBeruangTab("tambah");
+    document.getElementById("quick-form-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   // Close handlers
@@ -84,10 +87,11 @@ function initAIAdvisor() {
   document.getElementById("ai-chips")?.addEventListener("click", (e) => {
     const chip = e.target.closest(".ai-chip");
     if (!chip) return;
+    if (chip.dataset.record) { input.value = chip.dataset.record; input.focus(); return; }
     const q = advisorSuggestion(chip.dataset.q);
     if (q) {
       input.value = q;
-      sendQuestion(q);
+      handleRuvyInput(q);
     }
   });
 
@@ -96,8 +100,124 @@ function initAIAdvisor() {
     e.preventDefault();
     const q = input.value.trim();
     if (!q) return;
-    sendQuestion(q);
+    handleRuvyInput(q);
   });
+}
+
+function ruvyHasAI() {
+  const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
+  return typeof hasAIAccess === "function" && hasAIAccess(profile);
+}
+// "?" or a leading question word means "ask the AI"; everything else is tried as an entry
+// first, so "bakso 25rb dari dompet utama" never spends AI tokens.
+function looksLikeQuestion(text) {
+  return /\?\s*$/.test(text) || /^(berapa|apa|apakah|gimana|bagaimana|kenapa|mengapa|kapan|kalau|jika|bandingkan|saran|tips|analisa|analisis|how|what|why|when|should|compare|which)\b/i.test(text.trim());
+}
+function handleRuvyInput(text) {
+  if (aiAdvisorSending) return;
+  const input = document.getElementById("ai-chat-input");
+  const chips = document.getElementById("ai-chips");
+  if (!looksLikeQuestion(text) && typeof parseChatForWallet === "function") {
+    if (document.body.classList.contains("app-locked") || (typeof isAccessLocked === "function" && isAccessLocked())) {
+      appendBubble(text, "user"); input.value = "";
+      appendBubble(advisorText("Akses akun terkunci. Pilih paket untuk lanjut mencatat.", "Account access is locked. Choose a plan to keep recording."), "bot");
+      return;
+    }
+    const out = parseChatForWallet(text);
+    if (out && !out.error) {
+      if (chips) chips.style.display = "none";
+      appendBubble(text, "user"); input.value = "";
+      try { addTransaction(out.parsed, out.wallet.id); }
+      catch (_) { appendBubble(advisorText("Belum bisa mencatat. Periksa nominalnya lalu coba lagi.", "Could not record this. Check the amount and try again."), "bot"); return; }
+      appendRecordedBubble(out.parsed, out.wallet);
+      if (typeof renderAll === "function") renderAll();
+      if (typeof window.maybeAskReview === "function") setTimeout(() => window.maybeAskReview(), 1500);
+      return;
+    }
+    // No amount at all reads as a question; any other parse problem is shown as-is.
+    const noAmount = out && /jumlah uang|No amount/i.test(out.error || "");
+    if (!noAmount || !ruvyHasAI()) {
+      appendBubble(text, "user"); input.value = "";
+      appendBubble((out && out.error ? out.error + " " : "") + advisorText("Contoh: \"bakso 25rb dari dompet utama\" atau \"gaji 8jt\".", "Example: \"coffee 4.50\" or \"salary 2500\"."), "bot");
+      if (noAmount && !ruvyHasAI()) openPaywall();
+      return;
+    }
+  }
+  if (!ruvyHasAI()) {
+    appendBubble(text, "user"); input.value = "";
+    appendBubble(advisorText("Mencatat transaksi gratis. Untuk bertanya ke AI, aktifkan paket berbayar.", "Recording is free. Asking the AI needs a paid plan."), "bot");
+    openPaywall();
+    return;
+  }
+  sendQuestion(text);
+}
+function appendRecordedBubble(t, wallet) {
+  const money = typeof formatWalletMoney === "function" ? formatWalletMoney(t.jumlah, wallet.currency) : formatRupiah(t.jumlah);
+  appendBubble(advisorText("✅ Dicatat: ", "✅ Recorded: ") + (t.jenis === "pemasukan" ? "+" : "−") + money + " · " + (t.deskripsi || t.subKategori)
+    + "\n" + t.subKategori + " (" + t.kategori + ") · " + wallet.name + " · " + formatTanggal(t.tanggal), "bot");
+  const bubble = document.getElementById("ai-chat-body").lastElementChild;
+  const edit = document.createElement("button");
+  edit.type = "button"; edit.className = "ai-chip ruvy-edit-chip"; edit.textContent = advisorText("✏️ Ubah", "✏️ Edit");
+  edit.onclick = () => {
+    closeAIChat();
+    if (typeof getActiveWalletId === "function" && getActiveWalletId() !== wallet.id && !selectWallet(wallet.id)) return;
+    if (typeof openEditModal === "function") openEditModal(t.id);
+  };
+  bubble.appendChild(edit);
+}
+// Receipt photo: free on-device OCR (same engine and Pro rule as before), then Ruvy
+// shows the total for confirmation before anything is saved.
+async function handleRuvyReceipt(e) {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!file || aiAdvisorSending) return;
+  if (typeof isPro === "function" && !isPro(currentProfile)) {
+    appendBubble(advisorText("Baca foto struk tersedia di paket berbayar. Sementara, ketik saja totalnya, mis. \"indomaret 86rb\".", "Receipt photos need a paid plan. For now, type the total, e.g. \"groceries 86.50\"."), "bot");
+    return;
+  }
+  if (typeof readReceiptPhoto !== "function") return;
+  const chips = document.getElementById("ai-chips");
+  if (chips) chips.style.display = "none";
+  appendBubble(advisorText("📷 Foto struk", "📷 Receipt photo"), "user");
+  appendBubble(advisorText("Membaca struk…", "Reading the receipt…"), "bot");
+  const status = document.getElementById("ai-chat-body").lastElementChild;
+  aiAdvisorSending = true;
+  try {
+    const text = await readReceiptPhoto(file, pct => { status.lastChild.textContent = advisorText("Membaca struk… ", "Reading the receipt… ") + pct + "%"; });
+    status.remove();
+    const res = text ? parseStruk(text, todayISO()) : { error: "empty" };
+    const input = document.getElementById("ai-chat-input");
+    if (!res || res.error) {
+      appendBubble(advisorText("Total struk belum terbaca. Ketik saja, mis. \"indomaret 86rb\".", "I couldn't find the total. Type it instead, e.g. \"groceries 86.50\"."), "bot");
+      input.focus();
+      return;
+    }
+    const wallet = getActiveWallet();
+    const { items, ...toSave } = res;
+    appendBubble(advisorText("Struk terbaca: ", "Receipt read: ") + (toSave.deskripsi || "") + " · " + (typeof formatWalletMoney === "function" ? formatWalletMoney(toSave.jumlah, wallet.currency) : formatRupiah(toSave.jumlah))
+      + "\n" + toSave.subKategori + " · " + wallet.name + advisorText(". Simpan?", ". Save it?"), "bot");
+    const bubble = document.getElementById("ai-chat-body").lastElementChild;
+    const save = document.createElement("button"), fix = document.createElement("button");
+    save.type = fix.type = "button"; save.className = fix.className = "ai-chip ruvy-edit-chip";
+    save.textContent = advisorText("✅ Simpan", "✅ Save"); fix.textContent = advisorText("✏️ Ubah dulu", "✏️ Edit first");
+    save.onclick = () => {
+      save.disabled = fix.disabled = true;
+      try { addTransaction(toSave, wallet.id); } catch (_) { appendBubble(advisorText("Belum bisa mencatat struk ini.", "Could not record this receipt."), "bot"); return; }
+      appendRecordedBubble(toSave, wallet);
+      if (typeof renderAll === "function") renderAll();
+    };
+    fix.onclick = () => {
+      save.disabled = fix.disabled = true;
+      input.value = (toSave.deskripsi || "struk") + " " + formatMoneyInput(toSave.jumlah);
+      input.focus();
+    };
+    bubble.append(save, fix);
+  } catch (err) {
+    status.remove();
+    appendBubble(advisorText("Gagal membaca foto. Coba foto yang lebih terang dan lurus.", "Couldn't read the photo. Try a brighter, straighter shot."), "bot");
+  } finally {
+    aiAdvisorSending = false;
+  }
 }
 
 function showAIFab() {
@@ -231,7 +351,7 @@ function appendBubble(text, who) {
   const bubble = document.createElement("div");
   bubble.className = `ai-bubble ai-bubble-${who}`;
   if (who === "bot") {
-    bubble.innerHTML = `<div class="ai-bubble-meta">${advisorText('🐻 Ruvy', '🐻 Ruvy AI')}</div>` + escapeHtml(text);
+    bubble.innerHTML = `<div class="ai-bubble-meta">🤖 Ruvy</div>` + escapeHtml(text).replace(/\n/g, "<br>");
   } else {
     bubble.textContent = text;
   }
@@ -410,9 +530,7 @@ function renderAIPromo() {
   el.querySelector(".ai-promo-cta").onclick = () => {
     dismiss();
     const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
-    const userIsPro = typeof hasAIAccess === "function" && hasAIAccess(profile);
-    if (userIsPro) { if (typeof openAIChat === "function") openAIChat(); }
-    else { if (typeof openPaywall === "function") openPaywall(); }
+    if (typeof openAIChat === "function") openAIChat();
   };
 }
 

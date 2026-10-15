@@ -326,3 +326,16 @@
   .ruvy-app .ai-chip{min-height:44px}
 }
 @media(max-width:360px){.ruvy-app main{padding-inline:max(14px,env(safe-area-inset-left))!important}.ruvy-app .topbar{padding-inline:14px}.ruvy-app .topbar-actions{gap:6px}.ruvy-greeting{font-size:20px}.ruvy-balance-value{font-size:29px}.ruvy-home-actions .btn{font-size:10px}}
+/* One entry point: everything records through the Ruvy panel (15 Okt). */
+.ruvy-app :is(.panel,.ruvy-quick-entry,.quick-entry,.chat-panel)[hidden]{display:none!important}
+.ruvy-open-chat{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}
+.ruvy-open-chat:hover{border-color:var(--primary)}
+.ruvy-open-chat-hint{font-size:12px;color:var(--ink-soft)}
+.ruvy-tambah-card{flex-direction:row;align-items:center;gap:14px;padding:18px;margin-bottom:14px;border:1px solid var(--glass-edge)}
+.ruvy-tambah-card b{display:block;font-size:16px}.ruvy-tambah-card small{color:var(--ink-soft)}
+.manual-entry{margin:6px 0 14px}.manual-entry>summary{cursor:pointer;list-style:revert}
+.ai-chat-photo{display:grid;place-items:center;flex:0 0 auto;width:42px;height:42px;border-radius:14px;cursor:pointer;font-size:20px;background:var(--surface,#fff);border:1px solid var(--line,#ddd)}
+.ai-bubble .ruvy-edit-chip{margin:8px 6px 0 0;font-size:12px;padding:6px 10px}
+.ai-bubble .ruvy-edit-chip:disabled{opacity:.5}
+.ai-chat-manual{background:none;border:0;padding:0;font:inherit;color:var(--primary);text-decoration:underline;cursor:pointer}
+.ruvy-app .app-fab{display:none!important} /* tombol Ruvy (ai-fab) sudah jadi satu-satunya tombol catat */
