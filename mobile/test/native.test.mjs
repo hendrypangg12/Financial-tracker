@@ -94,7 +94,7 @@ test('Play paywall prevents a second charged plan from overlapping active access
   const upgrade=await render(freeTrial);
   assert.deepEqual(upgrade.buttons.map(button=>button.disabled),[false,false,false]);
   assert.match(upgrade.elements['play-plan-status'].textContent,/Uji Coba Gratis/);
-  assert.match(upgrade.elements['play-plan-status'].textContent,/ditagih segera/);
+  assert.match(upgrade.elements['play-plan-status'].textContent,/Google Play.*uji coba.*tanggal tagihan pertama/);
   assert.doesNotMatch(upgrade.elements['play-plan-status'].textContent,/setelah paket ini berakhir/);
   assert.equal(upgrade.context.currentProfile,freeTrial,'rendering upgrade does not change the existing entitlement');
   for(const plan of ['trial','starter','monthly','annual']){

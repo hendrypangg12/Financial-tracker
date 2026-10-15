@@ -68,7 +68,7 @@
     const activeSubscription=hasActivePlaySubscription(profile);
     status.textContent=activeSubscription?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Kelola langganan Google Play sebelum membeli paket lain.`:
       active&&['lifetime','pro'].includes(profile.plan)?'Akun ini sudah memiliki akses tanpa batas waktu. Pembelian paket tambahan tidak diperlukan.':
-      active&&profile.plan==='free_trial'?`Paket saat ini: Uji Coba Gratis · aktif${end?` sampai ${end}`:''}. Anda bisa membeli paket sekarang. Paket berbayar dimulai dan ditagih segera setelah pembelian; sisa uji coba gratis tidak menambah masa langganan.`:
+      active&&profile.plan==='free_trial'?`Paket saat ini: Uji Coba Gratis · aktif${end?` sampai ${end}`:''}. Anda bisa memilih paket sekarang. Google Play mengonfirmasi uji coba yang tersedia dan tanggal tagihan pertama sebelum berlangganan. Sisa uji coba aplikasi tidak menambah masa langganan.`:
       active?`Paket saat ini: ${names[profile.plan]||'Pro'} · aktif${end?` sampai ${end}`:''}. Langganan baru tersedia setelah paket ini berakhir.`:
       'Belum ada paket aktif. Pilih paket di bawah; harga akan mengikuti yang ditampilkan Google Play.';
     if(english()) {
@@ -76,7 +76,7 @@
       const until=end?' until '+end:'';
       status.textContent=activeSubscription?`Current plan: ${plan} · active${until}. Manage your Google Play subscription before buying another plan.`:
         active&&['lifetime','pro'].includes(profile.plan)?'This account already has unlimited access. No additional plan is needed.':
-        active&&profile.plan==='free_trial'?`Current plan: Free trial · active${until}. A paid plan starts and is charged immediately after purchase; unused trial days are not added to the subscription.`:
+        active&&profile.plan==='free_trial'?`Current plan: Free trial · active${until}. You can choose a plan now. Google Play confirms any available trial and the first charge date before you subscribe. Unused app trial days are not added to the subscription.`:
         active?`Current plan: ${plan} · active${until}. A new subscription is available after this plan expires.`:
         'No active plan. Choose a plan below; Google Play displays the price before purchase.';
     }
