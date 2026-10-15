@@ -19,7 +19,9 @@ function getAppLanguage() {
   return data?.preferences?.language === 'en' ? 'en' : data?.preferences?.language === 'id' ? 'id' : getDeviceLanguage();
 }
 function getAppLocale() { return getAppLanguage() === 'en' ? 'en-US' : 'id-ID'; }
-function getAccountCurrency() { return typeof getActiveWallet === 'function' ? getActiveWallet().currency : preferenceState()?.preferences?.currency || 'IDR'; }
+// Set only while parsing an entry that names another wallet ("bakso 25rb dari bca").
+let walletCurrencyOverride = null;
+function getAccountCurrency() { return walletCurrencyOverride || (typeof getActiveWallet === 'function' ? getActiveWallet().currency : preferenceState()?.preferences?.currency || 'IDR'); }
 function getCurrencyDigits(code = getAccountCurrency()) {
   // Existing Rupiah balances and inputs use whole Rupiah.
   if (code === 'IDR') return 0;

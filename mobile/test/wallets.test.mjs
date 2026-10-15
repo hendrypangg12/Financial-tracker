@@ -90,3 +90,30 @@ test('legacy category renames update foreign wallet history without translating 
   assert.equal(h.run("renameCustomCategory('pengeluaran','My coffee','My café').ok"),true);
   assert.equal(h.run('getFinancialState().transactions[0].kategori'),'My café');
 });
+test('chat entry naming a wallet records into that wallet and strips the wallet phrase',()=>{
+  const h=app();h.run("state.preferences={language:'id',currency:'IDR'}");
+  const gopay=h.run("createWallet({name:'GoPay',currency:'IDR',amount:100000,date:'2026-10-01'}).id");
+  h.run("selectWallet('legacy')");
+  let out=h.run("parseChatForWallet('bakso 25rb dari dompet utama')");
+  assert.equal(out.wallet.id,'legacy');assert.equal(out.parsed.jumlah,25000);assert.equal(out.parsed.deskripsi,'bakso');
+  out=h.run("parseChatForWallet('bensin 50rb pakai gopay')");
+  assert.equal(out.wallet.id,gopay);assert.equal(out.parsed.deskripsi,'bensin');
+  h.context.p=out.parsed;h.run('addTransaction(p,'+JSON.stringify(gopay)+')');
+  assert.equal(h.run('walletBalance('+JSON.stringify(gopay)+')'),50000);
+  assert.equal(h.run('getActiveWalletId()'),'legacy');
+  out=h.run("parseChatForWallet('bakso 25rb')");assert.equal(out.wallet.id,'legacy');assert.equal(out.parsed.deskripsi,'bakso');
+  h.run("createWallet({name:'Makan',currency:'IDR',amount:0})");h.run("selectWallet('legacy')");
+  out=h.run("parseChatForWallet('makan siang 25rb')");assert.equal(out.wallet.id,'legacy');
+  assert.match(h.run("parseChatForWallet('kopi 20rb dari gopay ke dompet utama').error"),/satu dompet/);
+  const usd=h.run("createWallet({name:'Travel',currency:'USD',amount:10,date:'2026-10-01'}).id");h.run("selectWallet('legacy')");
+  out=h.run("parseChatForWallet('coffee 2.50 via travel')");assert.equal(out.wallet.id,usd);assert.equal(out.parsed.jumlah,2.5);
+  assert.equal(h.run('getAccountCurrency()'),'IDR');
+});
+test('money inputs re-group while typing past four digits',()=>{
+  const h=app();h.run("state.preferences={language:'id',currency:'IDR'}");
+  let v='';for(const ch of '1500000'){v=h.run('formatMoneyInput('+JSON.stringify(v+ch)+')');}
+  assert.equal(v,'1.500.000');assert.equal(h.run('parseMoneyInput('+JSON.stringify(v)+')'),1500000);
+  assert.equal(h.run('formatMoneyInput(25000)'),'25.000');
+  assert.equal(h.run("formatMoneyInput('')"),'');
+  assert.match(h.run('formatShort(1500000)'),/1,5/);
+});

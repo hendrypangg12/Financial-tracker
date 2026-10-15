@@ -112,6 +112,46 @@ function updateWallet(id, { name, currency }) {
   if (typeof renderAll === 'function') renderAll();
   return { ok: true };
 }
+// "bakso 25rb dari dompet utama" / "bensin 50rb pakai gopay": find the wallet named in a
+// chat entry and strip that phrase. A preposition or the word "dompet/wallet" is required
+// so a wallet called "Makan" is not picked from "makan siang 25rb".
+function resolveWalletMention(text) {
+  text = String(text || '');
+  const esc = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const candidates = [];
+  for (const wallet of getWallets()) {
+    const names = [wallet.name];
+    if (wallet.id === LEGACY_WALLET_ID) names.push('dompet utama', 'main wallet');
+    for (const name of names) if (name && name.trim()) candidates.push({ wallet, name: name.trim() });
+  }
+  candidates.sort((a, b) => b.name.length - a.name.length);
+  const preps = '(?:dari|pakai|pake|pakek|pk|via|lewat|dengan|dgn|ke|di|from|using|with|by)';
+  const found = new Map();
+  let rest = text;
+  for (const { wallet, name } of candidates) {
+    const named = esc(name).replace(/\s+/g, '\\s+');
+    const selfLabelled = /^(dompet|wallet)\b/i.test(name);
+    const lead = selfLabelled ? `(?:${preps}\\s+)?` : `(?:${preps}\\s+(?:(?:dompet|wallet)\\s+)?|(?:dompet|wallet)\\s+)`;
+    const re = new RegExp(`(^|[\\s,(])${lead}${named}(?=$|[\\s,.;!?)])`, 'giu');
+    if (re.test(rest)) {
+      found.set(wallet.id, wallet);
+      rest = rest.replace(re, '$1');
+    }
+  }
+  rest = rest.replace(/\s+/g, ' ').replace(/\s+([,.;!?])/g, '$1').trim();
+  if (found.size > 1) return { error: preferenceMessage('Sebutkan satu dompet saja dalam satu catatan.', 'Name only one wallet per entry.') };
+  return { wallet: found.size ? [...found.values()][0] : null, text: found.size ? rest : text };
+}
+function parseChatForWallet(text, fallbackWallet = getActiveWallet()) {
+  const mention = resolveWalletMention(text);
+  if (mention.error) return { error: mention.error };
+  const wallet = mention.wallet || fallbackWallet;
+  walletCurrencyOverride = wallet.currency;
+  try {
+    const parsed = parseChat(mention.text);
+    return parsed && !parsed.error ? { parsed, wallet } : (parsed || { error: preferenceMessage('Gagal memproses.', 'Could not process this entry.') });
+  } finally { walletCurrencyOverride = null; }
+}
 function formatWalletMoney(amount, currency) {
   return new Intl.NumberFormat(getAppLocale(), { style: 'currency', currency, currencyDisplay: 'code',
     minimumFractionDigits: getCurrencyDigits(currency), maximumFractionDigits: getCurrencyDigits(currency) }).format(amount);

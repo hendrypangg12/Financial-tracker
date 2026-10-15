@@ -12,7 +12,8 @@ function formatShort(n) {
   if (Math.abs(Number(n) || 0) < 1000) return formatRupiah(n);
   return new Intl.NumberFormat(moneyLocale(), {
     style: 'currency', currency, currencyDisplay: 'code', notation: 'compact',
-    maximumFractionDigits: Math.min(1, moneyDigits(currency)),
+    // IDR has no minor unit, but "Rp 1,5 jt" still needs one compact decimal.
+    maximumFractionDigits: currency === 'IDR' ? 1 : Math.min(1, moneyDigits(currency)),
   }).format(Number(n) || 0).replace(/IDR\s*/g, 'Rp ');
 }
 
@@ -153,10 +154,24 @@ function parseMoneyInput(value) {
 }
 
 function formatMoneyInput(value) {
-  const amount = parseMoneyInput(value);
-  // Keep an incomplete decimal while the user types; validation happens on submit.
-  if (amount === null) return String(value ?? '');
-  return new Intl.NumberFormat(moneyLocale(), { maximumFractionDigits: moneyDigits() }).format(amount);
+  if (typeof value === 'number') {
+    const amount = parseMoneyInput(value);
+    return amount === null ? '' : new Intl.NumberFormat(moneyLocale(), { maximumFractionDigits: moneyDigits() }).format(amount);
+  }
+  // Typing: re-group from raw digits on every keystroke. Parsing the already-grouped
+  // value broke at the 5th digit ("2.500" + "0" -> "2.5000" is neither group nor decimal).
+  const raw = String(value ?? '');
+  const parts = new Intl.NumberFormat(moneyLocale()).formatToParts(1234567.1);
+  const group = parts.find(part => part.type === 'group')?.value || ',';
+  const decimal = parts.find(part => part.type === 'decimal')?.value || '.';
+  const digits = moneyDigits();
+  let s = raw.replace(/[\s  ]/g, '').split(group).join('');
+  if (digits === 0) s = s.replace(/[.,]/g, '');
+  const [intPart, frac, extra] = s.split(decimal);
+  if (extra !== undefined || !/^\d*$/.test(intPart) || (frac !== undefined && !/^\d*$/.test(frac))) return raw;
+  if (!intPart && frac === undefined) return '';
+  const whole = new Intl.NumberFormat(moneyLocale(), { maximumFractionDigits: 0, useGrouping: true }).format(Number(intPart || '0'));
+  return frac !== undefined && digits > 0 ? whole + decimal + frac.slice(0, digits) : whole;
 }
 
 function roundMoney(value) {

@@ -188,6 +188,22 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   paket 7 hari yang ditumpuk → kode refund one-time ada di patch lokal ChatGPT, belum bisa diaudit. HP Android bos tidak ada
   → tes pakai emulator Android Studio (image Google Play) + License testing. Tes beli belum terbukti.
 
+- 🤖 14–15 Okt: CHATGPT/CODEX REBRAND → "RUVY" (pakai y; app "Ruvy - AI Money Tracker", 1.5.1 vc15) LANGSUNG di branch ini:
+  UI kaca biru, Bahasa Indonesia/English (js/i18n.js), dompet multi mata uang = buku terpisah per dompet
+  (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN
+  di store-assets/ruvy/. Homepage + listing menulis "Ruvy AI sementara belum tersedia" (saldo Anthropic HABIS —
+  pesan "layanan AI sementara tidak tersedia. Coba lagi nanti ya" = credit balance). Firestore Rules produksi SUDAH
+  menerima preferences/wallets/walletData (dites 15 Okt via akun probe, dihapus). Nama Ruvy vs Ruvi & ganti nama app
+  BELUM dikonfirmasi bos ke Claude.
+  15 Okt Claude audit + FIX: (1) KRITIS: kolom uang tidak bisa diketik ≥10.000 ("2.500"+"0"→"2.5000" invalid) →
+  `formatMoneyInput()` mengelompokkan ulang dari digit mentah. (2) `formatShort` IDR kembali 1 desimal ("Rp 1,5 jt").
+  (3) FITUR permintaan bos: "bakso 25rb dari dompet utama" / "bensin 50rb pakai gopay" → masuk ke dompet yang disebut
+  (`resolveWalletMention()`/`parseChatForWallet()` di js/wallets.js; wajib kata depan atau "dompet", jadi dompet
+  bernama "Makan" tidak tertangkap dari "makan siang"; mata uang parse ikut dompet tujuan via `walletCurrencyOverride`).
+  Dipakai di chat Tambah (js/app.js) + input cepat Ruvy (js/ruvy.js). Semua ?v=67, SW ruvy-v67.
+  Sisa temuan belum diperbaiki: "22.000,-" tidak terbaca; kata "mop"/"bob" dianggap kode mata uang; "kopi 28rb, bakso 25rb"
+  hanya tersimpan 1. Bos mau input foto struk/detail transaksi lewat AI Ruvy saja (MENUNGGU keputusan: trial tanpa AI,
+  biaya token vision).
 - 📦 14 Okt: Codex push branch terpisah `codex/beruang-1-4-7-trial-upgrade` (13 Okt 16:45) → DI-MERGE ke branch ini.
   Isi: Android 1.4.7 / versionCode 13; paywall Play tidak lagi memblokir user UJI COBA GRATIS yang mau beli paket
   (sebelumnya dianggap "paket masih aktif" → bulanan/tahunan ditolak). Server (google-play.js) memang tidak memblokir trial.

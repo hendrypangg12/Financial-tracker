@@ -56,15 +56,16 @@ function submitRuvyQuickEntry(event) {
   }
   form.dataset.submitting = 'true';
   const submit = document.getElementById('ruvy-quick-submit'); submit.disabled = true;
-  let parsed;
+  let parsed, target = wallet;
   try {
-    parsed = parseChat(input.value.trim());
-    if (!parsed || parsed.error) {
-      setRuvyQuickFeedback(parsed?.error || ruvyText('Catatan belum diproses. Periksa isianmu.', 'Entry was not processed. Check your text.'), 'error');
+    // "bakso 25rb dari dompet utama" records into the named wallet; otherwise the selected one.
+    const out = parseChatForWallet(input.value.trim(), wallet);
+    if (!out || out.error) {
+      setRuvyQuickFeedback(out?.error || ruvyText('Catatan belum diproses. Periksa isianmu.', 'Entry was not processed. Check your text.'), 'error');
       return;
     }
-    // Use the existing parser and ledger writer; pin this explicit submit to its wallet.
-    addTransaction(parsed, wallet.id);
+    parsed = out.parsed; target = out.wallet;
+    addTransaction(parsed, target.id);
   } catch (error) {
     setRuvyQuickFeedback(ruvyText('Belum dapat mencatat. Periksa isian dan coba lagi.', 'Could not record this entry. Check it and try again.'), 'error');
     return;
@@ -72,7 +73,7 @@ function submitRuvyQuickEntry(event) {
     delete form.dataset.submitting; submit.disabled = false;
   }
   input.value = ''; ruvyQuickDrafts.delete(ruvyQuickContext);
-  const message = ruvyText('Dicatat: ', 'Recorded: ') + formatWalletMoney(parsed.jumlah, wallet.currency) + ' · ' + wallet.name;
+  const message = ruvyText('Dicatat: ', 'Recorded: ') + formatWalletMoney(parsed.jumlah, target.currency) + ' · ' + target.name;
   // Rendering cannot turn an already-recorded entry into a failed-save message.
   try { renderAll(); } finally {
     setRuvyQuickFeedback(message, 'success');

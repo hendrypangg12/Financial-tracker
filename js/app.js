@@ -248,16 +248,17 @@ function attachEvents() {
     if (!text) return;
     appendChat('user', text);
     chatInput.value = '';
-    const res = parseChat(text);
-    if (!res || res.error) {
+    const out = typeof parseChatForWallet === 'function' ? parseChatForWallet(text) : (() => { const r = parseChat(text); return r && !r.error ? { parsed: r } : r; })();
+    if (!out || out.error) {
       chatInput.value = text;
-      appendChat('bot', `❌ ${res && res.error ? res.error : 'Gagal memproses.'}`);
+      appendChat('bot', `❌ ${out && out.error ? out.error : 'Gagal memproses.'}`);
       return;
     }
-    addTransaction(res);
+    const res = out.parsed, chatWallet = out.wallet;
+    addTransaction(res, chatWallet?.id);
     // Android: minta rating Play Store di momen positif (aturan & batas ada di mobile runtime)
     if (typeof window.maybeAskReview === 'function') setTimeout(() => window.maybeAskReview(), 1500);
-    appendChat('bot', `✅ Dicatat: <b>${res.jenis}</b> ${formatRupiah(res.jumlah)}<br>${escapeHtml(res.deskripsi)} · ${escapeHtml(res.subKategori)} (${escapeHtml(res.kategori)})${res.alokasi ? ' · ' + escapeHtml(res.alokasi) : ''} · ${formatTanggal(res.tanggal)}`);
+    appendChat('bot', `✅ Dicatat: <b>${res.jenis}</b> ${chatWallet ? escapeHtml(formatWalletMoney(res.jumlah, chatWallet.currency)) + ' · ' + escapeHtml(chatWallet.name) : formatRupiah(res.jumlah)}<br>${escapeHtml(res.deskripsi)} · ${escapeHtml(res.subKategori)} (${escapeHtml(res.kategori)})${res.alokasi ? ' · ' + escapeHtml(res.alokasi) : ''} · ${formatTanggal(res.tanggal)}`);
     renderAll();
   };
   // Contoh cepat: isi kolom saja (tidak langsung disimpan) supaya user bisa ubah angkanya.
