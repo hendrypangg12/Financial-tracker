@@ -26,8 +26,8 @@ android {
         applicationId beruangProduction ? "id.berstock.beruang" : "id.berstock.beruang.dev"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode beruangProduction ? 14 : 2
-        versionName beruangProduction ? "1.5.0" : "1.5.0-test"
+        versionCode beruangProduction ? 15 : 2
+        versionName beruangProduction ? "1.5.1" : "1.5.1-test"
         manifestPlaceholders = [appLabel: beruangProduction ? 'Ruvy' : 'Ruvy Uji']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

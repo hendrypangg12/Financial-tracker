@@ -1,6 +1,85 @@
 // Product shell. User records are always escaped; no sample money is seeded here.
 function ruvyText(id, en) { return preferenceMessage(id, en); }
 function ruvyEscape(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
+function renderRuvyAuthCopy() {
+  document.querySelectorAll('#login-screen [data-ruvy-id][data-ruvy-en]').forEach(node => {
+    node.textContent = getAppLanguage() === 'en' ? node.dataset.ruvyEn : node.dataset.ruvyId;
+  });
+}
+// Drafts stay in memory, separately for each account, wallet and currency.
+// A wallet switch must never reinterpret an unfinished amount in another currency.
+const ruvyQuickDrafts = new Map();
+let ruvyQuickContext = null;
+function ruvyQuickKey(wallet = getActiveWallet()) { return JSON.stringify([storageKey(), wallet.id, wallet.currency]); }
+function setRuvyQuickFeedback(message = '', tone = '') {
+  const feedback = document.getElementById('ruvy-quick-feedback');
+  feedback.textContent = message; feedback.dataset.tone = tone; feedback.hidden = !message;
+}
+function renderRuvyQuickEntry() {
+  const input = document.getElementById('ruvy-quick-input');
+  if (!input) return;
+  const wallet = getActiveWallet(), key = ruvyQuickKey(wallet);
+  if (key !== ruvyQuickContext) {
+    if (ruvyQuickContext !== null) ruvyQuickDrafts.set(ruvyQuickContext, input.value);
+    input.value = ruvyQuickDrafts.get(key) || '';
+    ruvyQuickContext = key;
+    setRuvyQuickFeedback();
+  }
+  document.getElementById('ruvy-quick-wallet').textContent = wallet.name + ' · ' + wallet.currency;
+  input.placeholder = wallet.currency === 'IDR' && getAppLanguage() !== 'en' ? 'kopi 25rb'
+    : ruvyText('kopi ', 'coffee ') + wallet.currency + (getCurrencyDigits(wallet.currency) ? ' 3.50' : ' 300');
+}
+function waveRuvy(message) {
+  const robot = document.getElementById('ruvy-robot'), bubble = document.getElementById('ruvy-bubble');
+  const reducedMotion = document.body.classList.contains('ruvy-reduce-motion')
+    || (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const homeVisible = document.getElementById('tab-dashboard').classList.contains('active');
+  // A second greeting refreshes the words without snapping an ongoing gesture.
+  if (!document.hidden && homeVisible && !reducedMotion && !robot.classList.contains('waving')) robot.classList.add('waving');
+  bubble.textContent = message;
+  clearTimeout(robot._timer);
+  robot._timer = setTimeout(() => { bubble.textContent = ruvyText('Kenali uangmu, satu catatan setiap hari.', 'Know your money, one entry at a time.'); }, 3500);
+}
+function submitRuvyQuickEntry(event) {
+  event.preventDefault();
+  const form = document.getElementById('ruvy-quick-form'), input = document.getElementById('ruvy-quick-input');
+  if (form.dataset.submitting === 'true' || !input.value.trim()) return;
+  if (document.body.classList.contains('app-locked') || (typeof isAccessLocked === 'function' && isAccessLocked())) {
+    setRuvyQuickFeedback(ruvyText('Akses akun terkunci. Periksa akun dan paket sebelum mencatat.', 'Account access is locked. Check your account and plan before recording.'), 'error');
+    return;
+  }
+  const wallet = getActiveWallet();
+  if (ruvyQuickContext !== ruvyQuickKey(wallet)) {
+    renderRuvyQuickEntry();
+    setRuvyQuickFeedback(ruvyText('Dompet berubah. Periksa kembali isian untuk dompet ini.', 'Wallet changed. Review the entry for this wallet.'), 'error');
+    return;
+  }
+  form.dataset.submitting = 'true';
+  const submit = document.getElementById('ruvy-quick-submit'); submit.disabled = true;
+  let parsed;
+  try {
+    parsed = parseChat(input.value.trim());
+    if (!parsed || parsed.error) {
+      setRuvyQuickFeedback(parsed?.error || ruvyText('Catatan belum diproses. Periksa isianmu.', 'Entry was not processed. Check your text.'), 'error');
+      return;
+    }
+    // Use the existing parser and ledger writer; pin this explicit submit to its wallet.
+    addTransaction(parsed, wallet.id);
+  } catch (error) {
+    setRuvyQuickFeedback(ruvyText('Belum dapat mencatat. Periksa isian dan coba lagi.', 'Could not record this entry. Check it and try again.'), 'error');
+    return;
+  } finally {
+    delete form.dataset.submitting; submit.disabled = false;
+  }
+  input.value = ''; ruvyQuickDrafts.delete(ruvyQuickContext);
+  const message = ruvyText('Dicatat: ', 'Recorded: ') + formatWalletMoney(parsed.jumlah, wallet.currency) + ' · ' + wallet.name;
+  // Rendering cannot turn an already-recorded entry into a failed-save message.
+  try { renderAll(); } finally {
+    setRuvyQuickFeedback(message, 'success');
+    waveRuvy(ruvyText('Sudah dicatat. Satu langkah lebih jelas.', 'Recorded. Your money is a little clearer.'));
+  }
+  if (typeof window.maybeAskReview === 'function') setTimeout(() => window.maybeAskReview(), 1500);
+}
 function renderRuvy() {
   for (const page of ['privacy','terms']) document.querySelectorAll('a[href^="' + page + '"]').forEach(link => link.href = page + (getAppLanguage() === 'en' ? '-en' : '') + '.html');
   const home = document.getElementById('ruvy-home');
@@ -42,7 +121,7 @@ function renderRuvy() {
     : currency==='IDR' ? ['bakso 25rb','bensin 50rb','gaji 8jt','kopi 28k kemarin'] : ['kopi '+currency+' '+small,'bensin '+currency+' 30','gaji '+currency+' 2500','kopi '+currency+' '+small+' kemarin'];
   document.querySelectorAll('[data-chat-example]').forEach((button,index)=>{button.dataset.chatExample=examples[index];button.textContent=examples[index];});
   const chat=document.getElementById('chat-input'); if(chat) chat.placeholder=examples[0];
-
+  renderRuvyQuickEntry();
 }
 
 let walletEditorId = null;
@@ -89,6 +168,8 @@ function initRuvy() {
   }
   document.getElementById('ruvy-period-month').onchange = event => { state.selectedMonth = Number(event.target.value); renderAll(); };
   document.getElementById('ruvy-period-year').onchange = event => { state.selectedYear = Number(event.target.value); renderAll(); };
+  document.getElementById('ruvy-quick-form').onsubmit = submitRuvyQuickEntry;
+  document.getElementById('ruvy-quick-input').oninput = () => { ruvyQuickDrafts.set(ruvyQuickContext, document.getElementById('ruvy-quick-input').value); setRuvyQuickFeedback(); };
   document.getElementById('ruvy-currency-search').oninput = renderCurrencyChoices;
   document.getElementById('ruvy-wallet-currency').onchange = event => { event.target.dataset.selectedCurrency = event.target.value; document.getElementById('ruvy-wallet-form').elements.amount.value = ''; };
   document.getElementById('ruvy-wallet-form').onsubmit = event => {
@@ -110,15 +191,16 @@ function initRuvy() {
   for (const id of ['preferences-close','preferences-done']) document.getElementById(id).onclick = () => document.getElementById('modal-preferences').hidden = true;
   document.getElementById('btn-open-preferences').onclick = () => { document.getElementById('user-dropdown').hidden = true; refreshAccountPreferencesUI(); document.getElementById('modal-preferences').hidden = false; };
   const robot = document.getElementById('ruvy-robot');
-  robot.onclick = () => {
-    robot.classList.remove('waving'); void robot.offsetWidth; robot.classList.add('waving');
-    const bubble = document.getElementById('ruvy-bubble');
-    bubble.textContent = ruvyText('Hai! Mau lihat ke mana uangmu pergi?','Hi! Want to see where your money goes?');
-    clearTimeout(robot._timer); robot._timer = setTimeout(() => { robot.classList.remove('waving'); bubble.textContent = ruvyText('Kenali uangmu, satu catatan setiap hari.','Know your money, one entry at a time.'); },2500);
-  };
-  document.addEventListener('visibilitychange', () => document.body.classList.toggle('ruvy-paused', document.hidden));
+  robot.onclick = () => waveRuvy(ruvyText('Hai! Mau lihat ke mana uangmu pergi?', 'Hi! Want to see where your money goes?'));
+  const finishWave = event => { if (event.animationName === 'ruvy-wave') robot.classList.remove('waving'); };
+  robot.addEventListener('animationend', finishWave);
+  robot.addEventListener('animationcancel', finishWave);
+  const syncRobotVisibility = () => document.body.classList.toggle('ruvy-paused', document.hidden);
+  document.addEventListener('visibilitychange', syncRobotVisibility);
+  syncRobotVisibility();
   const loginLanguage = document.getElementById('login-language');
-  if (loginLanguage) loginLanguage.onchange = () => { setDeviceLanguage(loginLanguage.value); applyAppLanguage(); };
+  if (loginLanguage) loginLanguage.onchange = () => { setDeviceLanguage(loginLanguage.value); applyAppLanguage(); renderRuvyAuthCopy(); };
+  renderRuvyAuthCopy();
   renderRuvy();
 }
 initRuvy();

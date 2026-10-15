@@ -1,111 +1,18 @@
-Browser tab: 12, Title: "Ruvy en transaksi", URL: "http://127.0.0.1:8767/store-en-3.html".
-1 AXWebArea Ruvy en transaksi, URL: 127.0.0.1:8767/store-en-3.html
-	2 container
-		3 image
-		4 text Ruvy
-		5 heading Every entry. Easy to find., Value: 1
-			6 text Every entry.
-			7 text Easy to find.
-		8 text Review your income and expenses by wallet.
-		9 container Ruvy app
-			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=en&view=transaksi
-				11 container
-					12 image Ruvy
-					13 text Ruvy
-					14 button 🙂, Help: Account, ID: user-menu-btn
-						15 text 🙂
-				16 container
-					17 heading Your wallets, Value: 2
-						18 text Your wallets
-					19 button Wallet settings
-					20 container Description: Choose wallet, ID: ruvy-wallet-strip
-						21 checkbox IDR Main wallet IDR 9,875,000, Value: 0
-							22 text IDR
-							23 text Main wallet
-							24 text IDR 9,875,000
-						25 checkbox USD Travel USD 2,563.00, Value: 1
-							26 text USD
-							27 text Travel
-							28 text USD 2,563.00
-						29 button New wallet
-							30 text New wallet
-					31 text Balances are shown per wallet. No automatic exchange-rate conversion.
-					32 container tab-transaksi
-						33 heading Transactions, Value: 1
-							34 text Transactions
-						35 search text field (settable) trx-search
-						36 pop up button (collapsed, settable) Value: All types, ID: trx-filter-jenis, Secondary Actions: Expand
-							37 menu
-								38 (selected) All types
-								39 Income
-								40 Expenses
-						41 pop up button (collapsed, settable) Value: Oktober, ID: trx-filter-month, Secondary Actions: Expand
-							42 menu
-								43 All months
-								44 Januari
-								45 Februari
-								46 Maret
-								47 April
-								48 Mei
-								49 Juni
-								50 Juli
-								51 Agustus
-								52 September
-								53 (selected) Oktober
-								54 November
-								55 Desember
-						56 pop up button (collapsed, settable) Value: 2026, ID: trx-filter-year, Secondary Actions: Expand
-							57 menu
-								58 All years
-								59 2021
-								60 2022
-								61 2023
-								62 2024
-								63 2025
-								64 (selected) 2026
-								65 2027
-						66 table
-							67 container trx-body
-								68 row
-									69 cell
-										70 text TODAY −USD 12.50
-								71 row
-									72 cell
-										73 text Lunch
-									74 cell
-										75 text − USD 12.50
-									76 cell
-										77 text Dining out
-									78 cell
-										79 button Edit
-										80 button Delete
-								81 row
-									82 cell
-										83 text OCT 12, 2026 +USD 2,450.00
-								84 row
-									85 cell
-										86 text October salary
-									87 cell
-										88 text +USD 2,450.00
-									89 cell
-										90 text Salary
-									91 cell
-										92 button Edit
-										93 button Delete
-				94 container bottom-nav
-					95 button Home
-						96 image
-						97 text Home
-					98 button Transactions
-						99 image
-						100 text Transactions
-					101 button Money tools
-						102 image
-						103 text Money tools
-					104 button Settings
-						105 image
-						106 text Settings
-				107 button Add transaction
-		108 text Sample data · No automatic currency conversion
-
-The focused UI element is 1 AXWebArea Ruvy en transaksi, URL: 127.0.0.1:8767/store-en-3.html
+Ruvy 1.5.1 Google Play artwork source evidence
+Language: en
+Artwork: store-assets/ruvy/en/03-transactions.png
+Source screenshot: outputs/ruvy-store-captures/en-3.jpg
+Artwork wrapper: outputs/ruvy-preview-bundle/store-en-3.html
+Product iframe: product.html?lang=en&theme=light&view=transaksi
+Page title: Ruvy en transaksi
+Heading: Every entry. Easy to find.
+Subtitle: Review your income and expenses by wallet.
+Footer: Sample data · No automatic currency conversion
+Dimensions: 1080 x 1920 pixels
+Conversion: source JPEG decoded and saved as PNG with identical pixels; no resizing, cropping or artwork editing.
+Preview uses isolated sample data. This is not a production account or a live AI response.
+Evidence type: local screenshot file and authored wrapper source; not a new accessibility snapshot.
+Source JPEG SHA256: b3776091eb9245da109a14e1abca9d11d412c51d63d80be3cb96cd37a511104d
+PNG SHA256: 46d7dde8ec97cc522895a5d3f4035a5c8188d889f1506deb5ce780cdc1bf6913
+Upload copy: outputs/ruvy-upload/ruvy-en-15-03-transactions.png
+Converted UTC: 2026-10-15T05:33:16+00:00

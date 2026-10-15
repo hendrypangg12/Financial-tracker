@@ -1,13 +1,328 @@
-.ruvy-app{--bg:#f3f6fc;--panel:rgba(255,255,255,.76);--ink:#1d293d;--ink-soft:#65748b;--line:#dfe6f0;--income:#137e70;--expense:#be4c64;--income-bg:#e4f5f0;--expense-bg:#fcecf0;--primary:#395bd5;--primary-dark:#2946b1;--brown:#395bd5;--accent:#7298ed;--cream-2:#edf2fd;--radius:22px;--shadow:0 8px 24px rgba(28,52,95,.055);background:radial-gradient(ellipse at 80% 10%,#e4dcff80,transparent 45%),radial-gradient(ellipse at 0 35%,#ccefe980,transparent 50%),var(--bg);background-attachment:fixed;color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif}
-.ruvy-app [hidden]{display:none!important}.ruvy-app button,.ruvy-app select,.ruvy-app input{font-family:inherit}.ruvy-app button:focus-visible,.ruvy-app select:focus-visible,.ruvy-app input:focus-visible{outline:3px solid #6584ee;outline-offset:3px}.ruvy-app .topbar{background:rgba(245,248,254,.85);backdrop-filter:blur(24px);border-bottom:1px solid #ffffff99;box-shadow:none;padding:16px 24px}.ruvy-app .brand-icon-img{width:34px;height:34px}.ruvy-app .brand-title{font-size:22px;letter-spacing:-.7px;color:var(--ink)}.ruvy-app .brand-sub{font-size:10px;letter-spacing:.06em}.ruvy-app .tabs .tab{border-radius:14px}.ruvy-app main{max-width:1060px;padding:24px 28px 100px}.ruvy-app #subscription-summary{display:none!important}.ruvy-app #tab-dashboard>:not(#ruvy-home){display:none!important}.ruvy-app .panel,.ruvy-app .login-card,.ruvy-app .hutang-card,.ruvy-app .plan-hub-card,.ruvy-app .modal-card{background:var(--panel);border:1px solid #ffffffc9;box-shadow:var(--shadow);backdrop-filter:blur(22px);border-radius:var(--radius)}.ruvy-app .btn-primary{background:var(--primary);border-color:var(--primary);color:white}.ruvy-app .btn,.ruvy-app select,.ruvy-app input{border-radius:12px}.ruvy-app .footer{display:none}.ruvy-app .bottom-nav{background:rgba(255,255,255,.82);backdrop-filter:blur(24px);border:1px solid #ffffffcc;box-shadow:0 -4px 26px #20375609}.ruvy-app .bnav-item.active{color:var(--primary)}
-.ruvy-wallets-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.ruvy-wallets-head h2{font-size:14px;font-weight:650;margin:0;letter-spacing:-.2px}.ruvy-wallets-head button{border:0;color:var(--primary);background:none;cursor:pointer;font-size:12px;padding:8px}.ruvy-wallet-strip{display:flex;gap:10px;overflow-x:auto;padding:2px 3px 12px;scrollbar-width:thin;scroll-snap-type:x proximity}.ruvy-wallet{min-width:146px;flex:0 0 auto;padding:14px 16px;display:flex;flex-direction:column;gap:5px;text-align:left;border-radius:18px;border:1px solid #fff;background:#ffffff7a;cursor:pointer;box-shadow:0 3px 9px #24365b04;scroll-snap-align:start;color:var(--ink)}.ruvy-wallet strong{font-size:13px;max-width:165px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ruvy-wallet>span:last-child{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-soft)}.ruvy-wallet.selected{background:#e5f1ffb8;border-color:#93b1ef;box-shadow:0 0 0 1px #94b1ef25}.ruvy-wallet-code{font-size:10px;letter-spacing:.09em;color:var(--ink-soft)}.ruvy-new-wallet{min-width:104px;justify-content:center;align-items:center;background:transparent;border:1px dashed #b8c6dd;text-align:center}.ruvy-new-wallet>span:first-child{font-size:25px;color:var(--ink-soft)}.ruvy-wallet-note{font-size:11px;color:var(--ink-soft);margin:0 0 24px}
-.ruvy-home{max-width:700px;margin:auto}.ruvy-hero{text-align:center;position:relative;padding:4px 0 20px}.ruvy-greeting{font-size:15px;letter-spacing:-.3px;font-weight:600;margin:4px 0 8px}.ruvy-bubble{font-size:12px;color:var(--ink-soft);margin:4px auto 0;min-height:18px}.ruvy-robot{display:block;width:106px;height:111px;border:0;background:none;margin:0 auto;position:relative;cursor:pointer;isolation:isolate}.ruvy-robot-body{width:66px;height:88px;position:absolute;left:20px;top:5px;animation:ruvy-bob 4.6s ease-in-out infinite}.ruvy-robot-head{position:absolute;top:0;width:66px;height:43px;border-radius:26px 26px 20px 20px;background:linear-gradient(145deg,#fff,#dce9ef);border:1px solid #fff;box-shadow:inset 0 2px 6px #fff,0 6px 16px #374f7614}.ruvy-robot-face{position:absolute;inset:11px 9px 10px;background:linear-gradient(120deg,#26344c,#101a2b);border-radius:12px;display:flex;justify-content:space-around;align-items:center;padding:0 10px;box-shadow:inset 0 1px 3px #0008}.ruvy-robot-face i{display:block;width:4px;height:10px;border-radius:3px;background:#86ecda;box-shadow:0 0 8px #78e9d57a;animation:ruvy-blink 6.8s infinite}.ruvy-robot-torso{position:absolute;top:41px;left:13px;width:40px;height:34px;border-radius:7px 7px 24px 24px;background:linear-gradient(140deg,#ffffffdc,#dce9edb0);border:1px solid #fff;box-shadow:inset 0 2px 3px white}.ruvy-robot-torso:after{content:'';position:absolute;left:14px;top:9px;width:10px;height:10px;border-radius:50%;background:#a0d7ed88;box-shadow:0 0 8px #8cced370}.ruvy-robot-arm{position:absolute;top:40px;width:8px;height:24px;background:linear-gradient(90deg,#fff,#d5e3eb);border:1px solid #fff;border-radius:7px}.ruvy-robot-arm.left{left:3px;transform:rotate(13deg)}.ruvy-robot-arm.right{right:3px;transform:rotate(-13deg);transform-origin:50% 5%}.ruvy-robot.waving .right{animation:ruvy-wave .35s ease-in-out 4}.ruvy-robot-shadow{position:absolute;bottom:12px;left:33px;width:40px;height:7px;background:#798caa24;border-radius:50%;filter:blur(1px)}
-.ruvy-balance-card{background:linear-gradient(130deg,#ffffffd6,#e1efff8a 55%,#e9e4ff9e);border:1px solid white;padding:26px;border-radius:28px;box-shadow:0 12px 35px #33497508;text-align:center;backdrop-filter:blur(22px)}.ruvy-balance-card>small{color:var(--ink-soft);font-size:12px}.ruvy-balance-value{font-size:clamp(26px,5vw,42px);font-weight:700;letter-spacing:-1.3px;line-height:1.25;margin:9px 0 19px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.ruvy-period{display:flex;gap:8px;justify-content:center;margin-bottom:18px}.ruvy-period select{border:1px solid #d7e1f380;background:#ffffff7a;color:var(--ink-soft);padding:7px 10px;font-size:12px;width:auto}.ruvy-cashflow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ruvy-cashflow>div{background:#ffffff99;border:1px solid #fff8;padding:13px;border-radius:16px;text-align:left;min-width:0}.ruvy-cashflow small{display:block;font-size:11px;color:var(--ink-soft);margin-bottom:6px}.ruvy-cashflow strong{font-size:16px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;letter-spacing:-.4px}.ruvy-net-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink-soft);margin-top:15px}.ruvy-net-row b{color:var(--ink);font-variant-numeric:tabular-nums}.ruvy-home-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0 28px}.ruvy-home-actions button{font-size:13px;font-weight:600;padding:14px;border-radius:16px}.ruvy-home-actions .btn-ghost{background:#ffffffb0;border:1px solid white;color:var(--ink)}.ruvy-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.ruvy-section-head h2{font-size:15px;margin:0;letter-spacing:-.3px}.ruvy-section-head button{border:0;background:none;color:var(--primary);font-size:12px;cursor:pointer;padding:8px}.ruvy-recent{margin-top:9px;border-radius:20px;overflow:hidden;background:#ffffff85;border:1px solid white}.ruvy-recent-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #dfe6f080;padding:15px;cursor:pointer;color:var(--ink)}.ruvy-recent-row:last-child{border-bottom:0}.ruvy-tx-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-size:18px}.ruvy-tx-icon.income{color:var(--income);background:var(--income-bg)}.ruvy-tx-icon.expense{color:var(--expense);background:var(--expense-bg)}.ruvy-tx-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}.ruvy-tx-copy strong{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ruvy-tx-copy small{font-size:10px;color:var(--ink-soft)}.ruvy-recent-row>b{font-size:12px;font-weight:600;max-width:45%;overflow-wrap:anywhere}.ruvy-empty{text-align:center;padding:24px 18px;color:var(--ink-soft)}.ruvy-empty>span{display:block;font-size:24px;color:var(--primary);margin-bottom:8px}.ruvy-empty strong{font-size:13px;color:var(--ink)}.ruvy-empty p{font-size:12px;max-width:300px;margin:7px auto 0}
-.ruvy-settings{max-width:650px;margin:auto}.ruvy-settings>h1{font-size:25px;letter-spacing:-.6px}.ruvy-settings-group{background:var(--panel);border:1px solid white;border-radius:20px;overflow:hidden;margin:16px 0;backdrop-filter:blur(22px)}.ruvy-setting-row{display:flex;width:100%;align-items:center;gap:14px;background:none;border:0;border-bottom:1px solid var(--line);padding:18px;text-align:left;color:var(--ink);text-decoration:none;cursor:pointer;font-size:13px}.ruvy-setting-row:last-child{border-bottom:0}.ruvy-setting-row>span:first-child{flex:1;display:flex;flex-direction:column;gap:5px;font-weight:600}.ruvy-setting-row small{font-size:11px;color:var(--ink-soft);font-weight:400}.ruvy-setting-row input[type=checkbox]{accent-color:var(--primary);width:20px;height:20px;flex-shrink:0}.ruvy-settings-note{color:var(--ink-soft);font-size:11px;line-height:1.7}.ruvy-wallet-dialog{color:var(--ink);border:1px solid #ffffffba;border-radius:28px;background:var(--bg);padding:26px;width:min(440px,calc(100vw - 24px));max-height:85dvh;overflow:auto;box-shadow:0 25px 100px #14214433}.ruvy-wallet-dialog::backdrop{background:#1c294e66;backdrop-filter:blur(6px)}.ruvy-wallet-dialog h2{font-size:22px;letter-spacing:-.5px;margin:4px 0 20px}.ruvy-wallet-dialog label{display:flex;flex-direction:column;gap:8px;margin:16px 0;font-size:12px;font-weight:600}.ruvy-wallet-dialog input,.ruvy-wallet-dialog select{padding:12px;background:var(--panel);border:1px solid var(--line);width:100%;color:var(--ink);font-size:14px}.ruvy-wallet-dialog select{height:135px;padding:5px}.ruvy-wallet-dialog option{padding:9px;font-size:12px}.ruvy-wallet-dialog p{color:var(--ink-soft);font-size:12px;line-height:1.6}.ruvy-wallet-dialog .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}.ruvy-wallet-error{color:var(--expense)!important}.ruvy-app .preferences-card{padding:28px}.ruvy-app .preference-field{display:flex;flex-direction:column;gap:8px;margin:16px 0}.ruvy-app .preference-toggle{display:flex;align-items:center;justify-content:space-between;margin:18px 0}.ruvy-app .preferences-footnote{display:block;color:var(--ink-soft);margin:12px 0 20px}.ruvy-app .app-fab{position:fixed;bottom:calc(82px + env(safe-area-inset-bottom));right:max(22px,calc((100vw - 1060px)/2 + 22px));z-index:800;width:52px;height:52px;border:1px solid #ffffffaa;border-radius:19px;background:#395bd5;color:white;box-shadow:0 8px 24px #395bd52b;font-size:28px;cursor:pointer}.ruvy-app.app-locked .app-fab{display:none!important}
-.ruvy-dark{--bg:#101928;--panel:rgba(25,39,60,.88);--ink:#e5edf9;--ink-soft:#a6b5cb;--line:#33415b;--income:#77d8c6;--expense:#ff9aaf;--income-bg:#1b403f;--expense-bg:#402936;--primary:#789bff;--primary-dark:#557dee;background:radial-gradient(ellipse at 90% 5%,#34406155,transparent 50%),var(--bg)}.ruvy-dark .topbar,.ruvy-dark .bottom-nav{background:#101928d9;border-color:#33415b}.ruvy-dark .panel,.ruvy-dark .modal-card,.ruvy-dark .ruvy-settings-group,.ruvy-dark .ruvy-recent{border-color:#33415b}.ruvy-dark .ruvy-wallet{background:#1b293eee;border-color:#33415b}.ruvy-dark .ruvy-wallet.selected{background:#284263;border-color:#7e9fe4}.ruvy-dark .ruvy-balance-card{background:linear-gradient(130deg,#1c304d,#293459);border-color:#41587b}.ruvy-dark .ruvy-cashflow>div,.ruvy-dark .ruvy-period select,.ruvy-dark .ruvy-home-actions .btn-ghost{background:#17263bc9;border-color:#41587b}.ruvy-dark .ruvy-wallet-dialog{border-color:#41587b}.ruvy-dark .btn-primary{color:#101928}.ruvy-solid .panel,.ruvy-solid .modal-card,.ruvy-solid .topbar,.ruvy-solid .bottom-nav,.ruvy-solid .ruvy-settings-group,.ruvy-solid .ruvy-wallet,.ruvy-solid .ruvy-recent{background:var(--bg)!important;backdrop-filter:none!important}
-@keyframes ruvy-bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}@keyframes ruvy-blink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.12)}}@keyframes ruvy-wave{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(-65deg)}}.ruvy-reduce-motion .ruvy-robot-body,.ruvy-reduce-motion .ruvy-robot-face i,.ruvy-reduce-motion .ruvy-robot-arm,.ruvy-app #tab-dashboard:not(.active) .ruvy-robot-body,.ruvy-app #tab-dashboard:not(.active) .ruvy-robot-face i{animation:none!important}.ruvy-paused .ruvy-robot *{animation-play-state:paused!important}@media(prefers-reduced-motion:reduce){.ruvy-app .ruvy-robot *{animation:none!important}.ruvy-app *{scroll-behavior:auto!important}}
-@media(max-width:700px){.ruvy-app .topbar{padding:12px 18px}.ruvy-app .brand-sub{display:none}.ruvy-app .tabs{display:none}.ruvy-app main{padding:18px 16px 110px}.ruvy-app .bottom-nav{display:grid;grid-template-columns:repeat(4,1fr);left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));width:auto;border-radius:22px;padding:6px;min-height:62px;z-index:900}.ruvy-app .bnav-item{padding:8px 2px;min-height:48px}.ruvy-app .bnav-item.active{background:#dce8ff70;border-radius:16px}.ruvy-app .bnav-label{font-size:10px}.ruvy-app .bnav-icon{width:21px;height:21px}.ruvy-app .bnav-fab{display:none}.ruvy-wallet{min-width:132px;padding:12px 14px}.ruvy-wallets-head{margin-bottom:8px}.ruvy-wallet-note{margin-bottom:12px;font-size:10px}.ruvy-hero{padding:0 0 14px}.ruvy-robot{height:99px}.ruvy-robot-shadow{bottom:1px}.ruvy-balance-card{padding:22px 18px}.ruvy-balance-value{font-size:32px;margin:8px 0 15px}.ruvy-home-actions{margin-bottom:20px}.ruvy-app #tab-transaksi .page-head,.ruvy-app #tab-rekap .page-head{flex-wrap:wrap}.ruvy-app .page-title h1{font-size:23px}.ruvy-app .page-title .emoji{display:none}.ruvy-app .panel{padding:16px}}
-.ruvy-app{padding-top:var(--native-top,0px)}.ruvy-app .topbar{position:sticky;top:var(--native-top,0px);min-height:64px}.ruvy-app .brand{min-width:0}.ruvy-app .brand-icon-img{background:none;box-shadow:none;padding:0}.ruvy-app.ruvy-test-build{padding-top:calc(38px + var(--native-top,0px))}.ruvy-app.ruvy-test-build .topbar{top:calc(38px + var(--native-top,0px))}.ruvy-app:not(.ruvy-test-build) .login-screen{top:0}.ruvy-app .ruvy-wallet-strip{scrollbar-width:none}.ruvy-wallet-strip::-webkit-scrollbar{display:none}.ruvy-app .play-paywall{color:var(--ink)}.ruvy-app .play-plan{background:var(--panel);border-color:var(--line);color:var(--ink)}.ruvy-app .play-plan span{color:var(--primary)}.ruvy-app #paywall-screen:not([hidden]){background:var(--bg)}.ruvy-app .plan-hub-icon{background:#e8effc}.ruvy-app .plan-hub-card:hover{border-color:#9eb7f0}@media(max-width:700px){.ruvy-wallet{min-width:124px}.ruvy-new-wallet{min-width:82px}.ruvy-app .plan-hub-card{padding:18px}.ruvy-app .ruvy-robot{height:92px}.ruvy-app .ruvy-hero{padding-bottom:12px}}
+/* Ruvy: one pearl-glass surface system, with a simple four-item dock. */
+.ruvy-app {
+  --bg:#eef2f6; --panel:rgba(255,255,255,.68); --surface:rgba(255,255,255,.82); --surface-soft:rgba(230,238,247,.68); --glass-edge:rgba(255,255,255,.94);
+  --ink:#1d2b3c; --ink-soft:#607086; --line:rgba(127,150,176,.19); --income:#187b68; --expense:#b64560; --income-bg:#e4f3ed; --expense-bg:#f8e8ed;
+  --primary:#3869c8; --primary-dark:#2855aa; --primary-ink:#fff; --primary-light:#dce8fa; --brown:var(--primary); --brown-dark:var(--primary-dark); --brand:var(--primary); --green:var(--income); --accent:#7c9ecf; --cream-2:#eaf0f8;
+  --radius:24px; --shadow:0 8px 30px rgba(39,63,88,.055),inset 0 1px 0 rgba(255,255,255,.7);
+  --balance-glass:linear-gradient(118deg,rgba(255,255,255,.94),rgba(234,244,251,.85) 62%,rgba(222,236,243,.77));
+  background:radial-gradient(ellipse at 85% 8%,rgba(189,211,236,.37),transparent 48%),radial-gradient(ellipse at 5% 62%,rgba(194,226,219,.28),transparent 46%),var(--bg);
+  background-attachment:fixed; color:var(--ink); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; padding-top:var(--native-top,0px);
+}
+.ruvy-app [hidden]{display:none!important}
+.ruvy-app :is(button,input,select,textarea){font-family:inherit}
+.ruvy-app :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #7a9ee3;outline-offset:3px}
+.ruvy-app :is(button,a){-webkit-tap-highlight-color:transparent}
+.ruvy-app :is(.btn,.tab,.seg,.user-item){min-height:44px}
+.ruvy-app main{max-width:1100px;padding:26px 28px calc(122px + env(safe-area-inset-bottom))!important}
+.ruvy-app #subscription-summary,.ruvy-app #tab-dashboard>:not(#ruvy-home),.ruvy-app .footer{display:none!important}
 
-.ruvy-app #ai-paywall-upgrade{display:inline-flex!important}.ruvy-app .onb-card{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:28px;backdrop-filter:blur(22px)}.ruvy-app .onb-title,.ruvy-app .onb-field-label{color:var(--ink)}.ruvy-app .onb-save{background:var(--primary);color:white}.ruvy-app .onb-amount-wrap{background:var(--panel);border-color:var(--line)}.ruvy-app .onb-amount{color:var(--ink)}
-.ruvy-app .ai-chat-panel,.ruvy-app .ai-chat-body,.ruvy-app .ai-chat-back{background:var(--bg);color:var(--ink)}.ruvy-app .ai-chat-head{background:linear-gradient(120deg,#395bd5,#598adf)}.ruvy-app .ai-bubble-bot,.ruvy-app .ai-chip,.ruvy-app .ai-chat-form,.ruvy-app .ai-chat-foot{background:var(--panel);border-color:var(--line);color:var(--ink)}.ruvy-app #ai-greeting{white-space:normal}.ruvy-app .ai-chat-back{color:var(--primary)}
+/* Header is deliberately quiet; all four destinations live in the dock. */
+.ruvy-app .topbar{position:sticky;top:var(--native-top,0px);display:flex;gap:20px;min-height:72px;padding:12px max(28px,calc((100vw - 1044px)/2));border-bottom:1px solid var(--glass-edge);background:rgba(245,248,252,.7);backdrop-filter:blur(28px) saturate(135%);-webkit-backdrop-filter:blur(28px) saturate(135%);box-shadow:0 1px 15px rgba(40,65,97,.025)}
+.ruvy-app .brand{min-width:0;gap:10px}
+.ruvy-app .brand-icon-img{width:36px;height:36px;background:none;box-shadow:none;padding:0;border-radius:12px}
+.ruvy-app .brand-title{font-size:23px;line-height:1.15;letter-spacing:-.8px;color:var(--ink)}
+.ruvy-app .brand-sub{font-size:8px;font-weight:600;letter-spacing:.14em;margin-top:4px}
+.ruvy-app .tabs{display:none}
+.ruvy-app .topbar-actions{justify-content:flex-end;gap:9px;margin-left:auto;min-width:0}
+.ruvy-app .sync-status{font-size:10px}
+.ruvy-app .btn-upgrade-pro{background:var(--surface);color:var(--primary);border:1px solid var(--glass-edge);border-radius:14px;padding:9px 13px;box-shadow:0 2px 7px rgba(42,64,95,.035);font-size:11px;animation:none}
+.ruvy-app .btn-upgrade-pro:hover{background:var(--surface-soft);box-shadow:none}
+.ruvy-app .trial-badge{background:var(--surface-soft);color:var(--primary);border-color:var(--line)}
+.ruvy-app .user-menu{margin-left:0}
+.ruvy-app .user-menu-btn{width:44px;height:44px;border:1px solid var(--glass-edge);background:var(--surface);color:var(--ink);box-shadow:0 3px 12px rgba(41,63,94,.06)}
+.ruvy-app .user-menu-btn:hover{background:var(--surface-soft)}
+.ruvy-app .user-dropdown{width:min(320px,calc(100vw - 28px));max-height:min(710px,calc(100dvh - 100px));overflow-y:auto;border-radius:22px;background:var(--surface);border-color:var(--glass-edge);color:var(--ink);padding:12px;box-shadow:0 20px 70px rgba(30,55,84,.17);backdrop-filter:blur(35px);-webkit-backdrop-filter:blur(35px)}
+.ruvy-app .user-info{padding:10px 12px}
+.ruvy-app .user-email{overflow-wrap:anywhere}
+.ruvy-app .user-item{border-radius:12px;padding:10px 12px}
+.ruvy-app .user-item:hover{background:var(--surface-soft);color:var(--ink)}
+.ruvy-app :is(.user-item-plan,.user-item-admin){color:var(--primary);background:none;font-weight:600}
+.ruvy-app .user-item-danger{color:var(--expense)}
+
+/* Glass surfaces and controls shared by tools, forms, settings and AI. */
+.ruvy-app :is(.panel,.login-card,.hutang-card,.plan-hub-card,.modal-card,.goal-card,.goal-form,.goal-empty,.admin-card,.admin-stat,.admin-confirm-card,.onb-card,.ruvy-settings-group,.ruvy-activity-card){background:var(--panel);color:var(--ink);border:1px solid var(--glass-edge);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%)}
+.ruvy-app .panel{padding:22px}
+.ruvy-app .panel:hover{box-shadow:var(--shadow)}
+.ruvy-app .page-head{margin-bottom:22px;gap:14px}
+.ruvy-app .page-head h1{margin:0;font-size:27px;letter-spacing:-.8px}
+.ruvy-app .page-title .emoji{display:none}
+.ruvy-app .panel-head h3{font-size:15px;letter-spacing:-.2px}
+.ruvy-app .page-subtitle{color:var(--ink-soft);margin-top:7px;line-height:1.6}
+.ruvy-app .btn{border-radius:14px;background:var(--surface);border-color:var(--line);color:var(--ink);padding:10px 15px;font-weight:600}
+.ruvy-app .btn:hover{background:var(--surface-soft)}
+.ruvy-app :is(.btn-primary,.onb-save){background:var(--primary);border-color:transparent;color:var(--primary-ink);box-shadow:0 5px 13px rgba(41,88,171,.13)}
+.ruvy-app .btn-primary:hover{background:var(--primary-dark);border-color:transparent}
+.ruvy-app .btn-danger{color:var(--expense);background:var(--expense-bg)}
+.ruvy-app :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){min-height:44px;border-radius:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:11px 12px}
+.ruvy-app :is(input,textarea)::placeholder{color:var(--ink-soft);opacity:.8}
+.ruvy-app :is(.form input,.form select,.form textarea,.goal-form input):focus{background:var(--surface)}
+.ruvy-app .form label{color:var(--ink-soft);gap:7px}
+.ruvy-app input[type="checkbox"]{accent-color:var(--primary)}
+.ruvy-app :is(.seg,.chat-example,.ai-chip,.quick-entry){background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.ruvy-app .seg{border-radius:13px}
+.ruvy-app .seg.active{color:var(--primary);background:var(--surface-soft);border-color:#92b1dc}
+.ruvy-app :is(.quick-entry,.plan-hub-card):hover{background:var(--surface);border-color:#b5cbe3;box-shadow:var(--shadow)}
+.ruvy-app .quick-entry{border-radius:18px}
+.ruvy-app .quick-entry.active{background:var(--surface-soft);border-color:#91afdc;box-shadow:inset 0 1px 0 var(--glass-edge)}
+.ruvy-app :is(.plan-hub-icon,.quick-entry-icon.receipt,.empty-state-mark){background:var(--surface-soft);color:var(--primary);border-radius:15px}
+.ruvy-app .plan-hub-grid{max-width:none;gap:16px}
+.ruvy-app .plan-hub-card{padding:23px;min-height:116px}
+.ruvy-app .plan-hub-card b{letter-spacing:-.3px}
+.ruvy-app :is(.plan-hub-bar,.goal-progress-bar){background:var(--surface-soft)}
+.ruvy-app .goal-progress-fill{background:linear-gradient(90deg,#88b5d4,var(--primary))}
+.ruvy-app :is(.goal-ai-plan,.goal-form-hint,.onb-amount-wrap,.category-create-inline,.advanced-fields){background:var(--surface-soft);border-color:var(--line);color:var(--ink)}
+.ruvy-app :is(.goal-ai-header,.onb-title,.onb-field-label,.onb-amount){color:var(--ink)}
+.ruvy-app :is(.trx-table,.rekap-table,.six-month-table) thead th{background:var(--surface-soft);color:var(--ink-soft)}
+.ruvy-app :is(.trx-table,.rekap-table) tbody tr:hover{background:var(--surface-soft)}
+.ruvy-app :is(.pill-alok,.pill-custom){background:var(--surface-soft);color:var(--ink-soft)}
+.ruvy-app .money-income{color:var(--income)} .ruvy-app .money-expense{color:var(--expense)}
+.ruvy-app .chat-box{background:var(--surface-soft);border-color:var(--line);border-radius:16px}
+.ruvy-app .chat-msg.bot{background:var(--surface)}
+.ruvy-app .chat-example{min-height:44px;border-radius:12px;padding:8px 12px}
+.ruvy-app :is(.modal,.admin-confirm-overlay){background:rgba(25,45,66,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ruvy-app .modal-close{width:44px;height:44px;border-radius:50%;color:var(--ink-soft)}
+
+/* Sign-in is its own compact screen; startup and the paywall keep their layout. */
+.ruvy-app #login-screen{justify-content:flex-start;padding:calc(22px + max(env(safe-area-inset-top),var(--native-top,0px))) max(20px,env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:radial-gradient(ellipse at 90% 5%,rgba(177,204,236,.35),transparent 48%),radial-gradient(ellipse at 3% 80%,rgba(187,220,216,.23),transparent 48%),var(--bg);overscroll-behavior:contain;scroll-padding-block:24px}
+.ruvy-auth-shell{width:100%;max-width:410px;flex:0 0 auto;margin-block:auto}
+.ruvy-auth-top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}
+.ruvy-auth-brand{display:flex;align-items:center;gap:9px;min-width:0}
+.ruvy-app #login-screen .login-logo{width:32px;height:32px;margin:0;border-radius:10px;box-shadow:none}
+.ruvy-app #login-screen .login-brand{margin:0;color:var(--ink);font-size:23px;line-height:1;letter-spacing:-.8px;font-weight:650}
+.ruvy-app #login-screen .login-language-picker{margin:0;min-width:0}
+.ruvy-app #login-screen #login-language{min-height:44px;max-width:174px;width:auto;font-size:11px;padding:10px 12px;border-radius:14px;background:var(--panel);border-color:var(--glass-edge);box-shadow:0 2px 8px rgba(39,63,88,.025)}
+.ruvy-auth-welcome{text-align:center;margin:0 0 23px}
+.ruvy-auth-mascot{display:grid;place-items:center;width:76px;height:76px;margin:0 auto 15px;border-radius:25px;border:1px solid var(--glass-edge);background:linear-gradient(145deg,var(--surface),var(--surface-soft));box-shadow:0 8px 24px rgba(62,93,129,.065),inset 0 1px 0 var(--glass-edge)}
+.ruvy-auth-mascot img{display:block;width:62px;height:62px;border-radius:19px}
+.ruvy-auth-welcome h1{font-size:28px;line-height:1.2;font-weight:650;letter-spacing:-1px;margin:0 0 9px;color:var(--ink)}
+.ruvy-auth-welcome p{font-size:12px;line-height:1.6;color:var(--ink-soft);margin:0}
+.ruvy-app #login-screen .ruvy-auth-card{width:100%;max-width:none;padding:23px;border-radius:27px;border-color:var(--glass-edge);background:var(--panel);box-shadow:0 14px 45px rgba(40,65,96,.07),inset 0 1px 0 var(--glass-edge);text-align:left}
+.ruvy-app #login-screen .login-tabs{display:flex;gap:4px;margin:0 0 20px;padding:4px;border:1px solid var(--line);border-radius:16px;background:var(--surface-soft)}
+.ruvy-app #login-screen .login-tab{min-height:42px;border-radius:12px;padding:9px 12px;color:var(--ink-soft);font-size:12px;font-weight:600}
+.ruvy-app #login-screen .login-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 2px 8px rgba(39,63,88,.07),inset 0 1px 0 var(--glass-edge)}
+.ruvy-app #login-screen .auth-form{gap:13px}
+.ruvy-app #login-screen .auth-form label{display:grid;gap:6px;margin:0;color:var(--ink);font-size:11px;font-weight:550}
+.ruvy-app #login-screen .auth-form input{min-height:46px;margin:0;padding:11px 13px;border-radius:13px;border-color:var(--line);background:var(--surface);font-size:16px;line-height:1.4;scroll-margin-block:22px}
+.ruvy-app #login-screen .auth-form input:focus{background:var(--surface);outline-color:#88a9df;outline-offset:2px}
+.ruvy-app #login-screen .btn-block{min-height:46px;border-radius:14px;font-size:12px;line-height:1.4;padding:12px 15px}
+.ruvy-app #login-screen .auth-form a{display:flex;align-items:center;justify-content:center;min-height:40px;margin:-3px 0 -5px;padding:8px;color:var(--primary);font-size:11px;border-radius:10px}
+.ruvy-app #login-screen .auth-divider{margin:16px 0;font-size:10px;gap:12px}
+.ruvy-app #login-screen .btn-google{background:var(--surface);border-color:var(--line);box-shadow:none;color:var(--ink);font-weight:550;gap:10px}
+.ruvy-app #login-screen .btn-google:hover{background:var(--surface-soft);border-color:#a9c1e1}
+.ruvy-app #login-screen .btn-google svg{flex:0 0 18px}
+.ruvy-auth-trial{display:block;color:var(--ink-soft);font-size:10px;line-height:1.6}
+.ruvy-app #login-screen :is(.auth-error,.auth-info,.ruvy-auth-notice){padding:11px 12px;margin-top:14px;border-radius:13px;font-size:11px;line-height:1.6;text-align:left;overflow-wrap:anywhere}
+.ruvy-app #login-screen .auth-error,.ruvy-app #login-screen .ruvy-auth-warning{background:var(--expense-bg);border:1px solid var(--line);color:var(--expense)}
+.ruvy-app #login-screen .auth-info,.ruvy-app #login-screen .ruvy-auth-notice{background:var(--surface-soft);border:1px solid var(--line);color:var(--ink-soft)}
+.ruvy-app #login-screen .ruvy-auth-warning{background:var(--expense-bg);color:var(--expense)}
+.ruvy-app #login-screen .login-footer{max-width:315px;margin:18px auto 0;padding:0 5px;color:var(--ink-soft);font-size:10px;line-height:1.65;text-align:center}
+@media(max-width:480px){
+  .ruvy-app #login-screen{padding-top:calc(15px + max(env(safe-area-inset-top),var(--native-top,0px)));padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .ruvy-auth-top{margin-bottom:20px}.ruvy-auth-welcome{margin-bottom:19px}
+  .ruvy-auth-mascot{width:62px;height:62px;border-radius:21px;margin-bottom:12px}.ruvy-auth-mascot img{width:52px;height:52px;border-radius:17px}
+  .ruvy-auth-welcome h1{font-size:26px;margin-bottom:7px}.ruvy-auth-welcome p{font-size:11px}
+  .ruvy-app #login-screen .ruvy-auth-card{padding:19px;border-radius:25px}.ruvy-app #login-screen .login-tabs{margin-bottom:17px}
+  .ruvy-app #login-screen .auth-form{gap:11px}.ruvy-app #login-screen .auth-form a{min-height:44px}
+  .ruvy-app #login-screen .login-footer{margin-top:15px;font-size:9px}
+}
+@media(max-height:680px){.ruvy-app #login-screen .ruvy-auth-shell{margin-block:0}.ruvy-auth-top{margin-bottom:14px}.ruvy-auth-welcome{margin-bottom:16px}.ruvy-auth-mascot{width:52px;height:52px;margin-bottom:10px}.ruvy-auth-mascot img{width:44px;height:44px}.ruvy-auth-welcome h1{font-size:24px}}
+
+/* Wallet choices remain available from every destination. */
+.ruvy-wallets{margin-bottom:19px}
+.ruvy-wallets-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}
+.ruvy-wallets-head h2{font-size:12px;font-weight:600;color:var(--ink-soft);margin:0;letter-spacing:.01em}
+.ruvy-wallets-head button{border:0;border-radius:12px;color:var(--primary);background:none;cursor:pointer;font-size:11px;font-weight:600;padding:9px 0 9px 12px;min-height:44px}
+.ruvy-wallet-strip{display:flex;gap:9px;overflow-x:auto;padding:2px 1px 9px;scrollbar-width:none;scroll-snap-type:x proximity}
+.ruvy-wallet-strip::-webkit-scrollbar{display:none}
+.ruvy-wallet{min-width:184px;flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px 14px;text-align:left;padding:13px 16px;border-radius:18px;border:1px solid var(--glass-edge);background:var(--panel);cursor:pointer;box-shadow:0 3px 12px rgba(39,62,85,.025);scroll-snap-align:start;color:var(--ink);transition:background .18s,border-color .18s}
+.ruvy-wallet strong{grid-column:1;grid-row:1;font-size:12px;max-width:175px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ruvy-wallet>span:last-child{grid-column:1/-1;font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.ruvy-wallet-code{grid-column:2;grid-row:1;font-size:8px;letter-spacing:.07em;color:var(--ink-soft);padding:4px 5px;border-radius:6px;background:var(--surface-soft)}
+.ruvy-wallet.selected{background:var(--surface);border-color:#98b9df;box-shadow:inset 0 1px 0 var(--glass-edge),0 3px 12px rgba(64,109,170,.07)}
+.ruvy-wallet.selected strong{color:var(--primary)}
+.ruvy-wallet:hover{background:var(--surface)}
+.ruvy-new-wallet{display:flex;flex-direction:row;min-width:135px;gap:6px;align-items:center;justify-content:center;background:rgba(255,255,255,.25);border:1px dashed rgba(107,139,173,.35)}
+.ruvy-new-wallet>span:first-child{font-size:21px;color:var(--ink-soft)}
+.ruvy-new-wallet strong{color:var(--ink-soft);font-size:11px;font-weight:500}
+.ruvy-wallet-note{color:var(--ink-soft);font-size:10px;line-height:1.5;margin:2px 0 0}
+
+/* Compact greeting and a balanced overview/activity composition. */
+.ruvy-home{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;max-width:none;margin:0;align-items:start}
+.ruvy-hero{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 2px;min-height:80px;margin-bottom:-3px}
+.ruvy-hero-copy{min-width:0}
+.ruvy-greeting{font-size:clamp(23px,2.2vw,29px);line-height:1.2;letter-spacing:-.9px;font-weight:650;margin:0 0 8px;overflow-wrap:anywhere}
+.ruvy-bubble{font-size:12px;line-height:1.5;color:var(--ink-soft);margin:0;min-height:18px}
+.ruvy-overview{min-width:0}
+.ruvy-balance-card{position:relative;overflow:hidden;text-align:left;background:var(--balance-glass);border:1px solid var(--glass-edge);padding:25px 26px 22px;border-radius:28px;box-shadow:0 12px 36px rgba(50,76,108,.065),inset 0 1px 0 var(--glass-edge);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px)}
+.ruvy-balance-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.ruvy-balance-head small{color:var(--ink-soft);font-size:12px;font-weight:500}
+.ruvy-balance-symbol{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:var(--surface);color:#748da8;border:1px solid var(--glass-edge)}
+.ruvy-balance-symbol svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ruvy-balance-value{font-size:clamp(30px,3.3vw,42px);font-weight:650;letter-spacing:-1.7px;line-height:1.2;margin:8px 0 18px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.ruvy-period{display:flex;align-items:center;gap:6px;margin-bottom:20px}
+.ruvy-app .ruvy-period select{min-height:44px;font-size:11px;font-weight:500;color:var(--ink-soft);width:auto;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ruvy-cashflow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ruvy-cashflow>div{background:var(--surface);border:1px solid var(--glass-edge);padding:13px 14px;border-radius:16px;min-width:0}
+.ruvy-cashflow small{display:block;font-size:10px;font-weight:500;color:var(--ink-soft);margin-bottom:7px}
+.ruvy-cashflow strong{display:block;font-size:17px;line-height:1.35;font-weight:600;letter-spacing:-.45px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.ruvy-net-row{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--ink-soft);font-size:10px;line-height:1.5;margin-top:17px;padding-top:15px;border-top:1px solid var(--line)}
+.ruvy-net-row b{color:var(--ink);font-size:12px;font-weight:600;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.ruvy-home-actions{display:grid;grid-template-columns:1.1fr 1fr;gap:10px;margin:13px 0 0}
+.ruvy-home-actions .btn{min-height:48px;font-size:12px;border-radius:16px;padding:12px}
+.ruvy-home-actions .btn-ghost{border-color:var(--glass-edge);background:var(--surface);color:var(--ink);box-shadow:0 3px 14px rgba(44,62,86,.03)}
+.ruvy-quick-entry{margin-top:13px;padding:15px 17px;border:1px solid var(--glass-edge);border-radius:20px;background:var(--panel);box-shadow:var(--shadow)}
+.ruvy-quick-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px;min-width:0}
+.ruvy-quick-head label{font-size:12px;font-weight:600;white-space:nowrap}
+.ruvy-quick-head>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--ink-soft)}
+.ruvy-quick-controls{display:flex;gap:8px;min-width:0}
+.ruvy-app .ruvy-quick-controls input{min-width:0;flex:1;font-size:14px;padding:10px 12px}
+.ruvy-quick-controls .btn{flex:0 0 auto;min-width:68px;font-size:12px}
+.ruvy-quick-entry>small{display:block;margin-top:8px;font-size:10px;color:var(--ink-soft);line-height:1.5}
+.ruvy-quick-entry>p{margin:9px 0 0;font-size:11px;line-height:1.5;overflow-wrap:anywhere;color:var(--income)}
+.ruvy-quick-entry>p[data-tone=error]{color:var(--expense)}
+.ruvy-activity-card{padding:20px 21px 5px;min-width:0}
+.ruvy-section-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ruvy-section-head h2{font-size:14px;letter-spacing:-.3px;font-weight:600;margin:0}
+.ruvy-section-head button{border:0;background:none;color:var(--primary);font-size:10px;font-weight:600;cursor:pointer;padding:10px 0 10px 8px;min-height:44px;border-radius:10px;white-space:nowrap}
+.ruvy-recent{margin-top:3px;overflow:hidden}
+.ruvy-recent-row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:16px 0;min-height:67px;cursor:pointer;color:var(--ink);border-radius:0}
+.ruvy-recent-row:last-child{border-bottom:0}
+.ruvy-recent-row:hover{background:var(--surface-soft)}
+.ruvy-tx-icon{width:35px;height:35px;display:grid;place-items:center;flex-shrink:0;border-radius:12px;font-size:18px}
+.ruvy-tx-icon.income{background:var(--income-bg);color:var(--income)} .ruvy-tx-icon.expense{background:var(--expense-bg);color:var(--expense)}
+.ruvy-tx-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.ruvy-tx-copy strong{font-size:12px;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ruvy-tx-copy small{font-size:10px;color:var(--ink-soft)}
+.ruvy-recent-row>b{max-width:44%;font-size:12px;font-weight:600;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.ruvy-empty{padding:48px 12px 52px;color:var(--ink-soft);text-align:center}
+.ruvy-empty>span{display:grid;place-items:center;width:44px;height:44px;border-radius:15px;font-size:22px;background:var(--surface-soft);color:var(--primary);margin:0 auto 14px}
+.ruvy-empty strong{font-size:13px;font-weight:600;color:var(--ink)}
+.ruvy-empty p{font-size:11px;line-height:1.7;max-width:260px;margin:7px auto 0}
+
+/* Original CSS robot, now at companion scale with a rounded focus ring. */
+.ruvy-robot{display:block;position:relative;width:88px;height:86px;flex:0 0 88px;border:0;border-radius:24px;background:radial-gradient(ellipse,rgba(220,234,243,.75),transparent 70%);cursor:pointer;isolation:isolate;padding:0}
+.ruvy-app .ruvy-robot:focus-visible{outline:none;box-shadow:0 0 0 3px #7a9ee3}
+.ruvy-robot-body{width:66px;height:88px;position:absolute;left:11px;top:-4px;transform-origin:center bottom;scale:.8;transform:translate3d(0,0,0);animation:ruvy-bob 7.2s cubic-bezier(.45,0,.55,1) infinite;will-change:transform;backface-visibility:hidden}
+.ruvy-robot-head{position:absolute;top:0;left:0;width:66px;height:43px;border-radius:26px 26px 20px 20px;background:linear-gradient(145deg,#fff,#dce9ef);border:1px solid #fff;box-shadow:inset 0 2px 6px #fff,0 6px 16px #374f7614}
+.ruvy-robot-face{position:absolute;inset:11px 9px 10px;background:linear-gradient(120deg,#26344c,#101a2b);border-radius:12px;display:flex;justify-content:space-around;align-items:center;padding:0 10px;box-shadow:inset 0 1px 3px #0008}
+.ruvy-robot-face i{display:block;width:4px;height:10px;border-radius:3px;background:#86ecda;box-shadow:0 0 8px #78e9d57a;animation:ruvy-blink 8.4s linear infinite;transform-origin:center}
+.ruvy-robot-torso{position:absolute;top:41px;left:13px;width:40px;height:34px;border-radius:7px 7px 24px 24px;background:linear-gradient(140deg,#ffffffdc,#dce9edb0);border:1px solid #fff;box-shadow:inset 0 2px 3px white}
+.ruvy-robot-torso:after{content:'';position:absolute;left:14px;top:9px;width:10px;height:10px;border-radius:50%;background:#a0d7ed88;box-shadow:0 0 8px #8cced370}
+.ruvy-robot-arm{position:absolute;top:40px;width:8px;height:24px;background:linear-gradient(90deg,#fff,#d5e3eb);border:1px solid #fff;border-radius:7px}
+.ruvy-robot-arm.left{left:3px;transform:rotate(13deg)} .ruvy-robot-arm.right{right:3px;transform:rotate(-13deg);transform-origin:50% 5%}
+.ruvy-robot.waving .right{animation:ruvy-wave 1.6s cubic-bezier(.4,0,.2,1) 1;will-change:transform}
+.ruvy-robot-shadow{position:absolute;bottom:3px;left:24px;width:40px;height:6px;background:#798caa24;border-radius:50%;filter:blur(2px)}
+@keyframes ruvy-bob{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-2px,0)}}
+@keyframes ruvy-blink{0%,94%,96%,100%{transform:scaleY(1)}95%{transform:scaleY(.18)}}
+@keyframes ruvy-wave{0%,100%{transform:rotate(-13deg)}20%{transform:rotate(-43deg)}40%{transform:rotate(-29deg)}60%{transform:rotate(-47deg)}80%{transform:rotate(-25deg)}}
+
+.ruvy-settings{max-width:760px;margin:auto}
+.ruvy-settings>h1{font-size:27px;letter-spacing:-.8px;margin:5px 0 22px}
+.ruvy-settings-group{overflow:hidden;margin:16px 0}
+.ruvy-setting-row{display:flex;width:100%;align-items:center;gap:14px;background:none;border:0;border-bottom:1px solid var(--line);padding:18px 20px;min-height:72px;text-align:left;color:var(--ink);text-decoration:none;cursor:pointer;font-size:13px}
+.ruvy-setting-row:last-child{border-bottom:0} .ruvy-setting-row:hover{background:var(--surface-soft)}
+.ruvy-setting-row>span:first-child{flex:1;display:flex;flex-direction:column;gap:5px;font-weight:600}
+.ruvy-setting-row small{font-size:11px;color:var(--ink-soft);font-weight:400;line-height:1.5}
+.ruvy-setting-row input[type=checkbox]{width:22px;height:22px;flex-shrink:0}
+.ruvy-settings-note{color:var(--ink-soft);font-size:11px;line-height:1.8;padding:3px 6px}
+.ruvy-wallet-dialog{color:var(--ink);border:1px solid var(--glass-edge);border-radius:28px;background:var(--bg);padding:26px;width:min(440px,calc(100vw - 24px));max-height:85dvh;overflow:auto;box-shadow:0 25px 100px rgba(20,40,65,.2)}
+.ruvy-wallet-dialog::backdrop{background:rgba(25,45,66,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ruvy-wallet-dialog h2{font-size:22px;letter-spacing:-.5px;margin:4px 0 20px}
+.ruvy-wallet-dialog label{display:flex;flex-direction:column;gap:8px;margin:16px 0;font-size:12px;font-weight:600}
+.ruvy-wallet-dialog :is(input,select){width:100%;font-size:14px}
+.ruvy-app .ruvy-wallet-dialog select{height:180px;padding:5px}
+.ruvy-wallet-dialog option{padding:11px;font-size:12px}
+.ruvy-wallet-dialog p{color:var(--ink-soft);font-size:12px;line-height:1.6}
+.ruvy-wallet-dialog .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.ruvy-wallet-error{color:var(--expense)!important}
+.ruvy-app .preferences-card{padding:28px}
+.ruvy-app .preference-field{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.ruvy-app .preference-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:18px 0;min-height:44px}
+.ruvy-app .preferences-footnote{display:block;color:var(--ink-soft);margin:12px 0 20px}
+.ruvy-app .app-fab{position:fixed;bottom:calc(94px + env(safe-area-inset-bottom));right:max(24px,calc((100vw - 1100px)/2 + 28px));z-index:800;width:48px;height:48px;border:1px solid var(--glass-edge);border-radius:17px;background:var(--primary);color:var(--primary-ink);box-shadow:0 8px 24px rgba(47,93,170,.18);font-size:26px;cursor:pointer}
+.ruvy-app.app-locked .app-fab,.ruvy-app:has(#tab-dashboard.active) .app-fab{display:none!important}
+.ruvy-app .ai-fab{border:1px solid var(--glass-edge);background:var(--surface);box-shadow:var(--shadow);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.ruvy-app .ai-fab-badge{background:var(--primary)}
+.ruvy-app .ai-chat-panel{background:var(--panel);color:var(--ink);border:1px solid var(--glass-edge);border-radius:26px;box-shadow:0 20px 70px rgba(27,51,80,.22);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px)}
+.ruvy-app :is(.ai-chat-body,.ai-chat-back){background:transparent;color:var(--ink);border-color:var(--line)}
+.ruvy-app .ai-chat-back{color:var(--primary);min-height:44px}
+.ruvy-app .ai-chat-head{background:var(--surface-soft);color:var(--ink);border-bottom:1px solid var(--line)}
+.ruvy-app .ai-chat-avatar{background:var(--surface);border-color:var(--line)}
+.ruvy-app :is(.ai-chat-close,.ai-chat-send){min-width:44px;min-height:44px}
+.ruvy-app .ai-chat-close{color:var(--ink-soft);background:var(--surface)}
+.ruvy-app :is(.ai-bubble-bot,.ai-chip,.ai-chat-form,.ai-chat-foot){background:var(--surface);border-color:var(--line);color:var(--ink)}
+.ruvy-app :is(.ai-bubble-user,.ai-chat-send){background:var(--primary);color:var(--primary-ink)}
+.ruvy-app #ai-greeting{white-space:normal} .ruvy-app #ai-paywall-upgrade{display:inline-flex!important}
+.ruvy-app .play-paywall{color:var(--ink)} .ruvy-app .play-plan{background:var(--panel);border-color:var(--line);color:var(--ink)}
+.ruvy-app .play-plan span{color:var(--primary)} .ruvy-app #paywall-screen:not([hidden]){background:var(--bg)}
+
+/* Four destinations, always below the content, including desktop. */
+.ruvy-app .bottom-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;z-index:900;left:50%;right:auto;transform:translateX(-50%);bottom:calc(15px + env(safe-area-inset-bottom));width:min(520px,calc(100% - 28px));border-radius:24px;padding:5px;min-height:66px;height:auto;background:var(--surface);border:1px solid var(--glass-edge);box-shadow:0 8px 30px rgba(30,55,87,.12),inset 0 1px 0 var(--glass-edge);backdrop-filter:blur(30px) saturate(150%);-webkit-backdrop-filter:blur(30px) saturate(150%)}
+.ruvy-app .bnav-item{min-width:0;min-height:54px;border-radius:18px;padding:7px 2px;color:var(--ink-soft);gap:4px}
+.ruvy-app .bnav-item.active{color:var(--primary);background:var(--surface-soft)}
+.ruvy-app .bnav-label{font-size:10px;line-height:1.2;font-weight:600;max-width:100%}
+.ruvy-app .bnav-icon,.ruvy-app .bnav-icon svg{width:21px;height:21px}
+.ruvy-app .bnav-item.active .bnav-icon{transform:none}
+.ruvy-app .bnav-fab{display:none}
+
+/* Dark, solid and reduced-motion preferences share the layout. */
+.ruvy-app.ruvy-dark{color-scheme:dark;--bg:#141d29;--panel:rgba(34,47,65,.73);--surface:rgba(43,58,77,.82);--surface-soft:rgba(51,72,93,.55);--glass-edge:rgba(169,196,219,.14);--ink:#e7eef6;--ink-soft:#a3b3c5;--line:rgba(149,172,198,.2);--income:#86d7bf;--expense:#f4a6b7;--income-bg:#294a43;--expense-bg:#4b3543;--primary:#9bbbf1;--primary-dark:#b0cbf4;--primary-ink:#1a2d48;--primary-light:#344864;--accent:#86a9d9;--cream-2:#2b3d55;--shadow:0 10px 30px rgba(3,11,21,.12),inset 0 1px 0 rgba(185,210,233,.04);--balance-glass:linear-gradient(118deg,rgba(40,59,79,.93),rgba(37,60,81,.87) 62%,rgba(43,67,82,.86));background:radial-gradient(ellipse at 88% 4%,rgba(60,85,123,.2),transparent 46%),radial-gradient(ellipse at 0 65%,rgba(48,94,86,.12),transparent 48%),var(--bg)}
+.ruvy-dark .topbar{background:rgba(24,35,49,.75)}
+.ruvy-dark .ruvy-wallet.selected{border-color:#6f93bd} .ruvy-dark .ruvy-new-wallet{background:transparent}
+.ruvy-dark .ruvy-balance-symbol{color:#a2bed5} .ruvy-dark .ruvy-robot{background:radial-gradient(ellipse,rgba(90,125,157,.2),transparent 70%)}
+.ruvy-dark .ruvy-robot-shadow{background:#080e1c99} .ruvy-dark .goal-card.goal-completed{background:var(--panel);border-color:#527d71}
+.ruvy-app.ruvy-solid{--panel:#fff;--surface:#fff;--surface-soft:#eaf0f7;--glass-edge:#e2e9f0;--balance-glass:#f8fbfe}
+.ruvy-app.ruvy-solid.ruvy-dark{--panel:#223042;--surface:#2c3c50;--surface-soft:#33475c;--glass-edge:#3a4c61;--balance-glass:#263b50}
+.ruvy-solid :is(.panel,.login-card,.hutang-card,.plan-hub-card,.modal-card,.goal-card,.goal-form,.goal-empty,.admin-card,.admin-stat,.admin-confirm-card,.onb-card,.ruvy-settings-group,.ruvy-activity-card,.ruvy-balance-card,.ruvy-wallet,.user-dropdown,.ai-fab,.ai-chat-panel,.topbar,.bottom-nav){backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.ruvy-solid :is(.topbar,.bottom-nav,.ruvy-new-wallet){background:var(--panel)}
+.ruvy-app.ruvy-test-build{padding-top:calc(38px + var(--native-top,0px))} .ruvy-app.ruvy-test-build .topbar{top:calc(38px + var(--native-top,0px))}
+.ruvy-app:not(.ruvy-test-build) .login-screen{top:0}
+.ruvy-reduce-motion .ruvy-robot *{animation:none!important}
+.ruvy-reduce-motion .ruvy-robot-body{transform:translate3d(0,0,0);will-change:auto}
+.ruvy-paused .ruvy-robot *,.ruvy-app #tab-dashboard:not(.active) .ruvy-robot *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.ruvy-app *,.ruvy-app *::before,.ruvy-app *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.ruvy-app .ruvy-robot-body{transform:translate3d(0,0,0);will-change:auto}}
+
+@media(max-width:900px){
+  .ruvy-app .topbar{min-height:66px;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left))}
+  .ruvy-app .brand-icon-img{width:34px;height:34px} .ruvy-app .brand-title{font-size:22px} .ruvy-app .brand-sub{display:none}
+  .ruvy-app main{padding:16px max(18px,env(safe-area-inset-right)) calc(115px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))!important}
+  .ruvy-app .bottom-nav{bottom:calc(10px + env(safe-area-inset-bottom));min-height:64px;border-radius:23px}
+  .ruvy-app .bnav-item{min-height:52px;border-radius:17px} .ruvy-app .bnav-label{font-size:10px}
+  .ruvy-app .app-fab{bottom:calc(87px + env(safe-area-inset-bottom));right:max(18px,env(safe-area-inset-right))}
+  .ruvy-app .ai-fab{bottom:calc(88px + env(safe-area-inset-bottom))}
+}
+@media(max-width:700px){
+  .ruvy-app .topbar{min-height:62px;padding-block:7px}
+  .ruvy-app .sync-status{max-width:80px;font-size:9px} .ruvy-app .btn-upgrade-pro{min-height:44px;padding:8px 10px;font-size:10px}
+  .ruvy-wallets{margin-bottom:9px} .ruvy-wallets-head{margin-bottom:1px}
+  .ruvy-wallet-strip{gap:8px;padding-bottom:7px} .ruvy-wallet{min-width:152px;padding:11px 12px;gap:3px 10px;border-radius:16px}
+  .ruvy-wallet strong{max-width:133px;font-size:11px} .ruvy-wallet>span:last-child{font-size:10px}
+  .ruvy-new-wallet{min-width:109px;gap:4px} .ruvy-new-wallet strong{font-size:10px}
+  .ruvy-wallet-note{font-size:9px;line-height:1.45}
+  .ruvy-home{grid-template-columns:minmax(0,1fr);gap:14px}
+  .ruvy-hero{min-height:64px;gap:10px;margin:0;padding:0} .ruvy-greeting{font-size:22px;letter-spacing:-.7px;margin-bottom:5px} .ruvy-bubble{font-size:10px;line-height:1.5}
+  .ruvy-robot{width:64px;flex-basis:64px;height:64px;border-radius:20px} .ruvy-robot-body{left:-1px;top:-17px} .ruvy-robot-shadow{bottom:2px;left:15px;width:34px}
+  .ruvy-balance-card{padding:17px 18px 16px;border-radius:24px} .ruvy-balance-head small{font-size:11px}
+  .ruvy-balance-symbol{width:30px;height:30px;border-radius:10px} .ruvy-balance-symbol svg{width:18px}
+  .ruvy-balance-value{font-size:32px;letter-spacing:-1.25px;margin:5px 0 12px}
+  .ruvy-period{margin-bottom:13px;gap:5px} .ruvy-app .ruvy-period select{padding:7px 9px;font-size:10px}
+  .ruvy-cashflow{gap:8px} .ruvy-cashflow>div{padding:10px 11px;border-radius:13px} .ruvy-cashflow small{font-size:9px;margin-bottom:5px} .ruvy-cashflow strong{font-size:15px;letter-spacing:-.3px}
+  .ruvy-net-row{margin-top:12px;padding-top:11px;font-size:9px} .ruvy-net-row b{font-size:11px}
+  .ruvy-home-actions{margin-top:10px;gap:8px} .ruvy-home-actions .btn{min-height:46px;font-size:11px;border-radius:14px;padding:10px}
+  .ruvy-quick-entry{margin-top:10px;padding:12px 14px;border-radius:19px}.ruvy-quick-head{margin-bottom:8px}.ruvy-quick-head label{font-size:11px}.ruvy-quick-head>span{font-size:9px}
+  .ruvy-app .ruvy-quick-controls input{font-size:16px}.ruvy-quick-controls .btn{min-width:62px;padding:10px 12px;font-size:11px}.ruvy-quick-entry>small{font-size:9px}
+  .ruvy-activity-card{padding:11px 16px 3px;border-radius:22px} .ruvy-section-head h2{font-size:13px} .ruvy-section-head button{font-size:10px}
+  .ruvy-recent{margin-top:0} .ruvy-recent-row{min-height:63px;padding:13px 0;gap:9px} .ruvy-tx-copy strong,.ruvy-recent-row>b{font-size:11px}
+  .ruvy-empty{padding:19px 5px 23px} .ruvy-empty>span{width:34px;height:34px;border-radius:12px;font-size:18px;margin-bottom:10px} .ruvy-empty p{font-size:10px}
+  .ruvy-app .page-head h1,.ruvy-settings>h1{font-size:24px}
+  .ruvy-app .panel{padding:18px 16px;border-radius:22px} .ruvy-app .plan-hub-grid{grid-template-columns:1fr;gap:12px}
+  .ruvy-app .plan-hub-card{min-height:100px;padding:18px;border-radius:22px} .ruvy-app .plan-hub-card b{font-size:14px}
+  .ruvy-app .quick-entry-chooser{gap:7px} .ruvy-app .quick-entry{padding:12px 10px;border-radius:16px}
+  .ruvy-app :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){font-size:16px}
+  .ruvy-app .ruvy-period select{font-size:12px}
+  .ruvy-setting-row{padding:16px;min-height:70px}
+  .ruvy-app .user-dropdown{max-height:calc(100dvh - 90px - env(safe-area-inset-bottom))} .ruvy-app .modal-card{max-height:calc(100dvh - 28px - env(safe-area-inset-bottom));overflow-y:auto}
+  .ruvy-app .ai-chat-panel{border-radius:24px 24px 0 0;padding-top:env(safe-area-inset-top)} .ruvy-app .ai-chat-form{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .ruvy-app .ai-chip{min-height:44px}
+}
+@media(max-width:360px){.ruvy-app main{padding-inline:max(14px,env(safe-area-inset-left))!important}.ruvy-app .topbar{padding-inline:14px}.ruvy-app .topbar-actions{gap:6px}.ruvy-greeting{font-size:20px}.ruvy-balance-value{font-size:29px}.ruvy-home-actions .btn{font-size:10px}}

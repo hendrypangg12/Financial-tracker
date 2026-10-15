@@ -1,648 +1,95 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BerUang — Catat Duit, Hidup Lebih Tertata 🐻💰</title>
-<meta name="description" content="Aplikasi catat keuangan personal dengan AI Akuntan + bot Telegram. Gratis 2 hari · Akses 7 hari Rp 10rb · Bulanan Rp 50rb · Tahunan Rp 299rb (hemat 50%). Bahasa Indonesia." />
-<meta name="theme-color" content="#412b23" />
-<link rel="icon" type="image/png" href="assets/icons/beruang-wallet-192.png" />
-<meta property="og:title" content="BerUang — Catat Duit, Hidup Lebih Tertata" />
-<meta property="og:description" content="Catat keuangan tanpa ribet. Tinggal chat / foto struk → otomatis terorganisir." />
-<meta property="og:image" content="assets/icons/beruang-wallet-192.png" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #fbf6ee;
-  --cream: #f5ebd8;
-  --cream-deep: #ede2cc;
-  --ink: #3e2d21;
-  --ink-soft: #8b7355;
-  --line: #ede2cc;
-  --brown: #8b5a2b;
-  --brown-dark: #6f4518;
-  --brown-light: #c89468;
-  --gold: #c9a352;
-  --gold-bright: #d4af37;
-  --green: #10b981;
-  --red: #ef4444;
-  --blue: #3b82f6;
-}
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
-img { max-width: 100%; display: block; }
-.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-
-/* NAV */
-nav { position: sticky; top: 0; z-index: 100; background: rgba(251,246,238,.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 12px 0; }
-nav .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-nav .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--brown-dark); text-decoration: none; }
-nav .logo img { width: 36px; height: 36px; border-radius: 50%; }
-nav .lifetime-badge { background: linear-gradient(135deg, var(--green), #34d399); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 5px; letter-spacing: 1px; margin-left: 4px; }
-nav .nav-cta { background: var(--brown); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; }
-
-/* HERO */
-.hero { background: linear-gradient(135deg, var(--bg) 0%, var(--cream) 100%); padding: 60px 20px 70px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; top: -10%; right: -10%; width: 50%; height: 80%; background: radial-gradient(circle, rgba(201,163,82,.18), transparent 60%); }
-.hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; position: relative; z-index: 2; }
-.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(139,90,43,.08); border: 1px solid rgba(139,90,43,.2); color: var(--brown); padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 18px; }
-.hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold-bright); animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-.hero h1 { font-size: 52px; font-weight: 900; line-height: 1.05; color: var(--ink); letter-spacing: -1.5px; margin-bottom: 16px; }
-.hero h1 .grad { background: linear-gradient(135deg, var(--brown), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p.lead { font-size: 18px; color: var(--ink-soft); margin-bottom: 26px; line-height: 1.55; }
-.hero p.lead strong { color: var(--ink); }
-.cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
-.btn-primary { background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; padding: 14px 26px; border-radius: 12px; font-size: 15px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 24px rgba(139,90,43,.3); transition: transform .15s, box-shadow .15s; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(139,90,43,.45); }
-.btn-secondary { background: rgba(139,90,43,.08); border: 2px solid rgba(139,90,43,.15); color: var(--brown); padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-.btn-secondary:hover { background: rgba(139,90,43,.15); }
-.hero-trust { font-size: 13px; color: var(--ink-soft); display: flex; gap: 16px; flex-wrap: wrap; }
-.hero-trust span { display: flex; align-items: center; gap: 4px; }
-
-/* Phone mockup */
-.hero-phone { display: flex; justify-content: center; }
-.phone-frame { width: 280px; background: var(--ink); border-radius: 36px; padding: 12px; box-shadow: 0 30px 80px rgba(62,45,33,.25); position: relative; }
-.phone-frame::before { content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 70px; height: 18px; background: #1a1a1a; border-radius: 999px; z-index: 2; }
-.phone-screen { background: var(--bg); border-radius: 24px; padding: 32px 16px 16px; min-height: 480px; display: flex; flex-direction: column; gap: 10px; }
-.phone-header { display: flex; align-items: center; gap: 10px; padding: 8px 4px 12px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
-.phone-header .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--brown), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.phone-header b { font-size: 12px; color: var(--ink); }
-.phone-header .stat { margin-left: auto; font-size: 9px; color: var(--green); display: flex; align-items: center; gap: 3px; }
-.phone-header .stat::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
-.chat-msg { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 11px; line-height: 1.4; max-width: 85%; align-self: flex-start; }
-.chat-msg.user { background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; align-self: flex-end; border: none; }
-.chat-msg b { color: var(--brown); }
-.chat-msg.user b { color: var(--gold-bright); }
-.chat-msg .auto-cat { display: inline-block; margin-top: 4px; padding: 2px 6px; background: rgba(16,185,129,.1); color: var(--green); border-radius: 4px; font-size: 9px; font-weight: 700; }
-@media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 32px; } .hero p.lead { font-size: 15px; } .hero-phone { display: none; } }
-
-/* Section common */
-.section { padding: 70px 20px; }
-.section h2 { font-size: 36px; font-weight: 900; color: var(--ink); text-align: center; letter-spacing: -1px; margin-bottom: 14px; }
-.section h2 .grad { background: linear-gradient(135deg, var(--brown), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.section .subtitle { font-size: 16px; color: var(--ink-soft); text-align: center; max-width: 600px; margin: 0 auto 40px; }
-
-/* Problem */
-.problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.problem-card { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--red); border-radius: 12px; padding: 20px; }
-.problem-card .ic { font-size: 32px; margin-bottom: 8px; }
-.problem-card h3 { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
-.problem-card p { font-size: 14px; color: var(--ink-soft); }
-@media (max-width: 640px) { .problem-grid { grid-template-columns: 1fr; } }
-
-/* How */
-.how-section { background: #fff; }
-.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.how-step { text-align: center; padding: 30px 20px; background: linear-gradient(180deg, var(--bg), #fff); border: 1px solid var(--line); border-radius: 16px; }
-.how-step .num { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 800; background: linear-gradient(135deg, var(--brown), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
-.how-step .ic { font-size: 56px; margin: 12px 0; }
-.how-step h3 { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
-.how-step p { font-size: 14px; color: var(--ink-soft); }
-@media (max-width: 768px) { .how-grid { grid-template-columns: 1fr; } }
-
-/* Features grid */
-.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.feat-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; transition: transform .15s, box-shadow .15s; }
-.feat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139,90,43,.1); }
-.feat-card.highlight { background: linear-gradient(135deg, #fefce8, #fff); border: 2px solid var(--gold); box-shadow: 0 8px 30px rgba(201,163,82,.15); }
-.feat-card .ic { font-size: 32px; margin-bottom: 10px; }
-.feat-card h3 { font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
-.feat-card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
-@media (max-width: 640px) { .feat-grid { grid-template-columns: 1fr; } }
-
-/* Deep features */
-.deep-feat-section { background: linear-gradient(180deg, #fff 0%, var(--bg) 100%); }
-.deep-feat { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; padding: 50px 0; border-bottom: 1px solid var(--line); }
-.deep-feat:last-child { border-bottom: none; }
-.deep-feat.reverse .deep-feat-text { order: 2; }
-.deep-feat-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; font-weight: 700; color: var(--brown); border: 1px solid var(--brown); padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
-.deep-feat-text h3 { font-size: 28px; font-weight: 800; color: var(--ink); margin-bottom: 12px; line-height: 1.2; letter-spacing: -0.5px; }
-.deep-feat-text > p { font-size: 15px; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.6; }
-.deep-feat-list { list-style: none; }
-.deep-feat-list li { font-size: 14px; color: var(--ink); padding: 6px 0; line-height: 1.55; }
-.deep-feat-list li b { color: var(--brown-dark); }
-.deep-feat-mockup { background: linear-gradient(135deg, var(--brown-dark), var(--ink)); border-radius: 16px; padding: 20px; box-shadow: 0 20px 50px rgba(62,45,33,.3); }
-.mock-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 16px; color: #f5ebd8; }
-.mock-head { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.5px; color: var(--gold-bright); padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 10px; }
-.mock-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,.08); font-size: 13px; }
-.mock-row:last-child { border-bottom: none; }
-.mock-row b { font-weight: 700; color: #fff; }
-.mock-row small { font-size: 10px; color: #c89468; }
-.mock-row.income b { color: #4ade80; }
-.mock-row.expense b { color: #f87171; }
-.mock-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.mock-stat { background: rgba(255,255,255,.06); border-radius: 8px; padding: 12px; border-left: 3px solid var(--gold); }
-.mock-stat.income { border-left-color: #4ade80; }
-.mock-stat.expense { border-left-color: #f87171; }
-.mock-stat .lbl { font-size: 10px; color: #c89468; text-transform: uppercase; letter-spacing: .5px; }
-.mock-stat .val { font-size: 22px; font-weight: 800; color: #fff; margin-top: 2px; }
-.mock-stat.income .val { color: #4ade80; }
-.mock-stat.expense .val { color: #f87171; }
-.mock-chat-wrap { display: flex; flex-direction: column; gap: 8px; }
-.mock-chat-bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; max-width: 85%; }
-.mock-chat-bubble.user { background: linear-gradient(135deg, var(--brown-light), var(--gold)); color: #1a1a1a; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
-.mock-chat-bubble.bot { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); color: #f5ebd8; align-self: flex-start; border-bottom-left-radius: 4px; }
-.mock-chat-bubble b { color: var(--gold-bright); }
-.mock-chat-bubble .green { color: #4ade80; }
-.mock-chat-bubble .auto-tag { display: inline-block; margin-top: 4px; padding: 1px 6px; background: rgba(74,222,128,.15); color: #4ade80; border-radius: 4px; font-size: 10px; font-weight: 700; }
-.mock-receipt { background: #fff; color: var(--ink); border-radius: 8px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.5; margin-bottom: 10px; }
-.mock-receipt .center { text-align: center; }
-.mock-receipt hr { border: 0; border-top: 1px dashed var(--ink-soft); margin: 6px 0; }
-.mock-receipt .total { font-weight: 800; font-size: 13px; }
-.mock-arrow { text-align: center; font-size: 24px; color: var(--gold-bright); margin: 4px 0; }
-@media (max-width: 768px) { .deep-feat { grid-template-columns: 1fr; gap: 24px; padding: 36px 0; } .deep-feat.reverse .deep-feat-text { order: 0; } .deep-feat-text h3 { font-size: 22px; } }
-
-/* Use case */
-.usecase-section { background: #fff; }
-.usecase-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.usecase-card { text-align: center; padding: 24px 18px; background: linear-gradient(180deg, var(--bg), #fff); border: 1px solid var(--line); border-radius: 14px; }
-.usecase-card .ic { font-size: 44px; margin-bottom: 10px; }
-.usecase-card h4 { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
-.usecase-card p { font-size: 12px; color: var(--ink-soft); }
-@media (max-width: 640px) { .usecase-grid { grid-template-columns: 1fr 1fr; } }
-
-/* Pricing */
-.pricing-section { background: var(--bg); }
-.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 800px; margin: 0 auto; }
-.plan { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 30px 24px; display: flex; flex-direction: column; }
-.plan.featured { border-color: var(--gold); background: linear-gradient(180deg, #fefce8 0%, #fff 100%); box-shadow: 0 16px 40px rgba(201,163,82,.2); position: relative; transform: scale(1.03); }
-.plan.featured::before { content: '🔥 BEST VALUE'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #fff; font-weight: 800; font-size: 11px; letter-spacing: 1px; padding: 4px 12px; border-radius: 6px; white-space: nowrap; }
-.plan-name { font-size: 13px; letter-spacing: 2px; color: var(--brown); font-weight: 700; }
-.plan-price { font-size: 38px; font-weight: 900; color: var(--ink); margin: 6px 0 4px; }
-.plan-price small { font-size: 14px; color: var(--ink-soft); font-weight: 500; }
-.plan-desc { font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; min-height: 38px; }
-.plan ul { list-style: none; margin-bottom: 20px; flex: 1; }
-.plan li { font-size: 14px; color: var(--ink); padding: 5px 0; display: flex; gap: 6px; }
-.plan li::before { content: '✓'; color: var(--green); font-weight: 700; }
-.plan-cta { background: var(--brown); color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; font-size: 14px; }
-.plan.featured .plan-cta { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color: var(--ink); }
-@media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } .plan.featured { transform: none; } }
-
-/* FAQ */
-.faq-section { background: var(--cream); }
-.faq { max-width: 800px; margin: 0 auto; }
-.faq details { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
-.faq summary { font-weight: 700; font-size: 16px; color: var(--ink); cursor: pointer; list-style: none; }
-.faq summary::after { content: '＋'; float: right; font-weight: 700; }
-.faq details[open] summary::after { content: '−'; }
-.faq details p { margin-top: 12px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
-
-/* Cross-sell BerBisnis */
-.cross-sell-section { padding: 60px 20px; background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%); position: relative; overflow: hidden; }
-.cross-sell-section::before { content: ''; position: absolute; top: -30%; right: -10%; width: 50%; height: 160%; background: radial-gradient(circle, rgba(212,175,55,.15), transparent 60%); }
-.cross-sell-card { background: rgba(255,255,255,.05); border-radius: 24px; padding: 36px 30px; max-width: 880px; margin: 0 auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); position: relative; overflow: hidden; display: grid; grid-template-columns: 110px 1fr auto; gap: 24px; align-items: center; border: 2px dashed #d4af37; color: #fff; }
-.cross-sell-card::before { content: '👔 BUAT BISNIS'; position: absolute; top: 14px; left: 14px; background: #e91e63; color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 2px; padding: 4px 10px; border-radius: 6px; transform: rotate(-3deg); }
-.cross-sell-card .cs-icon { width: 110px; height: 110px; background: linear-gradient(135deg, #1e3a5f, #0f1f3d); border: 2px solid #d4af37; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 24px rgba(212,175,55,.3); overflow: hidden; }
-.cross-sell-card .cs-icon img { width: 80%; height: 80%; object-fit: contain; }
-.cross-sell-card .cs-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #d4af37; background: rgba(212,175,55,.15); padding: 4px 10px; border-radius: 6px; margin-bottom: 8px; }
-.cross-sell-card h3 { font-size: 26px; font-weight: 900; color: #fff; margin-bottom: 6px; line-height: 1.15; }
-.cross-sell-card h3 .grad-cs { background: linear-gradient(135deg, #d4af37, #ffd76a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.cross-sell-card .cs-desc { font-size: 14px; color: #cbd5e1; line-height: 1.55; margin-bottom: 12px; }
-.cross-sell-card .cs-features { display: flex; gap: 10px; flex-wrap: wrap; }
-.cross-sell-card .cs-features span { font-size: 12px; background: rgba(212,175,55,.12); color: #d4af37; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
-.cross-sell-card .cs-cta { background: linear-gradient(135deg, #d4af37, #ffd76a); color: #0a1628; padding: 16px 24px; border-radius: 12px; font-size: 15px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(212,175,55,.3); white-space: nowrap; }
-.cross-sell-card .cs-cta:hover { transform: translateY(-2px); }
-.cross-sell-card .cs-price { display: block; font-size: 11px; color: rgba(10,22,40,.7); font-weight: 600; margin-top: 2px; letter-spacing: 1px; }
-@media (max-width: 768px) { .cross-sell-card { grid-template-columns: 1fr; text-align: center; padding: 30px 20px; } .cross-sell-card .cs-icon { margin: 0 auto; width: 80px; height: 80px; } .cross-sell-card h3 { font-size: 22px; } .cross-sell-card .cs-features { justify-content: center; } .cross-sell-card .cs-cta { width: 100%; justify-content: center; } }
-
-/* CTA Final */
-.cta-final { background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; text-align: center; padding: 70px 20px; position: relative; overflow: hidden; }
-.cta-final::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(212,175,55,.15), transparent 50%); }
-.cta-final .container { position: relative; z-index: 2; }
-.cta-final h2 { font-size: 38px; color: #fff; margin-bottom: 14px; }
-.cta-final h2 .grad { background: linear-gradient(135deg, var(--gold-bright), #ffd76a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.cta-final p { font-size: 16px; color: rgba(255,255,255,.85); max-width: 600px; margin: 0 auto 28px; }
-.cta-final-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.cta-final .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color: var(--ink); }
-.cta-final .btn-secondary { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); color: #fff; }
-.cta-final .contact { margin-top: 22px; font-size: 13px; color: rgba(255,255,255,.7); }
-.cta-final .contact b { color: var(--gold-bright); }
-
-/* Footer */
-footer { background: var(--ink); color: rgba(255,255,255,.7); padding: 36px 20px 28px; text-align: center; }
-footer .links { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
-footer a { color: rgba(255,255,255,.85); text-decoration: none; font-size: 14px; }
-footer a:hover { color: var(--gold-bright); }
-footer .copy { font-size: 12px; }
-
-/* Mascot widget */
-.mascot-widget { position: fixed; bottom: 24px; right: 24px; z-index: 9999; pointer-events: none; }
-.mascot-avatar-float { position: absolute; bottom: 0; right: 0; width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, var(--brown), var(--gold)); padding: 4px; cursor: pointer; pointer-events: auto; box-shadow: 0 8px 24px rgba(139,90,43,.4); animation: mascot-pulse 2.5s infinite; }
-@keyframes mascot-pulse { 0%, 100% { box-shadow: 0 8px 24px rgba(139,90,43,.4), 0 0 0 0 rgba(139,90,43,.4); } 50% { box-shadow: 0 8px 32px rgba(139,90,43,.55), 0 0 0 14px rgba(139,90,43,0); } }
-.mascot-avatar-float img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
-.mascot-avatar-float .online-dot { position: absolute; bottom: 4px; right: 4px; width: 16px; height: 16px; background: var(--green); border: 3px solid #fff; border-radius: 50%; }
-.mascot-avatar-float .notif-dot { position: absolute; top: -2px; right: -2px; width: 22px; height: 22px; background: #ef4444; border: 2px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 800; animation: notif-bounce 1s infinite; }
-@keyframes notif-bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
-.mascot-chat-panel { position: absolute; bottom: 84px; right: 0; width: 320px; background: #fff; border-radius: 18px; box-shadow: 0 20px 60px rgba(62,45,33,.2); overflow: hidden; pointer-events: none; opacity: 0; transform: translateY(20px) scale(.9); transform-origin: bottom right; transition: opacity .35s, transform .35s cubic-bezier(.34,1.56,.64,1); }
-.mascot-chat-panel.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-.mcp-head { background: linear-gradient(135deg, var(--brown), var(--brown-dark)); color: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
-.mcp-head .av-mini { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); padding: 2px; flex-shrink: 0; }
-.mcp-head .av-mini img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
-.mcp-head .info { flex: 1; }
-.mcp-head .info .name { font-weight: 800; font-size: 13px; }
-.mcp-head .info .status { font-size: 10px; color: #4ade80; display: flex; align-items: center; gap: 4px; }
-.mcp-head .info .status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #22c55e; }
-.mcp-head .close-x { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.1); border-radius: 50%; font-size: 14px; cursor: pointer; }
-.mcp-body { padding: 16px; background: var(--bg); max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.mcp-msg { background: #fff; border: 1px solid var(--line); border-radius: 12px; border-bottom-left-radius: 4px; padding: 10px 13px; font-size: 13px; line-height: 1.5; color: var(--ink); max-width: 88%; align-self: flex-start; opacity: 0; transform: translateY(8px); animation: msg-in .3s ease forwards; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
-@keyframes msg-in { to { opacity: 1; transform: translateY(0); } }
-.mcp-msg strong { color: var(--brown); }
-.mcp-msg .grad-text { background: linear-gradient(135deg, var(--brown), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-.mcp-msg .time { display: block; font-size: 9px; color: var(--ink-soft); margin-top: 3px; }
-.mcp-typing { background: #fff; border: 1px solid var(--line); border-radius: 12px; border-bottom-left-radius: 4px; padding: 10px 14px; align-self: flex-start; display: inline-flex; gap: 4px; opacity: 0; animation: msg-in .3s ease forwards; }
-.mcp-typing span { width: 6px; height: 6px; background: #cbd5e1; border-radius: 50%; animation: typing-dot 1.4s infinite; }
-.mcp-typing span:nth-child(2) { animation-delay: .2s; }
-.mcp-typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes typing-dot { 0%,60%,100%{transform:translateY(0); opacity:.4} 30%{transform:translateY(-4px); opacity:1} }
-.mcp-actions { padding: 10px 16px 16px; background: #fff; display: flex; flex-direction: column; gap: 6px; }
-.mcp-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
-.mcp-btn.primary { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
-.mcp-btn.secondary { background: var(--brown); color: #fff; }
-.mcp-footer { padding: 8px 16px; background: var(--cream); text-align: center; font-size: 9px; color: var(--ink-soft); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
-@media (max-width: 480px) { .mascot-widget { bottom: 16px; right: 16px; } .mascot-avatar-float { width: 58px; height: 58px; } .mascot-chat-panel { width: calc(100vw - 32px); max-width: 340px; bottom: 70px; } }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ruvy - AI Money Tracker</title>
+  <meta name="description" content="Track money and choose a currency for each wallet. English and Bahasa Indonesia. A 2-day recording trial. Ruvy AI is temporarily unavailable." />
+  <meta name="theme-color" content="#12213b" />
+  <link rel="canonical" href="https://berstock.id/landing.html" />
+  <link rel="alternate" hreflang="id" href="https://berstock.id/" />
+  <link rel="alternate" hreflang="en" href="https://berstock.id/landing.html" />
+  <link rel="icon" href="assets/icons/ruvy-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/ruvy-192.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://berstock.id/landing.html" />
+  <meta property="og:title" content="Ruvy - AI Money Tracker" />
+  <meta property="og:description" content="Your money, made clear. Track records by wallet and currency. Ruvy AI is temporarily unavailable." />
+  <meta property="og:image" content="https://berstock.id/assets/icons/ruvy-512.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Ruvy - AI Money Tracker" />
+  <meta name="twitter:description" content="Track money, choose a currency per wallet, and understand your spending. English and Bahasa Indonesia." />
+  <meta name="twitter:image" content="https://berstock.id/assets/icons/ruvy-512.png" />
+  <style>
+    :root{color-scheme:light;--ink:#12213b;--muted:#50627d;--blue:#3265e7;--line:#dbe4f4;--pale:#edf3ff}
+    *{box-sizing:border-box}body{margin:0;background:#f7faff;color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}a{color:#234fac;text-underline-offset:4px}a:focus-visible{outline:3px solid #ea9c28;outline-offset:5px;border-radius:6px}img{max-width:100%;height:auto}.wrap{width:min(1080px,calc(100% - 40px));margin:auto}
+    nav{background:#fff;border-bottom:1px solid var(--line)}.nav-inner{display:flex;align-items:center;gap:24px;min-height:82px}.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-size:24px;font-weight:800;text-decoration:none}.brand img{width:44px;height:44px}.nav-language{margin-left:auto;font-size:14px}.nav-open{font-size:14px;font-weight:700}
+    .hero{padding:72px 0 56px;display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center}.eyebrow{margin:0 0 20px;font-size:12px;letter-spacing:1.4px;font-weight:750;text-transform:uppercase;color:#35558b}h1{font-size:clamp(42px,6vw,70px);line-height:1.07;letter-spacing:-2px;margin:0 0 25px}h1 span{color:var(--blue)}.lead{font-size:18px;max-width:600px;color:var(--muted);margin:0 0 26px}.actions{display:flex;gap:12px;flex-wrap:wrap}.button{display:inline-flex;align-items:center;justify-content:center;padding:13px 20px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:#fff;color:var(--ink)}.button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}.fine{font-size:13px;color:var(--muted);margin:14px 0 0}.transition-note{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+    .mascot{background:linear-gradient(145deg,#e6edff,#fff);border:1px solid var(--line);border-radius:34px;padding:44px 32px;text-align:center;box-shadow:0 18px 60px #18376d0d}.mascot img{width:220px}.mascot h2{font-size:24px;margin:20px 0 4px}.mascot p{font-size:14px;color:var(--muted);margin:0}
+    .service-notice{padding:15px 18px;margin:0 0 24px;border:1px solid #d5aa52;border-radius:12px;background:#fff4d7;color:#57390e;font-size:14px;line-height:1.6}.service-notice strong{display:block;margin-bottom:3px}
+    section{padding:50px 0}h2{font-size:30px;line-height:1.2;letter-spacing:-.6px;margin:0 0 14px}.section-intro{color:var(--muted);max-width:680px;margin:0 0 28px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{padding:28px;background:#fff;border:1px solid var(--line);border-radius:20px}.card .number{color:#5479c0;font-size:12px;font-weight:800;letter-spacing:1px}.card h3{font-size:20px;line-height:1.3;margin:12px 0}.card p{color:var(--muted);margin:0;font-size:15px}.card p+p{margin-top:13px}.access{background:var(--ink);color:#fff;border-radius:28px;padding:36px}.access h2{color:#fff}.access p{color:#d9e3f5}.access ul{padding-left:22px;line-height:1.8}.access li+li{margin-top:12px}.access a{color:#d6e3ff}.contact{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:32px;background:var(--pale);border:1px solid var(--line);border-radius:22px}.contact h2{font-size:24px}.contact p{margin:0;color:var(--muted);font-size:15px}
+    footer{margin-top:30px;padding:32px 0;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}.footer-inner{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between}.footer-links{display:flex;flex-wrap:wrap;gap:18px}
+    @media(max-width:760px){.wrap{width:calc(100% - 32px)}.nav-inner{gap:14px;min-height:72px}.brand{font-size:21px}.brand img{width:36px;height:36px}.nav-language,.nav-open{font-size:12px}.hero{grid-template-columns:1fr;gap:28px;padding:44px 0 30px}.mascot{padding:28px}.mascot img{width:150px}.cards{grid-template-columns:1fr}.card{padding:24px}section{padding:32px 0}.access{padding:26px}.contact{display:block;padding:26px}.contact .button{margin-top:22px}.footer-inner{display:block}.footer-links{margin-top:16px}h1{letter-spacing:-1.5px}}
+  </style>
 </head>
 <body>
-
-<nav>
-  <div class="container nav-inner">
-    <a href="#" class="logo">
-      <img src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
-      <span>BerUang<span class="lifetime-badge">AI ✨</span></span>
-    </a>
-    <a href="#pricing" class="nav-cta">Lihat Pricing →</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container hero-grid">
-    <div>
-      <div class="hero-badge"><span class="dot"></span> CATAT DUIT TANPA RIBET</div>
-      <h1>Catat Duit,<br><span class="grad">Hidup Lebih Tertata.</span></h1>
-      <p class="lead">Aplikasi keuangan personal paling simpel di Indonesia. Tinggal ketik <strong>"bakso 45rb"</strong> atau foto struk — otomatis tercatat, terkategorisasi, dan ter-laporkan.</p>
-      <div class="cta-row">
-        <a href="#pricing" class="btn-primary">💰 Lihat Pricing</a>
-        <a href="app.html" target="_blank" class="btn-secondary">🎁 Coba Gratis</a>
-      </div>
-      <div class="hero-trust">
-        <span>✓ Tanpa kartu kredit</span>
-        <span>✓ Setup 1 menit</span>
-        <span>✓ Gratis 2 hari · AI Akuntan mulai Rp 10rb</span>
-      </div>
+  <nav aria-label="Main navigation">
+    <div class="wrap nav-inner">
+      <a class="brand" href="landing.html"><img src="assets/icons/ruvy-mark.svg" alt="" /><span>Ruvy</span></a>
+      <a class="nav-language" href="index.html" lang="id" hreflang="id">Bahasa Indonesia</a>
+      <a class="nav-open" href="app.html">Open app</a>
     </div>
-    <div class="hero-phone">
-      <div class="phone-frame">
-        <div class="phone-screen">
-          <div class="phone-header">
-            <div class="av">🐻</div>
-            <div><b>BerUang</b><div style="font-size:9px; color:#8b7355">Catat duit personal</div></div>
-            <div class="stat">Live</div>
-          </div>
-          <div class="chat-msg user">bakso 45rb</div>
-          <div class="chat-msg">✅ Tercatat: <b>Rp 45.000</b><br><span class="auto-cat">🍜 Makanan</span></div>
-          <div class="chat-msg user">grab 25rb pulang kantor</div>
-          <div class="chat-msg">✅ Tercatat: <b>Rp 25.000</b><br><span class="auto-cat">🚗 Transportasi</span></div>
-          <div class="chat-msg user">gaji bulan ini 8jt</div>
-          <div class="chat-msg">💰 Pemasukan: <b>Rp 8.000.000</b><br><span class="auto-cat">💼 Gaji</span></div>
+  </nav>
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AI Money Tracker · English &amp; Bahasa Indonesia</p>
+        <h1>Your money,<br><span>made clear.</span></h1>
+        <p class="lead">Record income and expenses, choose a currency for each wallet, and review your spending reports. Use the same account to keep your records in sync across devices.</p>
+        <aside class="service-notice" aria-label="Service availability"><strong>Ruvy AI is temporarily unavailable.</strong> Money recording and wallet tools remain available.</aside>
+        <div class="actions">
+          <a class="button primary" href="https://play.google.com/store/apps/details?id=id.berstock.beruang" target="_blank" rel="noopener">View on Google Play</a>
+          <a class="button" href="app.html">Open web app</a>
         </div>
+        <p class="fine">New accounts get a 2-day trial for recording features. Choose English on the sign-in screen.</p>
+        <p class="transition-note"><strong>Ruvy was previously called BerUang.</strong> Your existing account and records continue to work.</p>
       </div>
-    </div>
-  </div>
-</header>
-
-<section class="section">
-  <div class="container">
-    <h2>Catat Keuangan? <span style="color: var(--red)">Susah Banget</span> Ya Bos?</h2>
-    <p class="subtitle">Niat awal sebulan rajin catet, akhir bulan amblas. Kenal banget kan?</p>
-    <div class="problem-grid">
-      <div class="problem-card"><div class="ic">😩</div><h3>Males Buka Spreadsheet</h3><p>Capek pulang kantor, nyatat di Excel? Ribet. Akhirnya skip 3 hari, lupa angka.</p></div>
-      <div class="problem-card"><div class="ic">📸</div><h3>Struk Numpuk di Dompet</h3><p>Niat dicatat, tapi struk-nya hilang. Ujung-ujungnya gak tahu duit kemana.</p></div>
-      <div class="problem-card"><div class="ic">🤔</div><h3>Bingung Kategorisasi</h3><p>"Beli boba ini termasuk hiburan apa makanan?" Mikir kategori malah jadi malas.</p></div>
-      <div class="problem-card"><div class="ic">📊</div><h3>Gak Tahu Pengeluaran Real</h3><p>Akhir bulan saldo tipis. "Kok cepet abis ya?" Karena gak ada laporan visual.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section how-section">
-  <div class="container">
-    <h2>Cara Kerjanya <span class="grad">Cuma 3 Step</span></h2>
-    <p class="subtitle">Setup 1 menit, langsung pakai. Bisa dari HP atau laptop.</p>
-    <div class="how-grid">
-      <div class="how-step"><div class="num">01</div><div class="ic">💬</div><h3>Ketik Singkat / Foto</h3><p>"bakso 45rb" atau foto struk — itu aja. Gak perlu pilih kategori manual.</p></div>
-      <div class="how-step"><div class="num">02</div><div class="ic">🤖</div><h3>Otomatis Tercatat</h3><p>Aplikasi parse otomatis: nominal, kategori, tanggal. Gak ribet.</p></div>
-      <div class="how-step"><div class="num">03</div><div class="ic">📊</div><h3>Lihat Dashboard</h3><p>Kapanpun mau cek "duit kemana?" — buka app, langsung lihat grafik.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Fitur <span class="grad">Lengkap</span> di 1 App</h2>
-    <p class="subtitle">Semua yang bos butuh untuk kelola duit personal — dalam 1 aplikasi simpel.</p>
-    <div class="feat-grid">
-      <div class="feat-card highlight"><div class="ic">💬</div><h3>Input via Chat</h3><p>Ketik bahasa alami: "bakso 45rb" → otomatis tercatat dengan kategori benar.</p></div>
-      <div class="feat-card highlight"><div class="ic">📸</div><h3>OCR Foto Struk</h3><p>Foto struk belanja → app otomatis baca total + tanggal. Tinggal save.</p></div>
-      <div class="feat-card"><div class="ic">📊</div><h3>Dashboard Visual</h3><p>Grafik pemasukan, pengeluaran, kategori. Update real-time setiap input.</p></div>
-      <div class="feat-card"><div class="ic">💸</div><h3>Hutang & Piutang</h3><p>Pinjam/Pinjamin uang? Catat sekali, app ingatkan saat jatuh tempo.</p></div>
-      <div class="feat-card"><div class="ic">🏷️</div><h3>Auto-Kategorisasi</h3><p>Makanan, transport, hiburan — kategorisasi otomatis, bisa custom.</p></div>
-      <div class="feat-card"><div class="ic">📅</div><h3>Laporan per Periode</h3><p>Harian, mingguan, bulanan, tahunan. Bandingkan budget vs actual.</p></div>
-      <div class="feat-card"><div class="ic">☁️</div><h3>Cloud Sync Multi-Device</h3><p>Pakai di HP, lanjut di laptop. Data sinkron real-time, otomatis backup.</p></div>
-      <div class="feat-card"><div class="ic">📤</div><h3>Export Data</h3><p>Unduh cadangan JSON kapan saja dan impor kembali ke BerUang.</p></div>
-      <div class="feat-card"><div class="ic">🔒</div><h3>Kontrol Akun & Privasi</h3><p>Catatan dikaitkan ke akun pengguna. Fitur AI hanya memproses konteks keuangan saat digunakan; detailnya ada di kebijakan privasi.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section deep-feat-section">
-  <div class="container">
-    <h2>4 Fitur Paling <span class="grad">Disukai Pengguna</span></h2>
-    <p class="subtitle">Bukan sekedar fitur — ini yang bikin pengguna BerUang gak bisa lepas.</p>
-
-    <div class="deep-feat">
-      <div class="deep-feat-text">
-        <div class="deep-feat-tag">💬 SMART INPUT</div>
-        <h3>Catat Pengeluaran Pakai Chat Biasa</h3>
-        <p>Tidak ada lagi alasan "males buka app". Tinggal ketik kayak chat WA — selesai dalam 3 detik.</p>
-        <ul class="deep-feat-list">
-          <li>📝 Format bebas: <b>"bakso 45rb"</b>, <b>"isi bensin 100k"</b>, <b>"kopi 25 ribu"</b></li>
-          <li>🤖 AI parse otomatis: nominal, kategori, item</li>
-          <li>⏱️ Auto isi tanggal & waktu</li>
-          <li>✏️ Edit nanti kalau salah — tap aja</li>
-          <li>🔄 Bulk input: 5 transaksi sekaligus dalam 1 chat</li>
-        </ul>
+      <div class="mascot">
+        <img src="assets/icons/ruvy-mark.svg" alt="Ruvy mascot" />
+        <h2>Meet Ruvy</h2>
+        <p>A calmer place for your everyday money records.</p>
       </div>
-      <div class="deep-feat-mockup">
-        <div class="mock-card">
-          <div class="mock-head">💬 INPUT VIA CHAT · LIVE</div>
-          <div class="mock-chat-wrap">
-            <div class="mock-chat-bubble user">bakso pak yanto 45rb</div>
-            <div class="mock-chat-bubble bot">✅ Tercatat: <b>Rp 45.000</b><br>📍 Bakso Pak Yanto<br><span class="auto-tag">🍜 Makanan & Minuman</span></div>
-            <div class="mock-chat-bubble user">grab dari kantor 28rb</div>
-            <div class="mock-chat-bubble bot">✅ Tercatat: <b>Rp 28.000</b><br><span class="auto-tag">🚗 Transportasi</span></div>
-            <div class="mock-chat-bubble user">gaji 8jt</div>
-            <div class="mock-chat-bubble bot">💰 Pemasukan: <span class="green"><b>Rp 8.000.000</b></span><br><span class="auto-tag">💼 Gaji Bulanan</span></div>
-          </div>
-        </div>
+    </header>
+    <section aria-labelledby="features-title">
+      <h2 id="features-title">Record, review, understand.</h2>
+      <p class="section-intro">Keep daily records together and view each wallet in its selected currency.</p>
+      <div class="cards">
+        <article class="card"><span class="number">01 / WALLETS</span><h3>A currency for each wallet</h3><p>Create separate wallets for everyday life or travel. Choose currencies such as USD, EUR, GBP, IDR, SGD or MYR. Balances, debts and goals use the selected wallet currency.</p><p>Ruvy does not automatically convert currencies or combine balances in different currencies. The Telegram ledger currently uses IDR.</p></article>
+        <article class="card"><span class="number">02 / RECORDS</span><h3>Capture and review your spending</h3><p>Record income and expenses using text or a form. Read receipt photos with OCR, then check the results before saving. Find records with search, categories and date filters.</p><p>Track debts, receivables, recurring bills and savings goals. View reports by wallet, and export or restore backups.</p></article>
+        <article class="card"><span class="number">03 / RUVY AI</span><h3>AI is temporarily unavailable</h3><p>When the AI service is available, an active paid plan allows questions about spending, budgeting or savings goals. AI uses relevant summaries from your selected wallet; it is not individually trained on your records and does not remember previous conversations.</p><p>Responses can be incorrect, so check important figures. The usage limit is 30 questions per account per day.</p></article>
+        <article class="card"><span class="number">04 / YOUR ACCOUNT</span><h3>The same account across devices</h3><p>Choose English or Bahasa Indonesia in the app. Sign in with the same account on your devices to sync your records; an internet connection is needed to update cloud records.</p><p>Your records remain yours. Export backups and use the account menu or support to request account and data deletion.</p></article>
       </div>
-    </div>
-
-    <div class="deep-feat reverse">
-      <div class="deep-feat-text">
-        <div class="deep-feat-tag" style="color: var(--blue); border-color: var(--blue)">📸 OCR STRUK</div>
-        <h3>Foto Struk → Auto Tercatat</h3>
-        <p>Belanja di Indomaret/Alfamart/restoran? Tinggal foto struk-nya. AI baca otomatis total, tanggal, dan kategori.</p>
-        <ul class="deep-feat-list">
-          <li>📷 <b>Tinggal foto struk</b>, gak perlu ketik manual</li>
-          <li>🔍 Hasil OCR dapat diperiksa dan diedit sebelum disimpan</li>
-          <li>📋 <b>Item-by-item parsing</b> kalau struk detail</li>
-          <li>💾 Hasil pembacaan menjadi rancangan transaksi; foto tidak disimpan sebagai lampiran</li>
-          <li>⚡ Proses <b>5 detik</b>, langsung masuk dashboard</li>
-        </ul>
-      </div>
-      <div class="deep-feat-mockup">
-        <div class="mock-card">
-          <div class="mock-head">📸 OCR STRUK · DEMO</div>
-          <div class="mock-receipt">
-            <div class="center"><b>INDOMARET</b><br>JL SUDIRMAN NO 123</div>
-            <hr>
-            Indomie Goreng x2 ......  7.000<br>
-            Aqua 600ml x1 ..........  4.000<br>
-            Beng Beng x3 ........... 11.500<br>
-            Kopi Kapal Api x1 ......  3.500<br>
-            <hr>
-            <div class="total center">TOTAL: Rp 26.000</div>
-            <div class="center" style="font-size:9px">02 Mei 2026 · 14:23</div>
-          </div>
-          <div class="mock-arrow">↓ AI baca otomatis ↓</div>
-          <div class="mock-row expense"><span>Indomaret</span><b>Rp 26.000</b></div>
-          <div class="mock-row"><span>Kategori</span><b style="color:#fbbf24">🛒 Belanja Harian</b></div>
-          <div class="mock-row"><span>Tanggal</span><b>2 Mei 2026</b></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="deep-feat">
-      <div class="deep-feat-text">
-        <div class="deep-feat-tag" style="color: var(--green); border-color: var(--green)">📊 DASHBOARD</div>
-        <h3>Lihat Duit Kemana — dalam Sekejap</h3>
-        <p>Stop pertanyaan "kok saldo cepet abis ya?". Dashboard visual kasih jawaban dalam 5 detik.</p>
-        <ul class="deep-feat-list">
-          <li>💰 <b>Saldo real-time</b> + perbandingan bulan lalu</li>
-          <li>📊 <b>Donut chart kategori</b> visual breakdown pengeluaran</li>
-          <li>📈 <b>Trend grafik</b> 30 hari terakhir</li>
-          <li>🏆 <b>Top 5 kategori</b> pengeluaran tertinggi</li>
-          <li>🎯 <b>Target hemat</b> custom + progress tracker</li>
-        </ul>
-      </div>
-      <div class="deep-feat-mockup">
-        <div class="mock-card">
-          <div class="mock-head">📊 DASHBOARD · MEI 2026</div>
-          <div class="mock-stat-row">
-            <div class="mock-stat income"><div class="lbl">Pemasukan</div><div class="val">Rp 8.5jt</div></div>
-            <div class="mock-stat expense"><div class="lbl">Pengeluaran</div><div class="val">Rp 4.2jt</div></div>
-          </div>
-          <div class="mock-row"><span>💰 Net Saldo</span><b style="color:#4ade80">+ Rp 4.3jt</b></div>
-          <div class="mock-row"><span>🍜 Makanan & Minuman</span><b>Rp 1.2jt <small>(28%)</small></b></div>
-          <div class="mock-row"><span>🚗 Transportasi</span><b>Rp 850rb <small>(20%)</small></b></div>
-          <div class="mock-row"><span>🛒 Belanja</span><b>Rp 720rb <small>(17%)</small></b></div>
-          <div class="mock-row"><span>🎬 Hiburan</span><b>Rp 480rb <small>(11%)</small></b></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="deep-feat reverse">
-      <div class="deep-feat-text">
-        <div class="deep-feat-tag" style="color: var(--red); border-color: var(--red)">💸 HUTANG & PIUTANG</div>
-        <h3>Tracking Pinjam-Meminjam Tanpa Lupa</h3>
-        <p>Pinjamin teman 200rb? Hutang ke saudara 1jt? Catat sekali, app ingatkan otomatis sebelum jatuh tempo.</p>
-        <ul class="deep-feat-list">
-          <li>👥 <b>Catat per orang</b> — siapa pinjam ke siapa</li>
-          <li>📅 <b>Jatuh tempo</b> opsional + alert reminder</li>
-          <li>✓ <b>Tandai lunas</b> 1-klik kalau sudah dibayar</li>
-          <li>📊 <b>Total hutang & piutang</b> aktif di dashboard</li>
-          <li>📋 <b>Riwayat per orang</b> — siapa sering pinjam, siapa tepat waktu</li>
-        </ul>
-      </div>
-      <div class="deep-feat-mockup">
-        <div class="mock-card">
-          <div class="mock-head">💸 HUTANG & PIUTANG · AKTIF</div>
-          <div class="mock-stat-row">
-            <div class="mock-stat income"><div class="lbl">Total Piutang</div><div class="val">Rp 750rb</div></div>
-            <div class="mock-stat expense"><div class="lbl">Total Hutang</div><div class="val">Rp 1.2jt</div></div>
-          </div>
-          <div class="mock-row income"><span>↗ Andi (pinjam)</span><b>Rp 200rb <small>(due 5/5)</small></b></div>
-          <div class="mock-row income"><span>↗ Sinta (DP arisan)</span><b>Rp 550rb</b></div>
-          <div class="mock-row expense"><span>↙ Mama (renovasi)</span><b>Rp 1.2jt</b></div>
-          <div style="margin-top: 10px; padding: 8px; background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.3); border-radius: 6px; font-size: 12px; color: #fbbf24">⏰ <b>Reminder:</b> Andi due 5 Mei (3 hari lagi) — chat dia?</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section class="section usecase-section">
-  <div class="container">
-    <h2>Cocok Untuk <span class="grad">Siapa Aja?</span></h2>
-    <p class="subtitle">Dari pelajar sampai profesional. Selama bos punya duit untuk dicatat — cocok!</p>
-    <div class="usecase-grid">
-      <div class="usecase-card"><div class="ic">🎓</div><h4>Pelajar / Mahasiswa</h4><p>Catat uang jajan, transport, jajan kuliah</p></div>
-      <div class="usecase-card"><div class="ic">💼</div><h4>Karyawan / Pekerja</h4><p>Track gaji, expense kantor, cicilan</p></div>
-      <div class="usecase-card"><div class="ic">👨‍💻</div><h4>Freelancer</h4><p>Multiple income + invoice piutang</p></div>
-      <div class="usecase-card"><div class="ic">👨‍👩‍👧</div><h4>Ibu Rumah Tangga</h4><p>Belanja harian + budget rumah tangga</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="cross-sell-section">
-  <div class="cross-sell-card">
-    <div class="cs-icon"><img src="tokountung/assets/logo-berbisnis.png?v=3" alt="BerBisnis" /></div>
-    <div>
-      <span class="cs-tag">⚡ UNTUK OWNER UMKM</span>
-      <h3>Punya bisnis / toko?<br><span class="grad-cs">Pakai BerBisnis Pro saja!</span></h3>
-      <p class="cs-desc">Kalau bos butuh kelola <strong>kasir, stok, piutang pelanggan, hutang supplier, faktur A4</strong> — BerUang aja kurang. Upgrade ke BerBisnis Pro dengan AI Bot Telegram yang jawab semua data toko 24/7.</p>
-      <div class="cs-features">
-        <span>✓ POS Kasir + Stok</span>
-        <span>✓ AI Bot Telegram</span>
-        <span>✓ Piutang Tracker</span>
-      </div>
-    </div>
-    <a href="berbisnis-pro.html" class="cs-cta">Lihat BerBisnis →<span class="cs-price">Rp 500rb/bulan · EARLY BIRD</span></a>
-  </div>
-</section>
-
-<section class="section pricing-section" id="pricing">
-  <div class="container">
-    <h2>Pricing <span class="grad">Fair & Transparent</span></h2>
-    <p class="subtitle">Daftar = <b>gratis 2 hari</b> untuk fitur pencatatan. Mau AI Akuntan? Mulai Rp 10rb, atau hemat 50% dengan tahunan. Langganan bulanan & tahunan di Android diperpanjang otomatis, bisa dibatalkan kapan saja.</p>
-    <div class="pricing-grid">
-      <div class="plan">
-        <div class="plan-name">AKSES 7 HARI</div>
-        <div class="plan-price">Rp 10rb<small>/ 7 hari</small></div>
-        <div class="plan-desc">Setelah gratis 2 hari. Akses penuh semua fitur Pro selama 1 minggu</div>
+    </section>
+    <section id="pricing" aria-labelledby="access-title">
+      <div class="access">
+        <h2 id="access-title">Understand your access before paying.</h2>
+        <p><strong>Ruvy AI is temporarily unavailable.</strong> Choose a plan based on the money recording and wallet tools that remain available.</p>
         <ul>
-          <li>Akuntan AI dengan batas penggunaan harian</li>
-          <li>Bot Telegram + reminder tagihan</li>
-          <li>Foto struk AI Vision</li>
-          <li>Cloud sync multi-device</li>
-          <li>Dashboard + insight bulanan</li>
+          <li><strong>2-day trial:</strong> recording features from registration. AI is excluded.</li>
+          <li><strong>7-day pass:</strong> a one-time payment for 7 days of access.</li>
+          <li><strong>Monthly and yearly Google Play subscriptions:</strong> automatically renew until cancelled. Manage them through Google Play.</li>
         </ul>
-        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20BerUang%20Akses%207%20Hari%20Rp%2010rb" target="_blank" class="plan-cta">💬 Pilih 7 Hari</a>
+        <p>Google Play shows the applicable local price and billing period before purchase. Your wallet currency does not change your Google Play billing currency. Web purchases are one-time payments for the displayed access period.</p>
+        <p>When access expires, choose a plan to continue using the app. JSON backups remain downloadable from the plans screen. Read the <a href="terms-en.html">terms of service</a> for access, cancellation and refund details.</p>
       </div>
-      <div class="plan featured">
-        <div class="plan-name">TAHUNAN — HEMAT 50%</div>
-        <div class="plan-price">Rp 299rb<small>/ tahun</small></div>
-        <div class="plan-desc">Setara Rp 25rb/bulan. Hemat Rp 301rb vs bulanan.</div>
-        <ul>
-          <li>✨ Semua fitur Pro</li>
-          <li>🧠 Akuntan AI dengan batas penggunaan harian</li>
-          <li>🎯 Hemat 50% vs bulanan</li>
-          <li>🔄 Android: diperpanjang otomatis lewat Google Play, bisa dibatalkan kapan saja</li>
-          <li>💎 Priority support WhatsApp</li>
-          <li>🔓 Tidak ada tagihan tersembunyi</li>
-        </ul>
-        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20langganan%20BerUang%20Tahunan%20Rp%20299rb" target="_blank" class="plan-cta">🔥 Pilih Tahunan</a>
+    </section>
+    <section aria-labelledby="support-title">
+      <div class="contact">
+        <div><h2 id="support-title">Questions about your account?</h2><p>Contact Ruvy support at <a href="mailto:info@berstock.id">info@berstock.id</a>.<br>Read how records, AI and service providers are handled in our <a href="privacy-en.html">privacy policy</a>.</p></div>
+        <a class="button" href="privacy-en.html#delete-account">Account &amp; data deletion</a>
       </div>
-      <div class="plan">
-        <div class="plan-name">BULANAN</div>
-        <div class="plan-price">Rp 50rb<small>/ bulan</small></div>
-        <div class="plan-desc">Setara 2x Janji Jiwa — buat keuangan setahun</div>
-        <ul>
-          <li>Semua fitur Pro</li>
-          <li>Akuntan AI dengan batas penggunaan harian</li>
-          <li>Android: diperpanjang otomatis lewat Google Play, bisa dibatalkan kapan saja</li>
-          <li>Tidak ada tagihan tersembunyi</li>
-        </ul>
-        <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20langganan%20BerUang%20Bulanan%20Rp%2050rb%2Fbulan" target="_blank" class="plan-cta">💬 Pilih Bulanan</a>
-      </div>
-    </div>
-    <p style="text-align:center; margin-top:24px; font-size:13px; color: var(--ink-soft)">💡 Coba dulu tanpa register — <a href="app.html" target="_blank" style="color: var(--brown); font-weight: 700">buka aplikasi sekarang</a></p>
-  </div>
-</section>
-
-<section class="section faq-section">
-  <div class="container">
-    <h2>Pertanyaan yang <span class="grad">Sering Ditanya</span></h2>
-    <p class="subtitle">Belum yakin? Cek dulu jawaban di bawah.</p>
-    <div class="faq">
-      <details><summary>Apa yang gratis, dan apa bedanya paket 7 Hari vs Bulanan vs Tahunan?</summary><p>Setiap akun baru dapat <b>gratis 2 hari</b> untuk fitur pencatatan (AI Akuntan khusus paket berbayar). <b>Akses 7 Hari</b> dibayar sekali, tidak diperpanjang otomatis. <b>Bulanan</b> dan <b>Tahunan</b> di aplikasi Android adalah langganan Google Play yang <b>diperpanjang otomatis</b> sampai kamu batalkan (Play Store → Profil → Pembayaran & langganan). Pembelian lewat transfer/QRIS di website sekali bayar dan diperpanjang manual.</p></details>
-      <details><summary>Bagaimana sistem catat via chat-nya?</summary><p>Tinggal ketik bahasa natural seperti "bakso 45rb" atau "grab pulang 25k", aplikasi parse otomatis nominal, kategori, dan tanggal. Bisa juga bulk input — ketik 5 transaksi sekaligus dalam 1 chat.</p></details>
-      <details><summary>OCR struk akurat gak?</summary><p>Hasil bergantung pada cahaya, sudut foto, dan kualitas cetak. Periksa nominal dan tanggal sebelum menyimpan; hasil bisa diedit.</p></details>
-      <details><summary>Bagaimana data saya diproses?</summary><p>Catatan disinkronkan melalui Firebase untuk akun yang sama. Jika fitur AI atau Telegram digunakan, data terkait dapat dikirim ke penyedia layanan yang dijelaskan dalam kebijakan privasi.</p></details>
-      <details><summary>Bisa pakai di HP & laptop sekaligus?</summary><p>Bisa. Login dengan akun yang sama untuk memuat catatan cloud. Perubahan bersamaan yang bertentangan akan ditahan agar tidak menimpa data diam-diam.</p></details>
-      <details><summary>Bisa export data?</summary><p>Bisa. Saat ini aplikasi menyediakan ekspor cadangan dalam format JSON dan impor kembali dari format tersebut.</p></details>
-      <details><summary>Bisa offline?</summary><p>Bisa input offline, data otomatis sync begitu online. Jadi tetap bisa catat di pesawat, di tempat sinyal jelek, dll.</p></details>
-    </div>
-  </div>
-</section>
-
-<section class="cta-final">
-  <div class="container">
-    <h2>Mulai <span class="grad">Catat Duit Hari Ini</span></h2>
-    <p>Gratis 2 hari dulu. Cocok? AI Akuntan mulai Rp 10rb/7 hari, Rp 50rb/bulan, atau Rp 299rb/tahun (hemat 50%).</p>
-    <div class="cta-final-buttons">
-      <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20info%20BerUang%20Pro%20%28Trial%20Rp%2010rb%20/%20Bulanan%20Rp%2050rb%20/%20Tahunan%20Rp%20299rb%29" target="_blank" class="btn-primary">💬 Chat WhatsApp</a>
-      <a href="app.html" target="_blank" class="btn-secondary">🎁 Coba Gratis</a>
-    </div>
-    <div class="contact">📱 <b>+62 821-2484-8924</b> · IG <a href="https://instagram.com/hendrypangg" target="_blank" style="color:var(--gold-bright)">@hendrypangg</a></div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="links">
-      <a href="https://wa.me/6282124848924" target="_blank">WhatsApp</a>
-      <a href="https://instagram.com/hendrypangg" target="_blank">Instagram</a>
-      <a href="app.html" target="_blank">Aplikasi</a>
-      <a href="berbisnis-pro.html">BerBisnis Pro</a>
-      <a href="linktree.html">Linktree</a>
-    </div>
-    <div class="copy">© 2026 BerSatu Suite · BerUang · Catat Duit, Hidup Tertata 🐻💰</div>
-  </div>
-</footer>
-
-<div class="mascot-widget" id="mascot-widget">
-  <div class="mascot-chat-panel" id="mcp-panel">
-    <div class="mcp-head">
-      <div class="av-mini"><img src="assets/icons/beruang-wallet-192.png" alt="" /></div>
-      <div class="info"><div class="name">BerUang Helper 🐻</div><div class="status">Online · Reply 5 menit</div></div>
-      <div class="close-x" onclick="closeMcp()">✕</div>
-    </div>
-    <div class="mcp-body" id="mcp-body"></div>
-    <div class="mcp-actions" id="mcp-actions" style="display:none">
-      <a href="https://wa.me/6282124848924?text=Halo%20bos%2C%20saya%20mau%20coba%20BerUang%20Pro%20Trial%207%20Hari%20Rp%2010rb" target="_blank" class="mcp-btn primary">💬 Chat WhatsApp Sekarang</a>
-      <a href="app.html" target="_blank" class="mcp-btn secondary">🎁 Coba Gratis Dulu</a>
-    </div>
-    <div class="mcp-footer">⚡ POWERED BY BERSATU SUITE</div>
-  </div>
-  <div class="mascot-avatar-float" onclick="toggleMcp()">
-    <img src="assets/icons/beruang-wallet-192.png" alt="BerUang" />
-    <div class="online-dot"></div>
-    <div class="notif-dot" id="mcp-notif">1</div>
-  </div>
-</div>
-
-<script>
-const mcpPanel = document.getElementById('mcp-panel');
-const mcpBody = document.getElementById('mcp-body');
-const mcpActions = document.getElementById('mcp-actions');
-const mcpNotif = document.getElementById('mcp-notif');
-const messages = [
-  { delay: 800, html: 'Halo! 👋 Lagi cari cara catat duit yang ga ribet ya?' },
-  { delay: 1500, html: 'Tau gak, <strong>80% orang yang niat catat keuangan</strong> berhenti dalam 2 minggu — karena ribet 😅' },
-  { delay: 2000, html: 'BerUang bikin kamu cuma butuh <span class="grad-text">3 detik</span> per transaksi. Tinggal chat: <strong>"bakso 45rb"</strong> — selesai!' },
-  { delay: 1500, html: 'Daftar dulu <strong>gratis 2 hari</strong>. Mau AI Akuntan? <strong>Rp 10rb/7 hari</strong> atau <strong>Tahunan Rp 299rb (hemat 50%)</strong> 👇' },
-];
-function showTyping() { const t = document.createElement('div'); t.className = 'mcp-typing'; t.innerHTML = '<span></span><span></span><span></span>'; mcpBody.appendChild(t); mcpBody.scrollTop = mcpBody.scrollHeight; return t; }
-function showMsg(html) { const m = document.createElement('div'); m.className = 'mcp-msg'; const d = new Date(); m.innerHTML = html + `<span class="time">${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ✓</span>`; mcpBody.appendChild(m); mcpBody.scrollTop = mcpBody.scrollHeight; }
-async function playSequence() { for (const m of messages) { const t = showTyping(); await new Promise(r => setTimeout(r, m.delay)); t.remove(); showMsg(m.html); await new Promise(r => setTimeout(r, 400)); } mcpActions.style.display = 'flex'; }
-let played = false;
-function openMcp() { mcpPanel.classList.add('show'); mcpNotif.style.display = 'none'; if (!played) { played = true; playSequence(); } }
-function closeMcp() { mcpPanel.classList.remove('show'); }
-function toggleMcp() { mcpPanel.classList.contains('show') ? closeMcp() : openMcp(); }
-setTimeout(() => { if (!sessionStorage.getItem('mcp_beruang_seen')) { openMcp(); sessionStorage.setItem('mcp_beruang_seen', '1'); } }, 3000);
-</script>
+    </section>
+  </main>
+  <footer><div class="wrap footer-inner"><span>© 2026 Berstock.id · Ruvy by Hendry Phang</span><div class="footer-links"><a href="index.html" lang="id" hreflang="id">Bahasa Indonesia</a><a href="privacy-en.html">Privacy</a><a href="terms-en.html">Terms</a><a href="mailto:info@berstock.id">Support</a></div></div></footer>
 </body>
 </html>

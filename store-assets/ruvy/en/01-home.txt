@@ -1,95 +1,18 @@
-Browser tab: 12, Title: "Ruvy en dashboard", URL: "http://127.0.0.1:8767/store-en-1.html".
-1 AXWebArea Ruvy en dashboard, URL: 127.0.0.1:8767/store-en-1.html
-	2 container
-		3 image
-		4 text Ruvy
-		5 heading Your money. Made clear., Value: 1
-			6 text Your money.
-			7 text Made clear.
-		8 text A calm view of your balance, income and expenses.
-		9 container Ruvy app
-			10 AXWebArea Ruvy - AI Money Tracker, URL: 127.0.0.1:8767/product.html?lang=en&view=dashboard
-				11 container
-					12 image Ruvy
-					13 text Ruvy
-					14 button 🙂, Help: Account, ID: user-menu-btn
-						15 text 🙂
-				16 container
-					17 heading Your wallets, Value: 2
-						18 text Your wallets
-					19 button Wallet settings
-					20 container Description: Choose wallet, ID: ruvy-wallet-strip
-						21 checkbox IDR Main wallet IDR 9,875,000, Value: 0
-							22 text IDR
-							23 text Main wallet
-							24 text IDR 9,875,000
-						25 checkbox USD Travel USD 2,563.00, Value: 1
-							26 text USD
-							27 text Travel
-							28 text USD 2,563.00
-						29 button New wallet
-							30 text New wallet
-					31 text Balances are shown per wallet. No automatic exchange-rate conversion.
-					32 container ruvy-home
-						33 container
-							34 heading Hello, Alex, Value: 1, ID: ruvy-greeting
-								35 text Hello, Alex
-							36 button Description: Say hello to Ruvy, ID: ruvy-robot
-							37 text Know your money, one entry at a time.
-						38 container Wallet summary
-							39 text Wallet balance
-							40 text USD 2,563.00
-							41 pop up button (collapsed, settable) Description: Report month, Value: October, ID: ruvy-period-month, Secondary Actions: Expand
-								42 menu
-									43 January
-									44 February
-									45 March
-									46 April
-									47 May
-									48 June
-									49 July
-									50 August
-									51 September
-									52 (selected) October
-									53 November
-									54 December
-							55 pop up button (collapsed, settable) Description: Report year, Value: 2026, ID: ruvy-period-year, Secondary Actions: Expand
-								56 menu
-									57 (selected) 2026
-							58 text ↙ Income
-							59 text USD 2,450.00
-							60 text ↗ Expenses
-							61 text USD 12.50
-							62 text Net change this month
-							63 text USD 2,437.50
-						64 button ＋ Add transaction
-						65 button Ask Ruvy ✧
-						66 heading Recent activity, Value: 2
-							67 text Recent activity
-						68 button View all →
-						69 container ruvy-recent
-							70 button Lunch Oct 14, 2026 −USD 12.50
-								71 text Lunch
-								72 text Oct 14, 2026
-								73 text −USD 12.50
-							74 button October salary Oct 12, 2026 +USD 2,450.00
-								75 text October salary
-								76 text Oct 12, 2026
-								77 text +USD 2,450.00
-				78 container bottom-nav
-					79 button Home
-						80 image
-						81 text Home
-					82 button Transactions
-						83 image
-						84 text Transactions
-					85 button Money tools
-						86 image
-						87 text Money tools
-					88 button Settings
-						89 image
-						90 text Settings
-				91 button Add transaction
-		92 text Sample data · No automatic currency conversion
-
-The focused UI element is 1 AXWebArea Ruvy en dashboard, URL: 127.0.0.1:8767/store-en-1.html
+Ruvy 1.5.1 Google Play artwork source evidence
+Language: en
+Artwork: store-assets/ruvy/en/01-home.png
+Source screenshot: outputs/ruvy-store-captures/en-1.jpg
+Artwork wrapper: outputs/ruvy-preview-bundle/store-en-1.html
+Product iframe: product.html?lang=en&theme=light&view=dashboard
+Page title: Ruvy en dashboard
+Heading: Your money. Made clear.
+Subtitle: A calm view of your balance, income and expenses.
+Footer: Sample data · No automatic currency conversion
+Dimensions: 1080 x 1920 pixels
+Conversion: source JPEG decoded and saved as PNG with identical pixels; no resizing, cropping or artwork editing.
+Preview uses isolated sample data. This is not a production account or a live AI response.
+Evidence type: local screenshot file and authored wrapper source; not a new accessibility snapshot.
+Source JPEG SHA256: 3323305748dc62e5a3536263a259880b27d47c7e7f9403e36415f48c90b37d54
+PNG SHA256: ed8b2e77ea20bd8bf4f7afb5120aee3b8445cd96e2959246c6291bc688e9e297
+Upload copy: outputs/ruvy-upload/ruvy-en-15-01-home.png
+Converted UTC: 2026-10-15T05:33:14+00:00

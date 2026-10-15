@@ -340,6 +340,8 @@
     });
     document.querySelectorAll('[title],[placeholder],[aria-label]').forEach(node => {
       ['title', 'placeholder', 'aria-label'].forEach(attribute => {
+        // Wallet-aware examples are rendered with their current currency.
+        if (attribute === 'placeholder' && node.hasAttribute('data-dynamic-placeholder')) return;
         if (node.hasAttribute(attribute)) staticAttributes.push({ node, attribute, source: node.getAttribute(attribute) });
       });
     });

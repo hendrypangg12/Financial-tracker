@@ -38,10 +38,12 @@ for (const name of scripts) {
 let css = await readFile(path.join(repo, 'styles.css'), 'utf8');
 css = css.replace(/@import url\('https:\/\/fonts\.googleapis\.com[^']*'\);/g, '');
 await put('styles.css', css);
-await copy('privacy.html');
-await copy('terms.html');
-await copy('privacy-en.html');
-await copy('terms-en.html');
+for (const page of ['privacy.html', 'terms.html', 'privacy-en.html', 'terms-en.html']) {
+  const source = await readFile(path.join(repo, page), 'utf8');
+  // The native app entry is index.html; keep the website's app.html links intact.
+  const legal = source.replace(/(\shref\s*=\s*)(["'])app\.html([?#][^"']*)?\2/g, '$1$2index.html$3$2');
+  await put(page, legal);
+}
 await copy('ruvy.css');
 await copy('assets/icons/ruvy-mark.svg');
 for (const name of await readdir(path.join(repo, 'assets/icons'))) {
@@ -53,7 +55,7 @@ html = html.replace(/<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?\/>/,
   .replace(/<link rel="manifest"[^>]+>/, '')
   .replace(/<script src="js\/admin\.js[^>]+><\/script>/, '')
   .replace('width=device-width, initial-scale=1.0', 'width=device-width, initial-scale=1.0, viewport-fit=cover')
-  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=1" />\n</head>')
+  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=66" />\n</head>')
   .replace('</body>', `${production ? '<script>window.__BERUANG_STORE_BUILD__=true</script>\n' : ''}<script src="vendor/capacitor.js"></script>\n<script src="mobile-runtime.js"></script>\n</body>`);
 // Tanpa bundler, Capacitor.registerPlugin hanya ada jika build browser @capacitor/core ikut dimuat.
 await copy('vendor/capacitor.js', path.join(mobile, 'node_modules/@capacitor/core/dist/capacitor.js'));

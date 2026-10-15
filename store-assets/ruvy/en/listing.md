@@ -1,8 +1,10 @@
 Ruvy - AI Money Tracker
 
-Track money, choose a currency for each wallet, and get insights with Ruvy AI.
+Track money and manage wallets in English or Bahasa Indonesia.
 
 Ruvy - AI Money Tracker helps you record your money and understand spending habits with a simple, calm interface.
+
+Ruvy AI is temporarily unavailable. Money recording and wallet tools remain available.
 
 WALLETS AND CURRENCIES
 Create separate wallets for everyday life or travel. Choose a currency for each wallet, including USD, EUR, GBP, IDR, SGD, MYR and others. Balances, income, expenses, debts and goals use the selected wallet currency. Ruvy does not automatically convert currencies or combine balances in different currencies.
@@ -16,7 +18,7 @@ RECORD AND REVIEW
 • Export and restore backups of your records.
 
 MEET RUVY AI
-With an active paid plan, ask about spending patterns, budgeting or savings goals. AI uses relevant summaries from your selected wallet. It is not individually trained on your records and does not remember previous conversations. Responses can be incorrect, so check important figures. Usage limit: 30 questions per account per day.
+When Ruvy AI is available, an active paid plan allows questions about spending patterns, budgeting or savings goals. AI uses relevant summaries from your selected wallet. It is not individually trained on your records and does not remember previous conversations. Responses can be incorrect, so check important figures. Usage limit: 30 questions per account per day.
 
 LANGUAGE AND ACCOUNT
 Choose English or Bahasa Indonesia. Use the same account to sync records across devices. An internet connection is needed to update cloud records.

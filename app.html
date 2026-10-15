@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="stylesheet" href="styles.css?v=65" />
+  <link rel="stylesheet" href="styles.css?v=66" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -25,7 +25,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-database-compat.js"></script>
-  <link rel="stylesheet" href="ruvy.css?v=1" />
+  <link rel="stylesheet" href="ruvy.css?v=66" />
 </head>
 <body class="app-locked">
   <div id="startup-screen" class="login-screen" role="status" aria-live="polite">
@@ -38,54 +38,58 @@
   </div>
   <!-- ============ LOGIN SCREEN (tampil saat belum login) ============ -->
   <div id="login-screen" class="login-screen" hidden>
-    <div class="login-card">
-      <img class="login-logo" src="assets/icons/ruvy-mark.svg" alt="Ruvy" />
-      <h1 class="login-brand">Ruvy</h1>
-      <p class="login-tag"><i>"Catet dulu, biar beneran ber-uang"</i></p>
-
-      <label class="login-language-picker"><span>Language / Bahasa</span>
-        <select id="login-language" aria-label="Language / Bahasa">
-          <option value="id">Bahasa Indonesia</option><option value="en">English</option>
-        </select>
-      </label>
+    <div class="ruvy-auth-shell">
+      <header class="ruvy-auth-top">
+        <div class="ruvy-auth-brand"><img class="login-logo" src="assets/icons/ruvy-mark.svg" alt="" /><span class="login-brand">Ruvy</span></div>
+        <label class="login-language-picker"><span class="visually-hidden">Language / Bahasa</span>
+          <select id="login-language" aria-label="Language / Bahasa"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select>
+        </label>
+      </header>
+      <div class="ruvy-auth-welcome">
+        <div class="ruvy-auth-mascot" aria-hidden="true"><img src="assets/icons/ruvy-mark.svg" alt="" /></div>
+        <h1 data-ruvy-id="Uangmu, lebih jelas." data-ruvy-en="Your money, made clear.">Uangmu, lebih jelas.</h1>
+        <p data-ruvy-id="Catat hari ini. Pahami hari esok." data-ruvy-en="Track today. Understand tomorrow.">Catat hari ini. Pahami hari esok.</p>
+      </div>
+    <div class="login-card ruvy-auth-card">
 
       <div class="login-tabs">
-        <button class="login-tab active" data-auth-tab="login">Masuk</button>
-        <button class="login-tab" data-auth-tab="register">Daftar</button>
+        <button class="login-tab active" type="button" data-auth-tab="login" data-ruvy-id="Masuk" data-ruvy-en="Sign in">Masuk</button>
+        <button class="login-tab" type="button" data-auth-tab="register" data-ruvy-id="Daftar" data-ruvy-en="Sign up">Daftar</button>
       </div>
 
       <form id="form-login" class="auth-form">
-        <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
-        <label>Password<input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" minlength="6" /></label>
-        <button class="btn btn-primary btn-block" type="submit">Masuk</button>
-        <a href="#" id="link-forgot">Lupa password?</a>
+        <label><span>Email</span><input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
+        <label><span>Password</span><input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" minlength="6" /></label>
+        <button class="btn btn-primary btn-block" type="submit" data-ruvy-id="Masuk" data-ruvy-en="Sign in">Masuk</button>
+        <a href="#" id="link-forgot" data-ruvy-id="Lupa password?" data-ruvy-en="Forgot password?">Lupa password?</a>
       </form>
 
       <form id="form-register" class="auth-form" hidden>
-        <label>Email<input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
-        <label>Password (min. 6 karakter)<input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
-        <label>Konfirmasi Password<input type="password" name="password2" required placeholder="••••••••" minlength="6" /></label>
-        <button class="btn btn-primary btn-block" type="submit">Buat Akun</button>
-        <small style="color:var(--ink-soft)">Uji coba gratis 2 hari (belum termasuk AI). Harga paket ditampilkan oleh Google Play.</small>
+        <label><span data-ruvy-id="Email" data-ruvy-en="Email">Email</span><input type="email" name="email" required autocomplete="email" placeholder="nama@email.com" /></label>
+        <label><span data-ruvy-id="Password (min. 6 karakter)" data-ruvy-en="Password (at least 6 characters)">Password (min. 6 karakter)</span><input type="password" name="password" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
+        <label><span data-ruvy-id="Konfirmasi Password" data-ruvy-en="Confirm password">Konfirmasi Password</span><input type="password" name="password2" required autocomplete="new-password" placeholder="••••••••" minlength="6" /></label>
+        <button class="btn btn-primary btn-block" type="submit" data-ruvy-id="Buat Akun" data-ruvy-en="Create account">Buat Akun</button>
+        <small class="ruvy-auth-trial" data-ruvy-id="Uji coba gratis 2 hari (belum termasuk AI). Harga paket ditampilkan oleh Google Play." data-ruvy-en="2-day free trial (AI not included). Plan prices are shown by Google Play.">Uji coba gratis 2 hari (belum termasuk AI). Harga paket ditampilkan oleh Google Play.</small>
       </form>
 
-      <div class="auth-divider"><span>atau</span></div>
+      <div class="auth-divider"><span data-ruvy-id="atau" data-ruvy-en="or">atau</span></div>
 
-      <button class="btn btn-google btn-block" id="btn-google-login">
+      <button class="btn btn-google btn-block" id="btn-google-login" type="button">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.8 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.6 2.4-7.2 2.4-5.3 0-9.8-3.6-11.3-8.4l-6.6 5.1C9.5 39.7 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.8-3.7 5.2l6.2 5.2C41.3 35.3 44 30 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>
-        Login dengan Google
+        <span data-ruvy-id="Login dengan Google" data-ruvy-en="Continue with Google">Login dengan Google</span>
       </button>
 
-      <div id="auth-error" class="auth-error" hidden></div>
-      <div id="auth-info" class="auth-info" hidden></div>
-      <div id="auth-pwa-tip" style="margin-top:14px;padding:10px 12px;background:#fff7e6;border:1px solid #f0d488;border-radius:10px;font-size:12px;color:#6b4423;line-height:1.5;display:none;">
-        💡 <b>Biar sesi lebih mudah dibuka:</b> tap ikon Share <span style="font-family:monospace">⬆️</span> di Safari → <b>"Add to Home Screen"</b>. Sesi tetap mengikuti pengaturan browser dan dapat berakhir saat logout.
+      <div id="auth-error" class="auth-error" role="alert" hidden></div>
+      <div id="auth-info" class="auth-info" role="status" aria-live="polite" hidden></div>
+      <div id="auth-pwa-tip" class="ruvy-auth-notice" style="display:none;">
+        <span data-ruvy-id="Di Safari, pilih Bagikan → Tambahkan ke Layar Utama agar Ruvy mudah dibuka. Sesi mengikuti pengaturan browser dan berakhir saat logout." data-ruvy-en="In Safari, choose Share → Add to Home Screen to open Ruvy easily. Sessions follow your browser settings and end when you sign out.">Di Safari, pilih Bagikan → Tambahkan ke Layar Utama agar Ruvy mudah dibuka. Sesi mengikuti pengaturan browser dan berakhir saat logout.</span>
       </div>
-      <div id="auth-private-warn" style="margin-top:8px;padding:10px 12px;background:#fde8e8;border:1px solid #f5a8a8;border-radius:10px;font-size:12px;color:#8b2020;line-height:1.5;display:none;">
-        ⚠️ <b>Mode Private/Incognito terdeteksi.</b> Login bos gak akan ke-simpan setelah tutup tab. Pindah ke browser normal atau install ke homescreen.
+      <div id="auth-private-warn" class="ruvy-auth-notice ruvy-auth-warning" style="display:none;">
+        <span data-ruvy-id="Mode privat terdeteksi. Sesi dapat berakhir saat tab ditutup. Gunakan browser normal agar mudah masuk kembali." data-ruvy-en="Private browsing detected. Your session may end when the tab closes. Use a regular browser to sign in again easily.">Mode privat terdeteksi. Sesi dapat berakhir saat tab ditutup. Gunakan browser normal agar mudah masuk kembali.</span>
       </div>
     </div>
-    <div class="login-footer">Ruvy — Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat</div>
+    <div class="login-footer"><span data-ruvy-id="Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat" data-ruvy-en="Use the same account to sync your records across devices">Gunakan akun yang sama untuk menyinkronkan catatan antarperangkat</span></div>
+    </div>
   </div>
 
   <!-- ============ PAYWALL (tampil saat belum / habis berlangganan) ============ -->
@@ -262,32 +266,46 @@
       <button class="pwa-banner-x" id="pwa-banner-x" aria-label="Tutup">×</button>
     </div>
 
-    <div class="ruvy-wallets-head"><h2 data-ruvy-id="Dompetmu" data-ruvy-en="Your wallets">Dompetmu</h2><button type="button" data-ruvy-action="wallet" data-ruvy-id="Atur dompet" data-ruvy-en="Wallet settings">Atur dompet</button></div>
-    <div id="ruvy-wallet-strip" class="ruvy-wallet-strip" aria-label="Pilih dompet"></div>
-    <p id="ruvy-wallet-note" class="ruvy-wallet-note"></p>
+    <div class="ruvy-wallets">
+      <div class="ruvy-wallets-head"><h2 data-ruvy-id="Dompetmu" data-ruvy-en="Your wallets">Dompetmu</h2><button type="button" data-ruvy-action="wallet" data-ruvy-id="Atur dompet" data-ruvy-en="Wallet settings">Atur dompet</button></div>
+      <div id="ruvy-wallet-strip" class="ruvy-wallet-strip" aria-label="Pilih dompet"></div>
+      <p id="ruvy-wallet-note" class="ruvy-wallet-note"></p>
+    </div>
     <aside id="subscription-summary" class="subscription-summary" hidden aria-live="polite"></aside>
 
     <!-- ================= DASHBOARD ================= -->
     <section id="tab-dashboard" class="tab-panel active">
       <div id="ruvy-home" class="ruvy-home">
         <div class="ruvy-hero">
-          <h1 class="ruvy-greeting" id="ruvy-greeting">Uangmu, lebih jelas.</h1>
+          <div class="ruvy-hero-copy">
+            <h1 class="ruvy-greeting" id="ruvy-greeting">Uangmu, lebih jelas.</h1>
+            <p class="ruvy-bubble" id="ruvy-bubble" data-ruvy-id="Kenali uangmu, satu catatan setiap hari." data-ruvy-en="Know your money, one entry at a time.">Kenali uangmu, satu catatan setiap hari.</p>
+          </div>
           <button type="button" class="ruvy-robot" id="ruvy-robot" aria-label="Sapa Ruvy">
             <span class="ruvy-robot-shadow" aria-hidden="true"></span>
             <span class="ruvy-robot-body" aria-hidden="true"><span class="ruvy-robot-head"><span class="ruvy-robot-face"><i></i><i></i></span></span><span class="ruvy-robot-torso"></span><span class="ruvy-robot-arm left"></span><span class="ruvy-robot-arm right"></span></span>
           </button>
-          <p class="ruvy-bubble" id="ruvy-bubble" data-ruvy-id="Kenali uangmu, satu catatan setiap hari." data-ruvy-en="Know your money, one entry at a time.">Kenali uangmu, satu catatan setiap hari.</p>
         </div>
-        <section class="ruvy-balance-card" aria-label="Ringkasan dompet">
-          <small id="ruvy-balance-label">Saldo dompet</small>
-          <div class="ruvy-balance-value" id="ruvy-balance">—</div>
-          <div class="ruvy-period"><select id="ruvy-period-month" aria-label="Bulan laporan"></select><select id="ruvy-period-year" aria-label="Tahun laporan"></select></div>
-          <div class="ruvy-cashflow"><div><small data-ruvy-id="↙ Pemasukan" data-ruvy-en="↙ Income">↙ Pemasukan</small><strong class="money-income" id="ruvy-income">—</strong></div><div><small data-ruvy-id="↗ Pengeluaran" data-ruvy-en="↗ Expenses">↗ Pengeluaran</small><strong class="money-expense" id="ruvy-expense">—</strong></div></div>
-          <div class="ruvy-net-row"><span data-ruvy-id="Perubahan bersih bulan ini" data-ruvy-en="Net change this month">Perubahan bersih bulan ini</span><b id="ruvy-net">—</b></div>
+        <div class="ruvy-overview">
+          <section class="ruvy-balance-card" aria-label="Ringkasan dompet">
+            <div class="ruvy-balance-head"><small id="ruvy-balance-label">Saldo dompet</small><span class="ruvy-balance-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h15v13H4zM4 6V4h13v2m-3 5h7v5h-7z"/><circle cx="16.5" cy="13.5" r=".5"/></svg></span></div>
+            <div class="ruvy-balance-value" id="ruvy-balance">—</div>
+            <div class="ruvy-period"><select id="ruvy-period-month" aria-label="Bulan laporan"></select><select id="ruvy-period-year" aria-label="Tahun laporan"></select></div>
+            <div class="ruvy-cashflow"><div><small data-ruvy-id="↙ Pemasukan" data-ruvy-en="↙ Income">↙ Pemasukan</small><strong class="money-income" id="ruvy-income">—</strong></div><div><small data-ruvy-id="↗ Pengeluaran" data-ruvy-en="↗ Expenses">↗ Pengeluaran</small><strong class="money-expense" id="ruvy-expense">—</strong></div></div>
+            <div class="ruvy-net-row"><span data-ruvy-id="Perubahan bersih bulan ini" data-ruvy-en="Net change this month">Perubahan bersih bulan ini</span><b id="ruvy-net">—</b></div>
+          </section>
+          <form id="ruvy-quick-form" class="ruvy-quick-entry">
+            <div class="ruvy-quick-head"><label for="ruvy-quick-input" data-ruvy-id="Catat cepat" data-ruvy-en="Quick entry">Catat cepat</label><span id="ruvy-quick-wallet"></span></div>
+            <div class="ruvy-quick-controls"><input id="ruvy-quick-input" data-dynamic-placeholder type="text" placeholder="kopi 25rb" required maxlength="240" autocomplete="off" enterkeyhint="done" aria-describedby="ruvy-quick-hint ruvy-quick-feedback" /><button id="ruvy-quick-submit" type="submit" class="btn btn-primary" data-ruvy-id="Catat" data-ruvy-en="Record">Catat</button></div>
+            <small id="ruvy-quick-hint" data-ruvy-id="Satu transaksi. Periksa nominal sebelum mencatat." data-ruvy-en="One transaction. Check the amount before recording.">Satu transaksi. Periksa nominal sebelum mencatat.</small>
+            <p id="ruvy-quick-feedback" role="status" aria-live="polite" hidden></p>
+          </form>
+          <div class="ruvy-home-actions"><button type="button" class="btn btn-ghost" data-open-tab="tambah" data-ruvy-id="＋ Form lengkap" data-ruvy-en="＋ Full entry form">＋ Form lengkap</button><button type="button" class="btn btn-ghost" data-ruvy-action="ai" data-ruvy-id="Tanya Ruvy ✧" data-ruvy-en="Ask Ruvy ✧">Tanya Ruvy ✧</button></div>
+        </div>
+        <section class="ruvy-activity-card">
+          <div class="ruvy-section-head"><h2 data-ruvy-id="Aktivitas terbaru" data-ruvy-en="Recent activity">Aktivitas terbaru</h2><button type="button" data-open-tab="transaksi" data-ruvy-id="Lihat semua →" data-ruvy-en="View all →">Lihat semua →</button></div>
+          <div id="ruvy-recent" class="ruvy-recent"></div>
         </section>
-        <div class="ruvy-home-actions"><button type="button" class="btn btn-primary" data-open-tab="tambah" data-ruvy-id="＋ Catat transaksi" data-ruvy-en="＋ Add transaction">＋ Catat transaksi</button><button type="button" class="btn btn-ghost" data-ruvy-action="ai" data-ruvy-id="Tanya Ruvy ✧" data-ruvy-en="Ask Ruvy ✧">Tanya Ruvy ✧</button></div>
-        <div class="ruvy-section-head"><h2 data-ruvy-id="Aktivitas terbaru" data-ruvy-en="Recent activity">Aktivitas terbaru</h2><button type="button" data-open-tab="transaksi" data-ruvy-id="Lihat semua →" data-ruvy-en="View all →">Lihat semua →</button></div>
-        <div id="ruvy-recent" class="ruvy-recent"></div>
       </div>
       <aside id="starting-balance-reminder" class="starting-balance-reminder" hidden></aside>
       <div id="welcome-banner" class="welcome-banner" hidden>
@@ -607,7 +625,7 @@
         </div>
         <div class="chat-box" id="chat-box"></div>
         <form id="chat-form" class="chat-form">
-          <input type="text" id="chat-input" placeholder="mis. makan siang 35rb" autocomplete="off" enterkeyhint="send" />
+          <input type="text" id="chat-input" data-dynamic-placeholder placeholder="mis. makan siang 35rb" autocomplete="off" enterkeyhint="send" />
           <button class="btn btn-primary" type="submit">Catat</button>
         </form>
       </div>
@@ -957,7 +975,7 @@ TOTAL            86.500"></textarea>
         <button type="button" class="ruvy-setting-row" data-ruvy-action="btn-import"><span><span data-ruvy-id="Pulihkan cadangan" data-ruvy-en="Restore backup">Pulihkan cadangan</span><small data-ruvy-id="Periksa file sebelum mengganti data" data-ruvy-en="Review the file before replacing data">Periksa file sebelum mengganti data</small></span><span aria-hidden="true">›</span></button>
       </div>
       <div class="ruvy-settings-group"><a class="ruvy-setting-row" href="privacy.html"><span data-ruvy-id="Privasi & bantuan" data-ruvy-en="Privacy & help">Privasi &amp; bantuan</span><span aria-hidden="true">›</span></a><a class="ruvy-setting-row" href="terms.html"><span data-ruvy-id="Syarat & ketentuan" data-ruvy-en="Terms of service">Syarat &amp; ketentuan</span><span aria-hidden="true">›</span></a><button class="ruvy-setting-row" type="button" data-ruvy-action="btn-logout"><span data-ruvy-id="Keluar akun" data-ruvy-en="Sign out">Keluar akun</span><span aria-hidden="true">›</span></button></div>
-      <p class="ruvy-settings-note" data-ruvy-id="Ruvy - AI Money Tracker. Gunakan akun yang sama untuk menyinkronkan dompet antarperangkat. AI memberi insight dari catatanmu; jawabannya perlu diperiksa." data-ruvy-en="Ruvy - AI Money Tracker. Use the same account to sync wallets across devices. AI provides insights from your records; review its answers.">Ruvy - AI Money Tracker. Gunakan akun yang sama untuk menyinkronkan dompet antarperangkat. AI memberi insight dari catatanmu; jawabannya perlu diperiksa.</p>
+      <p class="ruvy-settings-note" data-ruvy-id="Ruvy - AI Money Tracker. Gunakan akun yang sama untuk menyinkronkan dompet antarperangkat. Ruvy AI sementara belum tersedia." data-ruvy-en="Ruvy - AI Money Tracker. Use the same account to sync wallets across devices. Ruvy AI is temporarily unavailable.">Ruvy - AI Money Tracker. Gunakan akun yang sama untuk menyinkronkan dompet antarperangkat. Ruvy AI sementara belum tersedia.</p>
     </section>
   </main>
 
@@ -1175,31 +1193,31 @@ TOTAL            86.500"></textarea>
       <div class="modal-actions"><button type="button" id="ruvy-wallet-close" class="btn btn-ghost" data-ruvy-id="Batal" data-ruvy-en="Cancel">Batal</button><button type="submit" class="btn btn-primary" data-ruvy-id="Simpan dompet" data-ruvy-en="Save wallet">Simpan dompet</button></div>
     </form>
   </dialog>
-  <script src="js/data.js?v=65"></script>
-  <script src="js/preferences.js?v=65"></script>
-  <script src="js/i18n.js?v=65"></script>
-  <script src="js/utils.js?v=65"></script>
-  <script src="js/firebase-config.js?v=65"></script>
+  <script src="js/data.js?v=66"></script>
+  <script src="js/preferences.js?v=66"></script>
+  <script src="js/i18n.js?v=66"></script>
+  <script src="js/utils.js?v=66"></script>
+  <script src="js/firebase-config.js?v=66"></script>
   <script>window.PRESENCE_APP = 'beruang';</script>
-  <script src="js/presence.js?v=65"></script>
-  <script src="js/storage.js?v=65"></script>
-  <script src="js/wallets.js?v=65"></script>
-  <script src="js/parser.js?v=65"></script>
-  <script src="js/sync.js?v=65"></script>
-  <script src="js/auth.js?v=65"></script>
-  <script src="js/dashboard.js?v=65"></script>
-  <script src="js/anomaly.js?v=65"></script>
-  <script src="js/pages.js?v=65"></script>
-  <script src="js/reports.js?v=65"></script>
-  <script src="js/admin.js?v=65"></script>
-  <script src="js/hutang.js?v=65"></script>
-  <script src="js/goal.js?v=65"></script>
-  <script src="js/ai-advisor.js?v=65"></script>
-  <script src="js/recurring.js?v=65"></script>
-  <script src="js/telegram-link.js?v=65"></script>
-  <script src="js/onboarding.js?v=65"></script>
-  <script src="js/metrics.js?v=65"></script>
-  <script src="js/ruvy.js?v=65"></script>
-  <script src="js/app.js?v=65"></script>
+  <script src="js/presence.js?v=66"></script>
+  <script src="js/storage.js?v=66"></script>
+  <script src="js/wallets.js?v=66"></script>
+  <script src="js/parser.js?v=66"></script>
+  <script src="js/sync.js?v=66"></script>
+  <script src="js/auth.js?v=66"></script>
+  <script src="js/dashboard.js?v=66"></script>
+  <script src="js/anomaly.js?v=66"></script>
+  <script src="js/pages.js?v=66"></script>
+  <script src="js/reports.js?v=66"></script>
+  <script src="js/admin.js?v=66"></script>
+  <script src="js/hutang.js?v=66"></script>
+  <script src="js/goal.js?v=66"></script>
+  <script src="js/ai-advisor.js?v=66"></script>
+  <script src="js/recurring.js?v=66"></script>
+  <script src="js/telegram-link.js?v=66"></script>
+  <script src="js/onboarding.js?v=66"></script>
+  <script src="js/metrics.js?v=66"></script>
+  <script src="js/ruvy.js?v=66"></script>
+  <script src="js/app.js?v=66"></script>
 </body>
 </html>

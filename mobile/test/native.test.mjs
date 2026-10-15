@@ -212,6 +212,17 @@ test('bundle contains local frontend only, with payment and admin surfaces exclu
   assert.doesNotMatch(html, /<script[^>]+src="https?:/);
   assert.doesNotMatch(html, /id="payment-modal"|js\/admin\.js|signing\.keystore/);
   const manifest=JSON.parse(await readFile(new URL('bundle-manifest.json',base),'utf8'));
+  const packagedPaths=new Set(manifest.files.map(file=>file.path));
+  for (const page of ['privacy.html','terms.html','privacy-en.html','terms-en.html']) {
+    const legal=await readFile(new URL(page,base),'utf8');
+    const pageUrl=new URL(page,'https://localhost/');
+    for (const [,,href] of legal.matchAll(/\shref\s*=\s*(["'])(.*?)\1/g)) {
+      const target=new URL(href,pageUrl);
+      if (target.origin===pageUrl.origin) {
+        assert.ok(packagedPaths.has(decodeURIComponent(target.pathname.slice(1))),`${page}: ${href} must resolve to a packaged file`);
+      }
+    }
+  }
   for (const file of manifest.files) {
     assert.doesNotMatch(file.path,/^bot\/|admin\.js|\.keystore$|\.jks$/);
     const content=await readFile(new URL(file.path,base));

@@ -1,0 +1,18 @@
+Ruvy 1.5.1 Google Play artwork source evidence
+Language: en
+Artwork: store-assets/ruvy/en/06-settings.png
+Source screenshot: outputs/ruvy-store-captures/en-6.jpg
+Artwork wrapper: outputs/ruvy-preview-bundle/store-en-6.html
+Product iframe: product.html?lang=en&theme=light&view=settings
+Page title: Ruvy en settings
+Heading: Your app. Your way.
+Subtitle: Choose English or Bahasa Indonesia and adjust the appearance.
+Footer: Sample data · English and Bahasa Indonesia
+Dimensions: 1080 x 1920 pixels
+Conversion: source JPEG decoded and saved as PNG with identical pixels; no resizing, cropping or artwork editing.
+Preview uses isolated sample data. This is not a production account or a live AI response.
+Evidence type: local screenshot file and authored wrapper source; not a new accessibility snapshot.
+Source JPEG SHA256: 6f22240069a4aef392fc704f7058c47070d683dd0da26817ce3fa5beac79d409
+PNG SHA256: befe115795461a1fbc553634b26c5a7793e0615674fe3931d0ed175bf436180c
+Upload copy: outputs/ruvy-upload/ruvy-en-15-06-settings.png
+Converted UTC: 2026-10-15T05:33:18+00:00
