@@ -51,7 +51,8 @@ function initAIAdvisor() {
   document.getElementById("ruvy-receipt-input")?.addEventListener("change", handleRuvyReceipt);
   document.getElementById("ruvy-chat-wallet")?.addEventListener("click", () => appendBubble(advisorText(
     "Catatan masuk ke dompet ini kalau tidak disebut. Mau dompet lain? Sebut saja, mis. \"bensin 50rb pakai gopay\".",
-    "Entries go to this wallet unless you name one, e.g. \"fuel 20 using travel\"."), "bot"));
+    "Entries go to this wallet unless you name one, e.g. \"fuel 20 using travel\"."), "bot", false));
+  document.getElementById("ruvy-mic")?.addEventListener("click", toggleRuvyMic);
   // Manual form stays available (e.g. to fix what the parser got wrong), tucked in the Tambah tab.
   document.getElementById("ai-chat-manual")?.addEventListener("click", () => {
     closeAIChat();
@@ -161,6 +162,11 @@ function appendRecordedBubble(t, wallet) {
     ? [advisorText("Uang masuk! 🎉 Sudah aku catat.", "Money in! 🎉 Logged it."), advisorText("Mantap, pemasukan tercatat 💰", "Nice, income recorded 💰")]
     : [advisorText("Siap, sudah aku catat 👍", "Got it, logged 👍"), advisorText("Tercatat ✅ Lanjut ketik yang lain ya.", "Recorded ✅ Keep them coming."), advisorText("Oke, masuk catatan 📝", "Okay, it's in your records 📝")];
   appendBubble(lines[Math.floor(Math.random() * lines.length)], "bot");
+  pushRuvyLog({ t: "c", id: t.id, w: wallet.id });
+  appendRecordedCard(t, wallet);
+}
+function appendRecordedCard(t, wallet) {
+  const income = t.jenis === "pemasukan";
   const money = typeof formatWalletMoney === "function" ? formatWalletMoney(t.jumlah, wallet.currency) : formatRupiah(t.jumlah);
   const icon = income ? "💰" : (typeof getCategoryEmoji === "function" ? getCategoryEmoji((t.kategori || "") + " " + (t.subKategori || "")) : "💸");
   const day = new Intl.DateTimeFormat(typeof getAppLocale === "function" ? getAppLocale() : "id-ID", { weekday: "short", day: "numeric", month: "short" }).format(new Date(t.tanggal + "T00:00:00"));
@@ -194,7 +200,7 @@ async function handleRuvyReceipt(e) {
   const chips = document.getElementById("ai-chips");
   if (chips) chips.style.display = "none";
   appendBubble(advisorText("📷 Foto struk", "📷 Receipt photo"), "user");
-  appendBubble(advisorText("Membaca struk…", "Reading the receipt…"), "bot");
+  appendBubble(advisorText("Membaca struk…", "Reading the receipt…"), "bot", false);
   const status = document.getElementById("ai-chat-body").lastElementChild;
   aiAdvisorSending = true;
   try {
@@ -251,12 +257,10 @@ function openAIChat() {
   markGuideAI();
   const pill = document.getElementById("ruvy-chat-wallet");
   if (pill && typeof getActiveWallet === "function") pill.textContent = "💳 " + getActiveWallet().name;
-  const body = document.getElementById("ai-chat-body");
-  if (body && !body.querySelector(".ruvy-day-sep")) {
-    const sep = document.createElement("div");
-    sep.className = "ruvy-day-sep"; sep.textContent = advisorText("Hari ini", "Today");
-    body.insertBefore(sep, body.firstChild);
-  }
+  // Re-read every open: picks up edits/deletes and another user's login on this device.
+  renderRuvyLog();
+  updateRuvyMic();
+  setTimeout(() => { const b = document.getElementById("ai-chat-body"); if (b) b.scrollTop = b.scrollHeight; }, 50);
   if (typeof trackOnce === "function") trackOnce("ai_open");
   document.getElementById("ai-chat-overlay").hidden = false;
   document.getElementById("ai-chat-panel").hidden = false;
@@ -274,9 +278,7 @@ function resetAdvisorWallet() {
   closeAIChat();
   const body = document.getElementById('ai-chat-body');
   if (!body) return;
-  body.querySelectorAll('.ai-bubble-user, .ai-bubble-bot:not(#ai-greeting), .ai-bubble-typing, .ruvy-rec-card').forEach(item => item.remove());
-  const chips = document.getElementById('ai-chips');
-  if (chips) chips.style.display = '';
+  renderRuvyLog();
   const input = document.getElementById('ai-chat-input');
   if (input) input.value = '';
 }
@@ -369,8 +371,67 @@ async function sendQuestion(question) {
   }
 }
 
-function appendBubble(text, who) {
+// ---- Chat history (per user, this device only): last 7 days / 80 items, re-rendered on open.
+// Cards are stored by transaction id and re-read from the ledger, so edits/deletes show up.
+const RUVY_LOG_MAX = 80, RUVY_LOG_DAYS = 7;
+function ruvyLogKey() {
+  const uid = (typeof currentUser !== "undefined" && currentUser?.uid) || "local";
+  return "ruvy-chat:" + uid;
+}
+function readRuvyLog() {
+  try {
+    const rows = JSON.parse(localStorage.getItem(ruvyLogKey()) || "[]");
+    const since = Date.now() - RUVY_LOG_DAYS * 86400000;
+    return Array.isArray(rows) ? rows.filter(r => r && r.ts > since) : [];
+  } catch (_) { return []; }
+}
+function pushRuvyLog(entry) {
+  try {
+    const rows = readRuvyLog(); rows.push({ ...entry, ts: Date.now() });
+    localStorage.setItem(ruvyLogKey(), JSON.stringify(rows.slice(-RUVY_LOG_MAX)));
+  } catch (_) {}
+}
+function ruvyDayLabel(ts) {
+  const d = new Date(ts), today = new Date(), y = new Date(); y.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return advisorText("Hari ini", "Today");
+  if (d.toDateString() === y.toDateString()) return advisorText("Kemarin", "Yesterday");
+  return new Intl.DateTimeFormat(typeof getAppLocale === "function" ? getAppLocale() : "id-ID", { weekday: "short", day: "numeric", month: "short" }).format(d);
+}
+function ensureDaySep(ts = Date.now()) {
   const body = document.getElementById("ai-chat-body");
+  const key = new Date(ts).toDateString();
+  if (body.dataset.lastDay === key) return;
+  body.dataset.lastDay = key;
+  const sep = document.createElement("div");
+  sep.className = "ruvy-day-sep"; sep.textContent = ruvyDayLabel(ts);
+  body.appendChild(sep);
+}
+function findLoggedTransaction(id, walletId) {
+  try {
+    const wallet = getWallets().find(w => w.id === walletId);
+    const t = wallet && getWalletLedger(walletId).transactions.find(x => x.id === id);
+    return t ? { t, wallet } : null;
+  } catch (_) { return null; }
+}
+function renderRuvyLog() {
+  const body = document.getElementById("ai-chat-body");
+  if (!body) return;
+  body.querySelectorAll(".ai-bubble-user, .ai-bubble-bot:not(#ai-greeting), .ai-bubble-typing, .ruvy-rec-card, .ruvy-day-sep").forEach(item => item.remove());
+  delete body.dataset.lastDay;
+  const rows = readRuvyLog();
+  const chips = document.getElementById("ai-chips");
+  if (chips) chips.style.display = rows.length ? "none" : "";
+  for (const row of rows) {
+    if (row.t === "c") {
+      const found = findLoggedTransaction(row.id, row.w);
+      if (found) { ensureDaySep(row.ts); appendRecordedCard(found.t, found.wallet); }
+    } else { ensureDaySep(row.ts); appendBubble(row.text, row.t === "u" ? "user" : "bot", false); }
+  }
+}
+
+function appendBubble(text, who, persist = true) {
+  const body = document.getElementById("ai-chat-body");
+  if (persist) { ensureDaySep(); pushRuvyLog({ t: who === "user" ? "u" : "b", text: String(text).slice(0, 1200) }); }
   const bubble = document.createElement("div");
   bubble.className = `ai-bubble ai-bubble-${who}`;
   if (who === "bot") {
@@ -555,6 +616,32 @@ function renderAIPromo() {
     const profile = typeof currentProfile !== "undefined" ? currentProfile : null;
     if (typeof openAIChat === "function") openAIChat();
   };
+}
+
+// ---- Voice input: the browser's own speech-to-text (free, no AI tokens). Hidden where
+// unsupported (e.g. Android WebView). Fills the box; the user checks it and taps send.
+let ruvyRecognition = null;
+function updateRuvyMic() {
+  const mic = document.getElementById("ruvy-mic");
+  if (mic) mic.hidden = !(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+function toggleRuvyMic() {
+  const mic = document.getElementById("ruvy-mic"), input = document.getElementById("ai-chat-input");
+  if (ruvyRecognition) { ruvyRecognition.stop(); return; }
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Rec) return;
+  const rec = new Rec();
+  rec.lang = typeof getAppLanguage === "function" && getAppLanguage() === "en" ? "en-US" : "id-ID";
+  rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.onresult = (e) => { input.value = Array.from(e.results).map(r => r[0].transcript).join(" ").trim(); };
+  rec.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") appendBubble(advisorText("Izin mikrofon belum diberikan. Aktifkan di pengaturan browser, atau ketik saja.", "Microphone permission is off. Enable it in browser settings, or just type."), "bot", false);
+  };
+  const placeholder = input.placeholder;
+  rec.onend = () => { ruvyRecognition = null; mic.classList.remove("listening"); input.placeholder = placeholder; input.focus(); };
+  ruvyRecognition = rec; mic.classList.add("listening");
+  input.value = ""; input.placeholder = advisorText("Bicara sekarang… mis. \"bakso dua puluh lima ribu\"", "Speak now…");
+  try { rec.start(); } catch (_) { ruvyRecognition = null; mic.classList.remove("listening"); }
 }
 
 // Expose globals

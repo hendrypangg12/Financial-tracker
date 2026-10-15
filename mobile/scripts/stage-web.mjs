@@ -55,7 +55,7 @@ html = html.replace(/<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?\/>/,
   .replace(/<link rel="manifest"[^>]+>/, '')
   .replace(/<script src="js\/admin\.js[^>]+><\/script>/, '')
   .replace('width=device-width, initial-scale=1.0', 'width=device-width, initial-scale=1.0, viewport-fit=cover')
-  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=69" />\n</head>')
+  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=70" />\n</head>')
   .replace('</body>', `${production ? '<script>window.__BERUANG_STORE_BUILD__=true</script>\n' : ''}<script src="vendor/capacitor.js"></script>\n<script src="mobile-runtime.js"></script>\n</body>`);
 // Tanpa bundler, Capacitor.registerPlugin hanya ada jika build browser @capacitor/core ikut dimuat.
 await copy('vendor/capacitor.js', path.join(mobile, 'node_modules/@capacitor/core/dist/capacitor.js'));

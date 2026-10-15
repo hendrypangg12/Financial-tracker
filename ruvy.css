@@ -348,3 +348,8 @@
 .ruvy-rec-copy{flex:1;min-width:0}.ruvy-rec-copy b{display:block;font-size:15px}.ruvy-rec-copy small{display:block;font-size:12px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ruvy-rec-amt{font-weight:700;white-space:nowrap}.ruvy-rec-amt.in{color:var(--income)}.ruvy-rec-amt.out{color:var(--expense,#b4415a)}
 .ruvy-rec-edit{display:block;margin-top:8px;font-size:11px;color:var(--primary)}
+.ruvy-mic[hidden]{display:none!important}
+.ruvy-mic.listening{background:var(--expense,#b4415a);color:#fff;animation:ruvyPulse 1s ease-in-out infinite}
+@keyframes ruvyPulse{50%{transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.ruvy-mic.listening{animation:none}}
+.ruvy-app .ai-chat-input{min-width:0;flex:1}

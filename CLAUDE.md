@@ -199,8 +199,11 @@ Cek produksi 25 Sep ~23:50 (Claude, via REST + akun probe yang langsung dihapus)
   15 Okt (contoh Rolly dari bos): catatan Ruvy jadi KARTU (`appendRecordedBubble`): "Dicatat: Pengeluaran · Kam, 15 Okt",
   ikon kategori (getCategoryEmoji), subkategori, deskripsi · dompet, nominal +/− berwarna, ketuk kartu = ubah; didahului
   kalimat ramah acak (template, BUKAN AI). Pill dompet aktif di atas chat + pemisah "Hari ini". v69, SW ruvy-v69.
-  Belum: tombol mic (Web Speech gratis), "Pindah dana" antar dompet (dompet = buku terpisah, beda mata uang), riwayat chat
-  tersimpan antar sesi.
+  15 Okt lanjutan: RIWAYAT CHAT Ruvy tersimpan di perangkat (localStorage `ruvy-chat:<uid>`, 7 hari / 80 item; kartu
+  disimpan sebagai id transaksi + dompet lalu dibaca ulang dari data → ikut berubah kalau diedit, hilang kalau dihapus),
+  pemisah Hari ini/Kemarin/tanggal. TOMBOL MIC 🎤 = speech-to-text bawaan browser (gratis, tanpa token), mengisi kolom,
+  user tetap tekan kirim; disembunyikan kalau tidak didukung (WebView Android biasanya tidak → perlu plugin native nanti).
+  v70, SW ruvy-v70. Belum: "Pindah dana" antar dompet (dompet = buku terpisah, bisa beda mata uang → perlu desain).
 - 🤖 14–15 Okt: CHATGPT/CODEX REBRAND → "RUVY" (pakai y; app "Ruvy - AI Money Tracker", 1.5.1 vc15) LANGSUNG di branch ini:
   UI kaca biru, Bahasa Indonesia/English (js/i18n.js), dompet multi mata uang = buku terpisah per dompet
   (`wallets[]` + `walletData{id: ledger}`, dompet utama 'legacy' = state lama IDR, js/wallets.js), Play listing ID/EN
