@@ -95,22 +95,89 @@ test('daily limit and free goal quota stay keyed by authenticated UID rather tha
   assert.match((await result.json()).reply, /10 AI questions/);
 });
 
-test('paid request forwards English currency context to the shared model and consumes only the verified UID quota', async t => {
+test('paid request uses Haiku 5.5 without thinking and forwards only the current English wallet context', async t => {
   let submitted;
   mockFetch(t, 'lifetime', options => {
     submitted = JSON.parse(options.body);
-    return json({ id: 'mock-message', type: 'message', role: 'assistant', model: 'claude-sonnet-5',
+    return json({ id: 'mock-message', type: 'message', role: 'assistant', model: 'claude-haiku-5-5',
       content: [{ type: 'text', text: 'Your recorded lunch cost USD 12.50.' }], stop_reason: 'end_turn', usage: { input_tokens: 1, output_tokens: 1 } });
   });
   const env = environment();
   const result = await handleAdvise(request({ language: 'en', currency: 'USD', totalPengeluaran: 12.5 }), env);
   assert.equal(result.status, 200);
-  assert.equal(submitted.model, 'claude-haiku-4-5');
+  assert.equal(submitted.model, 'claude-haiku-5-5');
+  assert.equal(submitted.max_tokens, 600);
+  assert.deepEqual(submitted.thinking, { type: 'disabled' });
+  assert.deepEqual(submitted.output_config, { effort: 'low' });
+  for (const unsupported of ['temperature', 'top_p', 'top_k']) assert.equal(unsupported in submitted, false);
   assert.match(submitted.system[0].text, /Selected wallet currency: USD/);
+  assert.deepEqual(submitted.system[0].cache_control, { type: 'ephemeral' });
   assert.match(submitted.messages[0].content, /USD\s+12\.50/);
   assert.equal(submitted.messages.length, 1);
   assert.equal(env.data.get('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10)), '1');
   assert.ok([...env.data.keys()].every(key => !key.includes('spoofed')));
+});
+
+test('mixed thinking and text responses expose only usable answer text, without replaying thinking blocks', async t => {
+  mockFetch(t, 'lifetime', () => json({ content: [
+    { type: 'thinking', thinking: 'PRIVATE_REASONING', signature: 'private-signature' },
+    { type: 'text', text: '   ' },
+    { type: 'text', text: '  Your lunch cost USD 12.50.  ' },
+    { type: 'text', text: 'Try a weekly dining budget.' },
+  ], stop_reason: 'end_turn' }));
+  const response = await handleAdvise(request({ language: 'en', currency: 'USD' }), environment());
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.reply, 'Your lunch cost USD 12.50.\n\nTry a weekly dining budget.');
+  assert.deepEqual(result.quota, { used: 1, limit: 10 });
+  assert.doesNotMatch(JSON.stringify(result), /PRIVATE_REASONING|private-signature/);
+});
+
+test('refusal, truncated answers and responses without usable text return localized unavailable, never a fake successful answer', async t => {
+  let providerResponse;
+  mockFetch(t, 'lifetime', () => json(providerResponse));
+  for (const language of ['id', 'en']) {
+    for (const [stopReason, content] of [
+      ['refusal', [{ type: 'text', text: 'PROVIDER_REFUSAL' }]],
+      ['max_tokens', [{ type: 'thinking', thinking: 'PRIVATE_REASONING', signature: 'private-signature' }]],
+      ['max_tokens', [{ type: 'text', text: 'TRUNCATED_FINANCIAL_ADVICE' }]],
+      ['model_context_window_exceeded', [{ type: 'text', text: 'TRUNCATED_FINANCIAL_ADVICE' }]],
+      ['end_turn', []],
+      ['end_turn', [{ type: 'text', text: '  ' }]],
+    ]) {
+      providerResponse = { content, stop_reason: stopReason };
+      const env = environment();
+      const response = await handleAdvise(request({ language, currency: 'USD' }), env);
+      assert.equal(response.status, 503, `${language}: ${stopReason}`);
+      const result = await response.json();
+      assert.equal(result.error, language === 'en' ? 'AI service unavailable' : 'Layanan AI tidak tersedia');
+      assert.equal(result.reply, language === 'en'
+        ? "I couldn't provide an answer. Rephrase your question or try again later."
+        : 'Belum dapat membuat jawaban. Coba ubah pertanyaan atau coba lagi nanti.');
+      assert.doesNotMatch(JSON.stringify(result), /PROVIDER_REFUSAL|PRIVATE_REASONING|private-signature|TRUNCATED_FINANCIAL_ADVICE/);
+      assert.equal(result.quota, undefined);
+      assert.equal(env.data.get('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10)), '1');
+    }
+  }
+});
+
+test('provider errors do not retry or fall back to another model and never expose provider details', async t => {
+  let providerCalls = 0;
+  mockFetch(t, 'lifetime', options => {
+    providerCalls++;
+    assert.equal(JSON.parse(options.body).model, 'claude-haiku-5-5');
+    return new Response(JSON.stringify({ type: 'error', error: { type: 'overloaded_error', message: 'PRIVATE_PROVIDER_DETAIL' } }),
+      { status: 529, headers: { 'Content-Type': 'application/json' } });
+  });
+  // Existing provider-error diagnostics are private server logs, not part of the response.
+  const original = console.error; console.error = () => {};
+  t.after(() => { console.error = original; });
+  const env = environment();
+  const response = await handleAdvise(request({ language: 'en', currency: 'USD' }), env);
+  assert.equal(response.status, 503);
+  assert.equal(providerCalls, 1, 'A failed call must not silently consume more requests');
+  assert.doesNotMatch(JSON.stringify(await response.json()), /PRIVATE_PROVIDER_DETAIL|overloaded_error|mock-key/);
+  assert.equal(env.data.get('advise_rate:verified-user:' + new Date().toISOString().slice(0, 10)), '1');
 });
 
 test('invalid new metadata is rejected before plan lookup or provider invocation', async t => {

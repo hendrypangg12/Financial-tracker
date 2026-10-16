@@ -4,7 +4,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { requireUser, readPlan } from "./auth.js";
 
-const MODEL = "claude-haiku-4-5"; // Haiku: jauh lebih hemat untuk tips keuangan rutin
+const MODEL = "claude-haiku-5-5"; // Haiku: jawaban keuangan rutin dengan biaya terkendali
 const MAX_TOKENS = 600;   // Jawaban ringkas, gak boros token
 const PAID_DAILY_LIMIT = 10;  // pertanyaan AI per hari, paket berbayar
 const TRIAL_DAILY_LIMIT = 5;  // pertanyaan AI per hari, uji coba Google Play 3 hari
@@ -223,10 +223,13 @@ export async function handleAdvise(request, env) {
   // Call Claude API
   let reply;
   try {
-    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 0 });
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: MAX_TOKENS,
+      // Routine advice needs a direct answer, not thinking that consumes the output budget.
+      thinking: { type: "disabled" },
+      output_config: { effort: "low" },
       system: [
         {
           type: "text",
@@ -237,9 +240,15 @@ export async function handleAdvise(request, env) {
       messages: [{ role: "user", content: userMsg }],
     });
 
-    // Extract text from response
-    const textBlock = response.content.find((b) => b.type === "text");
-    reply = textBlock?.text?.trim() || copy(language, "Bos, ada masalah sebentar. Coba tanya lagi ya 🐻", "I couldn't create a reply. Please try again shortly. 🐻");
+    // Select by block type; provider thinking is never shown as an answer.
+    reply = (response.content || []).filter(b => b.type === "text" && typeof b.text === "string")
+      .map(b => b.text.trim()).filter(Boolean).join("\n\n");
+    if (["refusal", "max_tokens", "model_context_window_exceeded"].includes(response.stop_reason) || !reply) {
+      return jsonResponse({
+        error: copy(language, "Layanan AI tidak tersedia", "AI service unavailable"),
+        reply: copy(language, "Belum dapat membuat jawaban. Coba ubah pertanyaan atau coba lagi nanti.", "I couldn't provide an answer. Rephrase your question or try again later."),
+      }, 503);
+    }
   } catch (err) {
     // Detail error info supaya bisa debug via `wrangler tail`
     const errInfo = {
