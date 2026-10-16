@@ -13,7 +13,7 @@ await mkdir(out, { recursive: true });
 
 // Presence uses an anonymous Realtime Database identifier that cannot be tied
 // to an account-deletion request. It is intentionally absent from the store build.
-const scripts = ['data','preferences','i18n','utils','firebase-config','storage','wallets','parser','sync','auth','dashboard','anomaly','pages','reports','hutang','goal','ai-advisor','recurring','telegram-link','onboarding','metrics','ruvy','app'];
+const scripts = ['data','preferences','i18n','password-visibility','utils','firebase-config','storage','wallets','parser','sync','auth','dashboard','anomaly','pages','reports','hutang','goal','ai-advisor','recurring','telegram-link','onboarding','metrics','ruvy','app'];
 const manifest = [];
 async function put(relative, data) {
   const target = path.join(out, relative);
@@ -55,7 +55,7 @@ html = html.replace(/<link\s+href="https:\/\/fonts\.googleapis\.com[\s\S]*?\/>/,
   .replace(/<link rel="manifest"[^>]+>/, '')
   .replace(/<script src="js\/admin\.js[^>]+><\/script>/, '')
   .replace('width=device-width, initial-scale=1.0', 'width=device-width, initial-scale=1.0, viewport-fit=cover')
-  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=75" />\n</head>')
+  .replace('</head>', '<link rel="stylesheet" href="mobile.css" />\n<link rel="stylesheet" href="ruvy.css?v=76" />\n</head>')
   .replace('</body>', `${production ? '<script>window.__BERUANG_STORE_BUILD__=true</script>\n' : ''}<script src="vendor/capacitor.js"></script>\n<script src="mobile-runtime.js"></script>\n</body>`);
 // Tanpa bundler, Capacitor.registerPlugin hanya ada jika build browser @capacitor/core ikut dimuat.
 await copy('vendor/capacitor.js', path.join(mobile, 'node_modules/@capacitor/core/dist/capacitor.js'));

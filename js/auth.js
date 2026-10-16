@@ -10,9 +10,11 @@ function onAuthStateChanged(callback) {
   if (!fbAuth) { callback(null); return () => {}; }
   return fbAuth.onAuthStateChanged(async (user) => {
     const generation = ++authGeneration;
+    authReady = false;
     currentUser = user;
     currentProfile = null;
     currentClaims = {};
+    let profileError = null;
     if (user) {
       try {
         const [profile, token] = await Promise.all([ensureUserProfile(user), user.getIdTokenResult()]);
@@ -21,11 +23,12 @@ function onAuthStateChanged(callback) {
         currentClaims = token.claims || {};
       } catch (error) {
         if (generation !== authGeneration) return;
+        profileError = error;
         console.warn('Profil belum dapat diperbarui:', error.code || 'network-error');
       }
     }
     authReady = true;
-    try { await callback(user, currentProfile); }
+    try { await callback(user, currentProfile, { profileError }); }
     catch (error) {
       console.warn('Aplikasi belum dapat dimuat:', error.code || error.message);
       if (typeof showScreen === 'function') showScreen('login');
@@ -54,18 +57,34 @@ function computeExpiry(paket, fromDate = new Date()) {
 // Pastikan profile user ada di Firestore (buat saat pertama login)
 // Profil baru dibuat server agar trial gratis tidak dapat dimanipulasi dari browser.
 async function ensureUserProfile(user) {
-  if (!fbDb) return null;
+  const unavailable = cause => {
+    const error = new Error('Profil akun belum dapat dimuat. Coba lagi setelah terhubung ke internet.');
+    error.code = 'account/profile-unavailable';
+    error.cause = cause;
+    return error;
+  };
+  if (!fbDb) throw unavailable();
   const ref = fbDb.collection('users').doc(user.uid).collection('meta').doc('profile');
-  const snap = await ref.get();
+  let snap;
+  try { snap = await ref.get({ source: 'server' }); }
+  catch (error) {
+    // A previously verified, still-active profile may keep working offline.
+    // Missing/expired cache is not evidence that a new account needs to pay.
+    const cached = await ref.get({ source: 'cache' }).catch(() => null);
+    if (cached?.exists && isPro(cached.data())) return cached.data();
+    throw unavailable(error);
+  }
   if (snap.exists) return snap.data();
-  const response = await fetch('https://berstock-bot.hendrypangg12.workers.dev/api/account/bootstrap', {
-    method: 'POST', headers: { 'Content-Type':'application/json', Authorization:'Bearer ' + await user.getIdToken() },
-    body: JSON.stringify({ displayName:user.displayName || user.email?.split('@')[0] || 'User', photoURL:user.photoURL || '' }),
-  });
-  if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || 'Profil belum dapat dibuat.');
-  const created = await ref.get({ source:'server' });
-  if (!created.exists) throw new Error('Profil belum tersedia.');
-  return created.data();
+  try {
+    const response = await fetch('https://berstock-bot.hendrypangg12.workers.dev/api/account/bootstrap', {
+      method: 'POST', headers: { 'Content-Type':'application/json', Authorization:'Bearer ' + await user.getIdToken() },
+      body: JSON.stringify({ displayName:user.displayName || user.email?.split('@')[0] || 'User', photoURL:user.photoURL || '' }),
+    });
+    if (!response.ok) throw new Error('Profile bootstrap failed');
+    const created = await ref.get({ source:'server' });
+    if (!created.exists) throw new Error('Profile is not available');
+    return created.data();
+  } catch (error) { throw unavailable(error); }
 }
 
 // Activate subscription: panggil setelah payment success

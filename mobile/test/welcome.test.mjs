@@ -268,3 +268,23 @@ test('reduced motion and page visibility pause welcome animation without disabli
   assert.match(css, /\.ruvy-reduce-motion \.ruvy-robot \*\{animation:none!important\}/);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[^}]*animation:none!important/);
 });
+
+test('a new account with its active signup trial enters the app without a payment screen', async () => {
+  const h = app({ language: 'en' });
+  h.context.ensureUserProfile = async () => ({ plan: 'free_trial', expiresAt: new Date(Date.now() + 2 * 86400000).toISOString() });
+  await h.auth(h.user());
+  assert.equal(h.el('paywall-screen').hidden, true);
+  assert.equal(h.el('startup-screen').hidden, true);
+  assert.equal(h.document.body.classList.contains('app-locked'), false);
+});
+
+test('a failed new-account bootstrap keeps a localized retry screen instead of checkout', async () => {
+  const h = app({ language: 'en' });
+  h.context.ensureUserProfile = async () => { throw Object.assign(new Error('offline'), { code: 'account/profile-unavailable' }); };
+  await h.auth(h.user());
+  assert.equal(h.el('startup-screen').hidden, false);
+  assert.equal(h.el('paywall-screen').hidden, true);
+  assert.equal(h.el('login-screen').hidden, true);
+  assert.match(h.el('account-load-status').textContent, /Check your connection and reload/);
+  assert.doesNotMatch(h.el('account-load-status').textContent, /buy|subscribe|payment/i);
+});

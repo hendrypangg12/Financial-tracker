@@ -686,13 +686,25 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAuthUI();
   // Tunggu auth state, baru tentukan tampil app atau login screen
   if (typeof onAuthStateChanged === 'function') {
-    onAuthStateChanged(async (user, profile) => {
+    onAuthStateChanged(async (user, profile, status = {}) => {
       if (!user) {
         stopAutoSync(); stopCloudListener();
         showScreen('login');
         return;
       }
+      if (typeof beginLoginLanguageSession === 'function') beginLoginLanguageSession(user.uid);
       showScreen('loading');
+      const accountStatus = document.getElementById('account-load-status');
+      if (accountStatus) accountStatus.textContent = preferenceMessage('Menyiapkan akun dan catatan keuangan…', 'Preparing your account and financial records…');
+      // An unavailable profile is a connection problem, never proof that a
+      // newly registered user must buy a subscription. Retry before checkout.
+      if (status.profileError || !profile) {
+        stopAutoSync(); stopCloudListener();
+        if (accountStatus) accountStatus.textContent = preferenceMessage(
+          'Akun belum dapat dimuat. Periksa koneksi lalu muat ulang. Data yang tersimpan tidak dihapus.',
+          'Your account could not be loaded. Check your connection and reload. Your saved records are not deleted.');
+        return;
+      }
       // Cek payment redirect dari Xendit (?payment=success&ref=xxx) — activate subscription
       if (typeof handlePostPaymentRedirect === 'function') {
         try { await handlePostPaymentRedirect(); } catch (e) { console.warn('[payment-redirect]', e); }
@@ -705,6 +717,10 @@ document.addEventListener('DOMContentLoaded', () => {
       loadState();
       await loadFromCloud();
       if (currentUser?.uid !== user.uid) return;
+      const languageChanged = typeof applyLoginLanguagePreference === 'function' && applyLoginLanguagePreference(user.uid);
+      if (languageChanged && typeof pushToCloudImmediate === 'function') await pushToCloudImmediate();
+      if (currentUser?.uid !== user.uid) return;
+      if (typeof applyAppLanguage === 'function') applyAppLanguage();
       if (typeof trackSessionMilestones === 'function') trackSessionMilestones(profile);
       // Data dimuat dulu supaya user yang terkunci tetap bisa mengunduh backup dari layar paywall.
       if (isAccessLocked(profile)) {
@@ -1023,17 +1039,20 @@ function showScreen(which) {
     const reloadBtn = document.getElementById('btn-paywall-reload');
     if (reloadBtn) reloadBtn.hidden = !locked;
     const title = document.getElementById('paywall-title');
-    if (title) title.textContent = locked ? 'Masa aktif habis' : 'Pilih Paket Langganan';
+    if (title) title.textContent = locked ? preferenceMessage('Masa aktif habis', 'Your access has ended') : preferenceMessage('Pilih Paket Langganan', 'Choose a subscription');
     const description = document.getElementById('paywall-description');
     if (description) {
       const active = typeof isPro === 'function' && isPro(currentProfile);
       const planNames = { free_trial: 'Uji Coba Gratis', trial: 'Akses 7 Hari', starter: 'Akses 7 Hari', monthly: 'Pro Bulanan', annual: 'Pro Tahunan', lifetime: 'Lifetime', pro: 'Pro' };
-      if (!currentProfile) description.textContent = 'Status paket belum dapat dibaca. Coba muat ulang sebelum memilih pembayaran.';
+      if (!currentProfile) description.textContent = preferenceMessage('Status paket belum dapat dibaca. Coba muat ulang sebelum memilih pembayaran.', 'Your plan could not be loaded. Reload before choosing a payment.');
       else if (active) {
         const date = currentProfile.expiresAt ? new Date(currentProfile.expiresAt) : null;
-        const end = date && !Number.isNaN(date.getTime()) ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date) : '';
-        description.textContent = `Paket ${planNames[currentProfile.plan] || 'Pro'} kamu aktif${end ? ` sampai ${end}` : ''}. Kamu bisa melihat pilihan paket di bawah. Data akun tetap tersimpan.`;
-      } else description.textContent = `Akun ${currentUser?.email || ''} belum memiliki paket aktif. Pilih paket untuk melanjutkan; data akun tetap tersimpan.`;
+        const end = date && !Number.isNaN(date.getTime()) ? new Intl.DateTimeFormat(getAppLocale(), { day: 'numeric', month: 'long', year: 'numeric' }).format(date) : '';
+        const englishPlans = { free_trial: 'Free trial', trial: '7-day access', starter: '7-day access', monthly: 'Monthly Pro', annual: 'Yearly Pro', lifetime: 'Lifetime', pro: 'Pro' };
+        description.textContent = currentProfile.plan === 'free_trial'
+          ? preferenceMessage(`Uji coba gratis aktif${end ? ` sampai ${end}` : ''}. Jelajahi aplikasi selama 2 hari tanpa pembayaran. Berlangganan hanya jika ingin melanjutkan setelahnya.`, `Your free trial is active${end ? ` until ${end}` : ''}. Explore the app for 2 days without payment. Subscribe only if you want to continue afterwards.`)
+          : preferenceMessage(`Paket ${planNames[currentProfile.plan] || 'Pro'} kamu aktif${end ? ` sampai ${end}` : ''}. Kamu bisa melihat pilihan paket di bawah. Data akun tetap tersimpan.`, `Your ${englishPlans[currentProfile.plan] || 'Pro'} plan is active${end ? ` until ${end}` : ''}. You can view plans below. Your account records remain saved.`);
+      } else description.textContent = preferenceMessage('Masa aktif akun sudah habis. Pilih paket untuk melanjutkan; catatan Anda tetap tersimpan.', 'Your access has ended. Choose a plan to continue; your records remain saved.');
     }
     document.querySelectorAll('.btn-buy').forEach(btn => {
       btn.disabled = !currentProfile;
@@ -1101,6 +1120,7 @@ function setupAuthUI() {
       const fd = new FormData(formLogin);
       setAuthBusy(true);
       try {
+        if (typeof rememberLoginLanguage === 'function') rememberLoginLanguage();
         await loginEmailPassword(fd.get('email'), fd.get('password'));
         // onAuthStateChanged akan handle redirect
       } catch (err) {
@@ -1121,6 +1141,7 @@ function setupAuthUI() {
       }
       setAuthBusy(true);
       try {
+        if (typeof rememberLoginLanguage === 'function') rememberLoginLanguage();
         await registerEmailPassword(fd.get('email'), fd.get('password'));
       } catch (err) {
         showAuthError(authErrorMessage(err));
@@ -1133,7 +1154,10 @@ function setupAuthUI() {
   if (btnGoogle) {
     btnGoogle.onclick = async () => {
       setAuthBusy(true);
-      try { await loginGoogle(); }
+      try {
+        if (typeof rememberLoginLanguage === 'function') rememberLoginLanguage();
+        await loginGoogle();
+      }
       catch (err) { showAuthError(authErrorMessage(err)); }
       finally { setAuthBusy(false); }
     };

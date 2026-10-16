@@ -371,6 +371,7 @@
   window.setDeviceLanguage = function (lang) {
     const chosen = lang === 'en' ? 'en' : 'id';
     try { localStorage.setItem('beruang_ui_language', chosen); } catch (_) {}
+    if (typeof rememberLoginLanguage === 'function' && (typeof currentUser === 'undefined' || !currentUser)) rememberLoginLanguage(chosen);
     return chosen;
   };
   registerStaticUI();

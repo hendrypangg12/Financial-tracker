@@ -13,8 +13,27 @@ function getDeviceLanguage() {
 function preferenceState() {
   try { return typeof state !== 'undefined' ? state : null; } catch (_) { return null; }
 }
+// Carry the language shown during an intentional sign-in into that account.
+// Restored sessions still use their synced preference; another user's cached
+// language must never override a choice made on this login screen.
+let loginLanguageChoice = null;
+function rememberLoginLanguage(language = getAppLanguage()) {
+  loginLanguageChoice = { language: language === 'en' ? 'en' : 'id', owner: null };
+}
+function beginLoginLanguageSession(uid) {
+  if (!loginLanguageChoice) return;
+  if (loginLanguageChoice.owner && loginLanguageChoice.owner !== uid) loginLanguageChoice = null;
+  else loginLanguageChoice.owner = uid;
+}
+function applyLoginLanguagePreference(uid) {
+  if (!loginLanguageChoice || loginLanguageChoice.owner !== uid || typeof currentUser === 'undefined' || currentUser?.uid !== uid) return;
+  const language = loginLanguageChoice.language;
+  loginLanguageChoice = null;
+  return setAccountPreferences({ language }).ok;
+}
 function getAppLanguage() {
   const data = preferenceState();
+  if (loginLanguageChoice && (!loginLanguageChoice.owner || (typeof currentUser !== 'undefined' && currentUser?.uid === loginLanguageChoice.owner))) return loginLanguageChoice.language;
   if (typeof currentUser !== 'undefined' && !currentUser) return getDeviceLanguage();
   return data?.preferences?.language === 'en' ? 'en' : data?.preferences?.language === 'id' ? 'id' : getDeviceLanguage();
 }
